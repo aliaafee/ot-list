@@ -1,0 +1,32 @@
+# /etc/systemd/system/pocketbase.service
+[Unit]
+Description=PocketBase service
+After=network.target
+
+[Service]
+# Run under a dedicated user with minimal privileges
+User=pocketbase
+Group=pocketbase
+
+# Working directory (adjust if needed, e.g., for migrations or static files)
+WorkingDirectory=/opt/react-pocketbase/pb
+
+# The executable path
+ExecStart=/opt/react-pocketbase/pb/pocketbase serve --http 0.0.0.0:8090 --publicDir /opt/react-pocketbase/dist
+
+# Restart policy
+Restart=on-failure
+RestartSec=5s
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ReadWritePaths=/opt/react-pocketbase
+
+[Install]
+WantedBy=multi-user.target
