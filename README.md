@@ -1,4 +1,4 @@
-# React + Vite + Tailwindcss4 + PocketBase
+# OT List
 
 ## Installation
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-ROOT_DIR="/opt/react-pocketbase"
+ROOT_DIR="/opt/ot-list"
 PB_DIR="$ROOT_DIR/pb"
 PB_USER="pocketbase"
 
@@ -31,7 +31,7 @@ sudo chown -R $PB_USER:$PB_USER $ROOT_DIR
 # Clone repository
 echo "[*] Cloning repository..."
 if [ ! -d "$ROOT_DIR/.git" ]; then
-    sudo -u $PB_USER git clone https://github.com/aliaafee/react-pocketbase.git $ROOT_DIR
+    sudo -u $PB_USER git clone https://github.com/aliaafee/ot-list.git $ROOT_DIR
 else
     echo "Repo already cloned, pulling changes."
     sudo -u $PB_USER git -C $ROOT_DIR pull

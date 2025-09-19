@@ -25,6 +25,7 @@ function Login() {
 
   return (
     <CenterBox>
+      <h1 className="font-bold">OT LIST</h1>
       <h1 className="font-bold">Login</h1>
       {import.meta.env.VITE_PB_BASE_URL}
       <form
