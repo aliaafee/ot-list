@@ -1,4 +1,3 @@
-import React from "react";
 import { twMerge } from "tailwind-merge";
 
 const ToolBarButton = ({
@@ -59,8 +58,9 @@ const ToolBarPill = ({
                 className
             )}
         >
-            {items.map((item) => (
+            {items.map((item, index) => (
                 <button
+                    key={index}
                     onClick={() => {
                         setValue(item.value);
                         onClick();

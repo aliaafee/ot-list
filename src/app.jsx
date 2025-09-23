@@ -4,22 +4,25 @@ import Login from "@/pages/login";
 import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
 import Register from "@/pages/register";
+import Test from "./pages/test";
 
 export default function App() {
-  return (
-    <Routes>
-      {/* Public */}
-      <Route path="/login" element={<Login />} />
+    return (
+        <Routes>
+            {/* Public */}
+            <Route path="/login" element={<Login />} />
 
-      {/* Protected */}
-      <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/register" element={<Register />} />
-      </Route>
+            <Route path="/test" element={<Test />} />
 
-      {/* Fallback */}
-      <Route path="*" element={<Login />} />
-    </Routes>
-  );
+            {/* Protected */}
+            <Route element={<ProtectedRoute />}>
+                <Route path="/" element={<Home />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/register" element={<Register />} />
+            </Route>
+
+            {/* Fallback */}
+            <Route path="*" element={<Login />} />
+        </Routes>
+    );
 }
