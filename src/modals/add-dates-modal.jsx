@@ -73,7 +73,6 @@ export default function AddDatesModal({
               ]
             : listDays.map((day) => ({
                   date: day,
-                  disabled: 0,
                   otList: selectedOtList,
                   remarks: "",
                   disabled: false,
