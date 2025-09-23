@@ -1,6 +1,6 @@
 # /etc/systemd/system/pocketbase.service
 [Unit]
-Description=PocketBase service
+Description=OtList PocketBase service
 After=network.target
 
 [Service]
@@ -9,10 +9,10 @@ User=pocketbase
 Group=pocketbase
 
 # Working directory (adjust if needed, e.g., for migrations or static files)
-WorkingDirectory=/opt/react-pocketbase/pb
+WorkingDirectory=/opt/ot-list/pb
 
 # The executable path
-ExecStart=/opt/react-pocketbase/pb/pocketbase serve --http 0.0.0.0:8090 --publicDir /opt/react-pocketbase/dist
+ExecStart=/opt/ot-list/pb/pocketbase serve --http 0.0.0.0:8090 --publicDir /opt/react-pocketbase/dist
 
 # Restart policy
 Restart=on-failure

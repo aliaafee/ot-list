@@ -1,9 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
+REPO="https://github.com/aliaafee/ot-list.git"
+
 ROOT_DIR="/opt/ot-list"
 PB_DIR="$ROOT_DIR/pb"
 PB_USER="pocketbase"
+SERVICE_NAME="otlist"
 
 # Create application directory
 echo "[*] Creating application directory..."
@@ -31,7 +34,7 @@ sudo chown -R $PB_USER:$PB_USER $ROOT_DIR
 # Clone repository
 echo "[*] Cloning repository..."
 if [ ! -d "$ROOT_DIR/.git" ]; then
-    sudo -u $PB_USER git clone https://github.com/aliaafee/ot-list.git $ROOT_DIR
+    sudo -u $PB_USER git clone $REPO $ROOT_DIR
 else
     echo "Repo already cloned, pulling changes."
     sudo -u $PB_USER git -C $ROOT_DIR pull
@@ -66,15 +69,15 @@ npm run build
 # Install systemd service
 echo "[*] Installing systemd service..."
 if [ -f "$ROOT_DIR/scripts/pocketbase.service" ]; then
-    sudo cp $ROOT_DIR/scripts/pocketbase.service /etc/systemd/system/pocketbase.service
+    sudo cp $ROOT_DIR/scripts/pocketbase.service /etc/systemd/system/$SERVICE_NAME.service
 else
     echo "Warning: pocketbase.service file not found in scripts/"
 fi
 
 # Reload systemd and enable service
-echo "[*] Enabling and starting PocketBase service..."
+echo "[*] Enabling and starting $SERVICE_NAME service..."
 sudo systemctl daemon-reload
-sudo systemctl enable pocketbase.service
-sudo systemctl start pocketbase.service
+sudo systemctl enable $SERVICE_NAME.service
+sudo systemctl start $SERVICE_NAME.service
 
 echo "Deployment complete!"
