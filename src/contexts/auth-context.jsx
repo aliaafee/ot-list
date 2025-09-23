@@ -28,23 +28,40 @@ export function AuthProvider({ children }) {
 
       login: async (email, password) => {
         setLoading(true);
-        const authData = await pb
-          .collection("users")
-          .authWithPassword(email, password, { autoRefreshThreshold: 30 * 60 });
-        setLoading(false);
-        setUser(authData.record);
-        return authData.record;
+        try {
+          const authData = await pb
+            .collection("users")
+            .authWithPassword(email, password, {
+              autoRefreshThreshold: 30 * 60,
+            });
+          setUser(authData.record);
+          return authData.record;
+        } catch (e) {
+          throw {
+            message: "Login Error",
+            originalError: e,
+          };
+        } finally {
+          setLoading(false);
+        }
       },
 
       register: async ({ email, password, passwordConfirm }) => {
         // Your users collection must be “users” with standard fields
         setLoading(true);
-        const record = await pb
-          .collection("users")
-          .create({ email, password, passwordConfirm });
-
-        setLoading(false);
-        return record;
+        try {
+          const record = await pb
+            .collection("users")
+            .create({ email, password, passwordConfirm });
+          return record;
+        } catch (e) {
+          throw {
+            message: "Register Error",
+            originalError: e,
+          };
+        } finally {
+          setLoading(false);
+        }
       },
 
       logout: () => {

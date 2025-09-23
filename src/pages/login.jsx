@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/auth-context";
 import CenterBox from "@/components/center-box";
 
 function Login() {
-  const { login } = useAuth();
+  const { login, loading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
@@ -19,13 +19,13 @@ function Login() {
       await login(email, password);
       navigate(from, { replace: true });
     } catch (e) {
-      setErr(e?.message || "Login failed");
+      console.log("Login failed", e);
+      setErr(e?.originalError?.message || e?.message || "Login failed");
     }
   }
 
   return (
     <CenterBox>
-      <h1 className="font-bold">OT LIST</h1>
       <h1 className="font-bold">Login</h1>
       {import.meta.env.VITE_PB_BASE_URL}
       <form
@@ -54,8 +54,9 @@ function Login() {
         <button
           type="submit"
           className="mt-4 px-4 py-1 bg-gray-600 hover:bg-gray-500 rounded-lg"
+          disabled={loading}
         >
-          Sign in
+          {loading ? "Signing in..." : "Sign in"}
         </button>
       </form>
     </CenterBox>

@@ -4,7 +4,11 @@ import { useAuth } from "@/contexts/auth-context";
 import CenterBox from "@/components/center-box";
 
 export default function Home() {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
 
-  return <div></div>;
+  return (
+    <p className="mt-4">
+      Welcome {user?.email || user?.username}! [<a onClick={logout}>Logout</a>]
+    </p>
+  );
 }
