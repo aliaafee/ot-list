@@ -59,40 +59,28 @@ function ProcedureListEditor({ procedureDayId, className, showDaysList }) {
         loadData();
     }, [procedureDayId]);
 
-    if (loading) {
-        return <div className={twMerge(className)}>Loading...</div>;
-    }
-
-    if (error) {
-        return <div className={twMerge(className)}>{error}</div>;
-    }
-
-    if (!!!otDay) {
-        return <div className={twMerge(className)}></div>;
-    }
-
-    return (
-        <div className={twMerge(className)}>
-            <ToolBar className="bg-gray-200 mb-4">
-                <ToolBarButton
-                    title="OT Dates"
-                    disabled={false}
-                    onClick={showDaysList}
-                    className="lg:hidden"
-                >
-                    <ChevronLeftIcon width={16} height={16} />
-                    <ToolBarButtonLabel>OT Date List</ToolBarButtonLabel>
-                </ToolBarButton>
-                <ToolBarButton
-                    title="Print OT List"
-                    disabled={otDay.disabled}
-                    // onClick={handlePrint}
-                >
-                    <PrinterIcon width={16} height={16} />
-                    <ToolBarButtonLabel>Print</ToolBarButtonLabel>
-                </ToolBarButton>
-                <div className="flex-grow"></div>
-                {!otDay.disabled ? (
+    const ProcedureToolBar = () => (
+        <ToolBar className="bg-gray-200 mb-4">
+            <ToolBarButton
+                title="OT Dates"
+                disabled={false}
+                onClick={showDaysList}
+                className="lg:hidden"
+            >
+                <ChevronLeftIcon width={16} height={16} />
+                <ToolBarButtonLabel>OT Date List</ToolBarButtonLabel>
+            </ToolBarButton>
+            <ToolBarButton
+                title="Print OT List"
+                disabled={otDay ? otDay?.disabled : true}
+                // onClick={handlePrint}
+            >
+                <PrinterIcon width={16} height={16} />
+                <ToolBarButtonLabel>Print</ToolBarButtonLabel>
+            </ToolBarButton>
+            <div className="flex-grow"></div>
+            {otDay &&
+                (!otDay?.disabled ? (
                     <ToolBarButton
                         title="Disable"
                         onClick={() => {
@@ -117,8 +105,40 @@ function ProcedureListEditor({ procedureDayId, className, showDaysList }) {
                             Enable
                         </ToolBarButtonLabel>
                     </ToolBarButton>
-                )}
-            </ToolBar>
+                ))}
+        </ToolBar>
+    );
+
+    if (loading) {
+        return (
+            <div className={twMerge(className)}>
+                <ProcedureToolBar />
+                <div>Loading...</div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className={twMerge(className)}>
+                <ProcedureToolBar />
+                <div>{error}</div>
+            </div>
+        );
+    }
+
+    if (!!!otDay) {
+        return (
+            <div className={twMerge(className)}>
+                <ProcedureToolBar />
+                <div></div>
+            </div>
+        );
+    }
+
+    return (
+        <div className={twMerge(className)}>
+            <ProcedureToolBar />
             <div className="mb-4 print:hidden">
                 <span
                     className={twMerge(
