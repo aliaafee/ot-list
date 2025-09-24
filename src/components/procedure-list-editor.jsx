@@ -60,7 +60,7 @@ function ProcedureListEditor({ procedureDayId, className, showDaysList }) {
     }, [procedureDayId]);
 
     const ProcedureToolBar = () => (
-        <ToolBar className="bg-gray-200 mb-4">
+        <ToolBar className="bg-gray-200">
             <ToolBarButton
                 title="OT Dates"
                 disabled={false}
@@ -111,49 +111,60 @@ function ProcedureListEditor({ procedureDayId, className, showDaysList }) {
 
     if (loading) {
         return (
-            <div className={twMerge(className)}>
+            <div
+                className={twMerge("flex flex-col overflow-hidden", className)}
+            >
                 <ProcedureToolBar />
-                <div>Loading...</div>
+                <div className="bg-white grow overflow-y-auto p-4">
+                    Loading...
+                </div>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className={twMerge(className)}>
+            <div
+                className={twMerge("flex flex-col overflow-hidden", className)}
+            >
                 <ProcedureToolBar />
-                <div>{error}</div>
+                <div className="bg-white grow overflow-y-auto p-4">{error}</div>
             </div>
         );
     }
 
     if (!!!otDay) {
         return (
-            <div className={twMerge(className)}>
+            <div
+                className={twMerge("flex flex-col overflow-hidden", className)}
+            >
                 <ProcedureToolBar />
-                <div></div>
+                <div className="bg-white grow overflow-y-auto p-4"></div>
             </div>
         );
     }
 
     return (
-        <div className={twMerge(className)}>
+        <div className={twMerge("flex flex-col overflow-hidden", className)}>
             <ProcedureToolBar />
-            <div className="mb-4 print:hidden">
-                <span
-                    className={twMerge(
-                        "text-xl",
-                        !!otDay.disabled && "text-red-400"
-                    )}
-                >
-                    {dayjs(otDay.date).format("dddd, DD MMM YYYY ")} -{" "}
-                    {otDay.expand.otList.description}
-                </span>
-                {!!otDay.disabled && (
-                    <span className="italic ml-2">
-                        {otDay.remarks || "No OT for this date"}
+            <div className="bg-white grow overflow-y-auto p-4">
+                <div className="">
+                    <span
+                        className={twMerge(
+                            "text-xl",
+                            !!otDay.disabled && "text-red-400"
+                        )}
+                    >
+                        {dayjs(otDay.date).format("dddd, DD MMM YYYY ")} -{" "}
+                        {otDay.expand.otList.description}
                     </span>
-                )}
+                    {!!otDay.disabled && (
+                        <span className="italic ml-2">
+                            {otDay.remarks || "No OT for this date"}
+                        </span>
+                    )}
+                </div>
+                <div>Procedures</div>
             </div>
         </div>
     );
