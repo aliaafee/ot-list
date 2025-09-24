@@ -18,7 +18,7 @@ function OtListMarker({ otList }) {
 
 function OtDaysList({
     otDays = [],
-    selectedDay = null,
+    selectedDayId = null,
     onSelectDay = (otDay) => {},
     selectedOtList = null,
 }) {
@@ -67,7 +67,7 @@ function OtDaysList({
                                         dateItem?.disabled === 1
                                             ? "text-red-400"
                                             : "text-black",
-                                        selectedDay === dateItem.id
+                                        selectedDayId === dateItem.id
                                             ? "bg-gray-400 hover:bg-gray-400"
                                             : "bg-transparent"
                                     )}

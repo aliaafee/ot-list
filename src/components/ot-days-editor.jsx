@@ -12,8 +12,9 @@ import OtDaysList from "@/components/ot-days-list";
 import AddDatesModal from "@/modals/add-dates-modal";
 import { LoadingSpinnerFull } from "./loading-spinner";
 import ErrorMessage from "@/modals/error-message";
+import { twMerge } from "tailwind-merge";
 
-function OtDaysEditor({ selectedDay, onSelectDay }) {
+function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [otLists, setOtLists] = useState([]);
@@ -35,10 +36,11 @@ function OtDaysEditor({ selectedDay, onSelectDay }) {
             });
             setOtDays(days);
             console.log(days);
-            setLoading(false);
         } catch (e) {
             console.log(e);
             setError(e.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -47,16 +49,18 @@ function OtDaysEditor({ selectedDay, onSelectDay }) {
     }, []);
 
     if (loading) {
-        return <LoadingSpinnerFull />;
+        return (
+            <div className={twMerge("bg-gray-200", className)}>Loading...</div>
+        );
     }
 
     if (error) {
-        return <ErrorMessage message={error} />;
+        return <div className={twMerge("bg-gray-200", className)}>{error}</div>;
     }
 
     return (
-        <div>
-            <ToolBar className="sticky top-8 bg-gray-200 grid grid-cols-1">
+        <div className={twMerge("bg-gray-200", className)}>
+            <ToolBar className="sticky top-0 bg-gray-200 grid grid-cols-1">
                 {
                     <ToolBarPill
                         items={[
@@ -104,7 +108,7 @@ function OtDaysEditor({ selectedDay, onSelectDay }) {
 
             <OtDaysList
                 otDays={otDays}
-                selectedDay={selectedDay}
+                selectedDayId={selectedDayId}
                 onSelectDay={onSelectDay}
                 selectedOtList={selectedOtList}
             />
