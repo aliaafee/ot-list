@@ -7,11 +7,11 @@ function Panels({ title, sidebar, content, showSideBar = true }) {
             <div className="grid grid-cols-1 lg:flex lg:flex-row grow overflow-hidden">
                 <div
                     className={twMerge(
-                        "col-start-1 row-start-1 z-10 bg-black/50 overflow-hidden lg:w-72 flex",
-                        !showSideBar && "hidden lg:inline"
+                        "col-start-1 row-start-1 z-10 bg-black/50 overflow-hidden lg:w-72 flex flex-col",
+                        !showSideBar && "hidden lg:flex"
                     )}
                 >
-                    <div className="w-full sm:w-72 lg:w-full overflow-hidden flex">
+                    <div className="w-full sm:w-72 lg:w-full overflow-hidden flex grow">
                         {sidebar}
                     </div>
                 </div>
