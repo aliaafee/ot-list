@@ -5,6 +5,7 @@ import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
 import Register from "@/pages/register";
 import Test from "./pages/test";
+import Procedures from "./pages/procedures";
 
 export default function App() {
     return (
@@ -16,7 +17,8 @@ export default function App() {
 
             {/* Protected */}
             <Route element={<ProtectedRoute />}>
-                <Route path="/" element={<Home />} />
+                {/* <Route path="/" element={<Home />} /> */}
+                <Route path="/" element={<Procedures />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/register" element={<Register />} />
             </Route>

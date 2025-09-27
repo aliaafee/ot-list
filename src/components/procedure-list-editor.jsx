@@ -60,7 +60,7 @@ function ProcedureListEditor({ procedureDayId, className, showDaysList }) {
     }, [procedureDayId]);
 
     const ProcedureToolBar = () => (
-        <ToolBar className="bg-gray-200">
+        <ToolBar className="bg-gray-200 fixed top-16 w-full">
             <ToolBarButton
                 title="OT Dates"
                 disabled={false}
@@ -165,6 +165,37 @@ function ProcedureListEditor({ procedureDayId, className, showDaysList }) {
                     )}
                 </div>
                 <div>Procedures</div>
+                <ul>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                    <li>One</li>
+                </ul>
             </div>
         </div>
     );

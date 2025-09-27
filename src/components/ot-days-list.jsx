@@ -78,7 +78,7 @@ function OtDaysList({
                                             {dayjs(dateItem.date).format("ddd")}
                                             ,{" "}
                                         </span>
-                                        <span className="col-span-2 overflow-ellipsis whitespace-nowrap  min-w-28">
+                                        <span className="col-span-2 overflow-ellipsis whitespace-nowrap grow">
                                             {dayjs(dateItem.date).format(
                                                 "DD MMMM"
                                             )}
