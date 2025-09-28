@@ -60,7 +60,7 @@ function ProcedureListEditor({ procedureDayId, className, showDaysList }) {
     }, [procedureDayId]);
 
     const ProcedureToolBar = () => (
-        <ToolBar className="bg-gray-200 fixed top-16 w-full">
+        <ToolBar className="bg-gray-200 fixed top-16 w-full lg:relative lg:top-0">
             <ToolBarButton
                 title="OT Dates"
                 disabled={false}
@@ -112,7 +112,10 @@ function ProcedureListEditor({ procedureDayId, className, showDaysList }) {
     if (loading) {
         return (
             <div
-                className={twMerge("flex flex-col overflow-hidden", className)}
+                className={twMerge(
+                    "flex flex-col overflow-hidden mt-8 lg:mt-0",
+                    className
+                )}
             >
                 <ProcedureToolBar />
                 <div className="bg-white grow overflow-y-auto p-4">
@@ -125,7 +128,10 @@ function ProcedureListEditor({ procedureDayId, className, showDaysList }) {
     if (error) {
         return (
             <div
-                className={twMerge("flex flex-col overflow-hidden", className)}
+                className={twMerge(
+                    "flex flex-col overflow-hidden mt-8 lg:mt-0",
+                    className
+                )}
             >
                 <ProcedureToolBar />
                 <div className="bg-white grow overflow-y-auto p-4">{error}</div>
@@ -136,7 +142,10 @@ function ProcedureListEditor({ procedureDayId, className, showDaysList }) {
     if (!!!otDay) {
         return (
             <div
-                className={twMerge("flex flex-col overflow-hidden", className)}
+                className={twMerge(
+                    "flex flex-col overflow-hidden mt-8 lg:mt-0",
+                    className
+                )}
             >
                 <ProcedureToolBar />
                 <div className="bg-white grow overflow-y-auto p-4"></div>
@@ -145,7 +154,12 @@ function ProcedureListEditor({ procedureDayId, className, showDaysList }) {
     }
 
     return (
-        <div className={twMerge("flex flex-col overflow-hidden", className)}>
+        <div
+            className={twMerge(
+                "flex flex-col overflow-hidden mt-8 lg:mt-0",
+                className
+            )}
+        >
             <ProcedureToolBar />
             <div className="bg-white grow overflow-y-auto p-4">
                 <div className="">
