@@ -20,7 +20,11 @@ import AddDatesModal from "@/modals/add-dates-modal";
 import { LoadingSpinnerFull } from "./loading-spinner";
 import ErrorMessage from "@/modals/error-message";
 
-function ProcedureListEditor({ procedureDayId, className, showDaysList }) {
+function ProcedureListEditor({
+    procedureDayId,
+    className,
+    handleShowDaysList,
+}) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [otDay, setOtDay] = useState(null);
@@ -64,7 +68,7 @@ function ProcedureListEditor({ procedureDayId, className, showDaysList }) {
             <ToolBarButton
                 title="OT Dates"
                 disabled={false}
-                onClick={showDaysList}
+                onClick={handleShowDaysList}
                 className="lg:hidden"
             >
                 <ChevronLeftIcon width={16} height={16} />
