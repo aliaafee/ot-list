@@ -19,6 +19,7 @@ import OtDaysList from "@/components/ot-days-list";
 import AddDatesModal from "@/modals/add-dates-modal";
 import { LoadingSpinnerFull } from "./loading-spinner";
 import ErrorMessage from "@/modals/error-message";
+import ProcedureSublist from "./procedure-sublist";
 
 function ProcedureListEditor({
     procedureDayId,
@@ -184,35 +185,17 @@ function ProcedureListEditor({
                 </div>
                 <div>Procedures</div>
                 <ul>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
-                    <li>One</li>
+                    {otDay.expand.otList.expand.operatingRooms.map(
+                        (operatingRoom, index) => (
+                            <li>
+                                <ProcedureSublist
+                                    procedures={procedures}
+                                    operatingRoomId={operatingRoom.id}
+                                    key={index}
+                                />
+                            </li>
+                        )
+                    )}
                 </ul>
             </div>
         </div>

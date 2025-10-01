@@ -28,14 +28,14 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
         try {
             const lists = await pb.collection("otLists").getFullList();
             setOtLists(lists);
-            console.log(lists);
+            console.log("otLists", lists);
 
             const days = await pb.collection("otDays").getFullList({
                 sort: "+date",
                 expand: "otList",
             });
             setOtDays(days);
-            console.log(days);
+            console.log("otDays", days);
         } catch (e) {
             console.log(e);
             setError(e.message);
