@@ -39,18 +39,18 @@ function ProcedureListEditor({
             const day = await pb.collection("otDays").getOne(procedureDayId, {
                 expand: "otList,otList.operatingRooms",
             });
-            console.log(day);
             setOtDay(day);
+            console.log("otDay", day);
 
             const proceduresList = await pb
                 .collection("procedures")
                 .getFullList({
                     filter: `procedureDay = "${procedureDayId}"`,
                     sort: "+order",
-                    expand: "patient,addedBy,otList,procedureDay",
+                    expand: "patient,addedBy,otList,procedureDay,otList.operatingRooms",
                 });
             setProcedures(proceduresList);
-            console.log(proceduresList);
+            console.log("procedures", proceduresList);
         } catch (e) {
             console.log(e);
             setError(e.message);
