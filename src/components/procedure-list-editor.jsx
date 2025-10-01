@@ -48,7 +48,7 @@ function ProcedureListEditor({
                 .getFullList({
                     filter: `procedureDay = "${procedureDayId}"`,
                     sort: "+order",
-                    expand: "patient,addedBy,otList,procedureDay,otList.operatingRooms",
+                    expand: "patient,addedBy,procedureDay.otList,procedureDay",
                 });
             setProcedures(proceduresList);
             console.log("procedures", proceduresList);
@@ -167,7 +167,7 @@ function ProcedureListEditor({
         >
             <ProcedureToolBar />
             <div className="bg-white grow overflow-y-auto p-4">
-                <div className="">
+                <div className="mb-2">
                     <span
                         className={twMerge(
                             "text-xl",
@@ -183,15 +183,13 @@ function ProcedureListEditor({
                         </span>
                     )}
                 </div>
-                <div>Procedures</div>
                 <ul>
                     {otDay.expand.otList.expand.operatingRooms.map(
                         (operatingRoom, index) => (
-                            <li>
+                            <li key={index}>
                                 <ProcedureSublist
                                     procedures={procedures}
-                                    operatingRoomId={operatingRoom.id}
-                                    key={index}
+                                    operatingRoom={operatingRoom}
                                 />
                             </li>
                         )

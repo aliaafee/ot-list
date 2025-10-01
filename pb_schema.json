@@ -941,19 +941,6 @@
       },
       {
         "cascadeDelete": false,
-        "collectionId": "pbc_4005008627",
-        "hidden": false,
-        "id": "relation2173489689",
-        "maxSelect": 1,
-        "minSelect": 0,
-        "name": "otList",
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "relation"
-      },
-      {
-        "cascadeDelete": false,
         "collectionId": "pbc_431205161",
         "hidden": false,
         "id": "relation2911377042",

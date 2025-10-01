@@ -1,23 +1,25 @@
 import { useMemo } from "react";
+import ReorderList from "./reorder-list";
 
-function ProcedureSublist({ procedures, operatingRoomId }) {
-    console.log(operatingRoomId);
-    console.log(procedures);
+function ProcedureSublist({ procedures, operatingRoom }) {
     const proceduresByRoom = useMemo(
         () =>
             procedures
                 .filter(
-                    (procedure) => procedure.operatingRoom === operatingRoomId
+                    (procedure) => procedure.operatingRoom === operatingRoom?.id
                 )
                 .sort((a, b) => a.order - b.order),
-        [procedures, operatingRoomId]
+        [procedures, operatingRoom]
     );
     return (
-        <ol>
-            {proceduresByRoom.map((item, index) => (
-                <li key={index}>{item.id}</li>
-            ))}
-        </ol>
+        <div>
+            <div className="text-xl">{operatingRoom?.name}</div>
+            <ReorderList
+                items={proceduresByRoom}
+                itemRender={(item) => <div>{item.id}</div>}
+                onChange={() => {}}
+            />
+        </div>
     );
 }
 
