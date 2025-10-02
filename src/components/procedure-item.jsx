@@ -1,9 +1,24 @@
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
-import LabelValue from "./label-value";
-import { age } from "@/utils/dates";
+import dayjs from "dayjs";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+dayjs.extend(isSameOrAfter);
+import {
+    EditIcon,
+    MoveUpIcon,
+    MoveDownIcon,
+    XIcon,
+    TrashIcon,
+    PencilOffIcon,
+    CalendarArrowDownIcon,
+    UndoDotIcon,
+} from "lucide-react";
 
-function ProcedureItem({ procedure }) {
+import { age } from "@/utils/dates";
+import LabelValue from "./label-value";
+import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
+
+function ProcedureItem({ procedure, selected, onSelect = (selected) => {} }) {
     const [updating, setUpdating] = useState(false);
 
     const SimplifiedView = () => {
@@ -14,9 +29,7 @@ function ProcedureItem({ procedure }) {
                     updating ? "animate-pulse" : "",
                     !!procedure.removed && "line-through"
                 )}
-                onClick={() => {
-                    onSelect();
-                }}
+                onClick={() => onSelect(true)}
             >
                 <LabelValue value={!procedure.removed && procedure.order} />
                 <LabelValue
@@ -49,6 +62,200 @@ function ProcedureItem({ procedure }) {
             </div>
         );
     };
+
+    const ExpandedView = () => {
+        return (
+            <div
+                className={twMerge(
+                    "flex-auto",
+                    updating ? "animate-pulse" : ""
+                )}
+            >
+                <ToolBar
+                    className={twMerge(
+                        "col-span-4 bg-gray-200 rounded-tr-lg rounded-tl-lg md:rounded-tl-none transition-colors"
+                    )}
+                >
+                    <ToolBarButton disabled={true}>
+                        <ToolBarButtonLabel className={"min-w-0"}>
+                            {!procedure.removed ? procedure.order : <>&nbsp;</>}
+                        </ToolBarButtonLabel>
+                    </ToolBarButton>
+                    {!procedure.removed && (
+                        <>
+                            <ToolBarButton
+                                title="Move Up"
+                                // disabled={isBusy()}
+                                onClick={() => onMoveProcedureUp(item.id)}
+                            >
+                                <MoveUpIcon
+                                    className=""
+                                    width={16}
+                                    height={16}
+                                />
+                            </ToolBarButton>
+                            <ToolBarButton
+                                title="Move Down"
+                                // disabled={isBusy()}
+                                onClick={() => onMoveProcedureDown(item.id)}
+                            >
+                                <MoveDownIcon
+                                    className=""
+                                    width={16}
+                                    height={16}
+                                />
+                            </ToolBarButton>
+                        </>
+                    )}
+                    <ToolBarButton
+                        title="Edit OT Procedure"
+                        // disabled={isBusy()}
+                        onClick={() => setEditing(true)}
+                    >
+                        <EditIcon className="" width={16} height={16} />
+                        <ToolBarButtonLabel className="hidden sm:inline">
+                            Edit
+                        </ToolBarButtonLabel>
+                    </ToolBarButton>
+                    <ToolBarButton
+                        title="Move OT Procedure"
+                        // disabled={isBusy()}
+                        onClick={() => {
+                            setNewDate(item.procedure_date);
+                            setConfirmMoveDate(true);
+                        }}
+                    >
+                        <CalendarArrowDownIcon width={16} height={16} />
+                        <ToolBarButtonLabel className="hidden sm:inline">
+                            Move
+                        </ToolBarButtonLabel>
+                    </ToolBarButton>
+                    {!procedure.removed ? (
+                        <ToolBarButton
+                            title="Remove OT Procedure"
+                            // disabled={isBusy()}
+                            onClick={() => setConfirmRemove(true)}
+                        >
+                            <TrashIcon
+                                className="text-red-400"
+                                width={16}
+                                height={16}
+                            />
+                            <ToolBarButtonLabel className="hidden sm:inline">
+                                Remove
+                            </ToolBarButtonLabel>
+                        </ToolBarButton>
+                    ) : (
+                        <ToolBarButton
+                            title="Restore OT Procedure"
+                            // disabled={isBusy()}
+                            onClick={() => onRestoreProcedure(item.id)}
+                        >
+                            <UndoDotIcon width={16} height={16} />
+                            <ToolBarButtonLabel>Restore</ToolBarButtonLabel>
+                        </ToolBarButton>
+                    )}
+                    <div className="flex-grow"></div>
+                    <ToolBarButton
+                        title="close"
+                        disabled={false}
+                        onClick={() => onSelect(false)}
+                    >
+                        <XIcon className="" width={16} height={16} />
+                    </ToolBarButton>
+                </ToolBar>
+                {procedure.removed && (
+                    <div className="bg-red-400/20 rounded-md m-2 p-1">
+                        Removed
+                    </div>
+                )}
+                <div className=" p-2 grid grid-cols-1 md:grid-cols-4 gap-2">
+                    {/* <LabelValue label="ID" value={row.id} /> */}
+                    <LabelValue
+                        label="NID"
+                        value={procedure.expand.patient.nid}
+                    />
+                    <LabelValue
+                        label="Hospital ID"
+                        value={procedure.expand.patient.hospitalId}
+                        className="md:col-span-2"
+                    />
+                    <LabelValue
+                        label="Phone"
+                        value={procedure.expand.patient.phone}
+                    />
+                    <LabelValue
+                        className="md:col-span-2"
+                        label="Name"
+                        value={procedure.expand.patient.name}
+                    />
+                    <LabelValue
+                        label="Age"
+                        value={age(procedure.expand.patient.dateOfBirth)}
+                    />
+                    <LabelValue
+                        label="Sex"
+                        value={procedure.expand.patient.sex}
+                    />
+
+                    <LabelValue
+                        className="md:col-span-2"
+                        label="Diagnosis"
+                        value={procedure.diagnosis}
+                    />
+                    <LabelValue
+                        className="md:col-span-2"
+                        label="Procedure"
+                        value={procedure.procedure}
+                    />
+                    <LabelValue
+                        className="md:col-span-4"
+                        label="Comorbidities"
+                        value={procedure.comorbids}
+                    />
+                    <LabelValue
+                        label="Anesthesia"
+                        value={procedure.anesthesia}
+                        className="md:col-span-1"
+                    />
+                    <LabelValue
+                        label="Expected Duration (minutes)"
+                        value={procedure.duration}
+                        className="md:col-span-1"
+                    />
+                    {/* <LabelValue
+                        label="Operating Room"
+                        value={item.operating_room_name}
+                    /> */}
+                    <LabelValue
+                        className="md:col-span-1"
+                        label="Added By"
+                        value={procedure.expand.addedBy.name}
+                    />
+                    <LabelValue
+                        className="md:col-span-1"
+                        label="Added Date"
+                        value={dayjs(procedure.addedDate).format("DD MMM YYYY")}
+                    />
+                    <LabelValue label="Admitted Bed" value={procedure.bed} />
+                    <LabelValue
+                        className="md:col-span-full"
+                        label="Remarks"
+                        value={procedure.remarks}
+                    />
+                    <LabelValue
+                        className="md:col-span-full"
+                        label="Special Requirements"
+                        value={procedure.requirements}
+                    />
+                </div>
+            </div>
+        );
+    };
+
+    if (selected) {
+        return <ExpandedView />;
+    }
 
     return <SimplifiedView />;
 }
