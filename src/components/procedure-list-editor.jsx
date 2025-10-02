@@ -183,6 +183,31 @@ function ProcedureListEditor({
                         </span>
                     )}
                 </div>
+                <div className="flex">
+                    <div className="p-2 hidden md:block">
+                        <span className="invisible">⠿</span>
+                    </div>
+                    <div className="grow flex-auto pl-2 pr-2 grid grid-cols-8 lg:grid-cols-12 font-bold gap-1">
+                        <div className="col-span-1 overflow-clip overflow-ellipsis">
+                            #
+                        </div>
+                        <div className="col-span-2 lg:col-span-1 overflow-clip overflow-ellipsis">
+                            NID
+                        </div>
+                        <div className="col-span-2 lg:col-span-3 overflow-clip overflow-ellipsis">
+                            Name
+                        </div>
+                        <div className="col-span-1 hidden lg:inline overflow-clip overflow-ellipsis">
+                            Age / Sex
+                        </div>
+                        <div className="col-span-3 hidden lg:inline overflow-clip overflow-ellipsis">
+                            Diagnosis
+                        </div>
+                        <div className="col-span-3 overflow-clip overflow-ellipsis">
+                            Procedure
+                        </div>
+                    </div>
+                </div>
                 <ul>
                     {otDay.expand.otList.expand.operatingRooms.map(
                         (operatingRoom, index) => (
