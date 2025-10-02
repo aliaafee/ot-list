@@ -18,7 +18,7 @@ function Procedures() {
     return (
         <div className="lg:overflow-hidden lg:h-screen lg:flex lg:flex-col">
             <TitleBar />
-            <div className="lg:flex lg:flex-row-reverse lg:overflow-hidden">
+            <div className="lg:flex lg:flex-row-reverse lg:overflow-hidden grow">
                 <ProcedureListEditor
                     procedureDayId={selectedDayId}
                     handleShowDaysList={() => setShowDaysList(true)}
