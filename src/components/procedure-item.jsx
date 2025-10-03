@@ -33,7 +33,10 @@ function ProcedureItem({ procedure }) {
                 )}
                 onClick={() => setSelected(procedure.id)}
             >
-                <LabelValue value={!procedure.removed && procedure.order} />
+                <LabelValue
+                    value={!procedure.removed && procedure.order}
+                    blank={<>&nbsp;</>}
+                />
                 <LabelValue
                     // label="NID"
                     value={procedure.expand.patient.nid}
@@ -167,7 +170,7 @@ function ProcedureItem({ procedure }) {
                     </ToolBarButton>
                 </ToolBar>
                 {procedure.removed && (
-                    <div className="bg-red-400/20 rounded-md m-2 p-1">
+                    <div className="bg-red-400/20 rounded-md m-2 p-1 text-sm">
                         Removed
                     </div>
                 )}

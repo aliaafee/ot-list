@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import ReorderList from "./reorder-list";
 import ProcedureItem from "./procedure-item";
 
-function ProcedureSublist({ procedures, operatingRoom }) {
+function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
     const [selectedRowId, setSelectedRowId] = useState(null);
 
     const proceduresByRoom = useMemo(
@@ -16,24 +16,43 @@ function ProcedureSublist({ procedures, operatingRoom }) {
                 .sort((a, b) => a.order - b.order),
         [procedures, operatingRoom]
     );
+
+    const removedProcedures = useMemo(
+        () =>
+            procedures
+                .filter(
+                    (procedure) => procedure.operatingRoom === operatingRoom?.id
+                )
+                .filter((procedure) => procedure.removed),
+        [procedures, operatingRoom]
+    );
+
     return (
         <div>
             <div className="text-xl">{operatingRoom?.name}</div>
-            <ReorderList
-                items={proceduresByRoom}
-                itemRender={(procedure) => (
-                    <ProcedureItem
-                        procedure={procedure}
-                        selected={selectedRowId === procedure.id}
-                        onSelect={(selected) =>
-                            selected
-                                ? setSelectedRowId(procedure.id)
-                                : setSelectedRowId(null)
-                        }
-                    />
-                )}
-                onChange={() => {}}
-            />
+            <ul className="gap-2 grid">
+                <ReorderList
+                    items={proceduresByRoom}
+                    itemRender={(procedure) => (
+                        <ProcedureItem procedure={procedure} />
+                    )}
+                    onChange={() => {}}
+                />
+                {showRemoved &&
+                    removedProcedures.map((procedure, index) => (
+                        <li
+                            key={index}
+                            className="select-none flex bg-gray-100 rounded-lg hover:shadow-md"
+                        >
+                            <div className="p-2 hidden md:block">
+                                <span className="invisible">⠿</span>
+                            </div>
+                            <div className="grow">
+                                <ProcedureItem procedure={procedure} />
+                            </div>
+                        </li>
+                    ))}
+            </ul>
         </div>
     );
 }

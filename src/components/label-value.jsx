@@ -1,6 +1,6 @@
 import { twMerge } from "tailwind-merge";
 
-function LabelValue({ label, value, className }) {
+function LabelValue({ label, value, className, blank = <>&mdash;</> }) {
     return (
         <div className={twMerge("flex flex-col", className)}>
             {!!label ? (
@@ -14,9 +14,7 @@ function LabelValue({ label, value, className }) {
                     !!label ? "p-1" : ""
                 )}
             >
-                <span className="select-all">
-                    {!!value ? value : <>&mdash;</>}
-                </span>
+                <span className="select-all">{!!value ? value : blank}</span>
             </span>
         </div>
     );

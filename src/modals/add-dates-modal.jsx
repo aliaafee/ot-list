@@ -32,7 +32,7 @@ export default function AddDatesModal({
     const [selectedOtList, setSelectedOtList] = useState("");
 
     useEffect(() => {
-        setSelectedOtList(initialOtList);
+        setSelectedOtList(!!initialOtList ? initialOtList : "");
     }, []);
 
     function getDaysInRange(startDate, endDate, days = []) {
