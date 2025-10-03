@@ -18,7 +18,7 @@ function Procedures() {
     }, [otDayId]);
 
     return (
-        <div className="lg:flex lg:flex-col overflow-hidden">
+        <div className="lg:flex lg:flex-col overflow-hidden grow">
             <div className="lg:flex lg:flex-row-reverse lg:overflow-hidden grow">
                 <ProcedureListEditor
                     procedureDayId={otDayId}
