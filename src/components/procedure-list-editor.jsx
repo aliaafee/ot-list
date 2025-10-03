@@ -8,60 +8,20 @@ import {
     PrinterIcon,
 } from "lucide-react";
 
-import { pb } from "@/lib/pb";
-import {
-    ToolBar,
-    ToolBarPill,
-    ToolBarButton,
-    ToolBarButtonLabel,
-} from "./toolbar";
-import OtDaysList from "@/components/ot-days-list";
-import AddDatesModal from "@/modals/add-dates-modal";
-import { LoadingSpinnerFull } from "./loading-spinner";
-import ErrorMessage from "@/modals/error-message";
+import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import ProcedureSublist from "./procedure-sublist";
+import { useProcedureList } from "@/contexts/procedure-list-context";
 
 function ProcedureListEditor({
     procedureDayId,
     className,
     handleShowDaysList,
 }) {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
-    const [otDay, setOtDay] = useState(null);
-    const [procedures, setProcedures] = useState([]);
-
-    const loadData = async () => {
-        setLoading(true);
-        try {
-            if (!!!procedureDayId) {
-                return;
-            }
-            const day = await pb.collection("otDays").getOne(procedureDayId, {
-                expand: "otList,otList.operatingRooms",
-            });
-            setOtDay(day);
-            console.log("otDay", day);
-
-            const proceduresList = await pb
-                .collection("procedures")
-                .getFullList({
-                    filter: `procedureDay = "${procedureDayId}"`,
-                    sort: "+order",
-                    expand: "patient,addedBy,procedureDay.otList,procedureDay",
-                });
-            setProcedures(proceduresList);
-            console.log("procedures", proceduresList);
-        } catch (e) {
-            console.log(e);
-            setError(e.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { proceduresList, otDay, loading, error, loadProcedures } =
+        useProcedureList();
 
     useEffect(() => {
-        loadData();
+        loadProcedures(procedureDayId);
     }, [procedureDayId]);
 
     const ProcedureToolBar = () => (
@@ -213,7 +173,7 @@ function ProcedureListEditor({
                         (operatingRoom, index) => (
                             <li key={index}>
                                 <ProcedureSublist
-                                    procedures={procedures}
+                                    procedures={proceduresList.procedures}
                                     operatingRoom={operatingRoom}
                                 />
                             </li>

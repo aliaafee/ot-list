@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { XIcon } from "lucide-react";
 
 import OtDaysEditor from "@/components/ot-days-editor";
 import ProcedureListEditor from "@/components/procedure-list-editor";
@@ -9,7 +10,7 @@ import {
     ToolBarButton,
     ToolBarButtonLabel,
 } from "@/components/toolbar";
-import { XIcon } from "lucide-react";
+import { ProcedureListProvider } from "@/contexts/procedure-list-context";
 
 function Procedures() {
     const [selectedDayId, setSelectedDayId] = useState(null);
@@ -19,11 +20,13 @@ function Procedures() {
         <div className="lg:overflow-hidden lg:h-screen lg:flex lg:flex-col">
             <TitleBar />
             <div className="lg:flex lg:flex-row-reverse lg:overflow-hidden grow">
-                <ProcedureListEditor
-                    procedureDayId={selectedDayId}
-                    handleShowDaysList={() => setShowDaysList(true)}
-                    className="lg:grow"
-                />
+                <ProcedureListProvider>
+                    <ProcedureListEditor
+                        procedureDayId={selectedDayId}
+                        handleShowDaysList={() => setShowDaysList(true)}
+                        className="lg:grow"
+                    />
+                </ProcedureListProvider>
                 <div
                     className={twMerge(
                         "bg-gray-600/50 top-0 h-full w-full fixed overflow-hidden lg:static lg:w-72 flex",

@@ -17,19 +17,21 @@ import {
 import { age } from "@/utils/dates";
 import LabelValue from "./label-value";
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
+import { useProcedureList } from "@/contexts/procedure-list-context";
 
-function ProcedureItem({ procedure, selected, onSelect = (selected) => {} }) {
-    const [updating, setUpdating] = useState(false);
+function ProcedureItem({ procedure }) {
+    const { proceduresList, setSelected, isUpdating, isBusy } =
+        useProcedureList();
 
     const SimplifiedView = () => {
         return (
             <div
                 className={twMerge(
                     "transition-colors flex-auto p-2 grid grid-cols-8 lg:grid-cols-12 cursor-pointer gap-1 ",
-                    updating ? "animate-pulse" : "",
+                    isUpdating(procedure) ? "animate-pulse" : "",
                     !!procedure.removed && "line-through"
                 )}
-                onClick={() => onSelect(true)}
+                onClick={() => setSelected(procedure.id)}
             >
                 <LabelValue value={!procedure.removed && procedure.order} />
                 <LabelValue
@@ -68,7 +70,7 @@ function ProcedureItem({ procedure, selected, onSelect = (selected) => {} }) {
             <div
                 className={twMerge(
                     "flex-auto",
-                    updating ? "animate-pulse" : ""
+                    isUpdating(procedure) ? "animate-pulse" : ""
                 )}
             >
                 <ToolBar
@@ -85,7 +87,7 @@ function ProcedureItem({ procedure, selected, onSelect = (selected) => {} }) {
                         <>
                             <ToolBarButton
                                 title="Move Up"
-                                // disabled={isBusy()}
+                                disabled={isBusy()}
                                 onClick={() => onMoveProcedureUp(item.id)}
                             >
                                 <MoveUpIcon
@@ -96,7 +98,7 @@ function ProcedureItem({ procedure, selected, onSelect = (selected) => {} }) {
                             </ToolBarButton>
                             <ToolBarButton
                                 title="Move Down"
-                                // disabled={isBusy()}
+                                disabled={isBusy()}
                                 onClick={() => onMoveProcedureDown(item.id)}
                             >
                                 <MoveDownIcon
@@ -109,7 +111,7 @@ function ProcedureItem({ procedure, selected, onSelect = (selected) => {} }) {
                     )}
                     <ToolBarButton
                         title="Edit OT Procedure"
-                        // disabled={isBusy()}
+                        disabled={isBusy()}
                         onClick={() => setEditing(true)}
                     >
                         <EditIcon className="" width={16} height={16} />
@@ -119,7 +121,7 @@ function ProcedureItem({ procedure, selected, onSelect = (selected) => {} }) {
                     </ToolBarButton>
                     <ToolBarButton
                         title="Move OT Procedure"
-                        // disabled={isBusy()}
+                        disabled={isBusy()}
                         onClick={() => {
                             setNewDate(item.procedure_date);
                             setConfirmMoveDate(true);
@@ -133,7 +135,7 @@ function ProcedureItem({ procedure, selected, onSelect = (selected) => {} }) {
                     {!procedure.removed ? (
                         <ToolBarButton
                             title="Remove OT Procedure"
-                            // disabled={isBusy()}
+                            disabled={isBusy()}
                             onClick={() => setConfirmRemove(true)}
                         >
                             <TrashIcon
@@ -148,7 +150,7 @@ function ProcedureItem({ procedure, selected, onSelect = (selected) => {} }) {
                     ) : (
                         <ToolBarButton
                             title="Restore OT Procedure"
-                            // disabled={isBusy()}
+                            disabled={isBusy()}
                             onClick={() => onRestoreProcedure(item.id)}
                         >
                             <UndoDotIcon width={16} height={16} />
@@ -159,7 +161,7 @@ function ProcedureItem({ procedure, selected, onSelect = (selected) => {} }) {
                     <ToolBarButton
                         title="close"
                         disabled={false}
-                        onClick={() => onSelect(false)}
+                        onClick={() => setSelected(null)}
                     >
                         <XIcon className="" width={16} height={16} />
                     </ToolBarButton>
@@ -223,10 +225,6 @@ function ProcedureItem({ procedure, selected, onSelect = (selected) => {} }) {
                         value={procedure.duration}
                         className="md:col-span-1"
                     />
-                    {/* <LabelValue
-                        label="Operating Room"
-                        value={item.operating_room_name}
-                    /> */}
                     <LabelValue
                         className="md:col-span-1"
                         label="Added By"
@@ -253,7 +251,7 @@ function ProcedureItem({ procedure, selected, onSelect = (selected) => {} }) {
         );
     };
 
-    if (selected) {
+    if (proceduresList.selected === procedure.id) {
         return <ExpandedView />;
     }
 
