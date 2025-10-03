@@ -6,6 +6,7 @@ import Dashboard from "@/pages/dashboard";
 import Register from "@/pages/register";
 import Test from "./pages/test";
 import Procedures from "./pages/procedures";
+import MainLayout from "./pages/main-layout";
 
 export default function App() {
     return (
@@ -18,9 +19,16 @@ export default function App() {
             {/* Protected */}
             <Route element={<ProtectedRoute />}>
                 {/* <Route path="/" element={<Home />} /> */}
-                <Route path="/" element={<Procedures />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/register" element={<Register />} />
+                <Route element={<MainLayout />}>
+                    <Route path="/" element={<Procedures />} />
+                    <Route path="/procedures" element={<Procedures />} />
+                    <Route
+                        path="/procedures/:otDayId"
+                        element={<Procedures />}
+                    />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/register" element={<Register />} />
+                </Route>
             </Route>
 
             {/* Fallback */}

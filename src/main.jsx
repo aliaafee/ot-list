@@ -4,12 +4,15 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import "./index.css";
 import App from "@/app.jsx";
 import { AuthProvider } from "@/contexts/auth-context";
+import { ProcedureListProvider } from "./contexts/procedure-list-context";
 
 createRoot(document.getElementById("root")).render(
     // <StrictMode>
     <BrowserRouter>
         <AuthProvider>
-            <App />
+            <ProcedureListProvider>
+                <App />
+            </ProcedureListProvider>
         </AuthProvider>
     </BrowserRouter>
     // s</StrictMode>

@@ -25,7 +25,7 @@ function ProcedureListEditor({
     }, [procedureDayId]);
 
     const ProcedureToolBar = () => (
-        <ToolBar className="bg-gray-200 fixed top-16 w-full lg:relative lg:top-0">
+        <ToolBar className="bg-gray-200 fixed top-16 lg:sticky lg:top-0 w-full">
             <ToolBarButton
                 title="OT Dates"
                 disabled={false}
@@ -94,7 +94,7 @@ function ProcedureListEditor({
         return (
             <div
                 className={twMerge(
-                    "flex flex-col overflow-hidden mt-8 lg:mt-0",
+                    "flex flex-col overflow-hidden mt-24 lg:mt-0",
                     className
                 )}
             >
@@ -108,7 +108,7 @@ function ProcedureListEditor({
         return (
             <div
                 className={twMerge(
-                    "flex flex-col overflow-hidden mt-8 lg:mt-0",
+                    "flex flex-col overflow-hidden mt-24 lg:mt-0",
                     className
                 )}
             >
@@ -121,7 +121,7 @@ function ProcedureListEditor({
     return (
         <div
             className={twMerge(
-                "flex flex-col overflow-hidden mt-8 lg:mt-0",
+                "flex flex-col overflow-hidden mt-24 lg:mt-0",
                 className
             )}
         >
@@ -135,7 +135,7 @@ function ProcedureListEditor({
                         )}
                     >
                         {dayjs(otDay.date).format("dddd, DD MMM YYYY ")} -{" "}
-                        {otDay.expand.otList.description}
+                        {otDay.expand.otList.name}
                     </span>
                     {!!otDay.disabled && (
                         <span className="italic ml-2">

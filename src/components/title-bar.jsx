@@ -5,7 +5,7 @@ function TitleBar() {
     const { user, logout } = useAuth();
 
     return (
-        <div className="sticky top-0 h-16 min-h-16 bg-gray-300 p-1 text-right flex items-center gap-1 flex-col">
+        <div className="fixed lg:static w-full top-0 h-16 min-h-16 bg-gray-300 p-1 text-right flex items-center gap-1 flex-col">
             <div className="grow"></div>
             <div className="flex w-full">
                 <div className="grow"></div>

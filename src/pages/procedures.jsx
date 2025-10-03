@@ -1,56 +1,61 @@
-import { useState } from "react";
+import { useParams } from "react-router";
+import { useEffect, useState } from "react";
 import { XIcon } from "lucide-react";
 
 import OtDaysEditor from "@/components/ot-days-editor";
 import ProcedureListEditor from "@/components/procedure-list-editor";
-import TitleBar from "@/components/title-bar";
 import { twMerge } from "tailwind-merge";
-import {
-    ToolBar,
-    ToolBarButton,
-    ToolBarButtonLabel,
-} from "@/components/toolbar";
-import { ProcedureListProvider } from "@/contexts/procedure-list-context";
+import { ToolBar, ToolBarButton } from "@/components/toolbar";
 
 function Procedures() {
-    const [selectedDayId, setSelectedDayId] = useState(null);
-    const [showDaysList, setShowDaysList] = useState(true);
+    const { otDayId } = useParams();
+    const [showDaysList, setShowDaysList] = useState(false);
+
+    useEffect(() => {
+        if (!otDayId) {
+            setShowDaysList(true);
+        }
+    }, [otDayId]);
 
     return (
-        <div className="lg:overflow-hidden lg:h-screen lg:flex lg:flex-col">
-            <TitleBar />
+        <div className="lg:flex lg:flex-col overflow-hidden">
             <div className="lg:flex lg:flex-row-reverse lg:overflow-hidden grow">
-                <ProcedureListProvider>
-                    <ProcedureListEditor
-                        procedureDayId={selectedDayId}
-                        handleShowDaysList={() => setShowDaysList(true)}
-                        className="lg:grow"
-                    />
-                </ProcedureListProvider>
+                <ProcedureListEditor
+                    procedureDayId={otDayId}
+                    handleShowDaysList={() => setShowDaysList(true)}
+                    className="lg:grow"
+                />
+
                 <div
                     className={twMerge(
-                        "bg-gray-600/50 top-0 h-full w-full fixed overflow-hidden lg:static lg:w-72 flex",
+                        "bg-gray-600/50 top-0 h-full w-full fixed overflow-hidden lg:static lg:w-72 lg:min-w-72 flex",
                         !showDaysList && "hidden lg:flex"
                     )}
                 >
-                    <div className="w-full max-w-72  mt-16 lg:mt-0 lg:grow flex flex-col">
-                        <ToolBar className="bg-gray-300 lg:hidden min-h-10">
-                            <div className="grow" />
-                            <ToolBarButton
-                                title="close"
-                                disabled={false}
-                                onClick={() => setShowDaysList(false)}
-                            >
-                                <XIcon className="" width={16} height={16} />
-                            </ToolBarButton>
-                        </ToolBar>
+                    <div className="w-full sm:max-w-72 lg:mt-0 lg:grow flex flex-col">
+                        <div className="bg-gray-300 lg:hidden min-h-16 flex flex-col">
+                            <div className="grow"></div>
+                            <ToolBar className="">
+                                <div className="grow" />
+                                <ToolBarButton
+                                    title="close"
+                                    disabled={false}
+                                    onClick={() => setShowDaysList(false)}
+                                >
+                                    <XIcon
+                                        className=""
+                                        width={16}
+                                        height={16}
+                                    />
+                                </ToolBarButton>
+                            </ToolBar>
+                        </div>
                         <OtDaysEditor
-                            selectedDayId={selectedDayId}
+                            selectedDayId={otDayId}
                             onSelectDay={(dayId) => {
-                                setSelectedDayId(dayId);
                                 setShowDaysList(false);
                             }}
-                            className={"overflow-y-auto grow"}
+                            className={"grow"}
                         />
                     </div>
                 </div>

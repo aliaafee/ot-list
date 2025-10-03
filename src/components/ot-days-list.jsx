@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { useMemo } from "react";
 import { twMerge } from "tailwind-merge";
+import { Link } from "react-router";
 
 function OtListMarker({ otList }) {
     return (
@@ -23,12 +24,12 @@ function OtDaysList({
     selectedOtList = null,
 }) {
     const groupDaysByMonth = (datesList) => {
-        return datesList.reduce((acc, dateItem) => {
-            const month = dayjs(dateItem.date).format("YYYY-MM");
+        return datesList.reduce((acc, otDay) => {
+            const month = dayjs(otDay.date).format("YYYY-MM");
             if (!acc[month]) {
                 acc[month] = [];
             }
-            acc[month].push(dateItem);
+            acc[month].push(otDay);
             return acc;
         }, {});
     };
@@ -50,7 +51,7 @@ function OtDaysList({
     }
 
     return (
-        <ul className="flex flex-col">
+        <ul className="flex flex-col overflow-y-auto overscroll-contain grow">
             {Object.keys(daysByMonth).map((month, index) => (
                 <li key={index} className=" text-gray-700">
                     <div className="font-semibold p-1 mt-3 overflow-clip whitespace-nowrap">
@@ -59,41 +60,45 @@ function OtDaysList({
                     <ul className="flex flex-col">
                         {daysByMonth[month]
                             .sort((a, b) => new Date(a.date) - new Date(b.date))
-                            .map((dateItem, subIndex) => (
+                            .map((otDay, subIndex) => (
                                 <li
                                     key={subIndex}
                                     className={twMerge(
                                         "hover:bg-gray-300 cursor-pointer p-1 pl-4",
-                                        dateItem?.disabled === 1
+                                        otDay?.disabled === 1
                                             ? "text-red-400"
                                             : "text-black",
-                                        selectedDayId === dateItem.id
+                                        selectedDayId === otDay.id
                                             ? "bg-gray-400 hover:bg-gray-400"
                                             : "bg-transparent"
                                     )}
-                                    onClick={() => onSelectDay(dateItem.id)}
+                                    onClick={() => onSelectDay(otDay.id)}
                                 >
-                                    <span className="flex overflow-clip">
-                                        <span className="overflow-clip whitespace-nowrap min-w-12">
-                                            {dayjs(dateItem.date).format("ddd")}
-                                            ,{" "}
-                                        </span>
-                                        <span className="col-span-2 overflow-ellipsis whitespace-nowrap grow">
-                                            {dayjs(dateItem.date).format(
-                                                "DD MMMM"
+                                    <Link to={`/procedures/${otDay.id}`}>
+                                        <span className="flex overflow-clip">
+                                            <span className="overflow-clip whitespace-nowrap min-w-12">
+                                                {dayjs(otDay.date).format(
+                                                    "ddd"
+                                                )}
+                                                ,{" "}
+                                            </span>
+                                            <span className="col-span-2 overflow-ellipsis whitespace-nowrap grow">
+                                                {dayjs(otDay.date).format(
+                                                    "DD MMMM"
+                                                )}
+                                            </span>
+
+                                            {!!!selectedOtList && (
+                                                <span className="overflow-clip whitespace-nowrap">
+                                                    <OtListMarker
+                                                        otList={
+                                                            otDay.expand.otList
+                                                        }
+                                                    />
+                                                </span>
                                             )}
                                         </span>
-
-                                        {!!!selectedOtList && (
-                                            <span className="overflow-clip whitespace-nowrap">
-                                                <OtListMarker
-                                                    otList={
-                                                        dateItem.expand.otList
-                                                    }
-                                                />
-                                            </span>
-                                        )}
-                                    </span>
+                                    </Link>
                                 </li>
                             ))}
                     </ul>

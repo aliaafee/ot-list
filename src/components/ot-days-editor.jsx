@@ -59,7 +59,12 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
     }
 
     return (
-        <div className={twMerge("bg-gray-200", className)}>
+        <div
+            className={twMerge(
+                "bg-gray-200 overflow-hidden flex flex-col",
+                className
+            )}
+        >
             <ToolBar className="sticky top-0 bg-gray-200 grid grid-cols-1">
                 {
                     <ToolBarPill
