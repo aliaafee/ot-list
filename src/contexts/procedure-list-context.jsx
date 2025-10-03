@@ -35,6 +35,7 @@ export function ProcedureListProvider({ children }) {
         null
     );
     const [otDay, setOtDay] = useState(null);
+    const [surgeons, setSurgeons] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -44,22 +45,23 @@ export function ProcedureListProvider({ children }) {
             if (!!!procedureDayId) {
                 return;
             }
+
             const day = await pb.collection("otDays").getOne(procedureDayId, {
-                expand: "otList,otList.operatingRooms",
+                expand: "otList,otList.operatingRooms,otList.department,otList.department.surgeons_via_department",
             });
             setOtDay(day);
             console.log("otDay", day);
 
-            const newList = await pb.collection("procedures").getFullList({
+            const gotList = await pb.collection("procedures").getFullList({
                 filter: `procedureDay = "${procedureDayId}"`,
                 sort: "+order",
                 expand: "patient,addedBy,procedureDay.otList,procedureDay",
             });
             dispathData({
                 type: "SET_LIST",
-                payload: { procedures: newList },
+                payload: { procedures: gotList },
             });
-            console.log("procedures", newList);
+            console.log("procedures", gotList);
         } catch (e) {
             console.log("Fetch Error: ", e);
             setError(e.message);
