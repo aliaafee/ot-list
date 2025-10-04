@@ -443,17 +443,6 @@
         "type": "relation"
       },
       {
-        "convertURLs": false,
-        "hidden": false,
-        "id": "editor1156222427",
-        "maxSize": 0,
-        "name": "remarks",
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "editor"
-      },
-      {
         "hidden": false,
         "id": "bool2231267043",
         "name": "disabled",
@@ -461,6 +450,20 @@
         "required": false,
         "system": false,
         "type": "bool"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text1156222427",
+        "max": 0,
+        "min": 0,
+        "name": "remarks",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
       },
       {
         "hidden": false,
@@ -856,17 +859,6 @@
         "type": "relation"
       },
       {
-        "convertURLs": false,
-        "hidden": false,
-        "id": "editor1156222427",
-        "maxSize": 0,
-        "name": "remarks",
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "editor"
-      },
-      {
         "hidden": false,
         "id": "number4113142680",
         "max": null,
@@ -920,17 +912,6 @@
         "type": "text"
       },
       {
-        "convertURLs": false,
-        "hidden": false,
-        "id": "editor1891541418",
-        "maxSize": 0,
-        "name": "requirements",
-        "presentable": false,
-        "required": false,
-        "system": false,
-        "type": "editor"
-      },
-      {
         "hidden": false,
         "id": "bool3194813053",
         "name": "removed",
@@ -964,6 +945,34 @@
         "required": false,
         "system": false,
         "type": "relation"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text1156222427",
+        "max": 0,
+        "min": 0,
+        "name": "remarks",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text1891541418",
+        "max": 0,
+        "min": 0,
+        "name": "requirements",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": false,
+        "system": false,
+        "type": "text"
       },
       {
         "hidden": false,
