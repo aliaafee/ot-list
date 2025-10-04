@@ -37,35 +37,38 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
     return (
         <div>
             <div className="text-xl">{operatingRoom?.name}</div>
-            <ul className="gap-2 grid">
+            <div className="grid">
                 <ReorderList
                     items={proceduresByRoom}
                     itemRender={(procedure) => (
                         <ProcedureItem procedure={procedure} />
                     )}
+                    itemClassName="group select-none flex bg-gray-100 rounded-lg hover:shadow-md mt-2"
                     onChange={(newList) => {
                         console.log(newList);
                     }}
                 />
-                {showRemoved &&
-                    removedProcedures.map((procedure, index) => (
-                        <li
-                            key={index}
-                            className="select-none flex bg-gray-100 rounded-lg hover:shadow-md"
-                        >
-                            <div className="p-2 hidden md:block">
-                                <span className="invisible">⠿</span>
-                            </div>
-                            <div className="grow">
-                                <ProcedureItem procedure={procedure} />
-                            </div>
-                        </li>
-                    ))}
-                <li key="addItem">
+                <ul>
+                    {showRemoved &&
+                        removedProcedures.map((procedure, index) => (
+                            <li
+                                key={index}
+                                className="select-none flex bg-gray-100 rounded-lg hover:shadow-md mt-2"
+                            >
+                                <div className="p-2 hidden md:block">
+                                    <span className="invisible">⠿</span>
+                                </div>
+                                <div className="grow">
+                                    <ProcedureItem procedure={procedure} />
+                                </div>
+                            </li>
+                        ))}
+                </ul>
+                <div>
                     {showAddForm && (
                         <div
                             className={twMerge(
-                                "flex-auto bg-gray-100 rounded-lg"
+                                "flex-auto bg-gray-100 rounded-lg mt-2"
                             )}
                         >
                             <ToolBar
@@ -128,7 +131,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                     {!showAddForm && (
                         <div
                             className={twMerge(
-                                "flex-auto bg-gray-100 rounded-lg"
+                                "flex-auto bg-gray-100 rounded-lg mt-2"
                             )}
                         >
                             <ToolBarButton
@@ -144,8 +147,8 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                             </ToolBarButton>
                         </div>
                     )}
-                </li>
-            </ul>
+                </div>
+            </div>
         </div>
     );
 }

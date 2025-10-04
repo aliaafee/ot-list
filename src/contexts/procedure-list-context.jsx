@@ -83,6 +83,10 @@ export function ProcedureListProvider({ children }) {
         });
     };
 
+    const addProcedure = (procedure) => {
+        return "";
+    };
+
     const value = useMemo(() => {
         console.log("state", proceduresList);
         return {

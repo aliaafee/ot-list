@@ -144,7 +144,7 @@ function ProcedureListEditor({
                     )}
                 </div>
                 <div className="flex">
-                    <div className="p-2 hidden md:block">
+                    <div className="px-2 hidden md:inline">
                         <span className="invisible">⠿</span>
                     </div>
                     <div className="grow flex-auto pl-2 pr-2 grid grid-cols-8 lg:grid-cols-12 font-bold gap-1">

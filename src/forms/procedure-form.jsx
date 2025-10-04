@@ -13,7 +13,7 @@ export const initialProcedureValue = {
     comorbids: "",
     procedure: "",
     addedDate: "",
-    addedById: "",
+    addedBy: "",
     remarks: "",
     duration: "",
     bed: "",
@@ -24,13 +24,13 @@ export const initialProcedureValue = {
 export function ProcedureForm({ onChange, value, surgeons = [] }) {
     const requiredFields = [
         "nid",
-        "hospital_id",
+        "hospitalId",
         "phone",
         "name",
         "diagnosis",
         "procedure",
         "addedDate",
-        "addedById",
+        "addedBy",
     ];
     const [errorFields, setErrorFields] = useState([]);
 
@@ -158,8 +158,8 @@ export function ProcedureForm({ onChange, value, surgeons = [] }) {
             />
             <FormField
                 label="Added By"
-                name="addedById"
-                value={value.addedById}
+                name="addedBy"
+                value={value.addedBy}
                 onChange={handleChange}
                 type="select"
                 className="md:col-span-1"

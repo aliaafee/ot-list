@@ -12,6 +12,7 @@ export default function ReorderList({
     onChange,
     itemRender,
     disabled = false,
+    itemClassName,
 }) {
     const dragIdRef = useRef(null);
 
@@ -75,7 +76,7 @@ export default function ReorderList({
         <ul
             role="listbox"
             aria-label="Reorder list"
-            className="grid gap-2 p-0 m-0 list-none"
+            className="grid p-0 m-0 list-none"
         >
             {ordered.map((item) => (
                 <li
@@ -87,9 +88,7 @@ export default function ReorderList({
                     onDragEnd={handleDragEnd}
                     role="option"
                     aria-grabbed={dragIdRef.current === item.id}
-                    className={
-                        "group select-none flex bg-gray-100 rounded-lg hover:shadow-md"
-                    }
+                    className={twMerge("group flex select-none", itemClassName)}
                 >
                     {itemRender ? (
                         <>

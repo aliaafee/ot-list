@@ -19,7 +19,7 @@ import LabelValue from "./label-value";
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 
-function ProcedureItem({ procedure }) {
+function ProcedureItem({ procedure, className }) {
     const { proceduresList, setSelected, isUpdating, isBusy } =
         useProcedureList();
 
@@ -29,7 +29,8 @@ function ProcedureItem({ procedure }) {
                 className={twMerge(
                     "transition-colors flex-auto p-2 grid grid-cols-8 lg:grid-cols-12 cursor-pointer gap-1 ",
                     isUpdating(procedure) ? "animate-pulse" : "",
-                    !!procedure.removed && "line-through"
+                    !!procedure.removed && "line-through",
+                    className
                 )}
                 onClick={() => setSelected(procedure.id)}
             >
@@ -73,7 +74,8 @@ function ProcedureItem({ procedure }) {
             <div
                 className={twMerge(
                     "flex-auto",
-                    isUpdating(procedure) ? "animate-pulse" : ""
+                    isUpdating(procedure) ? "animate-pulse" : "",
+                    className
                 )}
             >
                 <ToolBar
