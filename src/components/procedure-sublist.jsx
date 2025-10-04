@@ -6,10 +6,12 @@ import ProcedureItem from "./procedure-item";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { twMerge } from "tailwind-merge";
+import { ProcedureForm, initialProcedureValue } from "@/forms/procedure-form";
 
 function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
     const { otDay, isBusy } = useProcedureList();
     const [showAddForm, setShowAddForm] = useState(false);
+    const [newProcedure, setNewProcedure] = useState(initialProcedureValue);
 
     const proceduresByRoom = useMemo(
         () =>
@@ -79,9 +81,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                                 <ToolBarButton
                                     title="close"
                                     disabled={isBusy()}
-                                    onClick={() => {
-                                        setShowAddForm(false);
-                                    }}
+                                    onClick={() => setShowAddForm(false)}
                                 >
                                     <XIcon
                                         className=""
@@ -91,12 +91,37 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                                 </ToolBarButton>
                             </ToolBar>
                             <div className="p-2">
-                                {/* <ProcedureEntryForm
-                                    onSubmit={handleAddProcedure}
-                                    onCancel={() => setShowAddForm(false)}
-                                    date={dateItem.date}
-                                    or={operatingRoom.name}
-                                /> */}
+                                <ProcedureForm
+                                    value={newProcedure}
+                                    onChange={(value) => setNewProcedure(value)}
+                                    surgeons={
+                                        otDay.expand.otList.expand.department
+                                            .expand.surgeons_via_department
+                                    }
+                                />
+                                <div className="sm:flex sm:flex-row-reverse col-span-full mt-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => {}}
+                                        className="inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-xs  sm:ml-3 sm:w-auto bg-blue-600 hover:bg-blue-500"
+                                    >
+                                        Save
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {}}
+                                        className="mt-3 sm:ml-3 sm:mt-0 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:w-auto"
+                                    >
+                                        Generate Sample
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowAddForm(false)}
+                                        className="mt-3 sm:mt-0 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50  sm:w-auto"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -109,7 +134,10 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                             <ToolBarButton
                                 title="Add OT Procedure"
                                 disabled={otDay.disabled === 1 || isBusy()}
-                                onClick={() => setShowAddForm(true)}
+                                onClick={() => {
+                                    setShowAddForm(true),
+                                        setNewProcedure(initialProcedureValue);
+                                }}
                             >
                                 <PlusIcon width={16} height={16} />
                                 <ToolBarButtonLabel>Add</ToolBarButtonLabel>
