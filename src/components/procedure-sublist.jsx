@@ -36,7 +36,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
 
     return (
         <div>
-            <div className="text-xl">{operatingRoom?.name}</div>
+            <div className="text-xl mt-2">{operatingRoom?.name}</div>
             <div className="grid">
                 <ReorderList
                     items={proceduresByRoom}
