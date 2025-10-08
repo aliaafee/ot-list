@@ -7,6 +7,7 @@ import { useProcedureList } from "@/contexts/procedure-list-context";
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { twMerge } from "tailwind-merge";
 import { ProcedureForm, initialProcedureValue } from "@/forms/procedure-form";
+import { GenerateProdecureFormData } from "@/utils/sample-data";
 
 function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
     const { otDay, isBusy } = useProcedureList();
@@ -33,6 +34,15 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                 .filter((procedure) => procedure.removed),
         [procedures, operatingRoom]
     );
+
+    const handleSampleData = () => {
+        setNewProcedure(
+            GenerateProdecureFormData(
+                otDay.expand.otList.expand.department.expand
+                    .surgeons_via_department
+            )
+        );
+    };
 
     return (
         <div>
@@ -112,7 +122,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => {}}
+                                        onClick={handleSampleData}
                                         className="mt-3 sm:ml-3 sm:mt-0 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:w-auto"
                                     >
                                         Generate Sample
