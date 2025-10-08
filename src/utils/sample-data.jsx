@@ -35,7 +35,7 @@ export function GenerateProdecureFormData(surgeons) {
             ][Math.floor(Math.random() * 10)]
         }`, // Random patient name
         age: Math.floor(18 + Math.random() * 60).toString(), // Random age between 18 and 77
-        sex: Math.random() > 0.5 ? "Male" : "Female", // Random sex
+        sex: Math.random() > 0.5 ? "male" : "female", // Random sex
         diagnosis: `${
             [
                 "Acute Appendicitis",

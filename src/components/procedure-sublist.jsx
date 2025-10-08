@@ -53,6 +53,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                 newProcedure
             );
         })();
+        setShowAddForm(false);
     };
 
     return (

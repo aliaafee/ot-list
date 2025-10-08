@@ -1,7 +1,6 @@
 import {
     createContext,
     useContext,
-    useEffect,
     useMemo,
     useReducer,
     useState,
@@ -12,12 +11,17 @@ import dayjs from "dayjs";
 const procedureListReducer = (state, action) => {
     switch (action.type) {
         case "SET_LIST":
+            if (state === null) {
+                return {
+                    procedures: action.payload,
+                    selected: null,
+                    updating: [],
+                    update_failed: [],
+                };
+            }
             return {
                 ...state,
                 procedures: action.payload,
-                selected: null,
-                updating: [],
-                update_failed: [],
             };
         case "SET_SELECTED":
             return {
@@ -29,6 +33,51 @@ const procedureListReducer = (state, action) => {
                 ...state,
                 procedures: [...state.procedures, action.payload],
             };
+        case "UPDATE_ID":
+            const procedure = state.procedures.find(
+                (p) => p.id === action.payload.id
+            );
+            return {
+                ...state,
+                procedures: [
+                    ...state.procedures.filter(
+                        (p) => p.id !== action.payload.id
+                    ),
+                    {
+                        ...procedure,
+                        id: action.payload.newId,
+                        patient: action.payload.newPatientId,
+                        expand: {
+                            ...procedure.expand,
+                            patient: {
+                                ...procedure.expand.patient,
+                                id: action.payload.newPatientId,
+                            },
+                        },
+                    },
+                ],
+                selected:
+                    state.selected === action.payload.id
+                        ? action.payload.newId
+                        : state.selected,
+            };
+        case "ADD_UPDATING":
+            return {
+                ...state,
+                updating: [...state.updating, ...action.payload],
+            };
+        case "DONE_UPDATING":
+            return {
+                ...state,
+                updating: state.updating.filter(
+                    (item) => !!!action.payload.includes(item)
+                ),
+            };
+        case "ADD_FAILED":
+            return {
+                ...state,
+                update_failed: [...state.update_failed, ...action.payload],
+            };
         default:
             return state;
     }
@@ -37,12 +86,11 @@ const procedureListReducer = (state, action) => {
 const ProcedureListContext = createContext(null);
 
 export function ProcedureListProvider({ children }) {
-    const [proceduresList, dispathData] = useReducer(
+    const [proceduresList, dispatchData] = useReducer(
         procedureListReducer,
         null
     );
     const [otDay, setOtDay] = useState(null);
-    const [surgeons, setSurgeons] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -64,7 +112,7 @@ export function ProcedureListProvider({ children }) {
                 sort: "+order",
                 expand: "patient,addedBy,procedureDay.otList,procedureDay",
             });
-            dispathData({
+            dispatchData({
                 type: "SET_LIST",
                 payload: gotList,
             });
@@ -83,8 +131,12 @@ export function ProcedureListProvider({ children }) {
         proceduresList.updating.includes(procedure.id);
     };
 
+    const getProcedureError = (procedure) => {
+        return proceduresList.update_failed.find((p) => p.id === procedure.id);
+    };
+
     const setSelected = (procedureId) => {
-        dispathData({
+        dispatchData({
             type: "SET_SELECTED",
             payload: procedureId,
         });
@@ -150,12 +202,55 @@ export function ProcedureListProvider({ children }) {
             },
         };
 
-        console.log(placeholderProcedure);
+        setSelected(placeholderProcedure.id);
 
-        dispathData({
+        dispatchData({
             type: "ADD_PROCEDURE",
             payload: placeholderProcedure,
         });
+
+        try {
+            dispatchData({
+                type: "ADD_UPDATING",
+                payload: [placeholderProcedure.id],
+            });
+
+            const newPatient = await pb.collection("patients").create(patient);
+
+            const newProcedure = await pb
+                .collection("procedures")
+                .create({ ...procedure, patient: newPatient.id });
+
+            dispatchData({
+                type: "UPDATE_ID",
+                payload: {
+                    id: placeholderProcedure.id,
+                    newId: newProcedure.id,
+                    newPatientId: newPatient.id,
+                },
+            });
+        } catch (e) {
+            console.log(
+                "Failed to add procedure",
+                JSON.parse(JSON.stringify(e))
+            );
+            dispatchData({
+                type: "ADD_FAILED",
+                payload: [
+                    {
+                        id: placeholderProcedure.id,
+                        message: `Failed to add procedure. ${e?.message}`,
+                        data: placeholderProcedure,
+                        response: e?.response,
+                    },
+                ],
+            });
+        } finally {
+            dispatchData({
+                type: "DONE_UPDATING",
+                payload: [placeholderProcedure.id],
+            });
+        }
     };
 
     const value = useMemo(() => {
@@ -168,6 +263,7 @@ export function ProcedureListProvider({ children }) {
             setSelected,
             isUpdating,
             isBusy,
+            getProcedureError,
             loading,
             error,
         };

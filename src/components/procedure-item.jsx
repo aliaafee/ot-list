@@ -20,16 +20,24 @@ import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 
 function ProcedureItem({ procedure, className }) {
-    const { proceduresList, setSelected, isUpdating, isBusy } =
-        useProcedureList();
+    const {
+        proceduresList,
+        setSelected,
+        isUpdating,
+        isBusy,
+        getProcedureError,
+    } = useProcedureList();
+
+    const recordError = getProcedureError(procedure);
 
     const SimplifiedView = () => {
         return (
             <div
                 className={twMerge(
-                    "transition-colors flex-auto p-2 grid grid-cols-8 lg:grid-cols-12 cursor-pointer gap-1 ",
+                    "transition-colors flex-auto p-2 grid grid-cols-8 lg:grid-cols-12 cursor-pointer gap-1 rounded-lg md:rounded-l-none",
                     isUpdating(procedure) ? "animate-pulse" : "",
                     !!procedure.removed && "line-through",
+                    !!recordError && "bg-red-200",
                     className
                 )}
                 onClick={() => setSelected(procedure.id)}
@@ -171,8 +179,13 @@ function ProcedureItem({ procedure, className }) {
                         <XIcon className="" width={16} height={16} />
                     </ToolBarButton>
                 </ToolBar>
+                {!!recordError && (
+                    <div className="bg-red-400/20 rounded-md m-2 p-2 text-sm">
+                        {recordError?.message}
+                    </div>
+                )}
                 {procedure.removed && (
-                    <div className="bg-red-400/20 rounded-md m-2 p-1 text-sm">
+                    <div className="bg-red-400/20 rounded-md m-2 p-2 text-sm">
                         Removed
                     </div>
                 )}
