@@ -10,7 +10,7 @@ import { ProcedureForm, initialProcedureValue } from "@/forms/procedure-form";
 import { GenerateProdecureFormData } from "@/utils/sample-data";
 
 function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
-    const { otDay, isBusy } = useProcedureList();
+    const { otDay, isBusy, addProcedure } = useProcedureList();
     const [showAddForm, setShowAddForm] = useState(false);
     const [newProcedure, setNewProcedure] = useState(initialProcedureValue);
 
@@ -42,6 +42,17 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                     .surgeons_via_department
             )
         );
+    };
+
+    const handleAddProcedure = () => {
+        (async () => {
+            await addProcedure(
+                proceduresByRoom,
+                otDay,
+                operatingRoom,
+                newProcedure
+            );
+        })();
     };
 
     return (
@@ -115,7 +126,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                                 <div className="sm:flex sm:flex-row-reverse col-span-full mt-3">
                                     <button
                                         type="button"
-                                        onClick={() => {}}
+                                        onClick={handleAddProcedure}
                                         className="inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-xs  sm:ml-3 sm:w-auto bg-blue-600 hover:bg-blue-500"
                                     >
                                         Save

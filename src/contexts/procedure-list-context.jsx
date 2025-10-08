@@ -7,12 +7,14 @@ import {
     useState,
 } from "react";
 import { pb } from "@/lib/pb";
+import dayjs from "dayjs";
 
 const procedureListReducer = (state, action) => {
     switch (action.type) {
         case "SET_LIST":
             return {
-                ...action.payload,
+                ...state,
+                procedures: action.payload,
                 selected: null,
                 updating: [],
                 update_failed: [],
@@ -21,6 +23,11 @@ const procedureListReducer = (state, action) => {
             return {
                 ...state,
                 selected: action.payload,
+            };
+        case "ADD_PROCEDURE":
+            return {
+                ...state,
+                procedures: [...state.procedures, action.payload],
             };
         default:
             return state;
@@ -59,7 +66,7 @@ export function ProcedureListProvider({ children }) {
             });
             dispathData({
                 type: "SET_LIST",
-                payload: { procedures: gotList },
+                payload: gotList,
             });
             console.log("procedures", gotList);
         } catch (e) {
@@ -83,8 +90,72 @@ export function ProcedureListProvider({ children }) {
         });
     };
 
-    const addProcedure = (procedure) => {
-        return "";
+    const addProcedure = async (
+        procedures,
+        otDay,
+        operatingRoom,
+        procedureData
+    ) => {
+        const patient = {
+            address: "", //procedureData.address,
+            dateOfBirth: `${dayjs().year() - procedureData.age}-01-01`, //procedureData.dateOfBirth,
+            hospitalId: procedureData.hospitalId,
+            name: procedureData.name,
+            nid: procedureData.nid,
+            phone: procedureData.phone,
+            sex: procedureData.sex,
+        };
+
+        let nextOrder = 1;
+        if (procedures && procedures.length > 0) {
+            nextOrder = procedures[procedures.length - 1].order + 1;
+        }
+
+        const procedure = {
+            addedBy: procedureData.addedBy,
+            addedDate: procedureData.addedDate,
+            anesthesia: procedureData.anesthesia,
+            bed: procedureData.bed,
+            comorbids: procedureData.comorbids,
+            diagnosis: procedureData.diagnosis,
+            duration: procedureData.duration,
+            operatingRoom: operatingRoom.id,
+            procedure: procedureData.procedure,
+            procedureDay: otDay.id,
+            remarks: procedureData.remarks,
+            removed: procedureData.removed,
+            requirements: procedureData.requirements,
+            order: nextOrder,
+        };
+
+        const tempPatientId = `tempid-${crypto.randomUUID()}`;
+        const tempProcedureId = `tempid-${crypto.randomUUID()}`;
+        const addedBy =
+            otDay.expand.otList.expand.department.expand.surgeons_via_department.find(
+                (s) => s.id === procedure.addedBy
+            );
+
+        const placeholderProcedure = {
+            ...procedure,
+            id: tempProcedureId,
+            order: nextOrder,
+            patient: tempPatientId,
+            expand: {
+                addedBy: addedBy,
+                patient: {
+                    ...patient,
+                    id: tempPatientId,
+                },
+                procedureDay: otDay,
+            },
+        };
+
+        console.log(placeholderProcedure);
+
+        dispathData({
+            type: "ADD_PROCEDURE",
+            payload: placeholderProcedure,
+        });
     };
 
     const value = useMemo(() => {
@@ -93,6 +164,7 @@ export function ProcedureListProvider({ children }) {
             proceduresList,
             otDay,
             loadProcedures,
+            addProcedure,
             setSelected,
             isUpdating,
             isBusy,
