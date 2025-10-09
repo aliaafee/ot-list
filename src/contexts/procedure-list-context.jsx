@@ -133,6 +133,26 @@ export function ProcedureListProvider({ children }) {
                 payload: gotList,
             });
             console.log("procedures", gotList);
+
+            pb.collection("procedures").unsubscribe();
+            pb.collection("procedures").subscribe(
+                "*",
+                (e) => {
+                    console.log(e.action);
+                    console.log(e.record);
+                    if (e.action === "update") {
+                        dispatchData({
+                            type: "UPDATE_PROCEDURE",
+                            payload: e.record,
+                        });
+                    }
+                },
+                {
+                    filter: `procedureDay = "${procedureDayId}"`,
+                    sort: "+order",
+                    expand: "patient,addedBy,procedureDay.otList,procedureDay",
+                }
+            );
         } catch (e) {
             console.log("Fetch Error: ", e);
             setError(e.message);
@@ -254,7 +274,7 @@ export function ProcedureListProvider({ children }) {
         const original = proceduresList.procedures.find(
             (p) => p.id === procedureId
         );
-        console.log("Procedure before update", original);
+
         const placeholderProcedure = {
             ...original,
             ...procedureData,
@@ -329,7 +349,7 @@ export function ProcedureListProvider({ children }) {
     };
 
     const value = useMemo(() => {
-        console.log("state", proceduresList);
+        // console.log("state", proceduresList);
         return {
             proceduresList,
             otDay,
