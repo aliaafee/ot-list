@@ -60,6 +60,23 @@ const procedureListReducer = (state, action) => {
                         ? action.payload.newId
                         : state.selected,
             };
+        case "UPDATE_PROCEDURE":
+            const originalProcedure = state.procedures.find(
+                (p) => p.id === action.payload.id
+            );
+            return {
+                ...state,
+                procedures: [
+                    ...state.procedures.filter(
+                        (p) => p.id !== action.payload.id
+                    ),
+                    {
+                        ...originalProcedure,
+                        ...action.payload,
+                    },
+                ],
+            };
+
         case "ADD_UPDATING":
             return {
                 ...state,
@@ -142,38 +159,6 @@ export function ProcedureListProvider({ children }) {
     };
 
     const addProcedure = async (patient, procedure, otDay) => {
-        // const patient = {
-        //     address: "", //procedureData.address,
-        //     dateOfBirth: `${dayjs().year() - procedureData.age}-01-01`, //procedureData.dateOfBirth,
-        //     hospitalId: procedureData.hospitalId,
-        //     name: procedureData.name,
-        //     nid: procedureData.nid,
-        //     phone: procedureData.phone,
-        //     sex: procedureData.sex,
-        // };
-
-        // let nextOrder = 1;
-        // if (procedures && procedures.length > 0) {
-        //     nextOrder = procedures[procedures.length - 1].order + 1;
-        // }
-
-        // const procedure = {
-        //     addedBy: procedureData.addedBy,
-        //     addedDate: procedureData.addedDate,
-        //     anesthesia: procedureData.anesthesia,
-        //     bed: procedureData.bed,
-        //     comorbids: procedureData.comorbids,
-        //     diagnosis: procedureData.diagnosis,
-        //     duration: procedureData.duration,
-        //     operatingRoom: operatingRoom.id,
-        //     procedure: procedureData.procedure,
-        //     procedureDay: otDay.id,
-        //     remarks: procedureData.remarks,
-        //     removed: procedureData.removed,
-        //     requirements: procedureData.requirements,
-        //     order: nextOrder,
-        // };
-
         const tempPatientId = `tempid-${crypto.randomUUID()}`;
         const tempProcedureId = `tempid-${crypto.randomUUID()}`;
         const addedBy =
@@ -236,7 +221,100 @@ export function ProcedureListProvider({ children }) {
                         data: {
                             patient: patient,
                             procedure: procedure,
-                            placeholderProcedure: placeholderProcedure,
+                        },
+                        response: e?.response,
+                    },
+                ],
+            });
+        } finally {
+            dispatchData({
+                type: "DONE_UPDATING",
+                payload: [placeholderProcedure.id],
+            });
+        }
+    };
+
+    const updateProcedure = async (procedureId, procedureData, otDay) => {
+        await updateProcedureAndPatient(
+            null,
+            {},
+            procedureId,
+            procedureData,
+            otDay
+        );
+    };
+
+    const updateProcedureAndPatient = async (
+        patientId,
+        patientData,
+        procedureId,
+        procedureData,
+        otDay
+    ) => {
+        const original = proceduresList.procedures.find(
+            (p) => p.id === procedureId
+        );
+        console.log("Procedure before update", original);
+        const placeholderProcedure = {
+            ...original,
+            ...procedureData,
+            expand: {
+                ...original.expand,
+                patient: {
+                    ...original.expand.patient,
+                    ...patientData,
+                },
+                procedureDay: otDay,
+                addedBy:
+                    otDay.expand.otList.expand.department.expand.surgeons_via_department.find(
+                        (s) => s.id === procedureData.addedBy
+                    ),
+            },
+        };
+
+        dispatchData({
+            type: "UPDATE_PROCEDURE",
+            payload: placeholderProcedure,
+        });
+
+        try {
+            dispatchData({
+                type: "ADD_UPDATING",
+                payload: [placeholderProcedure.id],
+            });
+
+            if (patientId !== null) {
+                const updatedPatient = await pb
+                    .collection("patients")
+                    .update(patientId, patientData);
+            }
+
+            const updatedProcedure = await pb
+                .collection("procedures")
+                .update(procedureId, procedureData, {
+                    expand: "patient,addedBy,procedureDay.otList,procedureDay",
+                });
+
+            dispatchData({
+                type: "UPDATE_PROCEDURE",
+                payload: placeholderProcedure,
+            });
+        } catch (e) {
+            console.log(
+                "Failed to update procedure",
+                JSON.parse(JSON.stringify(e))
+            );
+            dispatchData({
+                type: "ADD_FAILED",
+                payload: [
+                    {
+                        id: placeholderProcedure.id,
+                        message: `Failed to update procedure. ${e?.message}`,
+                        data: {
+                            patientId: patientId,
+                            patientData: patientData,
+                            procedureId: procedureId,
+                            procedureData: procedureData,
                         },
                         response: e?.response,
                     },
@@ -257,6 +335,8 @@ export function ProcedureListProvider({ children }) {
             otDay,
             loadProcedures,
             addProcedure,
+            updateProcedure,
+            updateProcedureAndPatient,
             setSelected,
             isUpdating,
             isBusy,

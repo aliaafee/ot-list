@@ -18,6 +18,7 @@ import { age } from "@/utils/dates";
 import LabelValue from "./label-value";
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { useProcedureList } from "@/contexts/procedure-list-context";
+import ProcedureEditor from "./procedure-editor";
 
 function ProcedureItem({ procedure, className }) {
     const {
@@ -26,9 +27,11 @@ function ProcedureItem({ procedure, className }) {
         isUpdating,
         isBusy,
         getProcedureError,
+        otDay,
     } = useProcedureList();
 
     const recordError = getProcedureError(procedure);
+    const [editing, setEditing] = useState(false);
 
     const SimplifiedView = () => {
         return (
@@ -268,6 +271,27 @@ function ProcedureItem({ procedure, className }) {
             </div>
         );
     };
+
+    if (editing) {
+        return (
+            <ProcedureEditor
+                procedure={procedure}
+                className={className}
+                onDiscard={() => {
+                    setEditing(false);
+                }}
+                onClose={() => {
+                    setEditing(false);
+                    if (proceduresList.selected === procedure.id) {
+                        setSelected(null);
+                    }
+                }}
+                onAfterSave={() => {
+                    setEditing(false);
+                }}
+            />
+        );
+    }
 
     if (proceduresList.selected === procedure.id) {
         return <ExpandedView />;
