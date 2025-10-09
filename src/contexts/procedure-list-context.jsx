@@ -6,7 +6,6 @@ import {
     useState,
 } from "react";
 import { pb } from "@/lib/pb";
-import dayjs from "dayjs";
 
 const procedureListReducer = (state, action) => {
     switch (action.type) {
@@ -142,43 +141,38 @@ export function ProcedureListProvider({ children }) {
         });
     };
 
-    const addProcedure = async (
-        procedures,
-        otDay,
-        operatingRoom,
-        procedureData
-    ) => {
-        const patient = {
-            address: "", //procedureData.address,
-            dateOfBirth: `${dayjs().year() - procedureData.age}-01-01`, //procedureData.dateOfBirth,
-            hospitalId: procedureData.hospitalId,
-            name: procedureData.name,
-            nid: procedureData.nid,
-            phone: procedureData.phone,
-            sex: procedureData.sex,
-        };
+    const addProcedure = async (patient, procedure, otDay) => {
+        // const patient = {
+        //     address: "", //procedureData.address,
+        //     dateOfBirth: `${dayjs().year() - procedureData.age}-01-01`, //procedureData.dateOfBirth,
+        //     hospitalId: procedureData.hospitalId,
+        //     name: procedureData.name,
+        //     nid: procedureData.nid,
+        //     phone: procedureData.phone,
+        //     sex: procedureData.sex,
+        // };
 
-        let nextOrder = 1;
-        if (procedures && procedures.length > 0) {
-            nextOrder = procedures[procedures.length - 1].order + 1;
-        }
+        // let nextOrder = 1;
+        // if (procedures && procedures.length > 0) {
+        //     nextOrder = procedures[procedures.length - 1].order + 1;
+        // }
 
-        const procedure = {
-            addedBy: procedureData.addedBy,
-            addedDate: procedureData.addedDate,
-            anesthesia: procedureData.anesthesia,
-            bed: procedureData.bed,
-            comorbids: procedureData.comorbids,
-            diagnosis: procedureData.diagnosis,
-            duration: procedureData.duration,
-            operatingRoom: operatingRoom.id,
-            procedure: procedureData.procedure,
-            procedureDay: otDay.id,
-            remarks: procedureData.remarks,
-            removed: procedureData.removed,
-            requirements: procedureData.requirements,
-            order: nextOrder,
-        };
+        // const procedure = {
+        //     addedBy: procedureData.addedBy,
+        //     addedDate: procedureData.addedDate,
+        //     anesthesia: procedureData.anesthesia,
+        //     bed: procedureData.bed,
+        //     comorbids: procedureData.comorbids,
+        //     diagnosis: procedureData.diagnosis,
+        //     duration: procedureData.duration,
+        //     operatingRoom: operatingRoom.id,
+        //     procedure: procedureData.procedure,
+        //     procedureDay: otDay.id,
+        //     remarks: procedureData.remarks,
+        //     removed: procedureData.removed,
+        //     requirements: procedureData.requirements,
+        //     order: nextOrder,
+        // };
 
         const tempPatientId = `tempid-${crypto.randomUUID()}`;
         const tempProcedureId = `tempid-${crypto.randomUUID()}`;
@@ -190,7 +184,6 @@ export function ProcedureListProvider({ children }) {
         const placeholderProcedure = {
             ...procedure,
             id: tempProcedureId,
-            order: nextOrder,
             patient: tempPatientId,
             expand: {
                 addedBy: addedBy,
@@ -240,7 +233,11 @@ export function ProcedureListProvider({ children }) {
                     {
                         id: placeholderProcedure.id,
                         message: `Failed to add procedure. ${e?.message}`,
-                        data: placeholderProcedure,
+                        data: {
+                            patient: patient,
+                            procedure: procedure,
+                            placeholderProcedure: placeholderProcedure,
+                        },
                         response: e?.response,
                     },
                 ],

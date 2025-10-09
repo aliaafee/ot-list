@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { PlusIcon, XIcon } from "lucide-react";
+import dayjs from "dayjs";
 
 import ReorderList from "./reorder-list";
 import ProcedureItem from "./procedure-item";
@@ -45,15 +46,43 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
     };
 
     const handleAddProcedure = () => {
-        (async () => {
-            await addProcedure(
-                proceduresByRoom,
-                otDay,
-                operatingRoom,
-                newProcedure
-            );
-        })();
+        const patient = {
+            address: "", //newProcedure.address,
+            dateOfBirth: `${dayjs().year() - newProcedure.age}-01-01`, //newProcedure.dateOfBirth,
+            hospitalId: newProcedure.hospitalId,
+            name: newProcedure.name,
+            nid: newProcedure.nid,
+            phone: newProcedure.phone,
+            sex: newProcedure.sex,
+        };
+
+        let nextOrder = 1;
+        if (proceduresByRoom && proceduresByRoom.length > 0) {
+            nextOrder = proceduresByRoom[proceduresByRoom.length - 1].order + 1;
+        }
+
+        const procedure = {
+            addedBy: newProcedure.addedBy,
+            addedDate: newProcedure.addedDate,
+            anesthesia: newProcedure.anesthesia,
+            bed: newProcedure.bed,
+            comorbids: newProcedure.comorbids,
+            diagnosis: newProcedure.diagnosis,
+            duration: newProcedure.duration,
+            operatingRoom: operatingRoom.id,
+            procedure: newProcedure.procedure,
+            procedureDay: otDay.id,
+            remarks: newProcedure.remarks,
+            removed: newProcedure.removed,
+            requirements: newProcedure.requirements,
+            order: nextOrder,
+        };
+
         setShowAddForm(false);
+
+        (async () => {
+            await addProcedure(patient, procedure, otDay);
+        })();
     };
 
     return (
