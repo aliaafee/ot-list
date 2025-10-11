@@ -124,6 +124,7 @@ export function ProcedureListProvider({ children }) {
 
     const loadProcedures = async (procedureDayId) => {
         setLoading(true);
+        setError("");
         try {
             if (!!!procedureDayId) {
                 return;
@@ -144,10 +145,13 @@ export function ProcedureListProvider({ children }) {
                 payload: gotList,
             });
             console.log("procedures", gotList);
+            setLoading(false);
         } catch (e) {
-            console.log("Fetch Error: ", e);
+            if (e.isAbort) {
+                return;
+            }
+            console.log("Fetch Error: ", JSON.parse(JSON.stringify(e)));
             setError(e.message);
-        } finally {
             setLoading(false);
         }
     };
