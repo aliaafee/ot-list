@@ -110,10 +110,16 @@ export function ProcedureListProvider({ children }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [subscribed, setSubscribed] = useState(false);
+    const [tempId, setTempId] = useState(1000);
 
     const proceduresCollectionOptions = {
         sort: "+order",
         expand: "patient,addedBy,procedureDay.otList,procedureDay",
+    };
+
+    const getTempId = () => {
+        setTempId(tempId + 1);
+        return tempId;
     };
 
     const loadProcedures = async (procedureDayId) => {
@@ -203,8 +209,9 @@ export function ProcedureListProvider({ children }) {
     };
 
     const addProcedure = async (patient, procedure, otDay) => {
-        const tempPatientId = `tempid-${crypto.randomUUID()}`;
-        const tempProcedureId = `tempid-${crypto.randomUUID()}`;
+        const tempPatientId = `tempid-${getTempId()}`;
+        const tempProcedureId = `tempid-${getTempId()}`;
+
         const addedBy =
             otDay.expand.otList.expand.department.expand.surgeons_via_department.find(
                 (s) => s.id === procedure.addedBy
@@ -224,12 +231,12 @@ export function ProcedureListProvider({ children }) {
             },
         };
 
-        setSelected(placeholderProcedure.id);
-
         dispatchData({
             type: "ADD_PROCEDURE",
             payload: placeholderProcedure,
         });
+
+        setSelected(placeholderProcedure.id);
 
         const isSubscribed = subscribed;
 
@@ -258,6 +265,7 @@ export function ProcedureListProvider({ children }) {
                 },
             });
         } catch (e) {
+            alert("Error on add");
             console.log(
                 "Failed to add procedure",
                 JSON.parse(JSON.stringify(e))

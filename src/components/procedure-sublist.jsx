@@ -78,11 +78,11 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
             order: nextOrder,
         };
 
-        setShowAddForm(false);
-
         (async () => {
             await addProcedure(patient, procedure, otDay);
         })();
+
+        setShowAddForm(false);
     };
 
     return (
