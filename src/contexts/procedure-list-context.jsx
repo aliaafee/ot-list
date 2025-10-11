@@ -194,7 +194,7 @@ export function ProcedureListProvider({ children }) {
     const isBusy = () => proceduresList?.updating.length > 0; // Busy if any row is being updated
 
     const isUpdating = (procedure) => {
-        proceduresList.updating.includes(procedure.id);
+        return proceduresList.updating.includes(procedure.id);
     };
 
     const getProcedureError = (procedure) => {
