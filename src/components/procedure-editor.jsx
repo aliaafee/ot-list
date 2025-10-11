@@ -30,7 +30,7 @@ function ProcedureEditor({
         diagnosis: procedure.diagnosis,
         comorbids: procedure.comorbids,
         procedure: procedure.procedure,
-        addedDate: procedure.addedDate,
+        addedDate: dayjs(procedure.addedDate).format("YYYY-MM-DD"),
         addedBy: procedure.addedBy,
         remarks: procedure.remarks,
         duration: procedure.duration,
