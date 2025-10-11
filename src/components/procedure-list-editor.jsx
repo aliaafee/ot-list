@@ -17,11 +17,21 @@ function ProcedureListEditor({
     className,
     handleShowDaysList,
 }) {
-    const { proceduresList, otDay, loading, error, loadProcedures } =
-        useProcedureList();
+    const {
+        proceduresList,
+        otDay,
+        loading,
+        error,
+        loadProcedures,
+        subscribeProcedures,
+    } = useProcedureList();
 
     useEffect(() => {
         loadProcedures(procedureDayId);
+
+        const unsubscribe = subscribeProcedures(procedureDayId);
+
+        return unsubscribe;
     }, [procedureDayId]);
 
     const ProcedureToolBar = () => (

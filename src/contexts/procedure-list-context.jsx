@@ -109,6 +109,12 @@ export function ProcedureListProvider({ children }) {
     const [otDay, setOtDay] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [subscribed, setSubscribed] = useState(false);
+
+    const proceduresCollectionOptions = {
+        sort: "+order",
+        expand: "patient,addedBy,procedureDay.otList,procedureDay",
+    };
 
     const loadProcedures = async (procedureDayId) => {
         setLoading(true);
@@ -124,41 +130,59 @@ export function ProcedureListProvider({ children }) {
             console.log("otDay", day);
 
             const gotList = await pb.collection("procedures").getFullList({
+                ...proceduresCollectionOptions,
                 filter: `procedureDay = "${procedureDayId}"`,
-                sort: "+order",
-                expand: "patient,addedBy,procedureDay.otList,procedureDay",
             });
             dispatchData({
                 type: "SET_LIST",
                 payload: gotList,
             });
             console.log("procedures", gotList);
-
-            pb.collection("procedures").unsubscribe();
-            pb.collection("procedures").subscribe(
-                "*",
-                (e) => {
-                    console.log(e.action);
-                    console.log(e.record);
-                    if (e.action === "update") {
-                        dispatchData({
-                            type: "UPDATE_PROCEDURE",
-                            payload: e.record,
-                        });
-                    }
-                },
-                {
-                    filter: `procedureDay = "${procedureDayId}"`,
-                    sort: "+order",
-                    expand: "patient,addedBy,procedureDay.otList,procedureDay",
-                }
-            );
         } catch (e) {
             console.log("Fetch Error: ", e);
             setError(e.message);
         } finally {
             setLoading(false);
         }
+    };
+
+    const unsubscribeProcedures = () => {
+        setSubscribed(false);
+        console.log("Unsubscribing to procedures changes...");
+        pb.collection("procedures").unsubscribe();
+    };
+
+    const subscribeProcedures = (procedureDayId) => {
+        setSubscribed(true);
+
+        console.log("Subscribing to procedures changes...", procedureDayId);
+        pb.collection("procedures").subscribe(
+            "*",
+            (e) => {
+                console.log(e.action);
+                console.log(e.record);
+                if (e.action === "update") {
+                    dispatchData({
+                        type: "UPDATE_PROCEDURE",
+                        payload: e.record,
+                    });
+                    return;
+                }
+                if (e.action === "create") {
+                    dispatchData({
+                        type: "ADD_PROCEDURE",
+                        payload: e.record,
+                    });
+                    return;
+                }
+            },
+            {
+                ...proceduresCollectionOptions,
+                filter: `procedureDay = "${procedureDayId}"`,
+            }
+        );
+
+        return unsubscribeProcedures;
     };
 
     const isBusy = () => proceduresList?.updating.length > 0; // Busy if any row is being updated
@@ -207,7 +231,13 @@ export function ProcedureListProvider({ children }) {
             payload: placeholderProcedure,
         });
 
+        const isSubscribed = subscribed;
+
         try {
+            if (isSubscribed) {
+                unsubscribeProcedures();
+            }
+
             dispatchData({
                 type: "ADD_UPDATING",
                 payload: [placeholderProcedure.id],
@@ -247,6 +277,9 @@ export function ProcedureListProvider({ children }) {
                 ],
             });
         } finally {
+            if (isSubscribed) {
+                subscribeProcedures(otDay.id);
+            }
             dispatchData({
                 type: "DONE_UPDATING",
                 payload: [placeholderProcedure.id],
@@ -297,7 +330,12 @@ export function ProcedureListProvider({ children }) {
             payload: placeholderProcedure,
         });
 
+        const isSubscribed = subscribed;
+
         try {
+            if (isSubscribed) {
+                unsubscribeProcedures();
+            }
             dispatchData({
                 type: "ADD_UPDATING",
                 payload: [placeholderProcedure.id],
@@ -341,6 +379,9 @@ export function ProcedureListProvider({ children }) {
                 ],
             });
         } finally {
+            if (isSubscribed) {
+                subscribeProcedures(otDay.id);
+            }
             dispatchData({
                 type: "DONE_UPDATING",
                 payload: [placeholderProcedure.id],
@@ -354,6 +395,7 @@ export function ProcedureListProvider({ children }) {
             proceduresList,
             otDay,
             loadProcedures,
+            subscribeProcedures,
             addProcedure,
             updateProcedure,
             updateProcedureAndPatient,
