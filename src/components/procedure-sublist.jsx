@@ -11,8 +11,14 @@ import { ProcedureForm, initialProcedureValue } from "@/forms/procedure-form";
 import { GenerateProdecureFormData } from "@/utils/sample-data";
 
 function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
-    const { otDay, isBusy, addProcedure, updateProcedures } =
-        useProcedureList();
+    const {
+        otDay,
+        isBusy,
+        addProcedure,
+        updateProcedures,
+        proceduresList,
+        setSelected,
+    } = useProcedureList();
     const [showAddForm, setShowAddForm] = useState(false);
     const [newProcedure, setNewProcedure] = useState(initialProcedureValue);
 
@@ -154,6 +160,54 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
         updateProcedures(rowsToUpdate);
     };
 
+    const handleRemove = (item) => {
+        const itemToRemoveIndex = proceduresByRoom.findIndex(
+            (row) => row.id === item.id
+        );
+        if (itemToRemoveIndex === -1) {
+            return;
+        }
+        const itemToRemove = proceduresByRoom[itemToRemoveIndex];
+        const updatedItem = {
+            id: itemToRemove.id,
+            order: -1,
+            removed: true,
+        };
+        // select the rows that need to have order updated
+        const rowsToUpdate = proceduresByRoom
+            .filter((row) => row.order > itemToRemove.order)
+            .map((row) => ({
+                id: row.id,
+                order: row.order - 1,
+            }));
+
+        if (proceduresList.selected === item.id) {
+            setSelected(null);
+        }
+
+        updateProcedures([updatedItem, ...rowsToUpdate]);
+    };
+
+    const handleRestore = (item) => {
+        console.log("Restore", item);
+        if (item === null) {
+            return;
+        }
+
+        let nextOrder = 1;
+        if (proceduresByRoom && proceduresByRoom.length > 0) {
+            nextOrder = proceduresByRoom[proceduresByRoom.length - 1].order + 1;
+        }
+
+        const updatedItem = {
+            id: item.id,
+            order: nextOrder,
+            removed: false,
+        };
+
+        updateProcedures([updatedItem]);
+    };
+
     return (
         <div>
             <div className="text-xl mt-2">{operatingRoom?.name}</div>
@@ -165,6 +219,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                             procedure={procedure}
                             onMoveUp={handleMoveUp}
                             onMoveDown={handleMoveDown}
+                            onRemove={handleRemove}
                         />
                     )}
                     itemClassName="group select-none flex bg-gray-100 rounded-lg hover:shadow-md mt-2"
@@ -182,7 +237,10 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                                     <span className="invisible">⠿</span>
                                 </div>
                                 <div className="grow">
-                                    <ProcedureItem procedure={procedure} />
+                                    <ProcedureItem
+                                        procedure={procedure}
+                                        onRestore={handleRestore}
+                                    />
                                 </div>
                             </li>
                         ))}

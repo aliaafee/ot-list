@@ -9,7 +9,6 @@ import {
     MoveDownIcon,
     XIcon,
     TrashIcon,
-    PencilOffIcon,
     CalendarArrowDownIcon,
     UndoDotIcon,
 } from "lucide-react";
@@ -25,6 +24,8 @@ function ProcedureItem({
     className,
     onMoveUp = (item) => {},
     onMoveDown = (item) => {},
+    onRemove = (item) => {},
+    onRestore = (item) => {},
 }) {
     const {
         proceduresList,
@@ -157,7 +158,7 @@ function ProcedureItem({
                         <ToolBarButton
                             title="Remove OT Procedure"
                             disabled={isBusy()}
-                            onClick={() => setConfirmRemove(true)}
+                            onClick={() => onRemove(procedure)}
                         >
                             <TrashIcon
                                 className="text-red-400"
@@ -172,7 +173,7 @@ function ProcedureItem({
                         <ToolBarButton
                             title="Restore OT Procedure"
                             disabled={isBusy()}
-                            onClick={() => onRestoreProcedure(item.id)}
+                            onClick={() => onRestore(procedure)}
                         >
                             <UndoDotIcon width={16} height={16} />
                             <ToolBarButtonLabel>Restore</ToolBarButtonLabel>
