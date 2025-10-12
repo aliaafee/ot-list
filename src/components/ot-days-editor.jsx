@@ -25,6 +25,7 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
 
     const loadData = async () => {
         setLoading(true);
+        setOtDays([]);
         try {
             const lists = await pb.collection("otLists").getFullList();
             setOtLists(lists);
@@ -50,11 +51,11 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
         loadData();
     }, [showAll]);
 
-    if (loading) {
-        return (
-            <div className={twMerge("bg-gray-200", className)}>Loading...</div>
-        );
-    }
+    // if (loading) {
+    //     return (
+    //         <div className={twMerge("bg-gray-200", className)}>Loading...</div>
+    //     );
+    // }
 
     if (error) {
         return <div className={twMerge("bg-gray-200", className)}>{error}</div>;
@@ -100,6 +101,7 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                     value={showAll}
                     setValue={(value) => setShowAll(value)}
                     className="grid grid-cols-2"
+                    disabled={loading}
                 />
 
                 <ToolBarButton
@@ -113,12 +115,16 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                 </ToolBarButton>
             </ToolBar>
 
-            <OtDaysList
-                otDays={otDays}
-                selectedDayId={selectedDayId}
-                onSelectDay={onSelectDay}
-                selectedOtList={selectedOtList}
-            />
+            {loading ? (
+                <div className="p-2">Loading...</div>
+            ) : (
+                <OtDaysList
+                    otDays={otDays}
+                    selectedDayId={selectedDayId}
+                    onSelectDay={onSelectDay}
+                    selectedOtList={selectedOtList}
+                />
+            )}
 
             {!!showAddDates && (
                 <AddDatesModal
