@@ -34,8 +34,17 @@ export function ProcedureListProvider({ children }) {
     const loadProcedures = async (procedureDayId) => {
         setLoading(true);
         setError("");
+
+        dispatchData({
+            type: "SET_LIST",
+            payload: [],
+        });
+        setOtDay(null);
+
         try {
-            if (!!!procedureDayId) {
+            if (procedureDayId === undefined) {
+                setLoading(false);
+
                 return;
             }
 
