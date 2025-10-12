@@ -20,7 +20,12 @@ import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import ProcedureEditor from "./procedure-editor";
 
-function ProcedureItem({ procedure, className }) {
+function ProcedureItem({
+    procedure,
+    className,
+    onMoveUp = (item) => {},
+    onMoveDown = (item) => {},
+}) {
     const {
         proceduresList,
         setSelected,
@@ -104,7 +109,7 @@ function ProcedureItem({ procedure, className }) {
                             <ToolBarButton
                                 title="Move Up"
                                 disabled={isBusy()}
-                                onClick={() => onMoveProcedureUp(item.id)}
+                                onClick={() => onMoveUp(procedure)}
                             >
                                 <MoveUpIcon
                                     className=""
@@ -115,7 +120,7 @@ function ProcedureItem({ procedure, className }) {
                             <ToolBarButton
                                 title="Move Down"
                                 disabled={isBusy()}
-                                onClick={() => onMoveProcedureDown(item.id)}
+                                onClick={() => onMoveDown(procedure)}
                             >
                                 <MoveDownIcon
                                     className=""

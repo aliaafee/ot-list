@@ -90,6 +90,70 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
         updateProcedures(newList);
     };
 
+    const handleMoveUp = (item) => {
+        const itemToMoveIndex = proceduresByRoom.findIndex(
+            (row) => row.id === item.id
+        );
+
+        if (proceduresByRoom[itemToMoveIndex].order <= 1) {
+            return;
+        }
+
+        const rowsToUpdate = [];
+
+        rowsToUpdate.push({
+            id: proceduresByRoom[itemToMoveIndex].id,
+            order: proceduresByRoom[itemToMoveIndex].order - 1,
+        });
+
+        const previousItemIndex = proceduresByRoom.findIndex(
+            (row) => row.order === proceduresByRoom[itemToMoveIndex].order - 1
+        );
+
+        if (previousItemIndex !== -1) {
+            rowsToUpdate.push({
+                id: proceduresByRoom[previousItemIndex].id,
+                order: proceduresByRoom[itemToMoveIndex].order,
+            });
+        }
+
+        updateProcedures(rowsToUpdate);
+    };
+
+    const handleMoveDown = (item) => {
+        console.log("down", item);
+        const itemToMoveIndex = proceduresByRoom.findIndex(
+            (row) => row.id === item.id
+        );
+
+        if (
+            proceduresByRoom[itemToMoveIndex].order === proceduresByRoom.length
+        ) {
+            return;
+        }
+
+        const rowsToUpdate = [];
+
+        rowsToUpdate.push({
+            id: proceduresByRoom[itemToMoveIndex].id,
+            order: proceduresByRoom[itemToMoveIndex].order + 1,
+        });
+
+        const previousItemIndex = proceduresByRoom.findIndex(
+            (row) => row.order === proceduresByRoom[itemToMoveIndex].order + 1
+        );
+
+        if (previousItemIndex !== -1) {
+            rowsToUpdate.push({
+                id: proceduresByRoom[previousItemIndex].id,
+                order: proceduresByRoom[itemToMoveIndex].order,
+            });
+        }
+
+        console.log(rowsToUpdate);
+        updateProcedures(rowsToUpdate);
+    };
+
     return (
         <div>
             <div className="text-xl mt-2">{operatingRoom?.name}</div>
@@ -97,7 +161,11 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                 <ReorderList
                     items={proceduresByRoom}
                     itemRender={(procedure) => (
-                        <ProcedureItem procedure={procedure} />
+                        <ProcedureItem
+                            procedure={procedure}
+                            onMoveUp={handleMoveUp}
+                            onMoveDown={handleMoveDown}
+                        />
                     )}
                     itemClassName="group select-none flex bg-gray-100 rounded-lg hover:shadow-md mt-2"
                     onChange={handleChangeOrder}
