@@ -47,7 +47,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
         setNewProcedure(
             GenerateProdecureFormData(
                 otDay.expand.otList.expand.department.expand
-                    .surgeons_via_department
+                    .activeSurgeons_via_department
             )
         );
     };
@@ -280,7 +280,8 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                                     onChange={(value) => setNewProcedure(value)}
                                     surgeons={
                                         otDay.expand.otList.expand.department
-                                            .expand.surgeons_via_department
+                                            .expand
+                                            .activeSurgeons_via_department
                                     }
                                 />
                                 <div className="sm:flex sm:flex-row-reverse col-span-full mt-3">

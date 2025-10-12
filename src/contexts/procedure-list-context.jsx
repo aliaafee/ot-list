@@ -49,7 +49,7 @@ export function ProcedureListProvider({ children }) {
             }
 
             const day = await pb.collection("otDays").getOne(procedureDayId, {
-                expand: "otList,otList.operatingRooms,otList.department,otList.department.surgeons_via_department",
+                expand: "otList,otList.operatingRooms,otList.department,otList.department.activeSurgeons_via_department,otList.department.surgeons_via_department",
             });
             setOtDay(day);
             console.log("otDay", day);

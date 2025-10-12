@@ -30,7 +30,9 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
             setOtLists(lists);
             console.log("otLists", lists);
 
-            const days = await pb.collection("otDays").getFullList({
+            const collectionName = showAll ? "otDays" : "upcomingOtDays";
+
+            const days = await pb.collection(collectionName).getFullList({
                 sort: "+date",
                 expand: "otList",
             });
@@ -46,7 +48,7 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
 
     useEffect(() => {
         loadData();
-    }, []);
+    }, [showAll]);
 
     if (loading) {
         return (

@@ -107,7 +107,7 @@ function ProcedureEditor({
                     onChange={(value) => setUpdatedProcedure(value)}
                     surgeons={
                         otDay.expand.otList.expand.department.expand
-                            .surgeons_via_department
+                            .activeSurgeons_via_department
                     }
                 />
                 <div className="sm:flex sm:flex-row-reverse col-span-full mt-3">
