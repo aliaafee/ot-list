@@ -11,7 +11,8 @@ import { ProcedureForm, initialProcedureValue } from "@/forms/procedure-form";
 import { GenerateProdecureFormData } from "@/utils/sample-data";
 
 function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
-    const { otDay, isBusy, addProcedure } = useProcedureList();
+    const { otDay, isBusy, addProcedure, updateProcedures } =
+        useProcedureList();
     const [showAddForm, setShowAddForm] = useState(false);
     const [newProcedure, setNewProcedure] = useState(initialProcedureValue);
 
@@ -85,6 +86,10 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
         setShowAddForm(false);
     };
 
+    const handleChangeOrder = (newList) => {
+        updateProcedures(newList);
+    };
+
     return (
         <div>
             <div className="text-xl mt-2">{operatingRoom?.name}</div>
@@ -95,9 +100,8 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                         <ProcedureItem procedure={procedure} />
                     )}
                     itemClassName="group select-none flex bg-gray-100 rounded-lg hover:shadow-md mt-2"
-                    onChange={(newList) => {
-                        console.log(newList);
-                    }}
+                    onChange={handleChangeOrder}
+                    disabled={isBusy()}
                 />
                 <ul>
                     {showRemoved &&

@@ -208,14 +208,78 @@ export function ProcedureListProvider({ children }) {
         }
     };
 
-    const updateProcedure = async (procedureId, procedureData, otDay) => {
-        await updateProcedureAndPatient(
-            null,
-            {},
-            procedureId,
-            procedureData,
-            otDay
+    const updateProcedures = async (newProcedures, updatedOtDay = otDay) => {
+        const placeHolders = newProcedures.map((newProcedure) => {
+            const original = proceduresList.procedures.find(
+                (p) => p.id === newProcedure.id
+            );
+            return {
+                ...original,
+                ...newProcedure,
+                procedureDay: updatedOtDay.id,
+                expand: {
+                    ...original.expand,
+                    procedureDay: updatedOtDay,
+                },
+            };
+        });
+
+        placeHolders.forEach((p) =>
+            dispatchData({
+                type: "UPDATE_PROCEDURE",
+                payload: p,
+            })
         );
+
+        const isSubscribed = subscribed;
+
+        try {
+            if (isSubscribed) {
+                unsubscribeProcedures();
+            }
+            dispatchData({
+                type: "ADD_UPDATING",
+                payload: newProcedures.map((p) => p.id),
+            });
+
+            for (const newProcedure of newProcedures) {
+                const { id: procedureId, ...changes } = newProcedure;
+                const updatedProcedure = await pb
+                    .collection("procedures")
+                    .update(procedureId, changes, {
+                        expand: "patient,addedBy,procedureDay.otList,procedureDay",
+                    });
+                dispatchData({
+                    type: "UPDATE_PROCEDURE",
+                    payload: updatedProcedure,
+                });
+            }
+        } catch (e) {
+            console.log(
+                "Failed to update procedure",
+                JSON.parse(JSON.stringify(e))
+            );
+            dispatchData({
+                type: "ADD_FAILED",
+                payload: newProcedures.map((p) => ({
+                    id: placeholderProcedure.id,
+                    message: `Failed to update procedure. ${e?.message}`,
+                    data: {
+                        procedureId: procedureId,
+                        procedureData: procedureData,
+                    },
+                    response: e?.response,
+                })),
+            });
+        } finally {
+            if (isSubscribed) {
+                subscribeProcedures(otDay.id);
+            }
+            dispatchData({
+                type: "DONE_UPDATING",
+                payload: newProcedures.map((p) => p.id),
+            });
+        }
     };
 
     const updateProcedureAndPatient = async (
@@ -276,7 +340,7 @@ export function ProcedureListProvider({ children }) {
 
             dispatchData({
                 type: "UPDATE_PROCEDURE",
-                payload: placeholderProcedure,
+                payload: updatedProcedure,
             });
         } catch (e) {
             console.log(
@@ -318,7 +382,7 @@ export function ProcedureListProvider({ children }) {
             loadProcedures,
             subscribeProcedures,
             addProcedure,
-            updateProcedure,
+            updateProcedures,
             updateProcedureAndPatient,
             setSelected,
             isUpdating,

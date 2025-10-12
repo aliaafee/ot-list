@@ -51,7 +51,8 @@ export default function ReorderList({
         next.splice(toIndex, 0, moved);
 
         const normalized = next.map((it, idx) => ({
-            ...it,
+            // ...it,
+            id: it.id,
             order: idx + 1,
         }));
 
@@ -101,7 +102,7 @@ export default function ReorderList({
                                 <span
                                     className={twMerge(
                                         "invisible group-hover:visible",
-                                        !!disabled && "text-gray-500"
+                                        !!disabled && "text-gray-300"
                                     )}
                                 >
                                     ⠿
