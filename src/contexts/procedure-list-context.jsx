@@ -76,14 +76,13 @@ export function ProcedureListProvider({ children }) {
 
     const unsubscribeProcedures = () => {
         setSubscribed(false);
-        console.log("Unsubscribing to procedures changes...");
+
         pb.collection("procedures").unsubscribe();
     };
 
     const subscribeProcedures = (procedureDayId) => {
         setSubscribed(true);
 
-        console.log("Subscribing to procedures changes...", procedureDayId);
         pb.collection("procedures").subscribe(
             "*",
             (e) => {
