@@ -88,7 +88,7 @@ function ProcedureListEditor({
         return (
             <div
                 className={twMerge(
-                    "flex flex-col overflow-hidden mt-8 lg:mt-0",
+                    "flex flex-col overflow-hidden mt-24 lg:mt-0",
                     className
                 )}
             >
