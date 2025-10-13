@@ -156,7 +156,6 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
             });
         }
 
-        console.log(rowsToUpdate);
         updateProcedures(rowsToUpdate);
     };
 
