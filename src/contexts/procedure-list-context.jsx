@@ -31,6 +31,14 @@ export function ProcedureListProvider({ children }) {
         return tempId;
     };
 
+    const getProcedures = async (procedureDayId, operatingRoomId) => {
+        return await pb.collection("procedures").getFullList({
+            ...proceduresCollectionOptions,
+            filter: `procedureDay = "${procedureDayId}" AND operatingRoom = "${operatingRoomId}`,
+            sort: "order",
+        });
+    };
+
     const loadProcedures = async (procedureDayId) => {
         setLoading(true);
         setError("");
@@ -388,6 +396,7 @@ export function ProcedureListProvider({ children }) {
             proceduresList,
             otDay,
             loadProcedures,
+            getProcedures,
             subscribeProcedures,
             addProcedure,
             updateProcedures,

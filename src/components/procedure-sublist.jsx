@@ -18,6 +18,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
         updateProcedures,
         proceduresList,
         setSelected,
+        getProcedures,
     } = useProcedureList();
     const [showAddForm, setShowAddForm] = useState(false);
     const [newProcedure, setNewProcedure] = useState(initialProcedureValue);
@@ -157,6 +158,45 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
         }
 
         updateProcedures(rowsToUpdate);
+    };
+
+    const handleMoveDate = async (itemToMove, newOtDate) => {
+        if (itemToMove.otDay === newOtDate.id) {
+            return; // No change in date
+        }
+
+        let nextOrder = 1;
+
+        const moveListData = await getProcedures(otDay.id, operatingRoom.id);
+
+        if (moveListData && moveListData.length > 0) {
+            nextOrder = moveListData[moveListData.length - 1].order + 1;
+        }
+
+        const updatedItem = {
+            id: itemToMove.id,
+            procedureDate: newOtDate.id,
+            operatingRoom: operatingRoom.id,
+            order: nextOrder,
+            removed: false,
+        };
+
+        if (proceduresList.selected === item.id) {
+            setSelected(null);
+        }
+
+        if (itemToMove.order < 0) {
+            updateProcedures([updatedItem]);
+        } else {
+            const rowsToUpdate = proceduresByRoom
+                .filter((row) => row.order > itemToMove.order)
+                .map((row) => ({
+                    id: row.id,
+                    order: row.order - 1,
+                }));
+
+            updateProcedures([updatedItem, ...rowsToUpdate]);
+        }
     };
 
     const handleRemove = (item) => {
