@@ -23,6 +23,13 @@ function ProcedureListReducer(state, action) {
                 ...state,
                 procedures: [...state.procedures, action.payload],
             };
+        case "REMOVE_PROCEDURE":
+            return {
+                ...state,
+                procedures: state.procedures.filter(
+                    (item) => item.id === action.payload.id
+                ),
+            };
         case "UPDATE_ID":
             const procedure = state.procedures.find(
                 (p) => p.id === action.payload.id

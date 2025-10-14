@@ -225,27 +225,60 @@ export function ProcedureListProvider({ children }) {
     };
 
     const updateProcedures = async (newProcedures, updatedOtDay = otDay) => {
-        const placeHolders = newProcedures.map((newProcedure) => {
-            const original = proceduresList.procedures.find(
-                (p) => p.id === newProcedure.id
-            );
-            return {
-                ...original,
-                ...newProcedure,
-                procedureDay: updatedOtDay.id,
-                expand: {
-                    ...original.expand,
-                    procedureDay: updatedOtDay,
-                },
-            };
-        });
-
-        placeHolders.forEach((p) =>
-            dispatchData({
-                type: "UPDATE_PROCEDURE",
-                payload: p,
+        newProcedures
+            .filter(
+                (
+                    newProcedure // Skip making placeholders for procedures not in this otDay
+                ) =>
+                    newProcedure?.procedureDay !== undefined
+                        ? newProcedure?.procedureDate === otDay.id
+                        : true
+            )
+            .map((newProcedure) => {
+                // Make the placeholders
+                const original = proceduresList.procedures.find(
+                    (p) => p.id === newProcedure.id
+                );
+                return {
+                    ...original,
+                    ...newProcedure,
+                    procedureDay: updatedOtDay.id,
+                    expand: {
+                        ...original.expand,
+                        procedureDay: updatedOtDay,
+                    },
+                };
             })
-        );
+            .forEach(
+                (
+                    newProcedure // Push to the reducer
+                ) =>
+                    dispatchData({
+                        type: "UPDATE_PROCEDURE",
+                        payload: newProcedure,
+                    })
+            );
+
+        newProcedures
+            .filter(
+                (
+                    newProcedure // Find the procedures in this list whose day has been changed
+                ) =>
+                    proceduresList.procedures.some(
+                        (p) => newProcedure.id === p.id
+                    ) &&
+                    (newProcedure?.procedureDay !== undefined
+                        ? newProcedure?.procedureDate !== otDay.id
+                        : false)
+            )
+            .forEach((newProcedure) => {
+                // Remove those placeholders from this list
+                console.log("Date Changed", newProcedure);
+                dispatchData({
+                    type: "REMOVE_PROCEDURE",
+                    payload: newProcedure,
+                });
+            });
 
         const isSubscribed = subscribed;
 
@@ -265,10 +298,14 @@ export function ProcedureListProvider({ children }) {
                     .update(procedureId, changes, {
                         expand: "patient,addedBy,procedureDay.otList,procedureDay",
                     });
-                dispatchData({
-                    type: "UPDATE_PROCEDURE",
-                    payload: updatedProcedure,
-                });
+
+                if (updatedProcedure.procedureDay === otDay.id) {
+                    // Only update the procedures in this otDay
+                    dispatchData({
+                        type: "UPDATE_PROCEDURE",
+                        payload: updatedProcedure,
+                    });
+                }
             }
         } catch (e) {
             console.log(
