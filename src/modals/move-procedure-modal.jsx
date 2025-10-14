@@ -32,6 +32,7 @@ function MoveProcedureModal({
             );
 
         if (itemToMove.procedureDay === newOtDay.id) {
+            onSuccess();
             return; // No change in date
         }
 

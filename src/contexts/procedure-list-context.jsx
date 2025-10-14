@@ -97,23 +97,31 @@ export function ProcedureListProvider({ children }) {
                 console.log(e.action);
                 console.log(e.record);
                 if (e.action === "update") {
+                    if (procedureDayId === e.record.procedureDay) {
+                        dispatchData({
+                            type: "UPDATE_PROCEDURE",
+                            payload: e.record,
+                        });
+                        return;
+                    }
                     dispatchData({
-                        type: "UPDATE_PROCEDURE",
+                        type: "REMOVE_PROCEDURE",
                         payload: e.record,
                     });
                     return;
                 }
                 if (e.action === "create") {
-                    dispatchData({
-                        type: "ADD_PROCEDURE",
-                        payload: e.record,
-                    });
-                    return;
+                    if (procedureDayId === e.record.procedureDay) {
+                        dispatchData({
+                            type: "ADD_PROCEDURE",
+                            payload: e.record,
+                        });
+                    }
                 }
             },
             {
                 ...proceduresCollectionOptions,
-                filter: `procedureDay = "${procedureDayId}"`,
+                // filter: `procedureDay = "${procedureDayId}"`,
             }
         );
 

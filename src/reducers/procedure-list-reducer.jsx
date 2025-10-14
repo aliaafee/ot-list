@@ -66,7 +66,10 @@ function ProcedureListReducer(state, action) {
                 (p) => p.id === action.payload.id
             );
             if (originalProcedure === undefined) {
-                return state;
+                return {
+                    ...state,
+                    procedures: [...state.procedures, action.payload],
+                };
             }
             return {
                 ...state,
