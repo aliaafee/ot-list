@@ -27,7 +27,7 @@ function ProcedureListReducer(state, action) {
             return {
                 ...state,
                 procedures: state.procedures.filter(
-                    (item) => item.id === action.payload.id
+                    (item) => item.id !== action.payload.id
                 ),
             };
         case "UPDATE_ID":

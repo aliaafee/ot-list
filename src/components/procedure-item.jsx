@@ -26,6 +26,7 @@ function ProcedureItem({
     onMoveDown = (item) => {},
     onRemove = (item) => {},
     onRestore = (item) => {},
+    onMoveDate = (item) => {},
 }) {
     const {
         proceduresList,
@@ -144,10 +145,7 @@ function ProcedureItem({
                     <ToolBarButton
                         title="Move OT Procedure"
                         disabled={isBusy()}
-                        onClick={() => {
-                            setNewDate(item.procedure_date);
-                            setConfirmMoveDate(true);
-                        }}
+                        onClick={() => onMoveDate(procedure)}
                     >
                         <CalendarArrowDownIcon width={16} height={16} />
                         <ToolBarButtonLabel className="hidden sm:inline">

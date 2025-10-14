@@ -9,6 +9,7 @@ import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { twMerge } from "tailwind-merge";
 import { ProcedureForm, initialProcedureValue } from "@/forms/procedure-form";
 import { GenerateProdecureFormData } from "@/utils/sample-data";
+import MoveProcedureModal from "@/modals/move-procedure-modal";
 
 function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
     const {
@@ -18,9 +19,9 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
         updateProcedures,
         proceduresList,
         setSelected,
-        getProcedures,
     } = useProcedureList();
     const [showAddForm, setShowAddForm] = useState(false);
+    const [procedureToMove, setProcedureToMove] = useState(null);
     const [newProcedure, setNewProcedure] = useState(initialProcedureValue);
 
     const proceduresByRoom = useMemo(
@@ -160,43 +161,9 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
         updateProcedures(rowsToUpdate);
     };
 
-    const handleMoveDate = async (itemToMove, newOtDate) => {
-        if (itemToMove.otDay === newOtDate.id) {
-            return; // No change in date
-        }
-
-        let nextOrder = 1;
-
-        const moveListData = await getProcedures(otDay.id, operatingRoom.id);
-
-        if (moveListData && moveListData.length > 0) {
-            nextOrder = moveListData[moveListData.length - 1].order + 1;
-        }
-
-        const updatedItem = {
-            id: itemToMove.id,
-            procedureDate: newOtDate.id,
-            operatingRoom: operatingRoom.id,
-            order: nextOrder,
-            removed: false,
-        };
-
-        if (proceduresList.selected === item.id) {
-            setSelected(null);
-        }
-
-        if (itemToMove.order < 0) {
-            updateProcedures([updatedItem]);
-        } else {
-            const rowsToUpdate = proceduresByRoom
-                .filter((row) => row.order > itemToMove.order)
-                .map((row) => ({
-                    id: row.id,
-                    order: row.order - 1,
-                }));
-
-            updateProcedures([updatedItem, ...rowsToUpdate]);
-        }
+    const handleMoveDate = (itemToMove) => {
+        console.log("move", itemToMove);
+        setProcedureToMove(itemToMove);
     };
 
     const handleRemove = (item) => {
@@ -259,6 +226,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                             onMoveUp={handleMoveUp}
                             onMoveDown={handleMoveDown}
                             onRemove={handleRemove}
+                            onMoveDate={handleMoveDate}
                         />
                     )}
                     itemClassName="group select-none flex bg-gray-100 rounded-lg hover:shadow-md mt-2"
@@ -279,6 +247,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                                     <ProcedureItem
                                         procedure={procedure}
                                         onRestore={handleRestore}
+                                        onMoveDate={handleMoveDate}
                                     />
                                 </div>
                             </li>
@@ -348,6 +317,15 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                                 </div>
                             </div>
                         </div>
+                    )}
+                    {procedureToMove !== null && (
+                        <MoveProcedureModal
+                            onCancel={() => setProcedureToMove(null)}
+                            onSuccess={() => setProcedureToMove(null)}
+                            itemToMove={procedureToMove}
+                            operatingRoom={operatingRoom}
+                            proceduresByRoom={proceduresByRoom}
+                        />
                     )}
                     {!showAddForm && (
                         <div

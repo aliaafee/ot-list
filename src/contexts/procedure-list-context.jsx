@@ -34,7 +34,7 @@ export function ProcedureListProvider({ children }) {
     const getProcedures = async (procedureDayId, operatingRoomId) => {
         return await pb.collection("procedures").getFullList({
             ...proceduresCollectionOptions,
-            filter: `procedureDay = "${procedureDayId}" AND operatingRoom = "${operatingRoomId}`,
+            filter: `procedureDay = "${procedureDayId}" && operatingRoom = "${operatingRoomId}"`,
             sort: "order",
         });
     };
