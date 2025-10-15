@@ -51,12 +51,6 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
         loadData();
     }, [showAll]);
 
-    // if (loading) {
-    //     return (
-    //         <div className={twMerge("bg-gray-200", className)}>Loading...</div>
-    //     );
-    // }
-
     if (error) {
         return <div className={twMerge("bg-gray-200", className)}>{error}</div>;
     }

@@ -11,7 +11,14 @@ function TitleBar() {
                 <div className="grow"></div>
                 <UserIcon width={16} height={16} />
                 <span className="text-sm">
-                    {user?.name || user?.email} [<a onClick={logout}>Logout</a>]
+                    {user?.name || user?.email} [
+                    <a
+                        onClick={logout}
+                        className="cursor-pointer hover:underline"
+                    >
+                        Logout
+                    </a>
+                    ]
                 </span>
             </div>
         </div>
