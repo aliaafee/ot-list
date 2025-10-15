@@ -97,7 +97,9 @@ function MoveProcedureModal({
             <p className="mb-2">
                 {itemToMove.expand.patient.nid} {itemToMove.expand.patient.name}{" "}
                 planned for {itemToMove.procedure} on{" "}
-                {dayjs(itemToMove.procedure_date).format("DD MMM YYYY")}
+                {dayjs(itemToMove.expand.procedureDay.date).format(
+                    "DD MMM YYYY"
+                )}
             </p>
             <p className="mb-2">Move the selected procedure to another date?</p>
             <form>
