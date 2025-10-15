@@ -7,6 +7,7 @@ import {
 } from "react";
 import { pb } from "@/lib/pb";
 import ProcedureListReducer from "@/reducers/procedure-list-reducer";
+import FatalErrorModal from "@/modals/fatal-error-modal";
 
 const ProcedureListContext = createContext(null);
 
@@ -77,7 +78,7 @@ export function ProcedureListProvider({ children }) {
                 return;
             }
             console.log("Fetch Error: ", JSON.parse(JSON.stringify(e)));
-            setError(e.message);
+            setError(e);
             setLoading(false);
         }
     };
@@ -202,22 +203,18 @@ export function ProcedureListProvider({ children }) {
                 },
             });
         } catch (e) {
-            alert("Error on add");
-            console.log(
-                "Failed to add procedure",
-                JSON.parse(JSON.stringify(e))
-            );
             dispatchData({
                 type: "ADD_FAILED",
                 payload: [
                     {
                         id: placeholderProcedure.id,
-                        message: `Failed to add procedure. ${e?.message}`,
+                        message: `Failed to add procedure. ${e?.message} ${e?.originalError?.message}`,
                         data: {
                             patient: patient,
                             procedure: procedure,
                         },
                         response: e?.response,
+                        error: e,
                     },
                 ],
             });
@@ -281,7 +278,6 @@ export function ProcedureListProvider({ children }) {
             )
             .forEach((newProcedure) => {
                 // Remove those placeholders from this list
-                console.log("Date Changed", newProcedure);
                 dispatchData({
                     type: "REMOVE_PROCEDURE",
                     payload: newProcedure,
@@ -300,36 +296,45 @@ export function ProcedureListProvider({ children }) {
             });
 
             for (const newProcedure of newProcedures) {
-                const { id: procedureId, ...changes } = newProcedure;
-                const updatedProcedure = await pb
-                    .collection("procedures")
-                    .update(procedureId, changes, {
-                        expand: "patient,addedBy,procedureDay.otList,procedureDay",
-                    });
+                try {
+                    const { id: procedureId, ...changes } = newProcedure;
+                    const updatedProcedure = await pb
+                        .collection("procedures")
+                        .update(procedureId, changes, {
+                            expand: "patient,addedBy,procedureDay.otList,procedureDay",
+                        });
 
-                if (updatedProcedure.procedureDay === otDay.id) {
-                    // Only update the procedures in this otDay
+                    if (updatedProcedure.procedureDay === otDay.id) {
+                        // Only update the procedures in this otDay
+                        dispatchData({
+                            type: "UPDATE_PROCEDURE",
+                            payload: updatedProcedure,
+                        });
+                    }
+                } catch (e) {
                     dispatchData({
-                        type: "UPDATE_PROCEDURE",
-                        payload: updatedProcedure,
+                        type: "ADD_FAILED",
+                        payload: [
+                            {
+                                id: newProcedure.id,
+                                message: `Failed to update procedure (i). ${e?.message} ${e?.originalError?.message}`,
+                                data: newProcedure,
+                                response: e?.response,
+                                error: e,
+                            },
+                        ],
                     });
                 }
             }
         } catch (e) {
-            console.log(
-                "Failed to update procedure",
-                JSON.parse(JSON.stringify(e))
-            );
             dispatchData({
                 type: "ADD_FAILED",
                 payload: newProcedures.map((p) => ({
-                    id: placeholderProcedure.id,
-                    message: `Failed to update procedure. ${e?.message}`,
-                    data: {
-                        procedureId: procedureId,
-                        procedureData: procedureData,
-                    },
+                    id: p.id,
+                    message: `Failed to update procedure. ${e?.message} ${e?.originalError?.message}`,
+                    data: p,
                     response: e?.response,
+                    error: e,
                 })),
             });
         } finally {
@@ -413,7 +418,7 @@ export function ProcedureListProvider({ children }) {
                 payload: [
                     {
                         id: placeholderProcedure.id,
-                        message: `Failed to update procedure. ${e?.message}`,
+                        message: `Failed to update procedure. ${e?.message} ${e?.originalError?.message}`,
                         data: {
                             patientId: patientId,
                             patientData: patientData,
@@ -421,6 +426,7 @@ export function ProcedureListProvider({ children }) {
                             procedureData: procedureData,
                         },
                         response: e?.response,
+                        error: e,
                     },
                 ],
             });
@@ -454,6 +460,24 @@ export function ProcedureListProvider({ children }) {
             error,
         };
     }, [proceduresList, loading, error]);
+
+    if (!!error) {
+        return (
+            <FatalErrorModal
+                message={`Error while loading procedures. ${error.message} Please reload page.`}
+                data={error}
+            />
+        );
+    }
+
+    if (proceduresList?.update_failed.length > 0) {
+        return (
+            <FatalErrorModal
+                message={`Error while adding/updating procedures. Please reload page.`}
+                data={proceduresList?.update_failed}
+            />
+        );
+    }
 
     return (
         <ProcedureListContext.Provider value={value}>
