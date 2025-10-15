@@ -21,7 +21,7 @@ function MoveProcedureModal({
         getProcedures,
     } = useProcedureList();
 
-    const [newOtDayId, setNewOtDayId] = useState("");
+    const [newOtDayId, setNewOtDayId] = useState(itemToMove?.procedureDay);
     const [moving, setMoving] = useState(false);
     const [error, setError] = useState("");
 
