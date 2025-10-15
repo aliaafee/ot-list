@@ -11,6 +11,7 @@ import {
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import ProcedureSublist from "./procedure-sublist";
 import { useProcedureList } from "@/contexts/procedure-list-context";
+import DisableOtDayModal from "@/modals/disable-ot-day-modal";
 
 function ProcedureListEditor({
     procedureDayId,
@@ -25,6 +26,8 @@ function ProcedureListEditor({
         loadProcedures,
         subscribeProcedures,
     } = useProcedureList();
+
+    const [showDisable, setShowDisable] = useState(false);
 
     useEffect(() => {
         loadProcedures(procedureDayId);
@@ -59,8 +62,7 @@ function ProcedureListEditor({
                     <ToolBarButton
                         title="Disable"
                         onClick={() => {
-                            setDisableRemarks("");
-                            setConfirmDisableDate(true);
+                            setShowDisable(true);
                         }}
                     >
                         <CalendarOffIcon width={16} height={16} />
@@ -191,6 +193,12 @@ function ProcedureListEditor({
                     )}
                 </ul>
             </div>
+            {showDisable && (
+                <DisableOtDayModal
+                    onCancel={() => setShowDisable(false)}
+                    onSuccess={() => setShowDisable(false)}
+                />
+            )}
         </div>
     );
 }

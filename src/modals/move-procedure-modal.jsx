@@ -26,6 +26,9 @@ function MoveProcedureModal({
     const [error, setError] = useState("");
 
     const handleMoveProcedure = async () => {
+        setMoving(true);
+        setError("");
+
         const newOtDay =
             otDay.expand.otList.expand.upcomingOtDays_via_otList.find(
                 (d) => d.id === newOtDayId
@@ -36,7 +39,6 @@ function MoveProcedureModal({
             return; // No change in date
         }
 
-        setMoving(true);
         let nextOrder = 1;
         try {
             const moveListData = await getProcedures(
