@@ -11,6 +11,15 @@ import FatalErrorModal from "@/modals/fatal-error-modal";
 
 const ProcedureListContext = createContext(null);
 
+const proceduresCollectionOptions = {
+    sort: "+order",
+    expand: "patient,addedBy,procedureDay.otList,procedureDay",
+};
+
+const otDayCollectionOptions = {
+    expand: "otList,otList.operatingRooms,otList.department,otList.department.activeSurgeons_via_department,otList.department.surgeons_via_department,otList.upcomingOtDays_via_otList",
+};
+
 export function ProcedureListProvider({ children }) {
     const [proceduresList, dispatchData] = useReducer(
         ProcedureListReducer,
@@ -21,11 +30,6 @@ export function ProcedureListProvider({ children }) {
     const [error, setError] = useState("");
     const [subscribed, setSubscribed] = useState(false);
     const [tempId, setTempId] = useState(1000);
-
-    const proceduresCollectionOptions = {
-        sort: "+order",
-        expand: "patient,addedBy,procedureDay.otList,procedureDay",
-    };
 
     const getTempId = () => {
         setTempId(tempId + 1);
@@ -58,7 +62,7 @@ export function ProcedureListProvider({ children }) {
             }
 
             const day = await pb.collection("otDays").getOne(procedureDayId, {
-                expand: "otList,otList.operatingRooms,otList.department,otList.department.activeSurgeons_via_department,otList.department.surgeons_via_department,otList.upcomingOtDays_via_otList",
+                ...otDayCollectionOptions,
             });
             setOtDay(day);
             console.log("otDay", day);
@@ -301,7 +305,7 @@ export function ProcedureListProvider({ children }) {
                     const updatedProcedure = await pb
                         .collection("procedures")
                         .update(procedureId, changes, {
-                            expand: "patient,addedBy,procedureDay.otList,procedureDay",
+                            ...proceduresCollectionOptions,
                         });
 
                     if (updatedProcedure.procedureDay === otDay.id) {
@@ -441,6 +445,19 @@ export function ProcedureListProvider({ children }) {
         }
     };
 
+    const updateOtDay = async (newOtDay) => {
+        try {
+            const { id: otDayId, ...changes } = newOtDay;
+            const updateOtDay = await pb
+                .collection("otDays")
+                .update(otDayId, changes, { ...otDayCollectionOptions });
+            setOtDay(updateOtDay);
+        } catch (e) {
+            console.log("Update otDay Error: ", JSON.parse(JSON.stringify(e)));
+            throw e;
+        }
+    };
+
     const value = useMemo(() => {
         // console.log("state", proceduresList);
         return {
@@ -452,6 +469,7 @@ export function ProcedureListProvider({ children }) {
             addProcedure,
             updateProcedures,
             updateProcedureAndPatient,
+            updateOtDay,
             setSelected,
             isUpdating,
             isBusy,
@@ -459,7 +477,7 @@ export function ProcedureListProvider({ children }) {
             loading,
             error,
         };
-    }, [proceduresList, loading, error]);
+    }, [proceduresList, loading, error, otDay]);
 
     if (!!error) {
         return (

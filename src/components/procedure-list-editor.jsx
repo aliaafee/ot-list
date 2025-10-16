@@ -74,7 +74,7 @@ function ProcedureListEditor({
                     <ToolBarButton
                         title="Enable"
                         onClick={() => {
-                            setConfirmEnableDate(true);
+                            setShowDisable(true);
                         }}
                     >
                         <CalendarCheckIcon width={16} height={16} />
@@ -138,7 +138,13 @@ function ProcedureListEditor({
             )}
         >
             <ProcedureToolBar />
-            <div className="bg-white grow overflow-y-auto p-4">
+            <div
+                className={twMerge(
+                    "bg-white grow overflow-y-auto p-4",
+                    otDay.disabled &&
+                        "bg-linear-to-b from-red-100 via-white to-white from-0% via-40% lg:via-10% to-90%"
+                )}
+            >
                 <div className="mb-2">
                     <span
                         className={twMerge(
