@@ -87,10 +87,13 @@ export function ProcedureListProvider({ children }) {
         }
     };
 
-    const unsubscribeProcedures = () => {
-        setSubscribed(false);
+    const createUnsubscribeProcedures = (procedureDayId) => {
+        return () => {
+            setSubscribed(false);
 
-        pb.collection("procedures").unsubscribe();
+            pb.collection("procedures").unsubscribe();
+            pb.collection("otDays").unsubscribe(procedureDayId);
+        };
     };
 
     const subscribeProcedures = (procedureDayId) => {
@@ -130,7 +133,19 @@ export function ProcedureListProvider({ children }) {
             }
         );
 
-        return unsubscribeProcedures;
+        pb.collection("otDays").subscribe(
+            procedureDayId,
+            (e) => {
+                if (e.action === "update") {
+                    setOtDay(e.record);
+                }
+            },
+            {
+                ...otDayCollectionOptions,
+            }
+        );
+
+        return createUnsubscribeProcedures(procedureDayId);
     };
 
     const isBusy = () => proceduresList?.updating.length > 0; // Busy if any row is being updated
@@ -180,13 +195,7 @@ export function ProcedureListProvider({ children }) {
 
         setSelected(placeholderProcedure.id);
 
-        const isSubscribed = subscribed;
-
         try {
-            if (isSubscribed) {
-                unsubscribeProcedures();
-            }
-
             dispatchData({
                 type: "ADD_UPDATING",
                 payload: [placeholderProcedure.id],
@@ -198,14 +207,22 @@ export function ProcedureListProvider({ children }) {
                 .collection("procedures")
                 .create({ ...procedure, patient: newPatient.id });
 
-            dispatchData({
-                type: "UPDATE_ID",
-                payload: {
-                    id: placeholderProcedure.id,
-                    newId: newProcedure.id,
-                    newPatientId: newPatient.id,
-                },
-            });
+            if (subscribed) {
+                dispatchData({
+                    type: "REMOVE_PROCEDURE",
+                    payload: placeholderProcedure,
+                });
+                setSelected(newProcedure.id);
+            } else {
+                dispatchData({
+                    type: "UPDATE_ID",
+                    payload: {
+                        id: placeholderProcedure.id,
+                        newId: newProcedure.id,
+                        newPatientId: newPatient.id,
+                    },
+                });
+            }
         } catch (e) {
             dispatchData({
                 type: "ADD_FAILED",
@@ -223,9 +240,6 @@ export function ProcedureListProvider({ children }) {
                 ],
             });
         } finally {
-            if (isSubscribed) {
-                subscribeProcedures(otDay.id);
-            }
             dispatchData({
                 type: "DONE_UPDATING",
                 payload: [placeholderProcedure.id],
@@ -288,12 +302,7 @@ export function ProcedureListProvider({ children }) {
                 });
             });
 
-        const isSubscribed = subscribed;
-
         try {
-            if (isSubscribed) {
-                unsubscribeProcedures();
-            }
             dispatchData({
                 type: "ADD_UPDATING",
                 payload: newProcedures.map((p) => p.id),
@@ -308,12 +317,14 @@ export function ProcedureListProvider({ children }) {
                             ...proceduresCollectionOptions,
                         });
 
-                    if (updatedProcedure.procedureDay === otDay.id) {
-                        // Only update the procedures in this otDay
-                        dispatchData({
-                            type: "UPDATE_PROCEDURE",
-                            payload: updatedProcedure,
-                        });
+                    if (!subscribed) {
+                        if (updatedProcedure.procedureDay === otDay.id) {
+                            // Only update the procedures in this otDay
+                            dispatchData({
+                                type: "UPDATE_PROCEDURE",
+                                payload: updatedProcedure,
+                            });
+                        }
                     }
                 } catch (e) {
                     dispatchData({
@@ -342,9 +353,6 @@ export function ProcedureListProvider({ children }) {
                 })),
             });
         } finally {
-            if (isSubscribed) {
-                subscribeProcedures(otDay.id);
-            }
             dispatchData({
                 type: "DONE_UPDATING",
                 payload: newProcedures.map((p) => p.id),
@@ -385,12 +393,7 @@ export function ProcedureListProvider({ children }) {
             payload: placeholderProcedure,
         });
 
-        const isSubscribed = subscribed;
-
         try {
-            if (isSubscribed) {
-                unsubscribeProcedures();
-            }
             dispatchData({
                 type: "ADD_UPDATING",
                 payload: [placeholderProcedure.id],
@@ -408,10 +411,12 @@ export function ProcedureListProvider({ children }) {
                     expand: "patient,addedBy,procedureDay.otList,procedureDay",
                 });
 
-            dispatchData({
-                type: "UPDATE_PROCEDURE",
-                payload: updatedProcedure,
-            });
+            if (!subscribed) {
+                dispatchData({
+                    type: "UPDATE_PROCEDURE",
+                    payload: updatedProcedure,
+                });
+            }
         } catch (e) {
             console.log(
                 "Failed to update procedure",
@@ -435,9 +440,6 @@ export function ProcedureListProvider({ children }) {
                 ],
             });
         } finally {
-            if (isSubscribed) {
-                subscribeProcedures(otDay.id);
-            }
             dispatchData({
                 type: "DONE_UPDATING",
                 payload: [placeholderProcedure.id],
@@ -451,7 +453,9 @@ export function ProcedureListProvider({ children }) {
             const updateOtDay = await pb
                 .collection("otDays")
                 .update(otDayId, changes, { ...otDayCollectionOptions });
-            setOtDay(updateOtDay);
+            if (!subscribed) {
+                setOtDay(updateOtDay);
+            }
         } catch (e) {
             console.log("Update otDay Error: ", JSON.parse(JSON.stringify(e)));
             throw e;
