@@ -1,5 +1,8 @@
 import { useEffect, useReducer, useState } from "react";
 import { PlusIcon } from "lucide-react";
+import dayjs from "dayjs";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+dayjs.extend(isSameOrAfter);
 
 import { pb } from "@/lib/pb";
 import {
@@ -13,6 +16,11 @@ import AddDatesModal from "@/modals/add-dates-modal";
 import { twMerge } from "tailwind-merge";
 import OtDaysReducer from "@/reducers/ot-days-reducer";
 
+const otDaysCollectionOptions = {
+    sort: "+date",
+    expand: "otList",
+};
+
 function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -22,32 +30,75 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
     const [otDaysList, dispatchOtDaysList] = useReducer(OtDaysReducer, null);
     const [showAddDates, setShowAddDates] = useState(false);
 
-    const loadData = async () => {
-        setLoading(true);
-        dispatchOtDaysList({ type: "SET_LIST", payload: [] });
-        try {
-            const lists = await pb.collection("otLists").getFullList();
-            setOtLists(lists);
-            console.log("otLists", lists);
-
-            const collectionName = showAll ? "otDays" : "upcomingOtDays";
-
-            const days = await pb.collection(collectionName).getFullList({
-                sort: "+date",
-                expand: "otList",
-            });
-            dispatchOtDaysList({ type: "SET_LIST", payload: days });
-            console.log("otDays", days);
-        } catch (e) {
-            console.log(e);
-            setError(e.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
-        loadData();
+        const collectionName = showAll ? "otDays" : "upcomingOtDays";
+
+        (async () => {
+            setLoading(true);
+            dispatchOtDaysList({ type: "SET_LIST", payload: [] });
+            try {
+                const lists = await pb.collection("otLists").getFullList();
+                setOtLists(lists);
+                console.log("otLists", lists);
+
+                const collectionName = showAll ? "otDays" : "upcomingOtDays";
+
+                const days = await pb.collection(collectionName).getFullList({
+                    ...otDaysCollectionOptions,
+                });
+                dispatchOtDaysList({ type: "SET_LIST", payload: days });
+                console.log("otDays", days);
+            } catch (e) {
+                console.log(e);
+                setError(e.message);
+            } finally {
+                setLoading(false);
+            }
+        })();
+
+        console.log("subscribe", "otDays");
+        pb.collection("otDays").subscribe(
+            "*",
+            function (e) {
+                console.log(e.action);
+                console.log(e.record);
+                if (e.action === "update") {
+                    dispatchOtDaysList({
+                        type: "UPDATE_DAY",
+                        payload: e.record,
+                    });
+                    return;
+                }
+                if (e.action === "create") {
+                    if (
+                        !showAll &&
+                        dayjs(e.record.date).isSameOrAfter(dayjs(), "day")
+                    ) {
+                        dispatchOtDaysList({
+                            type: "ADD_DAY",
+                            payload: e.record,
+                        });
+                        return;
+                    } else {
+                        if (showAll) {
+                            dispatchOtDaysList({
+                                type: "ADD_DAY",
+                                payload: e.record,
+                            });
+                            return;
+                        }
+                    }
+                }
+            },
+            {
+                ...otDaysCollectionOptions,
+            }
+        );
+
+        return () => {
+            console.log("unsubscribe", "otDays");
+            pb.collection("otDays").unsubscribe("*");
+        };
     }, [showAll]);
 
     if (error) {
@@ -125,7 +176,6 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                     onCancel={() => setShowAddDates(false)}
                     onSuccess={() => {
                         setShowAddDates(false);
-                        loadData();
                     }}
                     initialOtList={selectedOtList}
                 />
