@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { PlusIcon } from "lucide-react";
 
 import { pb } from "@/lib/pb";
@@ -10,9 +10,8 @@ import {
 } from "./toolbar";
 import OtDaysList from "@/components/ot-days-list";
 import AddDatesModal from "@/modals/add-dates-modal";
-import { LoadingSpinnerFull } from "./loading-spinner";
-import ErrorMessage from "@/modals/error-message";
 import { twMerge } from "tailwind-merge";
+import OtDaysReducer from "@/reducers/ot-days-reducer";
 
 function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
     const [loading, setLoading] = useState(false);
@@ -20,12 +19,12 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
     const [otLists, setOtLists] = useState([]);
     const [selectedOtList, setSelectedOtList] = useState(null);
     const [showAll, setShowAll] = useState(false);
-    const [otDays, setOtDays] = useState([]);
+    const [otDaysList, dispatchOtDaysList] = useReducer(OtDaysReducer, null);
     const [showAddDates, setShowAddDates] = useState(false);
 
     const loadData = async () => {
         setLoading(true);
-        setOtDays([]);
+        dispatchOtDaysList({ type: "SET_LIST", payload: [] });
         try {
             const lists = await pb.collection("otLists").getFullList();
             setOtLists(lists);
@@ -37,7 +36,7 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                 sort: "+date",
                 expand: "otList",
             });
-            setOtDays(days);
+            dispatchOtDaysList({ type: "SET_LIST", payload: days });
             console.log("otDays", days);
         } catch (e) {
             console.log(e);
@@ -113,7 +112,7 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                 <div className="p-2">Loading...</div>
             ) : (
                 <OtDaysList
-                    otDays={otDays}
+                    otDays={otDaysList?.otDays}
                     selectedDayId={selectedDayId}
                     onSelectDay={onSelectDay}
                     selectedOtList={selectedOtList}
