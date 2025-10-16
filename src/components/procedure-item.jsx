@@ -18,6 +18,7 @@ import LabelValue from "./label-value";
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import ProcedureEditor from "./procedure-editor";
+import ModalWindow from "@/modals/modal-window";
 
 function ProcedureItem({
     procedure,
@@ -39,6 +40,7 @@ function ProcedureItem({
 
     const recordError = getProcedureError(procedure);
     const [editing, setEditing] = useState(false);
+    const [confirmRemove, setConfirmRemove] = useState(false);
 
     const SimplifiedView = () => {
         return (
@@ -156,7 +158,7 @@ function ProcedureItem({
                         <ToolBarButton
                             title="Remove OT Procedure"
                             disabled={isBusy()}
-                            onClick={() => onRemove(procedure)}
+                            onClick={() => setConfirmRemove(true)}
                         >
                             <TrashIcon
                                 className="text-red-400"
@@ -272,6 +274,29 @@ function ProcedureItem({
                         value={procedure.requirements}
                     />
                 </div>
+                {!!confirmRemove && (
+                    <ModalWindow
+                        title="Remove Procedure"
+                        okLabel="Remove"
+                        onOk={() => {
+                            onRemove(procedure);
+                            setConfirmRemove(false);
+                        }}
+                        onCancel={() => {
+                            setConfirmRemove(false);
+                        }}
+                    >
+                        <p className="mb-2">
+                            {procedure.expand.patient.nid}{" "}
+                            {procedure.expand.patient.name} planned for{" "}
+                            {procedure.procedure} on{" "}
+                            {dayjs(procedure.expand.procedureDay.date).format(
+                                "DD MMM YYYY"
+                            )}
+                        </p>
+                        <p>Remove the selected procedure?</p>
+                    </ModalWindow>
+                )}
             </div>
         );
     };
