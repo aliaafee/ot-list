@@ -34,8 +34,8 @@ function Procedures() {
                 >
                     <div className="w-full sm:max-w-72 lg:mt-0 lg:grow flex flex-col">
                         <div className="bg-gray-300 lg:hidden min-h-26 flex flex-col">
-                            <div className="grow"></div>
-                            <ToolBar className="">
+                            <div className="bg-gray-300 grow"></div>
+                            <ToolBar className="h-10 bg-gray-200">
                                 <div className="grow" />
                                 <ToolBarButton
                                     title="close"
