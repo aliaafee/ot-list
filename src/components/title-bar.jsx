@@ -1,5 +1,6 @@
 import { useAuth } from "@/contexts/auth-context";
 import ModalWindow from "@/modals/modal-window";
+import UserModal from "@/modals/user-modal";
 import { UserColours } from "@/utils/colours";
 import { UserIcon } from "lucide-react";
 import { useState } from "react";
@@ -30,6 +31,25 @@ function TitleBar() {
                 </div>
             </div>
             {showDetails && (
+                <UserModal
+                    user={user}
+                    userIcon={
+                        <div
+                            className={twMerge(
+                                "w-10 h-10 rounded-full bg-amber-400 flex justify-center items-center cursor-pointer",
+                                UserColours[
+                                    user?.name.length % UserColours.length
+                                ]
+                            )}
+                        >
+                            <div className="text-2xl text-black/60">
+                                {user?.name[0]}
+                            </div>
+                        </div>
+                    }
+                />
+            )}
+            {/* {showDetails && (
                 <ModalWindow
                     title={`${user?.name || user?.email}`}
                     showButtons={true}
@@ -55,7 +75,7 @@ function TitleBar() {
                 >
                     <p>Would you like to logout?</p>
                 </ModalWindow>
-            )}
+            )} */}
         </>
     );
 }
