@@ -4,13 +4,18 @@ import { CalendarCheckIcon, CalendarOffIcon } from "lucide-react";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import ModalWindow from "./modal-window";
 import FormField from "@/components/form-field";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function DisableOtDayModal({ onCancel = () => {}, onSuccess = () => {} }) {
     const { otDay, updateOtDay } = useProcedureList();
+    const [displayedOtDay, setDisplayedOtDay] = useState(null);
     const [updating, setUpdating] = useState(false);
     const [error, setError] = useState("");
     const [remarks, setRemarks] = useState("");
+
+    useEffect(() => {
+        setDisplayedOtDay(otDay);
+    }, []);
 
     const handleDisableOtDay = async () => {
         try {
@@ -48,34 +53,38 @@ function DisableOtDayModal({ onCancel = () => {}, onSuccess = () => {} }) {
 
     return (
         <ModalWindow
-            title={otDay.disabled ? "Enable" : "Disable Day"}
-            okLabel={otDay.disabled ? "Enable" : "Disable"}
-            onOk={otDay.disabled ? handleEnableOtDay : handleDisableOtDay}
+            title={displayedOtDay?.disabled ? "Enable" : "Disable Day"}
+            okLabel={displayedOtDay?.disabled ? "Enable" : "Disable"}
+            onOk={
+                displayedOtDay?.disabled
+                    ? handleEnableOtDay
+                    : handleDisableOtDay
+            }
             onCancel={onCancel}
             icon={
-                otDay.disabled ? (
+                displayedOtDay?.disabled ? (
                     <CalendarCheckIcon width={24} height={24} />
                 ) : (
                     <CalendarOffIcon width={24} height={24} />
                 )
             }
             iconColor={
-                otDay.disabled
+                displayedOtDay?.disabled
                     ? "bg-blue-100 text-blue-600"
                     : "bg-red-100 text-red-600"
             }
             okColor={
-                otDay.disabled
+                displayedOtDay?.disabled
                     ? "bg-blue-600 hover:bg-blue-500"
                     : "bg-red-600 hover:bg-red-500"
             }
             loading={updating}
         >
             <p className="mb-2">
-                {otDay.disabled ? "Enable" : "Disable"} the OT Day on{" "}
-                {dayjs(otDay.date).format("DD MMM YYYY")}?
+                {displayedOtDay?.disabled ? "Enable" : "Disable"} the OT Day on{" "}
+                {dayjs(displayedOtDay?.date).format("DD MMM YYYY")}?
             </p>
-            {!otDay.disabled && (
+            {!displayedOtDay?.disabled && (
                 <form>
                     <FormField
                         label="Remarks"
