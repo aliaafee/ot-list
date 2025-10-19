@@ -47,6 +47,7 @@ function TitleBar() {
                             </div>
                         </div>
                     }
+                    onCancel={() => setShowDetails(false)}
                 />
             )}
             {/* {showDetails && (
