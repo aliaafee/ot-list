@@ -21,7 +21,7 @@ function TitleBar() {
                             "w-10 h-10 rounded-full bg-amber-400 flex justify-center items-center cursor-pointer hover:outline-3 outline-gray-400",
                             UserColours[user?.name.length % UserColours.length]
                         )}
-                        title="{user?.name || user?.email}"
+                        title={user?.name || user?.email}
                         onClick={() => setShowDetails(true)}
                     >
                         <div className="text-2xl text-black/60">
@@ -47,7 +47,7 @@ function TitleBar() {
                             </div>
                         </div>
                     }
-                    onCancel={() => setShowDetails(false)}
+                    onClose={() => setShowDetails(false)}
                 />
             )}
             {/* {showDetails && (

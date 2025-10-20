@@ -26,7 +26,7 @@ export function ProcedureListProvider({ children }) {
         null
     );
     const [otDay, setOtDay] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [subscribed, setSubscribed] = useState(false);
     const [tempId, setTempId] = useState(1000);
@@ -55,7 +55,7 @@ export function ProcedureListProvider({ children }) {
         setOtDay(null);
 
         try {
-            if (procedureDayId === undefined) {
+            if (procedureDayId === undefined || !procedureDayId) {
                 setLoading(false);
 
                 return;
