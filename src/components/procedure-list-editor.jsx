@@ -12,6 +12,7 @@ import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import ProcedureSublist from "./procedure-sublist";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import DisableOtDayModal from "@/modals/disable-ot-day-modal";
+import BodyLayout from "./body-layout";
 
 function ProcedureListEditor({
     procedureDayId,
@@ -38,7 +39,7 @@ function ProcedureListEditor({
     }, [procedureDayId]);
 
     const ProcedureToolBar = () => (
-        <ToolBar className="bg-gray-200 fixed top-16 lg:sticky lg:top-0 w-full">
+        <ToolBar>
             <ToolBarButton
                 title="OT Dates"
                 disabled={false}
@@ -88,124 +89,92 @@ function ProcedureListEditor({
 
     if (loading) {
         return (
-            <div
-                className={twMerge(
-                    "flex flex-col overflow-hidden mt-24 lg:mt-0",
-                    className
-                )}
-            >
-                <ProcedureToolBar />
+            <BodyLayout className={className} header={<ProcedureToolBar />}>
                 <div className="bg-white grow overflow-y-auto p-4">
                     Loading...
                 </div>
-            </div>
+            </BodyLayout>
         );
     }
 
     if (error) {
         return (
-            <div
-                className={twMerge(
-                    "flex flex-col overflow-hidden mt-24 lg:mt-0",
-                    className
-                )}
-            >
-                <ProcedureToolBar />
+            <BodyLayout className={className} header={<ProcedureToolBar />}>
                 <div className="bg-white grow overflow-y-auto p-4">{error}</div>
-            </div>
+            </BodyLayout>
         );
     }
 
     if (!!!otDay) {
         return (
-            <div
-                className={twMerge(
-                    "flex flex-col overflow-hidden mt-24 lg:mt-0",
-                    className
-                )}
-            >
-                <ProcedureToolBar />
-                <div className="bg-white grow overflow-y-auto p-4"></div>
-            </div>
+            <BodyLayout className={className} header={<ProcedureToolBar />}>
+                <></>
+            </BodyLayout>
         );
     }
 
     return (
-        <div
-            className={twMerge(
-                "flex flex-col overflow-hidden mt-24 lg:mt-0",
-                className
-            )}
-        >
-            <ProcedureToolBar />
-            <div
-                className={twMerge(
-                    "bg-white grow overflow-y-auto p-4",
-                    otDay.disabled &&
-                        "bg-linear-to-b from-red-100 via-white to-white from-0% via-40% lg:via-10% to-90%"
-                )}
-            >
-                <div className="mb-2">
-                    <span
-                        className={twMerge(
-                            "text-xl",
-                            !!otDay.disabled && "text-red-400"
-                        )}
-                    >
-                        {dayjs(otDay.date).format("dddd, DD MMM YYYY ")} -{" "}
-                        {otDay.expand.otList.name}
+        <BodyLayout className={className} header={<ProcedureToolBar />}>
+            <div className="mb-2">
+                <span
+                    className={twMerge(
+                        "text-xl",
+                        !!otDay.disabled && "text-red-400"
+                    )}
+                >
+                    {dayjs(otDay.date).format("dddd, DD MMM YYYY ")} -{" "}
+                    {otDay.expand.otList.name}
+                </span>
+                {!!otDay.disabled && (
+                    <span className="italic ml-2">
+                        {otDay.remarks || "No OT for this date"}
                     </span>
-                    {!!otDay.disabled && (
-                        <span className="italic ml-2">
-                            {otDay.remarks || "No OT for this date"}
-                        </span>
-                    )}
-                </div>
-                <div className="flex">
-                    <div className="px-2 hidden md:inline">
-                        <span className="invisible">⠿</span>
-                    </div>
-                    <div className="grow flex-auto pl-2 pr-2 grid grid-cols-8 lg:grid-cols-12 font-bold gap-1">
-                        <div className="col-span-1 overflow-clip overflow-ellipsis">
-                            #
-                        </div>
-                        <div className="col-span-2 lg:col-span-1 overflow-clip overflow-ellipsis">
-                            NID
-                        </div>
-                        <div className="col-span-2 lg:col-span-3 overflow-clip overflow-ellipsis">
-                            Name
-                        </div>
-                        <div className="col-span-1 hidden lg:inline overflow-clip overflow-ellipsis">
-                            Age / Sex
-                        </div>
-                        <div className="col-span-3 hidden lg:inline overflow-clip overflow-ellipsis">
-                            Diagnosis
-                        </div>
-                        <div className="col-span-3 overflow-clip overflow-ellipsis">
-                            Procedure
-                        </div>
-                    </div>
-                </div>
-                <ul>
-                    {otDay.expand.otList.expand.operatingRooms.map(
-                        (operatingRoom, index) => (
-                            <li key={index}>
-                                <ProcedureSublist
-                                    procedures={proceduresList.procedures}
-                                    operatingRoom={operatingRoom}
-                                />
-                            </li>
-                        )
-                    )}
-                </ul>
+                )}
             </div>
+            <div className="flex">
+                <div className="px-2 hidden md:inline">
+                    <span className="invisible">⠿</span>
+                </div>
+                <div className="grow flex-auto pl-2 pr-2 grid grid-cols-8 lg:grid-cols-12 font-bold gap-1">
+                    <div className="col-span-1 overflow-clip overflow-ellipsis">
+                        #
+                    </div>
+                    <div className="col-span-2 lg:col-span-1 overflow-clip overflow-ellipsis">
+                        NID
+                    </div>
+                    <div className="col-span-2 lg:col-span-3 overflow-clip overflow-ellipsis">
+                        Name
+                    </div>
+                    <div className="col-span-1 hidden lg:inline overflow-clip overflow-ellipsis">
+                        Age / Sex
+                    </div>
+                    <div className="col-span-3 hidden lg:inline overflow-clip overflow-ellipsis">
+                        Diagnosis
+                    </div>
+                    <div className="col-span-3 overflow-clip overflow-ellipsis">
+                        Procedure
+                    </div>
+                </div>
+            </div>
+            <ul>
+                {otDay.expand.otList.expand.operatingRooms.map(
+                    (operatingRoom, index) => (
+                        <li key={index}>
+                            <ProcedureSublist
+                                procedures={proceduresList.procedures}
+                                operatingRoom={operatingRoom}
+                            />
+                        </li>
+                    )
+                )}
+            </ul>
             {showDisable && (
                 <DisableOtDayModal
                     onCancel={() => setShowDisable(false)}
                     onSuccess={() => setShowDisable(false)}
                 />
             )}
-        </div>
+        </BodyLayout>
     );
 }
 

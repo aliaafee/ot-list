@@ -1,28 +1,36 @@
 import { Link } from "react-router";
 import { useAuth } from "@/contexts/auth-context";
 import CenterBox from "@/components/center-box";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, ChevronLeftIcon } from "lucide-react";
 import FormField from "@/components/form-field";
+import BodyLayout from "@/components/body-layout";
+import {
+    ToolBar,
+    ToolBarButton,
+    ToolBarButtonLabel,
+} from "@/components/toolbar";
 
 export default function Dashboard() {
     const { user, logout } = useAuth();
 
+    const handleBack = () => {};
+
+    const Tools = () => (
+        <ToolBar>
+            <ToolBarButton title="Home" disabled={false} onClick={handleBack}>
+                <ChevronLeftIcon width={16} height={16} />
+                <ToolBarButtonLabel>Back</ToolBarButtonLabel>
+            </ToolBarButton>
+        </ToolBar>
+    );
+
     return (
-        <div className="w-full sm:max-w-xl bg-white mx-auto mt-16 sm:mt-24 lg:mt-8 rounded-lg p-4">
-            <div>
-                <Link
-                    to="/"
-                    className="flex  items-center gap-2 hover:underline"
-                >
-                    <ChevronLeft width={16} height={16} />
-                    Home
-                </Link>
-            </div>
+        <BodyLayout header={<Tools />}>
             <h1 className="mt-4 text-xl">Dashboard: {user?.name} </h1>
             <h2 className="mt-4 text-lg">Email</h2>
             <p className="mt-4">{user.email}</p>
             <h2 className="mt-4 text-lg">Change Password</h2>
-            <div className="bg-gray-100 p-2 rounded-lg w-full sm:max-w-xs flex flex-col items-center mx-auto">
+            <div className="bg-gray-100 p-2 rounded-lg w-full sm:max-w-xs flex flex-col items-center">
                 <FormField label={"Current Password"} className="w-full" />
                 <FormField label={"New Password"} className="w-full" />
                 <FormField label={"Confirm Password"} className="w-full" />
@@ -33,6 +41,6 @@ export default function Dashboard() {
                     Save
                 </button>
             </div>
-        </div>
+        </BodyLayout>
     );
 }
