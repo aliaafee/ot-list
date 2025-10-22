@@ -87,10 +87,55 @@ function ProcedureListEditor({
         </ToolBar>
     );
 
+    const TableHeader = ({ className }) => (
+        <div className={twMerge("flex text-sm", className)}>
+            <div className="px-2 hidden md:inline">
+                <span className="invisible">⠿</span>
+            </div>
+            <div className="grow flex-auto pl-2 pr-2 grid grid-cols-8 lg:grid-cols-12 font-bold gap-1">
+                <div className="col-span-1 overflow-clip overflow-ellipsis">
+                    #
+                </div>
+                <div className="col-span-2 lg:col-span-1 overflow-clip overflow-ellipsis">
+                    NID
+                </div>
+                <div className="col-span-2 lg:col-span-3 overflow-clip overflow-ellipsis">
+                    Name
+                </div>
+                <div className="col-span-1 hidden lg:inline overflow-clip overflow-ellipsis">
+                    Age / Sex
+                </div>
+                <div className="col-span-3 hidden lg:inline overflow-clip overflow-ellipsis">
+                    Diagnosis
+                </div>
+                <div className="col-span-3 overflow-clip overflow-ellipsis">
+                    Procedure
+                </div>
+            </div>
+        </div>
+    );
+
     if (loading) {
         return (
             <BodyLayout className={className} header={<ProcedureToolBar />}>
-                Loading...
+                <div className="animate-pulse">
+                    <div className="mb-2">
+                        <div class="h-7 bg-gray-100 rounded-lg w-80 mb-4"></div>
+                    </div>
+                    <TableHeader className={"text-gray-100"} />
+                    <div className="mb-2">
+                        <div class="h-7 bg-gray-100 rounded-lg w-60"></div>
+                    </div>
+                    <div className="bg-gray-100 rounded-lg h-7 mb-2"></div>
+                    <div className="bg-gray-100 rounded-lg h-7 mb-2"></div>
+                    <div className="bg-gray-100 rounded-lg h-7 mb-2"></div>
+                    <div className="mb-2">
+                        <div class="h-7 bg-gray-100 rounded-lg w-60"></div>
+                    </div>
+                    <div className="bg-gray-100 rounded-lg h-7 mb-2"></div>
+                    <div className="bg-gray-100 rounded-lg h-7 mb-2"></div>
+                    <div className="bg-gray-100 rounded-lg h-7 mb-2"></div>
+                </div>
             </BodyLayout>
         );
     }
@@ -129,31 +174,7 @@ function ProcedureListEditor({
                     </span>
                 )}
             </div>
-            <div className="flex text-sm">
-                <div className="px-2 hidden md:inline">
-                    <span className="invisible">⠿</span>
-                </div>
-                <div className="grow flex-auto pl-2 pr-2 grid grid-cols-8 lg:grid-cols-12 font-bold gap-1">
-                    <div className="col-span-1 overflow-clip overflow-ellipsis">
-                        #
-                    </div>
-                    <div className="col-span-2 lg:col-span-1 overflow-clip overflow-ellipsis">
-                        NID
-                    </div>
-                    <div className="col-span-2 lg:col-span-3 overflow-clip overflow-ellipsis">
-                        Name
-                    </div>
-                    <div className="col-span-1 hidden lg:inline overflow-clip overflow-ellipsis">
-                        Age / Sex
-                    </div>
-                    <div className="col-span-3 hidden lg:inline overflow-clip overflow-ellipsis">
-                        Diagnosis
-                    </div>
-                    <div className="col-span-3 overflow-clip overflow-ellipsis">
-                        Procedure
-                    </div>
-                </div>
-            </div>
+            <TableHeader />
             <ul>
                 {otDay.expand.otList.expand.operatingRooms.map(
                     (operatingRoom, index) => (
