@@ -90,9 +90,7 @@ function ProcedureListEditor({
     if (loading) {
         return (
             <BodyLayout className={className} header={<ProcedureToolBar />}>
-                <div className="bg-white grow overflow-y-auto p-4">
-                    Loading...
-                </div>
+                Loading...
             </BodyLayout>
         );
     }
@@ -100,7 +98,7 @@ function ProcedureListEditor({
     if (error) {
         return (
             <BodyLayout className={className} header={<ProcedureToolBar />}>
-                <div className="bg-white grow overflow-y-auto p-4">{error}</div>
+                {error}
             </BodyLayout>
         );
     }
@@ -131,7 +129,7 @@ function ProcedureListEditor({
                     </span>
                 )}
             </div>
-            <div className="flex">
+            <div className="flex text-sm">
                 <div className="px-2 hidden md:inline">
                     <span className="invisible">⠿</span>
                 </div>
