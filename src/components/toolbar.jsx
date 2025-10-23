@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import { twMerge } from "tailwind-merge";
 
 const ToolBarButton = ({
@@ -29,6 +30,35 @@ const ToolBarButton = ({
                 {children}
             </div>
         </button>
+    );
+};
+
+const ToolBarLink = ({
+    className,
+    buttonClassName,
+    children,
+    title,
+    to,
+    disabled = false,
+}) => {
+    return (
+        <Link
+            className={twMerge("disabled:text-gray-500", buttonClassName)}
+            title={title}
+            to={to}
+        >
+            <div
+                className={twMerge(
+                    "rounded-lg flex items-center justify-center px-1.5 py-1.5 gap-1.5 m-1 whitespace-nowrap overflow-clip",
+                    disabled
+                        ? "hover:bg-transparent"
+                        : "hover:bg-gray-400 cursor-pointer",
+                    className
+                )}
+            >
+                {children}
+            </div>
+        </Link>
     );
 };
 
@@ -94,4 +124,4 @@ const ToolBar = ({ className, children }) => {
     );
 };
 
-export { ToolBar, ToolBarButton, ToolBarButtonLabel, ToolBarPill };
+export { ToolBar, ToolBarButton, ToolBarButtonLabel, ToolBarPill, ToolBarLink };

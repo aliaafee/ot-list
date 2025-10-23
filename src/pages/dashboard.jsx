@@ -8,6 +8,7 @@ import {
     ToolBar,
     ToolBarButton,
     ToolBarButtonLabel,
+    ToolBarLink,
 } from "@/components/toolbar";
 
 export default function Dashboard() {
@@ -17,10 +18,10 @@ export default function Dashboard() {
 
     const Tools = () => (
         <ToolBar>
-            <ToolBarButton title="Home" disabled={false} onClick={handleBack}>
+            <ToolBarLink title="Home" to="/">
                 <ChevronLeftIcon width={16} height={16} />
-                <ToolBarButtonLabel>Back</ToolBarButtonLabel>
-            </ToolBarButton>
+                <ToolBarButtonLabel>Home</ToolBarButtonLabel>
+            </ToolBarLink>
         </ToolBar>
     );
 
