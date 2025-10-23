@@ -130,7 +130,7 @@ function ProcedureListEditor({
                     <div className="bg-gray-100 rounded-lg h-7 mb-2"></div>
                     <div className="bg-gray-100 rounded-lg h-7 mb-2"></div>
                     <div className="mb-2">
-                        <div class="h-7 bg-gray-100 rounded-lg w-60"></div>
+                        <div className="h-7 bg-gray-100 rounded-lg w-60"></div>
                     </div>
                     <div className="bg-gray-100 rounded-lg h-7 mb-2"></div>
                     <div className="bg-gray-100 rounded-lg h-7 mb-2"></div>
