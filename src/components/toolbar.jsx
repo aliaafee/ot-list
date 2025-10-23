@@ -41,23 +41,33 @@ const ToolBarLink = ({
     to,
     disabled = false,
 }) => {
-    return (
-        <Link
-            className={twMerge("disabled:text-gray-500", buttonClassName)}
-            title={title}
-            to={to}
+    const content = (
+        <div
+            className={twMerge(
+                "rounded-lg flex items-center justify-center px-1.5 py-1.5 gap-1.5 m-1 whitespace-nowrap overflow-clip",
+                disabled
+                    ? "hover:bg-transparent"
+                    : "hover:bg-gray-400 cursor-pointer",
+                className
+            )}
         >
+            {children}
+        </div>
+    );
+    if (disabled) {
+        return (
             <div
-                className={twMerge(
-                    "rounded-lg flex items-center justify-center px-1.5 py-1.5 gap-1.5 m-1 whitespace-nowrap overflow-clip",
-                    disabled
-                        ? "hover:bg-transparent"
-                        : "hover:bg-gray-400 cursor-pointer",
-                    className
-                )}
+                className={twMerge("text-gray-500", buttonClassName)}
+                title={title}
+                to={to}
             >
-                {children}
+                {content}
             </div>
+        );
+    }
+    return (
+        <Link className={buttonClassName} title={title} to={to}>
+            {content}
         </Link>
     );
 };
