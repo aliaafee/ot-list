@@ -4,7 +4,7 @@ function BodyLayout({ className, header, children }) {
     return (
         <div
             className={twMerge(
-                "flex flex-col overflow-y-auto mt-24 lg:mt-0",
+                "flex flex-col overflow-y-auto mt-26 lg:mt-0",
                 className
             )}
         >
@@ -12,7 +12,7 @@ function BodyLayout({ className, header, children }) {
                 <div className="mx-auto max-w-4xl">{header}</div>
             </div>
 
-            <div className="bg-white grow  p-4 w-full max-w-4xl mx-auto">
+            <div className="bg-white grow  py-4 w-full max-w-4xl mx-auto">
                 {children}
             </div>
         </div>

@@ -27,10 +27,10 @@ export default function Dashboard() {
 
     return (
         <BodyLayout header={<Tools />}>
-            <h1 className="mt-4 text-xl">Dashboard: {user?.name} </h1>
-            <h2 className="mt-4 text-lg">Email</h2>
-            <p className="mt-4">{user.email}</p>
-            <h2 className="mt-4 text-lg">Change Password</h2>
+            <h1 className="mb-2 text-xl">Dashboard: {user?.name} </h1>
+            <h2 className="mb-2 text-lg">Email</h2>
+            <p className="mb-2">{user.email}</p>
+            <h2 className="mb-2 text-lg">Change Password</h2>
             <div className="bg-gray-100 p-2 rounded-lg w-full sm:max-w-xs flex flex-col items-center">
                 <FormField label={"Current Password"} className="w-full" />
                 <FormField label={"New Password"} className="w-full" />
