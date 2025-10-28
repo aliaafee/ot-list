@@ -7,6 +7,7 @@ import Register from "@/pages/register";
 import Test from "./pages/test";
 import Procedures from "./pages/procedures";
 import MainLayout from "./pages/main-layout";
+import OtListPrint from "./pages/otlist-print";
 
 export default function App() {
     return (
@@ -26,9 +27,14 @@ export default function App() {
                         path="/procedures/:otDayId"
                         element={<Procedures />}
                     />
+
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/register" element={<Register />} />
                 </Route>
+                <Route
+                    path="/procedures/:otDayId/print"
+                    element={<OtListPrint />}
+                />
             </Route>
 
             {/* Fallback */}

@@ -70,9 +70,9 @@ function ProcedureItem({
                 />
                 <LabelValue
                     // label="Age/Sex"
-                    value={`${age(procedure.expand.patient.dateOfBirth)} / ${
-                        procedure.expand.patient.sex[0]
-                    }`}
+                    value={`${age(
+                        procedure.expand.patient.dateOfBirth
+                    )} / ${procedure.expand.patient.sex[0].toUpperCase()}`}
                     className="col-span-1 hidden lg:inline"
                 />
                 <LabelValue

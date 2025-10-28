@@ -8,7 +8,12 @@ import {
     PrinterIcon,
 } from "lucide-react";
 
-import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
+import {
+    ToolBar,
+    ToolBarButton,
+    ToolBarButtonLabel,
+    ToolBarLink,
+} from "./toolbar";
 import ProcedureSublist from "./procedure-sublist";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import DisableOtDayModal from "@/modals/disable-ot-day-modal";
@@ -49,14 +54,14 @@ function ProcedureListEditor({
                 <ChevronLeftIcon width={16} height={16} />
                 <ToolBarButtonLabel>OT Date List</ToolBarButtonLabel>
             </ToolBarButton>
-            <ToolBarButton
+            <ToolBarLink
                 title="Print OT List"
                 disabled={otDay ? otDay?.disabled : true}
-                // onClick={handlePrint}
+                to="print"
             >
                 <PrinterIcon width={16} height={16} />
                 <ToolBarButtonLabel>Print</ToolBarButtonLabel>
-            </ToolBarButton>
+            </ToolBarLink>
             <div className="flex-grow"></div>
             {otDay &&
                 (!otDay?.disabled ? (
@@ -120,11 +125,11 @@ function ProcedureListEditor({
             <BodyLayout className={className} header={<ProcedureToolBar />}>
                 <div className="animate-pulse">
                     <div className="mb-2">
-                        <div class="h-7 bg-gray-100 rounded-lg w-80 mb-4"></div>
+                        <div className="h-7 bg-gray-100 rounded-lg w-80 mb-4"></div>
                     </div>
                     <TableHeader className={"text-gray-100"} />
                     <div className="mb-2">
-                        <div class="h-7 bg-gray-100 rounded-lg w-60"></div>
+                        <div className="h-7 bg-gray-100 rounded-lg w-60"></div>
                     </div>
                     <div className="bg-gray-100 rounded-lg h-7 mb-2"></div>
                     <div className="bg-gray-100 rounded-lg h-7 mb-2"></div>
