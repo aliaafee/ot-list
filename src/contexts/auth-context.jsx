@@ -12,8 +12,11 @@ export function AuthProvider({ children }) {
         (async () => {
             setUser(pb.authStore.record);
             try {
-                pb.authStore.isValid &&
-                    (await pb.collection("users").authRefresh());
+                if (!pb.authStore.isValid) {
+                    pb.authStore.clear();
+                } else {
+                    await pb.collection("users").authRefresh();
+                }
             } catch (e) {
                 pb.authStore.clear(); // after this call pb.authStore.isValid will be false
             } finally {

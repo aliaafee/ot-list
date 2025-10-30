@@ -12,7 +12,7 @@ function BodyLayout({ className, header, children }) {
                 <div className="mx-auto max-w-4xl">{header}</div>
             </div>
 
-            <div className="bg-white grow  py-4 w-full max-w-4xl mx-auto">
+            <div className="bg-white grow  px-2 py-4 w-full max-w-4xl mx-auto">
                 {children}
             </div>
         </div>
