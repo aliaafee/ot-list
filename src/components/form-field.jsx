@@ -9,6 +9,7 @@ export default function FormField({
     children,
     type = "text",
     error = false,
+    errorMessage = "",
     className = "",
     inputClassName = "",
 }) {
@@ -28,6 +29,9 @@ export default function FormField({
                 >
                     {children}
                 </select>
+                {!!errorMessage && (
+                    <p className="text-xs text-red-500">{errorMessage}</p>
+                )}
             </div>
         );
     }
@@ -67,6 +71,9 @@ export default function FormField({
                         !!error && "border-red-500 bg-red-50"
                     )}
                 />
+            )}
+            {!!errorMessage && (
+                <p className="text-xs text-red-500">{errorMessage}</p>
             )}
         </div>
     );
