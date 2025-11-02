@@ -1,6 +1,7 @@
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Edit } from "lucide-react";
 import BodyLayout from "@/components/body-layout";
 import { ToolBar, ToolBarButtonLabel, ToolBarLink } from "@/components/toolbar";
+import EditTable from "@/components/edit-table";
 
 function Settings({}) {
     const Tools = () => (
@@ -15,7 +16,14 @@ function Settings({}) {
         <BodyLayout header={<Tools />}>
             <h1 className="mb-2 text-xl">Settings</h1>
             <h2 className="mb-2 text-lg">Departments</h2>
-            <p>Manage your departments here.</p>
+            <EditTable
+                collectionName="Departments"
+                columns={[
+                    { field: "name", label: "Name" },
+                    { field: "description", label: "Description" },
+                    { field: "hospital", label: "Hospital" },
+                ]}
+            />
             <h2 className="mb-2 text-lg">Operating Rooms</h2>
             <p>Manage your operating rooms here.</p>
             <h2 className="mb-2 text-lg">Operating Lists</h2>

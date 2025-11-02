@@ -12,6 +12,7 @@ export default function FormField({
     errorMessage = "",
     className = "",
     inputClassName = "",
+    placeholder,
 }) {
     if (type === "select") {
         return (
@@ -51,7 +52,7 @@ export default function FormField({
                     name={name}
                     value={value}
                     onChange={onChange}
-                    placeholder={label}
+                    placeholder={!!placeholder ? placeholder : label}
                     className={twMerge(
                         "w-full rounded p-1 bg-white",
                         inputClassName,
@@ -64,7 +65,7 @@ export default function FormField({
                     name={name}
                     value={value}
                     onChange={onChange}
-                    placeholder={label}
+                    placeholder={!!placeholder ? placeholder : label}
                     className={twMerge(
                         "w-full rounded p-1 bg-white",
                         inputClassName,
