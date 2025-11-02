@@ -39,6 +39,7 @@ const ToolBarLink = ({
     children,
     title,
     to,
+    target,
     disabled = false,
 }) => {
     const content = (
@@ -66,7 +67,7 @@ const ToolBarLink = ({
         );
     }
     return (
-        <Link className={buttonClassName} title={title} to={to}>
+        <Link className={buttonClassName} title={title} to={to} target={target}>
             {content}
         </Link>
     );

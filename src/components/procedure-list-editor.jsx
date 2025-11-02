@@ -58,6 +58,7 @@ function ProcedureListEditor({
                 title="Print OT List"
                 disabled={otDay ? otDay?.disabled : true}
                 to="print"
+                target={"_blank"}
             >
                 <PrinterIcon width={16} height={16} />
                 <ToolBarButtonLabel>Print</ToolBarButtonLabel>
