@@ -8,6 +8,7 @@ import Test from "./pages/test";
 import Procedures from "./pages/procedures";
 import MainLayout from "./pages/main-layout";
 import OtListPrint from "./pages/otlist-print";
+import Settings from "./pages/settings";
 
 export default function App() {
     return (
@@ -29,6 +30,7 @@ export default function App() {
                     />
 
                     <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/settings" element={<Settings />} />
                     <Route path="/register" element={<Register />} />
                 </Route>
                 <Route
