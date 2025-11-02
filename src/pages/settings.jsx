@@ -24,12 +24,35 @@ function Settings({}) {
                     { field: "hospital", label: "Hospital" },
                 ]}
             />
-            <h2 className="mb-2 text-lg">Operating Rooms</h2>
-            <p>Manage your operating rooms here.</p>
-            <h2 className="mb-2 text-lg">Operating Lists</h2>
-            <p>Manage your operating lists here.</p>
-            <h2 className="mb-2 text-lg">Surgeons</h2>
-            <p>Manage your surgeons here.</p>
+            <h2 className="my-2 text-lg">Operating Rooms</h2>
+            <EditTable
+                collectionName="operatingRooms"
+                columns={[
+                    { field: "name", label: "Name" },
+                    { field: "description", label: "Description" },
+                    { field: "disabled", label: "Disabled" },
+                ]}
+            />
+            <h2 className="my-2 text-lg">Operating Lists</h2>
+            <EditTable
+                collectionName="otLists"
+                columns={[
+                    { field: "name", label: "Name" },
+                    { field: "description", label: "Description" },
+                    { field: "department", label: "Department" },
+                    { field: "operatingRooms", label: "OperatingRooms" },
+                    { field: "colour", label: "Colour" },
+                ]}
+            />
+            <h2 className="my-2 text-lg">Surgeons</h2>
+            <EditTable
+                collectionName="surgeons"
+                columns={[
+                    { field: "name", label: "Name" },
+                    { field: "department", label: "Department" },
+                    { field: "disabled", label: "Disabled" },
+                ]}
+            />
         </BodyLayout>
     );
 }
