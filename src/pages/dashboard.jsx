@@ -1,17 +1,9 @@
 import { useState } from "react";
-import { Link } from "react-router";
 import { useAuth } from "@/contexts/auth-context";
-import CenterBox from "@/components/center-box";
 import { ChevronLeft } from "lucide-react";
-import FormField from "@/components/form-field";
 import BodyLayout from "@/components/body-layout";
 import { pb } from "@/lib/pb";
-import {
-    ToolBar,
-    ToolBarButton,
-    ToolBarButtonLabel,
-    ToolBarLink,
-} from "@/components/toolbar";
+import { ToolBar, ToolBarButtonLabel, ToolBarLink } from "@/components/toolbar";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import ChangePasswordForm from "@/forms/change-password-form";
 
