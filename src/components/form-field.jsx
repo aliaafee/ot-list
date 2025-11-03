@@ -26,7 +26,8 @@ export default function FormField({
                     className={twMerge(
                         "w-full rounded p-1 bg-white",
                         inputClassName,
-                        !!error && "border-red-500 bg-red-50"
+                        !!error && "border-red-500 bg-red-50",
+                        disabled && "appearance-none"
                     )}
                     disabled={disabled}
                 >
