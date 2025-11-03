@@ -50,7 +50,15 @@ function Settings({}) {
                 columns={[
                     { field: "name", label: "Name" },
                     { field: "department", label: "Department" },
-                    { field: "disabled", label: "Disabled" },
+                    {
+                        field: "disabled",
+                        label: "Status",
+                        type: "select",
+                        options: [
+                            { value: false, label: "Enabled" },
+                            { value: true, label: "Disabled" },
+                        ],
+                    },
                 ]}
             />
         </BodyLayout>

@@ -120,14 +120,37 @@ export default function EditTable({ collectionName, columns }) {
                                             className="w-full"
                                             placeholder={col.label}
                                             inputClassName="bg-transparent border-0 p-0 px-2"
-                                        />
+                                        >
+                                            {col.type === "select" &&
+                                                col.options &&
+                                                col.options.map((option) => (
+                                                    <option
+                                                        key={option.value}
+                                                        value={option.value}
+                                                    >
+                                                        {option.label}
+                                                    </option>
+                                                ))}
+                                        </FormField>
                                     ) : (
                                         <FormField
                                             disabled={true}
                                             value={row[col.field] || ""}
                                             className="w-full"
                                             inputClassName="bg-transparent border-0 p-0 px-2"
-                                        />
+                                            type={col.type || "text"}
+                                        >
+                                            {col.type === "select" &&
+                                                col.options &&
+                                                col.options.map((option) => (
+                                                    <option
+                                                        key={option.value}
+                                                        value={option.value}
+                                                    >
+                                                        {option.label}
+                                                    </option>
+                                                ))}
+                                        </FormField>
                                     )}
                                 </td>
                             ))}
@@ -185,7 +208,18 @@ export default function EditTable({ collectionName, columns }) {
                                         type={col.type || "text"}
                                         className="w-full"
                                         inputClassName="bg-transparent border-0 p-0 px-2"
-                                    />
+                                    >
+                                        {col.type === "select" &&
+                                            col.options &&
+                                            col.options.map((option) => (
+                                                <option
+                                                    key={option.value}
+                                                    value={option.value}
+                                                >
+                                                    {option.label}
+                                                </option>
+                                            ))}
+                                    </FormField>
                                 </td>
                             ))}
                             <td className="flex items-center justify-end">

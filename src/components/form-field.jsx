@@ -12,7 +12,8 @@ export default function FormField({
     errorMessage = "",
     className = "",
     inputClassName = "",
-    placeholder,
+    disabled = false,
+    placeholder = "",
 }) {
     if (type === "select") {
         return (
@@ -27,6 +28,7 @@ export default function FormField({
                         inputClassName,
                         !!error && "border-red-500 bg-red-50"
                     )}
+                    disabled={disabled}
                 >
                     {children}
                 </select>
@@ -53,6 +55,7 @@ export default function FormField({
                     value={value}
                     onChange={onChange}
                     placeholder={!!placeholder ? placeholder : label}
+                    disabled={disabled}
                     className={twMerge(
                         "w-full rounded p-1 bg-white",
                         inputClassName,
@@ -66,6 +69,7 @@ export default function FormField({
                     value={value}
                     onChange={onChange}
                     placeholder={!!placeholder ? placeholder : label}
+                    disabled={disabled}
                     className={twMerge(
                         "w-full rounded p-1 bg-white",
                         inputClassName,
