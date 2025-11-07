@@ -11,9 +11,9 @@ function TableCell({ column, value, onChange }) {
             value={value || ""}
             onChange={(e) => onChange(e)}
             type={column.type || "text"}
-            className="w-full"
+            className="w-full border-2 border-transparent focus-within:border-gray-600"
             placeholder={column.label}
-            inputClassName="bg-transparent border-0 p-0 px-2"
+            inputClassName="bg-transparent border-0 py-1 px-2 focus:outline-none focus:ring-0"
         >
             {column.type === "select" &&
                 column.options &&
@@ -31,8 +31,8 @@ function TableReadonlyCell({ column, value }) {
         <FormField
             disabled={true}
             value={value || ""}
-            className="w-full"
-            inputClassName="bg-transparent border-0 p-0 px-2"
+            className="w-full border-2 border-transparent"
+            inputClassName="bg-transparent border-0 py-1 px-2"
             type={column.type || "text"}
         >
             {column.type === "select" &&
@@ -46,7 +46,7 @@ function TableReadonlyCell({ column, value }) {
     );
 }
 
-export default function EditTable({ collectionName, columns }) {
+export default function EditTable({ collectionName, columns, afterSave }) {
     const [data, setData] = useState([]);
     const [editingRow, setEditingRow] = useState(null);
     const [newRow, setNewRow] = useState(null); // State for adding a new row
@@ -101,6 +101,7 @@ export default function EditTable({ collectionName, columns }) {
                 setEditingRow(null);
                 alert("Row updated successfully!");
             }
+            afterSave && afterSave();
         } catch (err) {
             console.error("Error saving data:", err);
             setError("Failed to save changes.");
@@ -131,7 +132,7 @@ export default function EditTable({ collectionName, columns }) {
             )}
         >
             {error && <p className="text-red-500">{error}</p>}
-            <table className="table-auto w-full border-collapse text-left rounded overflow-hidden">
+            <table className="table-auto w-full border-collapse text-left ">
                 <thead className="bg-gray-400">
                     <tr>
                         {columns.map((col) => (

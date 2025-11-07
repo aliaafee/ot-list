@@ -3,9 +3,36 @@ import BodyLayout from "@/components/body-layout";
 import { ToolBar, ToolBarButtonLabel, ToolBarLink } from "@/components/toolbar";
 import EditTable from "@/components/edit-table";
 import { OtListColours } from "@/utils/colours";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { pb } from "@/lib/pb";
 
 function Settings({}) {
+    const [departments, setDepartments] = useState([]);
+    const [operatingRooms, setOperatingRooms] = useState([]);
+
+    const fetchData = async () => {
+        const gotDepartments = await pb.collection("departments").getFullList();
+        setDepartments(
+            gotDepartments.map((dept) => ({ label: dept.name, value: dept.id }))
+        );
+
+        const gotOperatingRooms = await pb
+            .collection("operatingRooms")
+            .getFullList();
+        setOperatingRooms(
+            gotOperatingRooms.map((room) => ({
+                label: room.name,
+                value: room.id,
+            }))
+        );
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    console.log({ departments, operatingRooms });
+
     const Tools = () => (
         <ToolBar>
             <ToolBarLink title="Home" to="/">
@@ -25,6 +52,7 @@ function Settings({}) {
                     { field: "description", label: "Description" },
                     { field: "hospital", label: "Hospital" },
                 ]}
+                afterSave={fetchData}
             />
             <h2 className="my-2 text-lg">Operating Rooms</h2>
             <EditTable
@@ -49,7 +77,12 @@ function Settings({}) {
                 columns={[
                     { field: "name", label: "Name" },
                     { field: "description", label: "Description" },
-                    { field: "department", label: "Department" },
+                    {
+                        field: "department",
+                        label: "Department",
+                        type: "select",
+                        options: departments,
+                    },
                     { field: "operatingRooms", label: "OperatingRooms" },
                     {
                         field: "colour",
@@ -69,7 +102,12 @@ function Settings({}) {
                 collectionName="surgeons"
                 columns={[
                     { field: "name", label: "Name" },
-                    { field: "department", label: "Department" },
+                    {
+                        field: "department",
+                        label: "Department",
+                        type: "select",
+                        options: departments,
+                    },
                     {
                         field: "disabled",
                         label: "Status",
