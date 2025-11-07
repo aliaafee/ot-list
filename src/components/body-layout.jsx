@@ -8,7 +8,7 @@ function BodyLayout({ className, header, children }) {
                 className
             )}
         >
-            <div className="bg-gray-200 fixed top-16 lg:sticky lg:top-0 w-full">
+            <div className="bg-gray-200 fixed top-16 lg:sticky lg:top-0 w-full shadow-md">
                 <div className="mx-auto max-w-4xl">{header}</div>
             </div>
 
