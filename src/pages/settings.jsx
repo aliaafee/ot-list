@@ -2,6 +2,8 @@ import { ChevronLeft, Edit } from "lucide-react";
 import BodyLayout from "@/components/body-layout";
 import { ToolBar, ToolBarButtonLabel, ToolBarLink } from "@/components/toolbar";
 import EditTable from "@/components/edit-table";
+import { OtListColours } from "@/utils/colours";
+import { useEffect } from "react";
 
 function Settings({}) {
     const Tools = () => (
@@ -30,7 +32,15 @@ function Settings({}) {
                 columns={[
                     { field: "name", label: "Name" },
                     { field: "description", label: "Description" },
-                    { field: "disabled", label: "Disabled" },
+                    {
+                        field: "disabled",
+                        label: "Status",
+                        type: "select",
+                        options: [
+                            { value: false, label: "Enabled" },
+                            { value: true, label: "Disabled" },
+                        ],
+                    },
                 ]}
             />
             <h2 className="my-2 text-lg">Operating Lists</h2>
@@ -41,7 +51,17 @@ function Settings({}) {
                     { field: "description", label: "Description" },
                     { field: "department", label: "Department" },
                     { field: "operatingRooms", label: "OperatingRooms" },
-                    { field: "colour", label: "Colour" },
+                    {
+                        field: "colour",
+                        label: "Colour",
+                        type: "select",
+                        options: Object.keys(OtListColours).map((colour) => ({
+                            value: colour,
+                            label:
+                                colour.charAt(0).toUpperCase() +
+                                colour.slice(1),
+                        })),
+                    },
                 ]}
             />
             <h2 className="my-2 text-lg">Surgeons</h2>
