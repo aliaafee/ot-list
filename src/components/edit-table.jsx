@@ -1,9 +1,50 @@
 import { useEffect, useState } from "react";
-import { pb } from "@/lib/pb"; // Assuming PocketBase is initialized in this file
+import { pb } from "@/lib/pb";
 import FormField from "@/components/form-field";
-import { LoadingSpinner } from "@/components/loading-spinner";
 import { EditIcon, PlusIcon, Save, SaveIcon, XIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
+
+function TableCell({ column, value, onChange }) {
+    return (
+        <FormField
+            name={column.field}
+            value={value || ""}
+            onChange={(e) => onChange(e)}
+            type={column.type || "text"}
+            className="w-full"
+            placeholder={column.label}
+            inputClassName="bg-transparent border-0 p-0 px-2"
+        >
+            {column.type === "select" &&
+                column.options &&
+                column.options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                        {option.label}
+                    </option>
+                ))}
+        </FormField>
+    );
+}
+
+function TableReadonlyCell({ column, value }) {
+    return (
+        <FormField
+            disabled={true}
+            value={value || ""}
+            className="w-full"
+            inputClassName="bg-transparent border-0 p-0 px-2"
+            type={column.type || "text"}
+        >
+            {column.type === "select" &&
+                column.options &&
+                column.options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                        {option.label}
+                    </option>
+                ))}
+        </FormField>
+    );
+}
 
 export default function EditTable({ collectionName, columns }) {
     const [data, setData] = useState([]);
@@ -110,47 +151,18 @@ export default function EditTable({ collectionName, columns }) {
                             {columns.map((col) => (
                                 <td key={col.field}>
                                     {editingRow === row.id ? (
-                                        <FormField
-                                            name={col.field}
-                                            value={row[col.field] || ""}
+                                        <TableCell
+                                            column={col}
+                                            value={row[col.field]}
                                             onChange={(e) =>
                                                 handleInputChange(e, row.id)
                                             }
-                                            type={col.type || "text"}
-                                            className="w-full"
-                                            placeholder={col.label}
-                                            inputClassName="bg-transparent border-0 p-0 px-2"
-                                        >
-                                            {col.type === "select" &&
-                                                col.options &&
-                                                col.options.map((option) => (
-                                                    <option
-                                                        key={option.value}
-                                                        value={option.value}
-                                                    >
-                                                        {option.label}
-                                                    </option>
-                                                ))}
-                                        </FormField>
+                                        />
                                     ) : (
-                                        <FormField
-                                            disabled={true}
-                                            value={row[col.field] || ""}
-                                            className="w-full"
-                                            inputClassName="bg-transparent border-0 p-0 px-2"
-                                            type={col.type || "text"}
-                                        >
-                                            {col.type === "select" &&
-                                                col.options &&
-                                                col.options.map((option) => (
-                                                    <option
-                                                        key={option.value}
-                                                        value={option.value}
-                                                    >
-                                                        {option.label}
-                                                    </option>
-                                                ))}
-                                        </FormField>
+                                        <TableReadonlyCell
+                                            column={col}
+                                            value={row[col.field]}
+                                        />
                                     )}
                                 </td>
                             ))}
@@ -198,28 +210,13 @@ export default function EditTable({ collectionName, columns }) {
                         <tr className="odd:bg-gray-200 even:bg-gray-300">
                             {columns.map((col) => (
                                 <td key={col.field}>
-                                    <FormField
-                                        name={col.field}
-                                        placeholder={col.label}
-                                        value={newRow[col.field] || ""}
+                                    <TableCell
+                                        column={col}
+                                        value={newRow[col.field]}
                                         onChange={(e) =>
                                             handleInputChange(e, "new")
                                         }
-                                        type={col.type || "text"}
-                                        className="w-full"
-                                        inputClassName="bg-transparent border-0 p-0 px-2"
-                                    >
-                                        {col.type === "select" &&
-                                            col.options &&
-                                            col.options.map((option) => (
-                                                <option
-                                                    key={option.value}
-                                                    value={option.value}
-                                                >
-                                                    {option.label}
-                                                </option>
-                                            ))}
-                                    </FormField>
+                                    />
                                 </td>
                             ))}
                             <td className="flex items-center justify-end">
