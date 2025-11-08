@@ -6,43 +6,47 @@ import { twMerge } from "tailwind-merge";
 
 function TableCell({ column, value, onChange }) {
     return (
-        <FormField
-            name={column.field}
-            value={value || ""}
-            onChange={(e) => onChange(e)}
-            type={column.type || "text"}
-            className="w-full border-2 border-transparent focus-within:border-gray-600"
-            placeholder={column.label}
-            inputClassName="bg-transparent border-0 py-1 px-2 focus:outline-none focus:ring-0"
-        >
-            {column.type === "select" &&
-                column.options &&
-                column.options.map((option) => (
-                    <option key={option.value} value={option.value}>
-                        {option.label}
-                    </option>
-                ))}
-        </FormField>
+        <td className="focus-within:outline-2 focus-within:bg-white outline-gray-600">
+            <FormField
+                name={column.field}
+                value={value || ""}
+                onChange={(e) => onChange(e)}
+                type={column.type || "text"}
+                className="w-full  "
+                placeholder={column.label}
+                inputClassName="bg-transparent border-0 py-1 px-2 focus:outline-none focus:ring-0"
+            >
+                {column.type === "select" &&
+                    column.options &&
+                    column.options.map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+            </FormField>
+        </td>
     );
 }
 
 function TableReadonlyCell({ column, value }) {
     return (
-        <FormField
-            disabled={true}
-            value={value || ""}
-            className="w-full border-2 border-transparent"
-            inputClassName="bg-transparent border-0 py-1 px-2"
-            type={column.type || "text"}
-        >
-            {column.type === "select" &&
-                column.options &&
-                column.options.map((option) => (
-                    <option key={option.value} value={option.value}>
-                        {option.label}
-                    </option>
-                ))}
-        </FormField>
+        <td>
+            <FormField
+                disabled={true}
+                value={value || ""}
+                className="w-full"
+                inputClassName="bg-transparent border-0 py-1 px-2"
+                type={column.type || "text"}
+            >
+                {column.type === "select" &&
+                    column.options &&
+                    column.options.map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+            </FormField>
+        </td>
     );
 }
 
@@ -132,7 +136,7 @@ export default function EditTable({ collectionName, columns, afterSave }) {
             )}
         >
             {error && <p className="text-red-500">{error}</p>}
-            <table className="table-auto w-full border-collapse text-left ">
+            <table className="table-auto w-full text-left ">
                 <thead className="bg-gray-400">
                     <tr>
                         {columns.map((col) => (
@@ -149,24 +153,24 @@ export default function EditTable({ collectionName, columns, afterSave }) {
                             key={row.id}
                             className="odd:bg-gray-200 even:bg-gray-300"
                         >
-                            {columns.map((col) => (
-                                <td key={col.field}>
-                                    {editingRow === row.id ? (
-                                        <TableCell
-                                            column={col}
-                                            value={row[col.field]}
-                                            onChange={(e) =>
-                                                handleInputChange(e, row.id)
-                                            }
-                                        />
-                                    ) : (
-                                        <TableReadonlyCell
-                                            column={col}
-                                            value={row[col.field]}
-                                        />
-                                    )}
-                                </td>
-                            ))}
+                            {columns.map((col) =>
+                                editingRow === row.id ? (
+                                    <TableCell
+                                        key={col.field}
+                                        column={col}
+                                        value={row[col.field]}
+                                        onChange={(e) =>
+                                            handleInputChange(e, row.id)
+                                        }
+                                    />
+                                ) : (
+                                    <TableReadonlyCell
+                                        key={col.field}
+                                        column={col}
+                                        value={row[col.field]}
+                                    />
+                                )
+                            )}
                             <td className="flex items-center justify-end">
                                 {editingRow === row.id ? (
                                     <>
@@ -210,15 +214,14 @@ export default function EditTable({ collectionName, columns, afterSave }) {
                     {newRow && (
                         <tr className="odd:bg-gray-200 even:bg-gray-300">
                             {columns.map((col) => (
-                                <td key={col.field}>
-                                    <TableCell
-                                        column={col}
-                                        value={newRow[col.field]}
-                                        onChange={(e) =>
-                                            handleInputChange(e, "new")
-                                        }
-                                    />
-                                </td>
+                                <TableCell
+                                    key={col.field}
+                                    column={col}
+                                    value={newRow[col.field]}
+                                    onChange={(e) =>
+                                        handleInputChange(e, "new")
+                                    }
+                                />
                             ))}
                             <td className="flex items-center justify-end">
                                 <button
