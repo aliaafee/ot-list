@@ -31,8 +31,6 @@ function Settings({}) {
         fetchData();
     }, []);
 
-    console.log({ departments, operatingRooms });
-
     const Tools = () => (
         <ToolBar>
             <ToolBarLink title="Home" to="/">
@@ -83,7 +81,12 @@ function Settings({}) {
                         type: "select",
                         options: departments,
                     },
-                    { field: "operatingRooms", label: "OperatingRooms" },
+                    {
+                        field: "operatingRooms",
+                        label: "OperatingRooms",
+                        type: "multi-select",
+                        options: operatingRooms,
+                    },
                     {
                         field: "colour",
                         label: "Colour",
