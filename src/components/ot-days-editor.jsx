@@ -25,26 +25,55 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [otLists, setOtLists] = useState([]);
+    const [selectedDepartmentId, setSelectedDepartmentId] = useState(null);
+    const [departments, setDepartments] = useState([]);
     const [selectedOtList, setSelectedOtList] = useState(null);
     const [showAll, setShowAll] = useState(false);
     const [otDaysList, dispatchOtDaysList] = useReducer(OtDaysReducer, null);
     const [showAddDates, setShowAddDates] = useState(false);
 
     useEffect(() => {
-        const collectionName = showAll ? "otDays" : "upcomingOtDays";
+        (async () => {
+            try {
+                const depts = await pb.collection("departments").getFullList();
+                setDepartments(depts);
+                if (depts.length > 0) {
+                    setSelectedDepartmentId(depts[0].id);
+                }
+            } catch (e) {
+                console.log(e);
+            }
+        })();
+    }, []);
+
+    useEffect(() => {
+        if (!selectedDepartmentId) {
+            setOtLists([]);
+            dispatchOtDaysList({ type: "SET_LIST", payload: [] });
+            return;
+        }
 
         (async () => {
+            console.log("fetch otDays for department", selectedDepartmentId);
             setLoading(true);
             dispatchOtDaysList({ type: "SET_LIST", payload: [] });
             try {
-                const lists = await pb.collection("otLists").getFullList();
+                const lists = await pb.collection("otLists").getFullList({
+                    filter: pb.filter("department = {:departmentId}", {
+                        departmentId: selectedDepartmentId,
+                    }),
+                });
                 setOtLists(lists);
+                setSelectedOtList(null);
                 console.log("otLists", lists);
 
                 const collectionName = showAll ? "otDays" : "upcomingOtDays";
 
                 const days = await pb.collection(collectionName).getFullList({
                     ...otDaysCollectionOptions,
+                    filter: pb.filter("otList.department = {:departmentId}", {
+                        departmentId: selectedDepartmentId,
+                    }),
                 });
                 dispatchOtDaysList({ type: "SET_LIST", payload: days });
                 console.log("otDays", days);
@@ -99,7 +128,7 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
             console.log("unsubscribe", "otDays");
             pb.collection("otDays").unsubscribe("*");
         };
-    }, [showAll]);
+    }, [showAll, selectedDepartmentId]);
 
     if (error) {
         return <div className={twMerge("bg-gray-200", className)}>{error}</div>;
@@ -112,6 +141,24 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                 className
             )}
         >
+            <div className="flex p-1 space-x-2 items-center ">
+                <select
+                    onChange={(e) => {
+                        const deptId = e.target.value || null;
+                        setSelectedDepartmentId(deptId);
+                        setSelectedOtList(null);
+                    }}
+                    value={selectedDepartmentId || ""}
+                    className="grow p-1"
+                >
+                    <option value="">Select Department</option>
+                    {departments.map((dept) => (
+                        <option key={dept.id} value={dept.id}>
+                            {dept.name}
+                        </option>
+                    ))}
+                </select>
+            </div>
             <ToolBar className="sticky top-0 bg-gray-200 grid grid-cols-1">
                 {
                     <ToolBarPill
