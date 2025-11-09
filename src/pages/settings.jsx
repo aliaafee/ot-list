@@ -80,7 +80,10 @@ function Settings({}) {
                         field: "department",
                         label: "Department",
                         type: "select",
-                        options: departments,
+                        options: [
+                            { value: "", label: "select" },
+                            ...departments,
+                        ],
                     },
                     {
                         field: "operatingRooms",
@@ -92,12 +95,15 @@ function Settings({}) {
                         field: "colour",
                         label: "Colour",
                         type: "select",
-                        options: Object.keys(OtListColours).map((colour) => ({
-                            value: colour,
-                            label:
-                                colour.charAt(0).toUpperCase() +
-                                colour.slice(1),
-                        })),
+                        options: [
+                            { value: "", label: "select" },
+                            ...Object.keys(OtListColours).map((colour) => ({
+                                value: colour,
+                                label:
+                                    colour.charAt(0).toUpperCase() +
+                                    colour.slice(1),
+                            })),
+                        ],
                     },
                 ]}
             />
@@ -110,7 +116,10 @@ function Settings({}) {
                         field: "department",
                         label: "Department",
                         type: "select",
-                        options: departments,
+                        options: [
+                            { value: "", label: "select" },
+                            ...departments,
+                        ],
                     },
                     {
                         field: "disabled",
