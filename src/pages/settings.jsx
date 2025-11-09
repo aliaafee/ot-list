@@ -68,6 +68,7 @@ function Settings({}) {
                         ],
                     },
                 ]}
+                afterSave={fetchData}
             />
             <h2 className="my-2 text-lg">Operating Lists</h2>
             <EditTable

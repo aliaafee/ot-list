@@ -51,13 +51,13 @@ export default function EditTable({ collectionName, columns, afterSave }) {
                     .create(newRow);
                 setData((prevData) => [...prevData, createdRow]);
                 setNewRow(null);
-                alert("New row added successfully!");
+                console.log("New row added successfully!");
             } else {
                 // Save existing row to the database
                 const updatedRow = data.find((row) => row.id === id);
                 await pb.collection(collectionName).update(id, updatedRow);
                 setEditingRow(null);
-                alert("Row updated successfully!");
+                console.log("Row updated successfully!");
             }
             afterSave && afterSave();
         } catch (err) {
