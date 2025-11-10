@@ -117,10 +117,14 @@ function OtListPrint({}) {
 
     return (
         <div className="w-full inline-block">
-            <div className="text-center font-bold">Neurosurgery OT List</div>
+            <div className="text-center font-bold"></div>
+            <div className="text-center font-bold">
+                {otDay?.expand?.otList?.expand?.department?.description} - OT
+                List
+            </div>
             <div className="text-center">
                 {dayjs(otDay?.date).format("dddd, DD MMM YYYY")} -{" "}
-                {otDay?.expand.otList.name}
+                {otDay?.expand?.otList?.description}
                 {!!otDay?.disabled && (
                     <span className="italic ml-2">
                         - {otDay.remarks || "No OT for this date"}
