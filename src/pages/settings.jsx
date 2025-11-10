@@ -5,10 +5,15 @@ import EditTable from "@/components/edit-table";
 import { OtListColours } from "@/utils/colours";
 import { useEffect, useState } from "react";
 import { pb } from "@/lib/pb";
+import { useAuth } from "@/contexts/auth-context";
 
 function Settings({}) {
     const [departments, setDepartments] = useState([]);
     const [operatingRooms, setOperatingRooms] = useState([]);
+
+    const { user } = useAuth();
+
+    console.log("User record in Settings:", user);
 
     const fetchData = async () => {
         const gotDepartments = await pb.collection("departments").getFullList();
@@ -51,6 +56,7 @@ function Settings({}) {
                     { field: "hospital", label: "Hospital" },
                 ]}
                 afterSave={fetchData}
+                readOnly={!(user?.role === "admin")}
             />
             <h2 className="my-2 text-lg">Operating Rooms</h2>
             <EditTable
@@ -69,6 +75,7 @@ function Settings({}) {
                     },
                 ]}
                 afterSave={fetchData}
+                readOnly={!(user?.role === "admin")}
             />
             <h2 className="my-2 text-lg">Operating Lists</h2>
             <EditTable

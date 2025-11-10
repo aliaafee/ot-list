@@ -4,12 +4,18 @@ import TableCell from "./edit-table-cell";
 import { EditIcon, PlusIcon, Save, SaveIcon, XIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
-export default function EditTable({ collectionName, columns, afterSave }) {
+export default function EditTable({
+    collectionName,
+    columns,
+    afterSave,
+    readOnly,
+}) {
     const [data, setData] = useState([]);
     const [editingRow, setEditingRow] = useState(null);
     const [newRow, setNewRow] = useState(null); // State for adding a new row
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [errorData, setErrorData] = useState({});
 
     // Fetch data from the PocketBase collection
     const fetchData = async () => {
@@ -43,6 +49,11 @@ export default function EditTable({ collectionName, columns, afterSave }) {
     const handleSave = async (id) => {
         setLoading(true);
         setError("");
+        setErrorData((prev) => ({
+            ...prev,
+            [id]: {},
+        }));
+
         try {
             if (id === "new") {
                 // Save new row to the database
@@ -61,12 +72,20 @@ export default function EditTable({ collectionName, columns, afterSave }) {
             }
             afterSave && afterSave();
         } catch (err) {
-            console.error("Error saving data:", err);
+            console.error("Error saving data:", err.response);
+            if (err.response?.data) {
+                setErrorData((prev) => ({
+                    ...prev,
+                    [id]: err.response?.data,
+                }));
+            }
             setError("Failed to save changes.");
         } finally {
             setLoading(false);
         }
     };
+
+    console.log("Error Data:", errorData);
 
     // Cancel editing or adding
     const handleCancel = (id) => {
@@ -98,7 +117,7 @@ export default function EditTable({ collectionName, columns, afterSave }) {
                                 {col.label}
                             </th>
                         ))}
-                        <th className="w-14"></th>
+                        {!!!readOnly && <th className="w-14"></th>}
                     </tr>
                 </thead>
                 <tbody>
@@ -116,46 +135,52 @@ export default function EditTable({ collectionName, columns, afterSave }) {
                                         handleInputChange(e, row.id)
                                     }
                                     readOnly={editingRow !== row.id}
+                                    error={errorData[row.id]?.[col.field]}
                                 />
                             ))}
-                            <td className="flex items-center justify-end">
-                                {editingRow === row.id ? (
-                                    <>
-                                        <button
-                                            className="m-0.5 p-1.5 rounded-full hover:bg-gray-400 cursor-pointer"
-                                            onClick={() => handleSave(row.id)}
-                                            disabled={loading}
-                                        >
-                                            <SaveIcon size={16} />
-                                        </button>
-                                        <button
-                                            className="m-0.5 p-1.5 rounded-full hover:bg-gray-400 cursor-pointer"
-                                            onClick={handleCancel}
-                                            disabled={loading}
-                                        >
-                                            <XIcon size={16} />
-                                        </button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <button
-                                            className="p-2 hover:bg-gray-400 cursor-pointer invisible"
-                                            disabled={true}
-                                        >
-                                            <EditIcon size={16} />
-                                        </button>
-                                        <button
-                                            className="m-0.5 p-1.5 rounded-full hover:bg-gray-400 cursor-pointer"
-                                            onClick={() =>
-                                                setEditingRow(row.id)
-                                            }
-                                            disabled={loading}
-                                        >
-                                            <EditIcon size={16} />
-                                        </button>
-                                    </>
-                                )}
-                            </td>
+                            {!!!readOnly && (
+                                <td className="flex items-center justify-end">
+                                    {editingRow === row.id ? (
+                                        <>
+                                            <button
+                                                className="m-0.5 p-1.5 rounded-full hover:bg-gray-400 cursor-pointer"
+                                                onClick={() =>
+                                                    handleSave(row.id)
+                                                }
+                                                disabled={loading}
+                                            >
+                                                <SaveIcon size={16} />
+                                            </button>
+                                            <button
+                                                className="m-0.5 p-1.5 rounded-full hover:bg-gray-400 cursor-pointer"
+                                                onClick={handleCancel}
+                                                disabled={loading}
+                                            >
+                                                <XIcon size={16} />
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button
+                                                className="p-2 hover:bg-gray-400 cursor-pointer invisible"
+                                                disabled={true}
+                                            >
+                                                <EditIcon size={16} />
+                                            </button>
+                                            <button
+                                                className="m-0.5 p-1.5 rounded-full hover:bg-gray-400 cursor-pointer"
+                                                onClick={() => {
+                                                    setEditingRow(row.id);
+                                                    setErrorData({});
+                                                }}
+                                                disabled={loading}
+                                            >
+                                                <EditIcon size={16} />
+                                            </button>
+                                        </>
+                                    )}
+                                </td>
+                            )}
                         </tr>
                     ))}
                     {newRow && (
@@ -168,6 +193,7 @@ export default function EditTable({ collectionName, columns, afterSave }) {
                                     onChange={(e) =>
                                         handleInputChange(e, "new")
                                     }
+                                    error={errorData["new"]?.[col.field]}
                                 />
                             ))}
                             <td className="flex items-center justify-end">
@@ -188,7 +214,7 @@ export default function EditTable({ collectionName, columns, afterSave }) {
                             </td>
                         </tr>
                     )}
-                    {!newRow && (
+                    {!!!readOnly && !newRow && (
                         <tr className="odd:bg-gray-200 even:bg-gray-300">
                             <td colSpan={columns.length}></td>
                             <td className="flex items-center justify-end">
@@ -200,7 +226,10 @@ export default function EditTable({ collectionName, columns, afterSave }) {
                                 </button>
                                 <button
                                     className="m-0.5 p-1.5 rounded-full hover:bg-gray-400 cursor-pointer"
-                                    onClick={() => setNewRow({})}
+                                    onClick={() => {
+                                        setNewRow({});
+                                        setErrorData({});
+                                    }}
                                     disabled={loading}
                                 >
                                     <PlusIcon size={16} />
