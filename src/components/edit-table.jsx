@@ -85,8 +85,6 @@ export default function EditTable({
         }
     };
 
-    console.log("Error Data:", errorData);
-
     // Cancel editing or adding
     const handleCancel = (id) => {
         if (id === "new") {
