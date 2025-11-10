@@ -46,7 +46,7 @@ function ProcedureItem({
         return (
             <div
                 className={twMerge(
-                    "transition-colors flex-auto p-2 grid grid-cols-8 lg:grid-cols-12 cursor-pointer gap-1 rounded-lg md:rounded-l-none",
+                    "flex-auto p-2 grid grid-cols-8 lg:grid-cols-12 cursor-pointer gap-1 rounded-lg md:rounded-l-none",
                     isUpdating(procedure) ? "animate-pulse" : "",
                     !!procedure.removed && "line-through",
                     !!recordError && "bg-red-200",

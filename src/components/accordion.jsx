@@ -17,11 +17,15 @@ const Accordion = ({ items }) => {
                         className="text-lg flex gap-2 items-center cursor-pointer"
                         onClick={() => handleClick(index)}
                     >
-                        {activeIndex === index ? (
-                            <ChevronDown size={16} />
-                        ) : (
-                            <ChevronRight size={16} />
-                        )}
+                        <ChevronRight
+                            size={16}
+                            className={twMerge(
+                                "transition-all",
+                                activeIndex === index
+                                    ? "rotate-90 "
+                                    : "rotate-0"
+                            )}
+                        />
                         {item.title}
                     </div>
                     {activeIndex === index && item.content}
