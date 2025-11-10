@@ -11,7 +11,9 @@ node_modules
 dist
 dist-ssr
 *.local
-pb
+pb/pb_data
+pb/pocketbase.exe
+pb/pocketbase
 
 # Editor directories and files
 .vscode/*
