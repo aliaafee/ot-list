@@ -5,15 +5,18 @@ import "./index.css";
 import App from "@/app.jsx";
 import { AuthProvider } from "@/contexts/auth-context";
 import { ProcedureListProvider } from "./contexts/procedure-list-context";
+import ErrorBoundary from "./components/error-boundary";
 
 createRoot(document.getElementById("root")).render(
     // <StrictMode>
-    <BrowserRouter>
-        <AuthProvider>
-            <ProcedureListProvider>
-                <App />
-            </ProcedureListProvider>
-        </AuthProvider>
-    </BrowserRouter>
-    // s</StrictMode>
+    <ErrorBoundary>
+        <BrowserRouter>
+            <AuthProvider>
+                <ProcedureListProvider>
+                    <App />
+                </ProcedureListProvider>
+            </AuthProvider>
+        </BrowserRouter>
+    </ErrorBoundary>
+    // </StrictMode>
 );

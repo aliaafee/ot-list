@@ -21,22 +21,22 @@ function ProcedureEditor({
     const { otDay, updateProcedureAndPatient } = useProcedureList();
 
     const [updatedProcedure, setUpdatedProcedure] = useState({
-        nid: procedure.expand.patient.nid,
-        hospitalId: procedure.expand.patient.hospitalId,
-        name: procedure.expand.patient.name,
-        age: age(procedure.expand.patient.dateOfBirth),
-        sex: procedure.expand.patient.sex,
-        phone: procedure.expand.patient.phone,
-        diagnosis: procedure.diagnosis,
-        comorbids: procedure.comorbids,
-        procedure: procedure.procedure,
-        addedDate: dayjs(procedure.addedDate).format("YYYY-MM-DD"),
-        addedBy: procedure.addedBy,
-        remarks: procedure.remarks,
-        duration: procedure.duration,
-        bed: procedure.bed,
-        anesthesia: procedure.anesthesia,
-        requirements: procedure.requirements,
+        nid: procedure?.expand?.patient?.nid || "",
+        hospitalId: procedure?.expand?.patient?.hospitalId || "",
+        name: procedure?.expand?.patient?.name || "",
+        age: age(procedure?.expand?.patient?.dateOfBirth) || "",
+        sex: procedure?.expand?.patient?.sex || "",
+        phone: procedure?.expand?.patient?.phone || "",
+        diagnosis: procedure?.diagnosis || "",
+        comorbids: procedure?.comorbids || "",
+        procedure: procedure?.procedure || "",
+        addedDate: dayjs(procedure?.addedDate).format("YYYY-MM-DD") || "",
+        addedBy: procedure?.addedBy || "",
+        remarks: procedure?.remarks || "",
+        duration: procedure?.duration || "",
+        bed: procedure?.bed || "",
+        anesthesia: procedure?.anesthesia || "",
+        requirements: procedure?.requirements || "",
     });
 
     const handleUpdateProcedure = () => {
@@ -106,8 +106,8 @@ function ProcedureEditor({
                     value={updatedProcedure}
                     onChange={(value) => setUpdatedProcedure(value)}
                     surgeons={
-                        otDay.expand.otList.expand.department.expand
-                            .activeSurgeons_via_department
+                        otDay?.expand?.otList?.expand?.department?.expand
+                            ?.activeSurgeons_via_department
                     }
                 />
                 <div className="sm:flex sm:flex-row-reverse col-span-full mt-3">
