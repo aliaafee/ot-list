@@ -17,6 +17,7 @@ function ProcedureEditor({
     onDiscard,
     onClose,
     onAfterSave,
+    error,
 }) {
     const { otDay, updateProcedureAndPatient } = useProcedureList();
 
@@ -96,6 +97,11 @@ function ProcedureEditor({
                     <XIcon className="" width={16} height={16} />
                 </ToolBarButton>
             </ToolBar>
+            {error?.type === "update" && (
+                <div className="bg-red-400/20 rounded-md m-2 p-2 text-sm">
+                    Update Failed
+                </div>
+            )}
             {procedure.removed && (
                 <div className="bg-red-400/20 rounded-md m-2 p-2 text-sm">
                     Removed
@@ -109,6 +115,7 @@ function ProcedureEditor({
                         otDay?.expand?.otList?.expand?.department?.expand
                             ?.activeSurgeons_via_department
                     }
+                    errorFields={error?.response?.data || {}}
                 />
                 <div className="sm:flex sm:flex-row-reverse col-span-full mt-3">
                     <button

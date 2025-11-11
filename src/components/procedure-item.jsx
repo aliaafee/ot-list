@@ -19,6 +19,7 @@ import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import ProcedureEditor from "./procedure-editor";
 import ModalWindow from "@/modals/modal-window";
+import { JSONTree } from "react-json-tree";
 
 function ProcedureItem({
     procedure,
@@ -33,8 +34,10 @@ function ProcedureItem({
         proceduresList,
         setSelected,
         isUpdating,
+        getUpdateError,
         isBusy,
         getProcedureError,
+        discardProcedureUpdate,
         otDay,
     } = useProcedureList();
 
@@ -49,7 +52,6 @@ function ProcedureItem({
                     "flex-auto p-2 grid grid-cols-8 lg:grid-cols-12 cursor-pointer gap-1 rounded-lg md:rounded-l-none",
                     isUpdating(procedure) ? "animate-pulse" : "",
                     !!procedure.removed && "line-through",
-                    !!recordError && "bg-red-200",
                     className
                 )}
                 onClick={() => setSelected(procedure.id)}
@@ -60,19 +62,19 @@ function ProcedureItem({
                 />
                 <LabelValue
                     // label="NID"
-                    value={procedure.expand.patient.nid}
+                    value={procedure?.expand?.patient?.nid}
                     className="col-span-2 lg:col-span-1"
                 />
                 <LabelValue
                     className="col-span-2 lg:col-span-3"
                     // label="Name"
-                    value={procedure.expand.patient.name}
+                    value={procedure?.expand?.patient?.name}
                 />
                 <LabelValue
                     // label="Age/Sex"
                     value={`${age(
-                        procedure.expand.patient.dateOfBirth
-                    )} / ${procedure.expand.patient.sex[0].toUpperCase()}`}
+                        procedure?.expand?.patient?.dateOfBirth
+                    )} / ${procedure?.expand?.patient?.sex[0].toUpperCase()}`}
                     className="col-span-1 hidden lg:inline"
                 />
                 <LabelValue
@@ -202,29 +204,29 @@ function ProcedureItem({
                     {/* <LabelValue label="ID" value={row.id} /> */}
                     <LabelValue
                         label="NID"
-                        value={procedure.expand.patient.nid}
+                        value={procedure?.expand?.patient?.nid}
                     />
                     <LabelValue
                         label="Hospital ID"
-                        value={procedure.expand.patient.hospitalId}
+                        value={procedure?.expand?.patient?.hospitalId}
                         className="md:col-span-2"
                     />
                     <LabelValue
                         label="Phone"
-                        value={procedure.expand.patient.phone}
+                        value={procedure?.expand?.patient?.phone}
                     />
                     <LabelValue
                         className="md:col-span-2"
                         label="Name"
-                        value={procedure.expand.patient.name}
+                        value={procedure?.expand?.patient?.name}
                     />
                     <LabelValue
                         label="Age"
-                        value={age(procedure.expand.patient.dateOfBirth)}
+                        value={age(procedure?.expand?.patient?.dateOfBirth)}
                     />
                     <LabelValue
                         label="Sex"
-                        value={procedure.expand.patient.sex}
+                        value={procedure?.expand?.patient?.sex}
                     />
 
                     <LabelValue
@@ -255,7 +257,7 @@ function ProcedureItem({
                     <LabelValue
                         className="md:col-span-1"
                         label="Added By"
-                        value={procedure.expand.addedBy.name}
+                        value={procedure?.expand?.addedBy?.name}
                     />
                     <LabelValue
                         className="md:col-span-1"
@@ -287,10 +289,10 @@ function ProcedureItem({
                         }}
                     >
                         <p className="mb-2">
-                            {procedure.expand.patient.nid}{" "}
-                            {procedure.expand.patient.name} planned for{" "}
+                            {procedure?.expand?.patient?.nid}{" "}
+                            {procedure?.expand?.patient?.name} planned for{" "}
                             {procedure.procedure} on{" "}
-                            {dayjs(procedure.expand.procedureDay.date).format(
+                            {dayjs(procedure?.expand?.procedureDay.date).format(
                                 "DD MMM YYYY"
                             )}
                         </p>
@@ -300,6 +302,29 @@ function ProcedureItem({
             </div>
         );
     };
+
+    if (recordError?.type === "update") {
+        return (
+            <ProcedureEditor
+                procedure={procedure}
+                className={className}
+                onDiscard={() => {
+                    setEditing(false);
+                    discardProcedureUpdate(procedure.id);
+                }}
+                onClose={() => {
+                    setEditing(false);
+                    if (proceduresList.selected === procedure.id) {
+                        setSelected(null);
+                    }
+                }}
+                onAfterSave={() => {
+                    setEditing(false);
+                }}
+                error={recordError}
+            />
+        );
+    }
 
     if (editing) {
         return (

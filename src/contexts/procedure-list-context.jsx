@@ -154,8 +154,30 @@ export function ProcedureListProvider({ children }) {
         return proceduresList.updating.includes(procedure.id);
     };
 
+    // const getUpdateError = (procedure) => {
+    //     return proceduresList.update_failed.some((p) => p.id === procedure.id);
+    // };
+
     const getProcedureError = (procedure) => {
         return proceduresList.update_failed.find((p) => p.id === procedure.id);
+    };
+
+    const discardProcedureUpdate = (procedureId) => {
+        if (!proceduresList.update_failed.some((p) => p.id === procedureId)) {
+            return;
+        }
+        console.log("Discarding procedure update for ", procedureId);
+        dispatchData({
+            type: "UPDATE_PROCEDURE",
+            payload: proceduresList.update_failed.find(
+                (p) => p.id === procedureId
+            ).original,
+        });
+
+        dispatchData({
+            type: "CLEAR_FAILED",
+            payload: [procedureId],
+        });
     };
 
     const setSelected = (procedureId) => {
@@ -229,6 +251,7 @@ export function ProcedureListProvider({ children }) {
                 payload: [
                     {
                         id: placeholderProcedure.id,
+                        type: "create",
                         message: `Failed to add procedure. ${e?.message} ${e?.originalError?.message}`,
                         data: {
                             patient: patient,
@@ -248,6 +271,8 @@ export function ProcedureListProvider({ children }) {
     };
 
     const updateProcedures = async (newProcedures, updatedOtDay = otDay) => {
+        newProcedures.forEach((p) => discardProcedureUpdate(p.id));
+
         newProcedures
             .filter(
                 (
@@ -259,9 +284,14 @@ export function ProcedureListProvider({ children }) {
             )
             .map((newProcedure) => {
                 // Make the placeholders
-                const original = proceduresList.procedures.find(
-                    (p) => p.id === newProcedure.id
-                );
+                const original =
+                    getProcedureError({ id: newProcedure.id })?.original ||
+                    proceduresList.procedures.find(
+                        (p) => p.id === newProcedure.id
+                    );
+
+                discardProcedureUpdate(procedureId);
+
                 return {
                     ...original,
                     ...newProcedure,
@@ -270,6 +300,7 @@ export function ProcedureListProvider({ children }) {
                         ...original.expand,
                         procedureDay: updatedOtDay,
                     },
+                    original: original,
                 };
             })
             .forEach(
@@ -332,7 +363,9 @@ export function ProcedureListProvider({ children }) {
                         payload: [
                             {
                                 id: newProcedure.id,
+                                type: "update",
                                 message: `Failed to update procedure (i). ${e?.message} ${e?.originalError?.message}`,
+                                original: newProcedure.original,
                                 data: newProcedure,
                                 response: e?.response,
                                 error: e,
@@ -346,7 +379,9 @@ export function ProcedureListProvider({ children }) {
                 type: "ADD_FAILED",
                 payload: newProcedures.map((p) => ({
                     id: p.id,
+                    type: "update",
                     message: `Failed to update procedure. ${e?.message} ${e?.originalError?.message}`,
+                    original: p.original,
                     data: p,
                     response: e?.response,
                     error: e,
@@ -367,9 +402,11 @@ export function ProcedureListProvider({ children }) {
         procedureData,
         otDay
     ) => {
-        const original = proceduresList.procedures.find(
-            (p) => p.id === procedureId
-        );
+        const original =
+            getProcedureError({ id: procedureId })?.original ||
+            proceduresList.procedures.find((p) => p.id === procedureId);
+
+        discardProcedureUpdate(procedureId);
 
         const placeholderProcedure = {
             ...original,
@@ -427,7 +464,9 @@ export function ProcedureListProvider({ children }) {
                 payload: [
                     {
                         id: placeholderProcedure.id,
+                        type: "update",
                         message: `Failed to update procedure. ${e?.message} ${e?.originalError?.message}`,
+                        original: original,
                         data: {
                             patientId: patientId,
                             patientData: patientData,
@@ -478,6 +517,7 @@ export function ProcedureListProvider({ children }) {
             isUpdating,
             isBusy,
             getProcedureError,
+            discardProcedureUpdate,
             loading,
             error,
         };
@@ -492,14 +532,14 @@ export function ProcedureListProvider({ children }) {
         );
     }
 
-    if (proceduresList?.update_failed.length > 0) {
-        return (
-            <FatalErrorModal
-                message={`Error while adding/updating procedures. Please reload page.`}
-                data={proceduresList?.update_failed}
-            />
-        );
-    }
+    // if (proceduresList?.update_failed.length > 0) {
+    //     return (
+    //         <FatalErrorModal
+    //             message={`Error while adding/updating procedures. Please reload page.`}
+    //             data={proceduresList?.update_failed}
+    //         />
+    //     );
+    // }
 
     return (
         <ProcedureListContext.Provider value={value}>

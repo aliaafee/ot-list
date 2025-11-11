@@ -21,7 +21,14 @@ export const initialProcedureValue = {
     requirements: "",
 };
 
-export function ProcedureForm({ onChange, value, surgeons = [] }) {
+export function ProcedureForm({
+    onChange,
+    value,
+    surgeons = [],
+    errorFields = [],
+}) {
+    console.log("ProcedureForm errorFields:", errorFields);
+
     const requiredFields = [
         "nid",
         "hospitalId",
@@ -32,22 +39,22 @@ export function ProcedureForm({ onChange, value, surgeons = [] }) {
         "addedDate",
         "addedBy",
     ];
-    const [errorFields, setErrorFields] = useState([]);
+    // const [errorFields, setErrorFields] = useState([]);
 
     const handleChange = (e) => {
         const { name, value: newValue } = e.target;
 
-        if (requiredFields.includes(name)) {
-            if (newValue === "") {
-                if (errorFields.indexOf(name) === -1) {
-                    setErrorFields([...errorFields, name]);
-                }
-            } else {
-                setErrorFields(
-                    errorFields.filter((fieldName) => fieldName !== name)
-                );
-            }
-        }
+        // if (requiredFields.includes(name)) {
+        //     if (newValue === "") {
+        //         if (errorFields.indexOf(name) === -1) {
+        //             setErrorFields([...errorFields, name]);
+        //         }
+        //     } else {
+        //         setErrorFields(
+        //             errorFields.filter((fieldName) => fieldName !== name)
+        //         );
+        //     }
+        // }
 
         onChange({
             ...value,
@@ -63,7 +70,7 @@ export function ProcedureForm({ onChange, value, surgeons = [] }) {
                 value={value.nid}
                 onChange={handleChange}
                 className="md:col-span-1"
-                error={errorFields.includes("nid")}
+                error={"nid" in errorFields}
             />
             <FormField
                 label="Hospital ID"
@@ -71,7 +78,7 @@ export function ProcedureForm({ onChange, value, surgeons = [] }) {
                 value={value.hospitalId}
                 onChange={handleChange}
                 className="md:col-span-2"
-                error={errorFields.includes("hospital_id")}
+                error={"nid" in errorFields}
             />
             <FormField
                 label="Phone"
@@ -79,7 +86,7 @@ export function ProcedureForm({ onChange, value, surgeons = [] }) {
                 value={value.phone}
                 onChange={handleChange}
                 className="md:col-span-1"
-                error={errorFields.includes("phone")}
+                error={"nid" in errorFields}
             />
             <FormField
                 label="Name"
@@ -87,7 +94,7 @@ export function ProcedureForm({ onChange, value, surgeons = [] }) {
                 value={value.name}
                 onChange={handleChange}
                 className="md:col-span-2"
-                error={errorFields.includes("name")}
+                error={"nid" in errorFields}
             />
             <FormField
                 label="Age (years)"
@@ -104,6 +111,7 @@ export function ProcedureForm({ onChange, value, surgeons = [] }) {
                 onChange={handleChange}
                 type="select"
                 className="md:col-span-1"
+                error={"sex" in errorFields}
             >
                 <option value="">Select</option>
                 <option value="male">Male</option>
@@ -115,7 +123,7 @@ export function ProcedureForm({ onChange, value, surgeons = [] }) {
                 value={value.diagnosis}
                 onChange={handleChange}
                 className="md:col-span-2"
-                error={errorFields.includes("diagnosis")}
+                error={"diagnosis" in errorFields}
             />
             <FormField
                 label="Procedure"
@@ -123,7 +131,7 @@ export function ProcedureForm({ onChange, value, surgeons = [] }) {
                 value={value.procedure}
                 onChange={handleChange}
                 className="md:col-span-2"
-                error={errorFields.includes("procedure")}
+                error={"procedure" in errorFields}
             />
             <FormField
                 label="Comorbidities"
@@ -131,7 +139,7 @@ export function ProcedureForm({ onChange, value, surgeons = [] }) {
                 value={value.comorbids}
                 onChange={handleChange}
                 className="md:col-span-4"
-                error={errorFields.includes("comorbids")}
+                error={"comorbids" in errorFields}
             />
             <FormField
                 label="Anesthesia"
@@ -140,6 +148,7 @@ export function ProcedureForm({ onChange, value, surgeons = [] }) {
                 onChange={handleChange}
                 type="select"
                 className="md:col-span-1"
+                error={"anesthesia" in errorFields}
             >
                 <option value="">Select</option>
                 {["GA", "LA", "RA"].map((type) => (
@@ -155,6 +164,7 @@ export function ProcedureForm({ onChange, value, surgeons = [] }) {
                 onChange={handleChange}
                 type="number"
                 className="md:col-span-1"
+                error={"duration" in errorFields}
             />
             <FormField
                 label="Added By"
@@ -163,7 +173,8 @@ export function ProcedureForm({ onChange, value, surgeons = [] }) {
                 onChange={handleChange}
                 type="select"
                 className="md:col-span-1"
-                error={errorFields.includes("added_by")}
+                error={"addedBy" in errorFields}
+                errorMessage={errorFields["addedBy"]?.message}
             >
                 <option value="">Select</option>
                 {surgeons.map((surgeon) => (
@@ -179,7 +190,7 @@ export function ProcedureForm({ onChange, value, surgeons = [] }) {
                 onChange={handleChange}
                 type="date"
                 className="md:col-span-1"
-                error={errorFields.includes("added_date")}
+                error={"addedDate" in errorFields}
             />
             <FormField
                 label="Admitted Bed"
@@ -187,6 +198,7 @@ export function ProcedureForm({ onChange, value, surgeons = [] }) {
                 value={value.bed}
                 onChange={handleChange}
                 className="md:col-span-1"
+                error={"bed" in errorFields}
             />
             <FormField
                 label="Remarks"
@@ -195,6 +207,7 @@ export function ProcedureForm({ onChange, value, surgeons = [] }) {
                 onChange={handleChange}
                 type="textarea"
                 className="md:col-span-full"
+                error={"remarks" in errorFields}
             />
             <FormField
                 label="Special Requirements"
@@ -203,6 +216,7 @@ export function ProcedureForm({ onChange, value, surgeons = [] }) {
                 onChange={handleChange}
                 type="textarea"
                 className="md:col-span-full"
+                error={"requirements" in errorFields}
             />
         </form>
     );

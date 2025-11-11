@@ -101,6 +101,13 @@ function ProcedureListReducer(state, action) {
                 ...state,
                 update_failed: [...state.update_failed, ...action.payload],
             };
+        case "CLEAR_FAILED":
+            return {
+                ...state,
+                update_failed: state.update_failed.filter(
+                    (item) => !!!action.payload.includes(item.id)
+                ),
+            };
         default:
             return state;
     }
