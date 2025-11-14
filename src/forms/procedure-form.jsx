@@ -27,8 +27,6 @@ export function ProcedureForm({
     surgeons = [],
     errorFields = [],
 }) {
-    console.log("ProcedureForm errorFields:", errorFields);
-
     const requiredFields = [
         "nid",
         "hospitalId",

@@ -312,12 +312,7 @@ function ProcedureItem({
                     setEditing(false);
                     discardProcedureUpdate(procedure.id);
                 }}
-                onClose={() => {
-                    setEditing(false);
-                    if (proceduresList.selected === procedure.id) {
-                        setSelected(null);
-                    }
-                }}
+                onClose={null}
                 onAfterSave={() => {
                     setEditing(false);
                 }}

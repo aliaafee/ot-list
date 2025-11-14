@@ -23,6 +23,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
     const [showAddForm, setShowAddForm] = useState(false);
     const [procedureToMove, setProcedureToMove] = useState(null);
     const [newProcedure, setNewProcedure] = useState(initialProcedureValue);
+    const [addError, setAddError] = useState(null);
 
     const proceduresByRoom = useMemo(
         () =>
@@ -55,6 +56,8 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
     };
 
     const handleAddProcedure = () => {
+        setAddError(null);
+
         const patient = {
             address: "", //newProcedure.address,
             dateOfBirth: `${dayjs().year() - newProcedure.age}-01-01`, //newProcedure.dateOfBirth,
@@ -88,7 +91,10 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
         };
 
         (async () => {
-            await addProcedure(patient, procedure, otDay);
+            const resultError = await addProcedure(patient, procedure, otDay);
+            if (resultError) {
+                setAddError(resultError);
+            }
         })();
 
         setShowAddForm(false);
@@ -254,7 +260,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                         ))}
                 </ul>
                 <div>
-                    {showAddForm && (
+                    {(showAddForm || addError) && (
                         <div
                             className={twMerge(
                                 "flex-auto bg-gray-100 rounded-lg mt-2"
@@ -282,6 +288,11 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                                     />
                                 </ToolBarButton>
                             </ToolBar>
+                            {addError?.message && (
+                                <div className="bg-red-400/20 rounded-md m-2 p-2 text-sm">
+                                    {addError.message}
+                                </div>
+                            )}
                             <div className="p-2">
                                 <ProcedureForm
                                     value={newProcedure}
@@ -291,6 +302,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                                             .expand
                                             .activeSurgeons_via_department
                                     }
+                                    errorFields={addError?.response?.data || {}}
                                 />
                                 <div className="sm:flex sm:flex-row-reverse col-span-full mt-3">
                                     <button

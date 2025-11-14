@@ -8,6 +8,7 @@ import {
 import { pb } from "@/lib/pb";
 import ProcedureListReducer from "@/reducers/procedure-list-reducer";
 import FatalErrorModal from "@/modals/fatal-error-modal";
+import { data } from "react-router";
 
 const ProcedureListContext = createContext(null);
 
@@ -154,10 +155,6 @@ export function ProcedureListProvider({ children }) {
         return proceduresList.updating.includes(procedure.id);
     };
 
-    // const getUpdateError = (procedure) => {
-    //     return proceduresList.update_failed.some((p) => p.id === procedure.id);
-    // };
-
     const getProcedureError = (procedure) => {
         return proceduresList.update_failed.find((p) => p.id === procedure.id);
     };
@@ -246,22 +243,20 @@ export function ProcedureListProvider({ children }) {
                 });
             }
         } catch (e) {
+            console.log(
+                "Failed to add procedure",
+                JSON.parse(JSON.stringify(e))
+            );
             dispatchData({
-                type: "ADD_FAILED",
-                payload: [
-                    {
-                        id: placeholderProcedure.id,
-                        type: "create",
-                        message: `Failed to add procedure. ${e?.message} ${e?.originalError?.message}`,
-                        data: {
-                            patient: patient,
-                            procedure: procedure,
-                        },
-                        response: e?.response,
-                        error: e,
-                    },
-                ],
+                type: "REMOVE_PROCEDURE",
+                payload: placeholderProcedure,
             });
+            return {
+                message: `Failed to add procedure`,
+                error: e,
+                data: { patient: patient, procedure: procedure },
+                response: e?.response,
+            };
         } finally {
             dispatchData({
                 type: "DONE_UPDATING",
@@ -290,7 +285,7 @@ export function ProcedureListProvider({ children }) {
                         (p) => p.id === newProcedure.id
                     );
 
-                discardProcedureUpdate(procedureId);
+                discardProcedureUpdate(newProcedure.id);
 
                 return {
                     ...original,

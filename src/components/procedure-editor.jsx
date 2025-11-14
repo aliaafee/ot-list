@@ -93,9 +93,15 @@ function ProcedureEditor({
                     <ToolBarButtonLabel>Discard</ToolBarButtonLabel>
                 </ToolBarButton>
                 <div className="flex-grow"></div>
-                <ToolBarButton title="close" disabled={false} onClick={onClose}>
-                    <XIcon className="" width={16} height={16} />
-                </ToolBarButton>
+                {onClose && (
+                    <ToolBarButton
+                        title="close"
+                        disabled={false}
+                        onClick={onClose}
+                    >
+                        <XIcon className="" width={16} height={16} />
+                    </ToolBarButton>
+                )}
             </ToolBar>
             {error?.type === "update" && (
                 <div className="bg-red-400/20 rounded-md m-2 p-2 text-sm">
