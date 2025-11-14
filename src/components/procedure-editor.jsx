@@ -41,6 +41,14 @@ function ProcedureEditor({
     });
 
     const handleUpdateProcedure = () => {
+        console.log("Updated Procedure:", updatedProcedure);
+        if (
+            updatedProcedure?.inputErrorFields &&
+            Object.keys(updatedProcedure.inputErrorFields).length > 0
+        ) {
+            alert("Please fix the errors in the form before saving.");
+            return;
+        }
         const updatedPatientRecord = {
             // id: procedure.patient,
             address: "", //updatedProcedure.address,
@@ -127,7 +135,12 @@ function ProcedureEditor({
                     <button
                         type="button"
                         onClick={handleUpdateProcedure}
-                        className="inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-xs  sm:ml-3 sm:w-auto bg-blue-600 hover:bg-blue-500"
+                        className="inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-xs  sm:ml-3 sm:w-auto bg-blue-600 hover:bg-blue-500 disabled:bg-gray-500"
+                        disabled={
+                            updatedProcedure?.inputErrorFields &&
+                            Object.keys(updatedProcedure.inputErrorFields)
+                                .length > 0
+                        }
                     >
                         Save
                     </button>

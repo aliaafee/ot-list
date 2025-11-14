@@ -38,35 +38,38 @@ export function ProcedureForm({
         "addedBy",
     ];
     const [currentErrorFields, setCurrentErrorFields] = useState({});
+    const [inputErrorFields, setInputErrorFields] = useState({});
 
     useEffect(() => {
         setCurrentErrorFields((prev) => ({
+            ...inputErrorFields,
             ...errorFields,
-            ...prev,
         }));
-    }, [errorFields]);
+    }, [errorFields, inputErrorFields]);
 
     const handleChange = (e) => {
         const { name, value: newValue } = e.target;
 
+        var newInputErrors = {};
         if (requiredFields.includes(name)) {
             if (newValue === "") {
-                setCurrentErrorFields((prev) => ({
-                    ...prev,
+                newInputErrors = {
+                    ...inputErrorFields,
                     [name]: { name, message: "This field is required." },
-                }));
+                };
             } else {
-                setCurrentErrorFields((prev) => {
-                    const updated = { ...prev };
-                    delete updated[name];
-                    return updated;
-                });
+                const updated = { ...inputErrorFields };
+                delete updated[name];
+                newInputErrors = updated;
             }
         }
+
+        setInputErrorFields(newInputErrors);
 
         onChange({
             ...value,
             [name]: newValue,
+            inputErrorFields: newInputErrors,
         });
     };
 
