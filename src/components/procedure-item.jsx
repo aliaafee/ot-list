@@ -20,6 +20,7 @@ import { useProcedureList } from "@/contexts/procedure-list-context";
 import ProcedureEditor from "./procedure-editor";
 import ModalWindow from "@/modals/modal-window";
 import { JSONTree } from "react-json-tree";
+import ProcedureComments from "./procedure-comments";
 
 function ProcedureItem({
     procedure,
@@ -276,6 +277,7 @@ function ProcedureItem({
                         value={procedure.requirements}
                     />
                 </div>
+                <ProcedureComments procedureId={procedure.id} />
                 {!!confirmRemove && (
                     <ModalWindow
                         title="Remove Procedure"
