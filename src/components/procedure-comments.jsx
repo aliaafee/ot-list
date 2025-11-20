@@ -56,7 +56,7 @@ function ProcedureComments(procedureId) {
                 {comments.map((comment) => (
                     <li
                         key={comment.id}
-                        className="text-sm mb-2 p-1 rounded-md bg-gray-200 select-text"
+                        className="text-sm mb-2 py-1 px-2 rounded-md bg-gray-200 select-text"
                     >
                         {comment.text}
                         <div className="text-xs text-gray-500 text-right">
@@ -66,16 +66,22 @@ function ProcedureComments(procedureId) {
                 ))}
             </ul>
             <form className="flex">
-                <textarea
-                    className="text-sm p-1 rounded-md bg-white w-full resize-none"
+                <input
+                    className="text-sm py-1 px-2 rounded-md bg-white w-full resize-none"
                     placeholder="Add a comment"
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
-                ></textarea>
+                    type="text"
+                />
                 <button
                     className="rounded-md p-2 bg-blue-600 hover:bg-blue-500 ml-2 text-white cursor-pointer"
                     title="Send Comment"
                     onClick={handleSendComment}
+                    onKeyUp={(e) => {
+                        if (e.key === "Enter") {
+                            handleSendComment(e);
+                        }
+                    }}
                 >
                     <SendHorizonalIcon size={16} />
                 </button>
