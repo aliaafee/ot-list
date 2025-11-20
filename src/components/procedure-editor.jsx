@@ -5,7 +5,6 @@ import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 dayjs.extend(isSameOrAfter);
 import { XIcon, PencilOffIcon } from "lucide-react";
 
-import { age } from "@/utils/dates";
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 
@@ -25,7 +24,10 @@ function ProcedureEditor({
         nid: procedure?.expand?.patient?.nid || "",
         hospitalId: procedure?.expand?.patient?.hospitalId || "",
         name: procedure?.expand?.patient?.name || "",
-        age: age(procedure?.expand?.patient?.dateOfBirth) || "",
+        dateOfBirth:
+            dayjs(procedure?.expand?.patient?.dateOfBirth).format(
+                "YYYY-MM-DD"
+            ) || "",
         sex: procedure?.expand?.patient?.sex || "",
         phone: procedure?.expand?.patient?.phone || "",
         diagnosis: procedure?.diagnosis || "",
@@ -52,7 +54,7 @@ function ProcedureEditor({
 
         const updatedPatientRecord = {
             address: "", //updatedProcedure.address,
-            dateOfBirth: `${dayjs().year() - updatedProcedure.age}-01-01`, //updatedProcedure.dateOfBirth,
+            dateOfBirth: updatedProcedure.dateOfBirth, //updatedProcedure.dateOfBirth,
             hospitalId: updatedProcedure.hospitalId,
             name: updatedProcedure.name,
             nid: updatedProcedure.nid,

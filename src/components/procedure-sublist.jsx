@@ -73,7 +73,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
 
         const patient = {
             address: "", //newProcedure.address,
-            dateOfBirth: `${dayjs().year() - newProcedure.age}-01-01`, //newProcedure.dateOfBirth,
+            dateOfBirth: newProcedure.dateOfBirth, //newProcedure.dateOfBirth,
             hospitalId: newProcedure.hospitalId,
             name: newProcedure.name,
             nid: newProcedure.nid,

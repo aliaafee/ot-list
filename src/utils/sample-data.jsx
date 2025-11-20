@@ -34,7 +34,9 @@ export function GenerateProdecureFormData(surgeons) {
                 "Hernandez",
             ][Math.floor(Math.random() * 10)]
         }`, // Random patient name
-        age: Math.floor(18 + Math.random() * 60).toString(), // Random age between 18 and 77
+        dateOfBirth: dayjs()
+            .subtract(Math.floor(18 + Math.random() * 60), "year")
+            .format("YYYY-MM-DD"), // Random DOB between 18 and 78 years ago
         sex: Math.random() > 0.5 ? "male" : "female", // Random sex
         diagnosis: `${
             [

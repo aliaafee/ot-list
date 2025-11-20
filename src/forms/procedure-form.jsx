@@ -6,7 +6,7 @@ export const initialProcedureValue = {
     nid: "",
     hospitalId: "",
     name: "",
-    age: "",
+    dateOfBirth: "",
     sex: "",
     phone: "",
     diagnosis: "",
@@ -103,13 +103,14 @@ export function ProcedureForm({
                 errorMessage={errorFields["name"]?.message}
             />
             <FormField
-                label="Age (years)"
-                name="age"
-                value={value.age}
+                label="DOB"
+                name="dateOfBirth"
+                value={value.dateOfBirth}
                 onChange={handleChange}
-                type="number"
+                type="date"
                 className="md:col-span-1"
-                errorMessage={errorFields["age"]?.message}
+                error={"dateOfBirth" in errorFields}
+                errorMessage={errorFields["dateOfBirth"]?.message}
             />
             <FormField
                 label="Sex"
