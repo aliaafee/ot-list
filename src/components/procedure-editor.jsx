@@ -9,7 +9,7 @@ import { age } from "@/utils/dates";
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 
-import { ProcedureForm } from "@/forms/procedure-form";
+import { ProcedureForm, validateProcedure } from "@/forms/procedure-form";
 
 function ProcedureEditor({
     procedure,
@@ -39,18 +39,18 @@ function ProcedureEditor({
         anesthesia: procedure?.anesthesia || "",
         requirements: procedure?.requirements || "",
     });
+    const [updatedProcedureErrors, setUpdatedProcedureErrors] = useState({});
 
     const handleUpdateProcedure = () => {
-        console.log("Updated Procedure:", updatedProcedure);
-        if (
-            updatedProcedure?.inputErrorFields &&
-            Object.keys(updatedProcedure.inputErrorFields).length > 0
-        ) {
-            alert("Please fix the errors in the form before saving.");
+        const inputErrors = validateProcedure(updatedProcedure);
+
+        setUpdatedProcedureErrors(inputErrors);
+
+        if (Object.keys(inputErrors).length > 0) {
             return;
         }
+
         const updatedPatientRecord = {
-            // id: procedure.patient,
             address: "", //updatedProcedure.address,
             dateOfBirth: `${dayjs().year() - updatedProcedure.age}-01-01`, //updatedProcedure.dateOfBirth,
             hospitalId: updatedProcedure.hospitalId,
@@ -60,7 +60,6 @@ function ProcedureEditor({
             sex: updatedProcedure.sex,
         };
         const updatedProcedureRecord = {
-            // id: procedure.id,
             addedBy: updatedProcedure.addedBy,
             addedDate: updatedProcedure.addedDate,
             anesthesia: updatedProcedure.anesthesia,
@@ -129,18 +128,16 @@ function ProcedureEditor({
                         otDay?.expand?.otList?.expand?.department?.expand
                             ?.activeSurgeons_via_department
                     }
-                    errorFields={error?.response?.data || {}}
+                    errorFields={{
+                        ...updatedProcedureErrors,
+                        ...error?.response?.data,
+                    }}
                 />
                 <div className="sm:flex sm:flex-row-reverse col-span-full mt-3">
                     <button
                         type="button"
                         onClick={handleUpdateProcedure}
                         className="inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-xs  sm:ml-3 sm:w-auto bg-blue-600 hover:bg-blue-500 disabled:bg-gray-500"
-                        disabled={
-                            updatedProcedure?.inputErrorFields &&
-                            Object.keys(updatedProcedure.inputErrorFields)
-                                .length > 0
-                        }
                     >
                         Save
                     </button>

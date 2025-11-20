@@ -7,7 +7,11 @@ import ProcedureItem from "./procedure-item";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { twMerge } from "tailwind-merge";
-import { ProcedureForm, initialProcedureValue } from "@/forms/procedure-form";
+import {
+    ProcedureForm,
+    initialProcedureValue,
+    validateProcedure,
+} from "@/forms/procedure-form";
 import { GenerateProdecureFormData } from "@/utils/sample-data";
 import MoveProcedureModal from "@/modals/move-procedure-modal";
 
@@ -23,6 +27,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
     const [showAddForm, setShowAddForm] = useState(false);
     const [procedureToMove, setProcedureToMove] = useState(null);
     const [newProcedure, setNewProcedure] = useState(initialProcedureValue);
+    const [newProcedureErrors, setNewProcedureErrors] = useState({});
     const [addError, setAddError] = useState(null);
 
     const proceduresByRoom = useMemo(
@@ -57,6 +62,14 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
 
     const handleAddProcedure = () => {
         setAddError(null);
+
+        const inputErrors = validateProcedure(newProcedure);
+
+        setNewProcedureErrors(inputErrors);
+
+        if (Object.keys(inputErrors).length > 0) {
+            return;
+        }
 
         const patient = {
             address: "", //newProcedure.address,
@@ -94,6 +107,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
             const resultError = await addProcedure(patient, procedure, otDay);
             if (resultError) {
                 setAddError(resultError);
+                setShowAddForm(true);
             }
         })();
 
@@ -260,7 +274,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                         ))}
                 </ul>
                 <div>
-                    {(showAddForm || addError) && (
+                    {showAddForm && (
                         <div
                             className={twMerge(
                                 "flex-auto bg-gray-100 rounded-lg mt-2"
@@ -302,7 +316,10 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                                             .expand
                                             .activeSurgeons_via_department
                                     }
-                                    errorFields={addError?.response?.data || {}}
+                                    errorFields={{
+                                        ...newProcedureErrors,
+                                        ...addError?.response?.data,
+                                    }}
                                 />
                                 <div className="sm:flex sm:flex-row-reverse col-span-full mt-3">
                                     <button
@@ -321,7 +338,11 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => setShowAddForm(false)}
+                                        onClick={() => {
+                                            setShowAddForm(false);
+                                            setAddError(null);
+                                            setNewProcedureErrors({});
+                                        }}
                                         className="mt-3 sm:mt-0 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50  sm:w-auto"
                                     >
                                         Cancel
