@@ -8,7 +8,7 @@ import {
 import { pb } from "@/lib/pb";
 import ProcedureListReducer from "@/reducers/procedure-list-reducer";
 import FatalErrorModal from "@/modals/fatal-error-modal";
-import { data } from "react-router";
+import ErrorModal from "@/modals/error-modal";
 
 const ProcedureListContext = createContext(null);
 
@@ -28,6 +28,7 @@ export function ProcedureListProvider({ children }) {
     );
     const [otDay, setOtDay] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [updateError, setUpdateError] = useState(null);
     const [error, setError] = useState("");
     const [subscribed, setSubscribed] = useState(false);
     const [tempId, setTempId] = useState(1000);
@@ -268,6 +269,10 @@ export function ProcedureListProvider({ children }) {
     const updateProcedures = async (newProcedures, updatedOtDay = otDay) => {
         newProcedures.forEach((p) => discardProcedureUpdate(p.id));
 
+        // Store original procedures for rollback
+        const originalProcedures = [];
+        const removedProcedures = [];
+
         newProcedures
             .filter(
                 (
@@ -286,6 +291,9 @@ export function ProcedureListProvider({ children }) {
                     );
 
                 discardProcedureUpdate(newProcedure.id);
+
+                // Store original for rollback
+                originalProcedures.push(original);
 
                 return {
                     ...original,
@@ -308,7 +316,7 @@ export function ProcedureListProvider({ children }) {
                     })
             );
 
-        newProcedures
+        const proceduresToRemove = newProcedures
             .filter(
                 (
                     newProcedure // Find the procedures in this list whose day has been changed
@@ -319,14 +327,23 @@ export function ProcedureListProvider({ children }) {
                     (newProcedure?.procedureDay !== undefined
                         ? newProcedure?.procedureDate !== otDay.id
                         : false)
-            )
-            .forEach((newProcedure) => {
-                // Remove those placeholders from this list
-                dispatchData({
-                    type: "REMOVE_PROCEDURE",
-                    payload: newProcedure,
-                });
+            );
+
+        proceduresToRemove.forEach((newProcedure) => {
+            // Store removed procedures for rollback
+            const original = proceduresList.procedures.find(
+                (p) => p.id === newProcedure.id
+            );
+            if (original) {
+                removedProcedures.push(original);
+            }
+
+            // Remove those placeholders from this list
+            dispatchData({
+                type: "REMOVE_PROCEDURE",
+                payload: newProcedure,
             });
+        });
 
         try {
             dispatchData({
@@ -335,53 +352,51 @@ export function ProcedureListProvider({ children }) {
             });
 
             for (const newProcedure of newProcedures) {
-                try {
-                    const { id: procedureId, ...changes } = newProcedure;
-                    const updatedProcedure = await pb
-                        .collection("procedures")
-                        .update(procedureId, changes, {
-                            ...proceduresCollectionOptions,
-                        });
-
-                    if (!subscribed) {
-                        if (updatedProcedure.procedureDay === otDay.id) {
-                            // Only update the procedures in this otDay
-                            dispatchData({
-                                type: "UPDATE_PROCEDURE",
-                                payload: updatedProcedure,
-                            });
-                        }
-                    }
-                } catch (e) {
-                    dispatchData({
-                        type: "ADD_FAILED",
-                        payload: [
-                            {
-                                id: newProcedure.id,
-                                type: "update",
-                                message: `Failed to update procedure (i). ${e?.message} ${e?.originalError?.message}`,
-                                original: newProcedure.original,
-                                data: newProcedure,
-                                response: e?.response,
-                                error: e,
-                            },
-                        ],
+                const { id: procedureId, ...changes } = newProcedure;
+                const updatedProcedure = await pb
+                    .collection("procedures")
+                    .update(procedureId, changes, {
+                        ...proceduresCollectionOptions,
                     });
+
+                if (!subscribed) {
+                    if (updatedProcedure.procedureDay === otDay.id) {
+                        // Only update the procedures in this otDay
+                        dispatchData({
+                            type: "UPDATE_PROCEDURE",
+                            payload: updatedProcedure,
+                        });
+                    }
                 }
             }
         } catch (e) {
-            dispatchData({
-                type: "ADD_FAILED",
-                payload: newProcedures.map((p) => ({
-                    id: p.id,
-                    type: "update",
-                    message: `Failed to update procedure. ${e?.message} ${e?.originalError?.message}`,
-                    original: p.original,
-                    data: p,
-                    response: e?.response,
-                    error: e,
-                })),
+            console.log(
+                "Failed to update procedures, reverting changes",
+                JSON.parse(JSON.stringify(e))
+            );
+
+            // Revert all changes
+            originalProcedures.forEach((original) => {
+                dispatchData({
+                    type: "UPDATE_PROCEDURE",
+                    payload: original,
+                });
             });
+
+            // Restore removed procedures
+            removedProcedures.forEach((procedure) => {
+                dispatchData({
+                    type: "ADD_PROCEDURE",
+                    payload: procedure,
+                });
+            });
+
+            setUpdateError({
+                message: `Failed to update procedures. All changes have been reverted.`,
+                data: e,
+            });
+
+            throw e;
         } finally {
             dispatchData({
                 type: "DONE_UPDATING",
@@ -527,18 +542,16 @@ export function ProcedureListProvider({ children }) {
         );
     }
 
-    // if (proceduresList?.update_failed.length > 0) {
-    //     return (
-    //         <FatalErrorModal
-    //             message={`Error while adding/updating procedures. Please reload page.`}
-    //             data={proceduresList?.update_failed}
-    //         />
-    //     );
-    // }
-
     return (
         <ProcedureListContext.Provider value={value}>
             {children}
+            {!!updateError && (
+                <ErrorModal
+                    message={updateError.message}
+                    data={updateError.data}
+                    onClose={() => setUpdateError(null)}
+                />
+            )}
         </ProcedureListContext.Provider>
     );
 }

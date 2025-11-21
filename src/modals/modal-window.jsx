@@ -8,8 +8,8 @@ export default function ModalWindow({
     title = "Alert",
     okLabel = "Ok",
     cancelLabel = "Cancel",
-    onOk = () => {},
-    onCancel = () => {},
+    onOk = null,
+    onCancel = null,
     icon = <AlertTriangleIcon width={24} height={24} />,
     iconColor = "bg-red-100 text-red-600",
     okColor = "bg-red-600 hover:bg-red-500",
@@ -42,6 +42,7 @@ export default function ModalWindow({
             </div>
             {showButtons && (
                 <div className="bg-gray-200 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    {!!onOk && (
                     <button
                         type="button"
                         className={twMerge(
@@ -55,7 +56,8 @@ export default function ModalWindow({
                             <LoadingSpinner size="small" className={"mr-2"} />
                         )}
                         {okLabel}
-                    </button>
+                    </button>)}
+                    {!!onCancel && (
                     <button
                         type="button"
                         className="cursor-pointer mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto"
@@ -63,7 +65,7 @@ export default function ModalWindow({
                         disabled={loading}
                     >
                         {cancelLabel}
-                    </button>
+                    </button>)}
                 </div>
             )}
         </ModalContainer>
