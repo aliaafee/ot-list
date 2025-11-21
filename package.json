@@ -1,14 +1,15 @@
 {
-  "name": "react-pocketbase",
+  "name": "ot-list",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "pb:serve": "./pb/pocketbase serve --publicDir ./dist --http 0.0.0.0:8090"
+    "pb:serve": "./pb/pocketbase serve --publicDir ./dist --http 0.0.0.0:8090",
+    "release": "npm run build && node scripts/create-release.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.13",
@@ -27,6 +28,7 @@
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react-swc": "^4.0.0",
+    "archiver": "^7.0.1",
     "eslint": "^9.33.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
