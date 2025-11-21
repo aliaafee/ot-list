@@ -817,6 +817,19 @@
         "type": "bool"
       },
       {
+        "cascadeDelete": false,
+        "collectionId": "pbc_1747635922",
+        "hidden": false,
+        "id": "relation2621226015",
+        "maxSelect": 1,
+        "minSelect": 0,
+        "name": "procedure",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "relation"
+      },
+      {
         "hidden": false,
         "id": "autodate2990389176",
         "name": "created",
