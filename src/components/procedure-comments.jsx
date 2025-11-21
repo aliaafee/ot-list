@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/auth-context";
 import { formatDateTime } from "@/utils/dates";
-import { SendHorizonalIcon } from "lucide-react";
+import { SendHorizonalIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { pb } from "@/lib/pb";
 
@@ -21,7 +21,7 @@ function ProcedureComments({ procedureId }) {
                 const records = await pb
                     .collection("procedureComments")
                     .getFullList({
-                        filter: `procedure = "${procedureId}" && removed = false`,
+                        filter: `procedure = "${procedureId}"`,
                         sort: "+created",
                         expand: "creator",
                     });
@@ -42,22 +42,16 @@ function ProcedureComments({ procedureId }) {
             (e) => {
                 if (e.record.procedure !== procedureId) return;
 
-                if (e.action === "create" && !e.record.removed) {
+                if (e.action === "create") {
                     // Add new comment
                     setComments((prev) => [...prev, e.record]);
                 } else if (e.action === "update") {
-                    // Update or remove comment
-                    if (e.record.removed) {
-                        setComments((prev) =>
-                            prev.filter((c) => c.id !== e.record.id)
-                        );
-                    } else {
-                        setComments((prev) =>
-                            prev.map((c) =>
-                                c.id === e.record.id ? e.record : c
-                            )
-                        );
-                    }
+                    // Update comment (including removed status)
+                    setComments((prev) =>
+                        prev.map((c) =>
+                            c.id === e.record.id ? e.record : c
+                        )
+                    );
                 } else if (e.action === "delete") {
                     // Remove deleted comment
                     setComments((prev) =>
@@ -96,6 +90,26 @@ function ProcedureComments({ procedureId }) {
         }
     };
 
+    const handleRemoveComment = async (commentId) => {
+        try {
+            await pb.collection("procedureComments").update(commentId, {
+                removed: true,
+            });
+        } catch (error) {
+            console.error("Error removing comment:", error);
+        }
+    };
+
+    const handleRestoreComment = async (commentId) => {
+        try {
+            await pb.collection("procedureComments").update(commentId, {
+                removed: false,
+            });
+        } catch (error) {
+            console.error("Error restoring comment:", error);
+        }
+    };
+
     return (
         <div className="p-2">
             <span className="text-sm font-semibold">Comments</span>
@@ -113,16 +127,55 @@ function ProcedureComments({ procedureId }) {
                         comments.map((comment) => (
                             <li
                                 key={comment.id}
-                                className="text-sm mb-2 py-1 px-2 rounded-md bg-blue-400/20 select-text"
+                                className={`text-sm mb-2 py-1 px-2 rounded-md select-text flex justify-between items-start gap-2 ${
+                                    comment.removed
+                                        ? "bg-gray-200/50 opacity-60"
+                                        : "bg-blue-400/20"
+                                }`}
                             >
-                                {comment.content}
-                                <div className="text-xs text-gray-500 text-right">
-                                    {comment.expand?.creator?.name ||
-                                        comment.expand?.creator?.email ||
-                                        comment.creator ||
-                                        "Unknown"}{" "}
-                                    - {formatDateTime(comment.created)}
+                                <div className="flex-1">
+                                    <span
+                                        className={comment.removed ? "line-through" : ""}
+                                    >
+                                        {comment.content}
+                                    </span>
+                                    <div className="text-xs text-gray-500 text-right flex gap-2 justify-end">
+                                        {comment.creator === user.id && !comment.removed && (
+                                            <button
+                                                className="text-red-600 rounded hover:bg-red-100 px-1 flex-shrink-0 cursor-pointer"
+                                                onClick={() =>
+                                                    handleRemoveComment(comment.id)
+                                                }
+                                                title="Remove comment"
+                                                type="button"
+                                            >
+                                                remove
+                                            </button>
+                                        )}
+                                        {comment.creator === user.id && comment.removed && (
+                                            <button
+                                                className="text-blue-600 rounded hover:bg-blue-200 px-1 flex-shrink-0 cursor-pointer"
+                                                onClick={() =>
+                                                    handleRestoreComment(comment.id)
+                                                }
+                                                title="Restore comment"
+                                                type="button"
+                                            >
+                                                restore
+                                            </button>
+                                        )}
+                                        <span className="font-semibold">
+                                            {comment.expand?.creator?.name ||
+                                            comment.expand?.creator?.email ||
+                                            comment.creator ||
+                                            "Unknown"}
+                                        </span>
+                                        <span>
+                                        {formatDateTime(comment.created)}
+                                        </span>
+                                    </div>
                                 </div>
+                                
                             </li>
                         ))
                     )}
