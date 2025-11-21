@@ -114,7 +114,7 @@ function ProcedureEditor({
             </ToolBar>
             {error?.type === "update" && (
                 <div className="bg-red-400/20 rounded-md m-2 p-2 text-sm">
-                    Update Failed
+                    Failed to update procedure
                 </div>
             )}
             {procedure.removed && (

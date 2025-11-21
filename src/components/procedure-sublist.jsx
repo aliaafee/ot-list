@@ -370,8 +370,10 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                                 title="Add OT Procedure"
                                 disabled={otDay.disabled === 1 || isBusy()}
                                 onClick={() => {
-                                    setShowAddForm(true),
-                                        setNewProcedure(initialProcedureValue);
+                                    setShowAddForm(true);
+                                    setAddError(null);
+                                    setNewProcedureErrors({});
+                                    setNewProcedure(initialProcedureValue);
                                 }}
                             >
                                 <PlusIcon width={16} height={16} />
