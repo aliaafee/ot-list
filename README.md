@@ -76,6 +76,14 @@ Use the deploy script or followind instructions
    npm run build
    ```
 
+   **Optional: Specify the Backend"
+
+   put this in .env file in project root
+
+   ```
+   VITE_PB_BASE_URL="site.domain.com:port"
+   ```
+
 10. **Install systemd service**
 
     ```bash
