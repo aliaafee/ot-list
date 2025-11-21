@@ -1,12 +1,12 @@
 [
   {
-    "id": "_pb_users_auth_",
-    "listRule": "id = @request.auth.id",
-    "viewRule": "id = @request.auth.id",
-    "createRule": "@request.auth.id != \"\" && @request.auth.role = \"admin\"",
-    "updateRule": "id = @request.auth.id && (@request.body.role:isset = false)",
-    "deleteRule": "id = @request.auth.id",
-    "name": "users",
+    "id": "pbc_3142635823",
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "name": "_superusers",
     "type": "auth",
     "fields": [
       {
@@ -80,62 +80,13 @@
         "type": "bool"
       },
       {
-        "autogeneratePattern": "",
-        "hidden": false,
-        "id": "text1579384326",
-        "max": 255,
-        "min": 0,
-        "name": "name",
-        "pattern": "",
-        "presentable": false,
-        "primaryKey": false,
-        "required": true,
-        "system": false,
-        "type": "text"
-      },
-      {
-        "hidden": false,
-        "id": "file376926767",
-        "maxSelect": 1,
-        "maxSize": 0,
-        "mimeTypes": [
-          "image/jpeg",
-          "image/png",
-          "image/svg+xml",
-          "image/gif",
-          "image/webp"
-        ],
-        "name": "avatar",
-        "presentable": false,
-        "protected": false,
-        "required": false,
-        "system": false,
-        "thumbs": null,
-        "type": "file"
-      },
-      {
-        "hidden": false,
-        "id": "select1466534506",
-        "maxSelect": 1,
-        "name": "role",
-        "presentable": false,
-        "required": true,
-        "system": false,
-        "type": "select",
-        "values": [
-          "doctor",
-          "receptionist",
-          "admin"
-        ]
-      },
-      {
         "hidden": false,
         "id": "autodate2990389176",
         "name": "created",
         "onCreate": true,
         "onUpdate": false,
         "presentable": false,
-        "system": false,
+        "system": true,
         "type": "autodate"
       },
       {
@@ -145,15 +96,15 @@
         "onCreate": true,
         "onUpdate": true,
         "presentable": false,
-        "system": false,
+        "system": true,
         "type": "autodate"
       }
     ],
     "indexes": [
-      "CREATE UNIQUE INDEX `idx_tokenKey__pb_users_auth_` ON `users` (`tokenKey`)",
-      "CREATE UNIQUE INDEX `idx_email__pb_users_auth_` ON `users` (`email`) WHERE `email` != ''"
+      "CREATE UNIQUE INDEX `idx_tokenKey_pbc_3142635823` ON `_superusers` (`tokenKey`)",
+      "CREATE UNIQUE INDEX `idx_email_pbc_3142635823` ON `_superusers` (`email`) WHERE `email` != ''"
     ],
-    "system": false,
+    "system": true,
     "authRule": "",
     "manageRule": null,
     "authAlert": {
@@ -166,9 +117,9 @@
     "oauth2": {
       "mappedFields": {
         "id": "",
-        "name": "name",
+        "name": "",
         "username": "",
-        "avatarURL": "avatar"
+        "avatarURL": ""
       },
       "enabled": false
     },
@@ -193,7 +144,7 @@
       }
     },
     "authToken": {
-      "duration": 604800
+      "duration": 86400
     },
     "passwordResetToken": {
       "duration": 1800
