@@ -15,7 +15,7 @@
     "@tailwindcss/vite": "^4.1.13",
     "dayjs": "^1.11.18",
     "lucide-react": "^0.544.0",
-    "pocketbase": "^0.26.2",
+    "pocketbase": "^0.26.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-json-tree": "^0.20.0",

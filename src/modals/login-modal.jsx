@@ -1,12 +1,10 @@
 import { useAuth } from "@/contexts/auth-context";
-import { twMerge } from "tailwind-merge";
 import ModalContainer from "./modal-container";
-import { Link } from "react-router";
 import FormField from "@/components/form-field";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-import CenterBox from "@/components/center-box";
 import { LoadingSpinner } from "@/components/loading-spinner";
+import { backendUrl } from "@/lib/pb";
 
 function LoginModal({}) {
     const { login, loading } = useAuth();
@@ -58,9 +56,9 @@ function LoginModal({}) {
                         </div>
                     )}
                 </div>
-                {!!import.meta.env.VITE_PB_BASE_URL && (
+                {!!backendUrl && (
                     <div className="px-4 pb-2 text-xs text-gray-600 text-center">
-                        Backend: {import.meta.env.VITE_PB_BASE_URL}
+                        Backend: {backendUrl}
                     </div>
                 )}
                 <div className="bg-gray-200 px-4 py-3 ">
