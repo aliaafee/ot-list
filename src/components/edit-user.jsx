@@ -126,7 +126,7 @@ function EditUser() {
                                         >
                                             <EditIcon size={16} />
                                         </button>
-                                        <button
+                                        {/* <button
                                             className="p-1.5 rounded-full hover:bg-gray-400 cursor-pointer"
                                             onClick={() => {
                                                 setChangingEmailUser(u);
@@ -136,7 +136,7 @@ function EditUser() {
                                             title="Change user email"
                                         >
                                             <MailIcon size={16} />
-                                        </button>
+                                        </button> */}
                                     </div>
                                 </td>
                             )}

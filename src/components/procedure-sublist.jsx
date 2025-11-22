@@ -368,7 +368,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                         >
                             <ToolBarButton
                                 title="Add OT Procedure"
-                                disabled={otDay.disabled === 1 || isBusy()}
+                                disabled={otDay.disabled || isBusy()}
                                 onClick={() => {
                                     setShowAddForm(true);
                                     setAddError(null);

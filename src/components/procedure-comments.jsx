@@ -171,6 +171,9 @@ function ProcedureComments({ procedureId }) {
                                             "Unknown"}
                                         </span>
                                         <span>
+                                            {comment.expand?.creator?.role || "user"}
+                                        </span>
+                                        <span>
                                         {formatDateTime(comment.created)}
                                         </span>
                                     </div>
