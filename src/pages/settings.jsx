@@ -1,7 +1,8 @@
-import { ChevronLeft, Edit } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import BodyLayout from "@/components/body-layout";
 import { ToolBar, ToolBarButtonLabel, ToolBarLink } from "@/components/toolbar";
 import EditTable from "@/components/edit-table";
+import EditUser from "@/components/edit-user";
 import { OtListColours } from "@/utils/colours";
 import { useEffect, useState } from "react";
 import { pb } from "@/lib/pb";
@@ -45,6 +46,10 @@ function Settings({}) {
     );
 
     const accordionItems = [
+        ...(user?.role === "admin" ? [{
+            title: "Users",
+            content: <EditUser />,
+        }] : []),
         {
             title: "Departments",
             content: (
