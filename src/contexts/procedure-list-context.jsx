@@ -266,7 +266,7 @@ export function ProcedureListProvider({ children }) {
         }
     };
 
-    const updateProcedures = async (newProcedures, updatedOtDay = otDay) => {
+    const updateProcedures = async (newProcedures, updatedOtDay = otDay, revertOnFail = true) => {
         newProcedures.forEach((p) => discardProcedureUpdate(p.id));
 
         // Store original procedures for rollback
@@ -298,10 +298,10 @@ export function ProcedureListProvider({ children }) {
                 return {
                     ...original,
                     ...newProcedure,
-                    procedureDay: updatedOtDay.id,
+                    procedureDay: !!updatedOtDay ? updatedOtDay.id : otDay.id,
                     expand: {
                         ...original.expand,
-                        procedureDay: updatedOtDay,
+                        procedureDay: !!updatedOtDay ? updatedOtDay : otDay,
                     },
                     original: original,
                 };
@@ -370,33 +370,60 @@ export function ProcedureListProvider({ children }) {
                 }
             }
         } catch (e) {
-            console.log(
-                "Failed to update procedures, reverting changes",
-                JSON.parse(JSON.stringify(e))
-            );
+            if (revertOnFail) {
+                console.log(
+                    "Failed to update procedures, reverting changes",
+                    JSON.parse(JSON.stringify(e))
+                );
 
-            // Revert all changes
-            originalProcedures.forEach((original) => {
-                dispatchData({
-                    type: "UPDATE_PROCEDURE",
-                    payload: original,
+                // Revert all changes
+                originalProcedures.forEach((original) => {
+                    dispatchData({
+                        type: "UPDATE_PROCEDURE",
+                        payload: original,
+                    });
                 });
-            });
 
-            // Restore removed procedures
-            removedProcedures.forEach((procedure) => {
-                dispatchData({
-                    type: "ADD_PROCEDURE",
-                    payload: procedure,
+                // Restore removed procedures
+                removedProcedures.forEach((procedure) => {
+                    dispatchData({
+                        type: "ADD_PROCEDURE",
+                        payload: procedure,
+                    });
                 });
-            });
 
-            setUpdateError({
-                message: `Failed to update procedures. All changes have been reverted.`,
-                data: e,
-            });
+                setUpdateError({
+                    message: `Failed to update procedures. All changes have been reverted.`,
+                    data: e,
+                });
 
-            throw e;
+                throw e;
+            } else {
+                console.log(
+                    "Failed to update procedures",
+                    JSON.parse(JSON.stringify(e))
+                );
+                dispatchData({
+                    type: "ADD_FAILED",
+                    payload: newProcedures.map((p) => ({
+                        id: p.id,
+                        type: "update",
+                        message: `Failed to update procedure. ${e?.message} ${e?.originalError?.message}`,
+                        original: originalProcedures.find(
+                            (op) => op.id === p.id
+                        ),
+                        data: {
+                            patientId: p.patient,
+                            patientData: {}, // Not updating patient here
+                            procedureId: p.id,
+                            procedureData: p,
+                        },
+                        response: e?.response,
+                        error: e,
+                    })),
+                });
+                throw e;
+            }
         } finally {
             dispatchData({
                 type: "DONE_UPDATING",

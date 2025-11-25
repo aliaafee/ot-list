@@ -12,6 +12,7 @@ import {
     initialProcedureValue,
     validateProcedure,
 } from "@/forms/procedure-form";
+import { initialPatientValue, PatientForm, validatePatient } from "@/forms/patient-form";
 import { GenerateProdecureFormData } from "@/utils/sample-data";
 import MoveProcedureModal from "@/modals/move-procedure-modal";
 
@@ -26,6 +27,8 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
     } = useProcedureList();
     const [showAddForm, setShowAddForm] = useState(false);
     const [procedureToMove, setProcedureToMove] = useState(null);
+    const [newPatient, setNewPatient] = useState(initialPatientValue);
+    const [newPatientErrors, setNewPatientErrors] = useState({});
     const [newProcedure, setNewProcedure] = useState(initialProcedureValue);
     const [newProcedureErrors, setNewProcedureErrors] = useState({});
     const [addError, setAddError] = useState(null);
@@ -52,22 +55,24 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
     );
 
     const handleSampleData = () => {
-        setNewProcedure(
-            GenerateProdecureFormData(
-                otDay.expand.otList.expand.department.expand
-                    .activeSurgeons_via_department
-            )
+        const sampleData = GenerateProdecureFormData(
+            otDay.expand.otList.expand.department.expand
+                .activeSurgeons_via_department
         );
+        setNewPatient(sampleData);
+        setNewProcedure(sampleData);
     };
 
     const handleAddProcedure = () => {
         setAddError(null);
 
-        const inputErrors = validateProcedure(newProcedure);
+        const procedureInputErrors = validateProcedure(newProcedure);
+        const patientInputErrors = validatePatient(newPatient);
 
-        setNewProcedureErrors(inputErrors);
+        setNewProcedureErrors(procedureInputErrors);
+        setNewPatientErrors(patientInputErrors);
 
-        if (Object.keys(inputErrors).length > 0) {
+        if (Object.keys(procedureInputErrors).length > 0 || Object.keys(patientInputErrors).length > 0) {
             return;
         }
 
@@ -308,6 +313,14 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                                 </div>
                             )}
                             <div className="p-2">
+                                <PatientForm 
+                                    value={newPatient}
+                                    onChange={(value) => setNewPatient(value)}
+                                    errorFields={{
+                                        ...newPatientErrors,
+                                        ...addError?.response?.data,
+                                    }}
+                                />
                                 <ProcedureForm
                                     value={newProcedure}
                                     onChange={(value) => setNewProcedure(value)}

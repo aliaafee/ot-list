@@ -9,6 +9,7 @@ import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 
 import { ProcedureForm, validateProcedure } from "@/forms/procedure-form";
+import PatientInfo from "./patient-info";
 
 function ProcedureEditor({
     procedure,
@@ -18,18 +19,9 @@ function ProcedureEditor({
     onAfterSave,
     error,
 }) {
-    const { otDay, updateProcedureAndPatient } = useProcedureList();
+    const { otDay, updateProcedures } = useProcedureList();
 
     const [updatedProcedure, setUpdatedProcedure] = useState({
-        nid: procedure?.expand?.patient?.nid || "",
-        hospitalId: procedure?.expand?.patient?.hospitalId || "",
-        name: procedure?.expand?.patient?.name || "",
-        dateOfBirth:
-            dayjs(procedure?.expand?.patient?.dateOfBirth).format(
-                "YYYY-MM-DD"
-            ) || "",
-        sex: procedure?.expand?.patient?.sex || "",
-        phone: procedure?.expand?.patient?.phone || "",
         diagnosis: procedure?.diagnosis || "",
         comorbids: procedure?.comorbids || "",
         procedure: procedure?.procedure || "",
@@ -51,17 +43,9 @@ function ProcedureEditor({
         if (Object.keys(inputErrors).length > 0) {
             return;
         }
-
-        const updatedPatientRecord = {
-            address: "", //updatedProcedure.address,
-            dateOfBirth: updatedProcedure.dateOfBirth, //updatedProcedure.dateOfBirth,
-            hospitalId: updatedProcedure.hospitalId,
-            name: updatedProcedure.name,
-            nid: updatedProcedure.nid,
-            phone: updatedProcedure.phone,
-            sex: updatedProcedure.sex,
-        };
+        
         const updatedProcedureRecord = {
+            id: procedure.id,
             addedBy: updatedProcedure.addedBy,
             addedDate: updatedProcedure.addedDate,
             anesthesia: updatedProcedure.anesthesia,
@@ -75,13 +59,8 @@ function ProcedureEditor({
             requirements: updatedProcedure.requirements,
         };
 
-        updateProcedureAndPatient(
-            procedure.patient,
-            updatedPatientRecord,
-            procedure.id,
-            updatedProcedureRecord,
-            otDay
-        );
+        updateProcedures([updatedProcedureRecord], null, false);
+
         onAfterSave();
     };
 
@@ -122,6 +101,7 @@ function ProcedureEditor({
                     Removed
                 </div>
             )}
+            <PatientInfo patient={procedure?.expand?.patient} />
             <div className="p-2">
                 <ProcedureForm
                     value={updatedProcedure}

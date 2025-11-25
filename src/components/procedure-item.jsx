@@ -21,6 +21,7 @@ import ProcedureEditor from "./procedure-editor";
 import ModalWindow from "@/modals/modal-window";
 import { JSONTree } from "react-json-tree";
 import ProcedureComments from "./procedure-comments";
+import PatientInfo from "./patient-info";
 
 function ProcedureItem({
     procedure,
@@ -201,35 +202,8 @@ function ProcedureItem({
                         Removed
                     </div>
                 )}
+                <PatientInfo patient={procedure?.expand?.patient} />
                 <div className=" p-2 grid grid-cols-1 md:grid-cols-4 gap-2">
-                    {/* <LabelValue label="ID" value={row.id} /> */}
-                    <LabelValue
-                        label="NID"
-                        value={procedure?.expand?.patient?.nid}
-                    />
-                    <LabelValue
-                        label="Hospital ID"
-                        value={procedure?.expand?.patient?.hospitalId}
-                        className="md:col-span-2"
-                    />
-                    <LabelValue
-                        label="Phone"
-                        value={procedure?.expand?.patient?.phone}
-                    />
-                    <LabelValue
-                        className="md:col-span-2"
-                        label="Name"
-                        value={procedure?.expand?.patient?.name}
-                    />
-                    <LabelValue
-                        label="Age"
-                        value={age(procedure?.expand?.patient?.dateOfBirth)}
-                    />
-                    <LabelValue
-                        label="Sex"
-                        value={procedure?.expand?.patient?.sex}
-                    />
-
                     <LabelValue
                         className="md:col-span-2"
                         label="Diagnosis"
