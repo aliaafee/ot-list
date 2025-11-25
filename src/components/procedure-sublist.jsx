@@ -312,7 +312,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                                     {addError.message}
                                 </div>
                             )}
-                            <div className="p-2">
+                            <div className="p-2 flex flex-col gap-2">
                                 <PatientForm 
                                     value={newPatient}
                                     onChange={(value) => setNewPatient(value)}
