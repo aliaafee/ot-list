@@ -266,7 +266,11 @@ export function ProcedureListProvider({ children }) {
         }
     };
 
-    const updateProcedures = async (newProcedures, updatedOtDay = otDay, revertOnFail = true) => {
+    const updateProcedures = async (
+        newProcedures,
+        updatedOtDay = otDay,
+        revertOnFail = true
+    ) => {
         newProcedures.forEach((p) => discardProcedureUpdate(p.id));
 
         // Store original procedures for rollback
@@ -316,18 +320,17 @@ export function ProcedureListProvider({ children }) {
                     })
             );
 
-        const proceduresToRemove = newProcedures
-            .filter(
-                (
-                    newProcedure // Find the procedures in this list whose day has been changed
-                ) =>
-                    proceduresList.procedures.some(
-                        (p) => newProcedure.id === p.id
-                    ) &&
-                    (newProcedure?.procedureDay !== undefined
-                        ? newProcedure?.procedureDate !== otDay.id
-                        : false)
-            );
+        const proceduresToRemove = newProcedures.filter(
+            (
+                newProcedure // Find the procedures in this list whose day has been changed
+            ) =>
+                proceduresList.procedures.some(
+                    (p) => newProcedure.id === p.id
+                ) &&
+                (newProcedure?.procedureDay !== undefined
+                    ? newProcedure?.procedureDate !== otDay.id
+                    : false)
+        );
 
         proceduresToRemove.forEach((newProcedure) => {
             // Store removed procedures for rollback

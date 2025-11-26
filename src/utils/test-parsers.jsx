@@ -51,7 +51,7 @@ export function patientInfoFromHINAIHeader(text) {
     }
 
     if (lines.length > 1) {
-        // Second line contains: National ID, Mobile No
+        // Second line contains: National ID, Mobile No, Address
         const secondLine = lines[1];
 
         // Extract National ID - looking for "NATIONAL ID : A000518"
@@ -64,6 +64,15 @@ export function patientInfoFromHINAIHeader(text) {
         const phoneMatch = secondLine.match(/Mobile\s+No\s*:\s*(\d+)/i);
         if (phoneMatch) {
             patientData.phone = phoneMatch[1];
+        }
+
+        // Extract Address - looking for "Address : ISLAND, Atoll, Atoll, COUNTRY"
+        // Address appears between "Address :" and the next field (usually "Blood group")
+        const addressMatch = secondLine.match(
+            /Address\s*:\s*([^,]+(?:,\s*[^,]+)*?)(?:\s*,\s*Blood\s+group|$)/i
+        );
+        if (addressMatch) {
+            patientData.address = addressMatch[1].trim();
         }
     }
 

@@ -38,6 +38,46 @@ export function GenerateProdecureFormData(surgeons) {
             .subtract(Math.floor(18 + Math.random() * 60), "year")
             .format("YYYY-MM-DD"), // Random DOB between 18 and 78 years ago
         sex: Math.random() > 0.5 ? "male" : "female", // Random sex
+        address: `${
+            [
+                "HULHUDHALEEGE",
+                "MAAFANNU VILLA",
+                "SOSUN MAGU",
+                "ORCHID MAGU",
+                "HENVEIRU",
+                "RAHDHEBAI MAGU",
+                "KINOLHAS",
+                "NEELOFARU HINGUN",
+                "AMEENEE MAGU",
+                "JANAVAREE MAGU",
+            ][Math.floor(Math.random() * 10)]
+        }, ${
+            [
+                "Malé",
+                "Hulhumalé",
+                "Villingili",
+                "Maafushi",
+                "Thulusdhoo",
+                "Dhiffushi",
+                "Guraidhoo",
+                "Gulhi",
+                "Himmafushi",
+                "Huraa",
+            ][Math.floor(Math.random() * 10)]
+        }, ${
+            [
+                "Kaafu",
+                "Alifu Alifu",
+                "Alifu Dhaalu",
+                "Vaavu",
+                "Meemu",
+                "Faafu",
+                "Dhaalu",
+                "Thaa",
+                "Laamu",
+                "Gaafu Alifu",
+            ][Math.floor(Math.random() * 10)]
+        }, MALDIVES`, // Random address
         diagnosis: `${
             [
                 "Acute Appendicitis",

@@ -7,6 +7,7 @@ export const initialPatientValue = {
     dateOfBirth: "",
     sex: "",
     phone: "",
+    address: "",
 };
 
 export const validatePatient = (patient) => {
@@ -100,6 +101,15 @@ export function PatientForm({ onChange, value, errorFields = {} }) {
                 <option value="male">Male</option>
                 <option value="female">Female</option>
             </FormField>
+            <FormField
+                label="Address"
+                name="address"
+                value={value.address}
+                onChange={handleChange}
+                className="md:col-span-4"
+                error={"address" in errorFields}
+                errorMessage={errorFields["address"]?.message}
+            />
         </form>
     );
 }

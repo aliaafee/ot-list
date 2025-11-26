@@ -54,9 +54,6 @@ function ProcedureAdder({
                 ...prev,
                 bed: bedNumber,
             }));
-
-            console.log(patientInfoFromHINAIHeader(text));
-            console.log(bedInfoFromHINAIHeader(text));
         } catch (err) {
             console.error("Failed to read clipboard:", err);
             // Optionally show error to user
@@ -87,6 +84,7 @@ function ProcedureAdder({
             nid: newPatient.nid,
             phone: newPatient.phone,
             sex: newPatient.sex,
+            address: newPatient.address,
         };
 
         let nextOrder = 1;
