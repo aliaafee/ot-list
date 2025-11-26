@@ -54,9 +54,16 @@ function ProcedureAdder({
                 ...prev,
                 bed: bedNumber,
             }));
+
+            // Clear any previous error
+            setAddError(null);
         } catch (err) {
-            console.error("Failed to read clipboard:", err);
-            // Optionally show error to user
+            console.error("Failed to paste patient information:", err);
+            // Show error to user
+            setAddError({
+                message:
+                    "Failed to paste patient information. Please check the clipboard format.",
+            });
         }
     };
 

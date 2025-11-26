@@ -7,6 +7,29 @@ export function patientInfoFromHINAIHeader(text) {
     // Accepts text like:
     // Mr FIRSTNAME LAST NAME ( MALE | 10 Years 5 Months (01-Jan-1990) )  visitStatus:IP Bed Type/Location/BED NO :NORMAL/SURGICAL WARD/ SW-33	IGMH0000012345
     // NATIONAL ID : A000000 Mobile No : 7123456 Address : ISLAND, Atoll, Atoll, COUNTRY , Blood group : ``O`` POSITIVE , G6PD : 1410
+
+    // Validate format - check for required patterns
+    if (lines.length < 2) {
+        throw new Error(
+            "Invalid format: Expected at least 2 lines of patient information"
+        );
+    }
+
+    const firstLine = lines[0];
+    const secondLine = lines[1];
+
+    // Check if first line has basic structure (name in parentheses and hospital ID)
+    if (!firstLine.match(/\([^)]+\)/)) {
+        throw new Error(
+            "Invalid format: First line must contain patient information in parentheses"
+        );
+    }
+
+    // Check if second line has NATIONAL ID
+    if (!secondLine.match(/NATIONAL\s+ID\s*:/i)) {
+        throw new Error("Invalid format: Second line must contain NATIONAL ID");
+    }
+
     if (lines.length > 0) {
         // First line contains: Name, Sex, DOB, Hospital ID, Bed
         const firstLine = lines[0];
