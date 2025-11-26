@@ -4,6 +4,9 @@ export function patientInfoFromHINAIHeader(text) {
     const patientData = { ...initialPatientValue };
     const lines = text.split("\n");
 
+    // Accepts text like:
+    // Mr FIRSTNAME LAST NAME ( MALE | 10 Years 5 Months (01-Jan-1990) )  visitStatus:IP Bed Type/Location/BED NO :NORMAL/SURGICAL WARD/ SW-33	IGMH0000012345
+    // NATIONAL ID : A000000 Mobile No : 7123456 Address : ISLAND, Atoll, Atoll, COUNTRY , Blood group : ``O`` POSITIVE , G6PD : 1410
     if (lines.length > 0) {
         // First line contains: Name, Sex, DOB, Hospital ID, Bed
         const firstLine = lines[0];
@@ -11,7 +14,13 @@ export function patientInfoFromHINAIHeader(text) {
         // Extract name - everything before the first opening parenthesis
         const nameMatch = firstLine.match(/^(Mr|Mrs|Ms|Miss)?\s*([^(]+)/i);
         if (nameMatch) {
-            patientData.name = nameMatch[0].trim();
+            // Remove title (Mr, Mrs, Ms, Miss) from the name
+            const fullMatch = nameMatch[0].trim();
+            const nameWithoutTitle = fullMatch.replace(
+                /^(Mr|Mrs|Ms|Miss)\s+/i,
+                ""
+            );
+            patientData.name = nameWithoutTitle.trim();
         }
 
         // Extract sex - looking for MALE or FEMALE in parentheses
