@@ -72,12 +72,14 @@ PB_TMPFILE="$PB_DIR/pocketbase.zip"
 curl -L "$LATEST_URL" -o "$PB_TMPFILE"
 unzip -o "$PB_TMPFILE" -d "$PB_DIR"
 rm "$PB_TMPFILE"
-chmod +x "$PB_DIR/pocketbase"
 echo "[*] PocketBase binary installed"
 
 # Set ownership
 echo "[*] Setting ownership..."
 chown -R $PB_USER:$PB_USER $ROOT_DIR
+# Set PocketBase binary ownership to root with execute permissions for pocketbase user
+chown root:$PB_USER "$PB_DIR/pocketbase"
+chmod 750 "$PB_DIR/pocketbase"
 
 # Install systemd service
 echo "[*] Installing systemd service..."

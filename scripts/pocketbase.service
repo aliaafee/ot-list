@@ -26,7 +26,7 @@ PrivateTmp=true
 ProtectControlGroups=true
 ProtectKernelModules=true
 ProtectKernelTunables=true
-ReadWritePaths=/opt/react-pocketbase
+ReadWritePaths=/opt/ot-list
 
 [Install]
 WantedBy=multi-user.target
