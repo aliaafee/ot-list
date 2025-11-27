@@ -84,7 +84,6 @@ function ProcedureAdder({
         }
 
         const patient = {
-            address: "",
             dateOfBirth: newPatient.dateOfBirth,
             hospitalId: newPatient.hospitalId,
             name: newPatient.name,
