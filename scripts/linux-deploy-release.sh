@@ -78,9 +78,6 @@ echo "[*] PocketBase binary installed"
 # Set ownership
 echo "[*] Setting ownership..."
 chown -R $PB_USER:$PB_USER $ROOT_DIR
-# Keep pocketbase binary owned by root but executable by all
-chown root:root "$PB_DIR/pocketbase"
-chmod 755 "$PB_DIR/pocketbase"
 
 # Install systemd service
 echo "[*] Installing systemd service..."
