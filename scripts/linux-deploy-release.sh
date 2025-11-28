@@ -81,6 +81,28 @@ chown -R $PB_USER:$PB_USER $ROOT_DIR
 chown root:$PB_USER "$PB_DIR/pocketbase"
 chmod 750 "$PB_DIR/pocketbase"
 
+# Apply the migrations
+echo "[*] Applying database migrations..."
+sudo -u $PB_USER "$PB_DIR/pocketbase" migrate up
+
+# Prompt for initial admin user creation
+echo ""
+read -p "Do you want to create an admin user now? (y/N): " CREATE_ADMIN
+if [[ "$CREATE_ADMIN" =~ ^[Yy]$ ]]; then
+    echo "[*] Creating initial admin user..."
+    read -p "Enter admin email: " ADMIN_EMAIL
+    read -s -p "Enter admin password: " ADMIN_PASSWORD
+    echo ""
+    
+    # Create admin user
+    sudo -u $PB_USER "$PB_DIR/pocketbase" superuser create "$ADMIN_EMAIL" "$ADMIN_PASSWORD"
+    echo "[*] Admin user created successfully"
+else
+    echo "[*] Skipping admin user creation"
+    echo "    You can create an admin user later by running:"
+    echo "    sudo -u $PB_USER $PB_DIR/pocketbase superuser create <email> <password>"
+fi
+
 # Install systemd service
 echo "[*] Installing systemd service..."
 if [ -f "$ROOT_DIR/scripts/pocketbase.service" ]; then
@@ -111,6 +133,6 @@ echo "  sudo systemctl restart $SERVICE_NAME   # Restart service"
 echo "  sudo systemctl logs $SERVICE_NAME      # View logs"
 echo "  sudo journalctl -u $SERVICE_NAME -f    # Follow logs"
 echo ""
-echo "To get the token for the admin user, check the logs after the first start:"
-echo "  sudo systemctl --full --no-pager  status $SERVICE_NAME | grep -A 1 "superuser account:""
+echo "To get the token for the admin user, if not already created, check the logs after the first start:"
+echo "  sudo systemctl --full --no-pager  status $SERVICE_NAME | grep -A 1 \"superuser account:\""
 echo ""
