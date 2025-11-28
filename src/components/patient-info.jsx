@@ -3,20 +3,16 @@ import LabelValue from "./label-value";
 
 function PatientInfo({ patient, className = "" }) {
     return (
-        <div className={`p-2 grid grid-cols-1 md:grid-cols-4 gap-2 ${className}`}>
-            <LabelValue
-                label="NID"
-                value={patient?.nid}
-            />
+        <div
+            className={`p-2 grid grid-cols-1 md:grid-cols-4 gap-2 ${className}`}
+        >
+            <LabelValue label="NID" value={patient?.nid} />
             <LabelValue
                 label="Hospital ID"
                 value={patient?.hospitalId}
                 className="md:col-span-2"
             />
-            <LabelValue
-                label="Phone"
-                value={patient?.phone}
-            />
+            <LabelValue label="Phone" value={patient?.phone} />
             <LabelValue
                 className="md:col-span-2"
                 label="Name"
@@ -24,12 +20,9 @@ function PatientInfo({ patient, className = "" }) {
             />
             <LabelValue
                 label="Age"
-                value={age(patient?.dateOfBirth)}
+                value={!!patient?.dateOfBirth ? age(patient?.dateOfBirth) : ""}
             />
-            <LabelValue
-                label="Sex"
-                value={patient?.sex}
-            />
+            <LabelValue label="Sex" value={patient?.sex} />
         </div>
     );
 }
