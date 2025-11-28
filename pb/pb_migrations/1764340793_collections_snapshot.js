@@ -1771,7 +1771,7 @@ migrate((app) => {
         {
           "autogeneratePattern": "",
           "hidden": false,
-          "id": "_clone_4BLz",
+          "id": "_clone_8eKB",
           "max": 0,
           "min": 0,
           "name": "name",
@@ -1786,7 +1786,7 @@ migrate((app) => {
           "cascadeDelete": false,
           "collectionId": "pbc_3865025440",
           "hidden": false,
-          "id": "_clone_qGD4",
+          "id": "_clone_XJAe",
           "maxSelect": 1,
           "minSelect": 0,
           "name": "department",
@@ -1797,7 +1797,7 @@ migrate((app) => {
         },
         {
           "hidden": false,
-          "id": "_clone_iwKz",
+          "id": "_clone_P3WC",
           "name": "created",
           "onCreate": true,
           "onUpdate": false,
@@ -1807,7 +1807,7 @@ migrate((app) => {
         },
         {
           "hidden": false,
-          "id": "_clone_hNmG",
+          "id": "_clone_xUBf",
           "name": "updated",
           "onCreate": true,
           "onUpdate": true,
@@ -1846,7 +1846,7 @@ migrate((app) => {
         },
         {
           "hidden": false,
-          "id": "_clone_5gtv",
+          "id": "_clone_ECn6",
           "max": "",
           "min": "",
           "name": "date",
@@ -1859,7 +1859,7 @@ migrate((app) => {
           "cascadeDelete": false,
           "collectionId": "pbc_4005008627",
           "hidden": false,
-          "id": "_clone_JE4S",
+          "id": "_clone_UciT",
           "maxSelect": 1,
           "minSelect": 0,
           "name": "otList",
@@ -1870,7 +1870,7 @@ migrate((app) => {
         },
         {
           "hidden": false,
-          "id": "_clone_YKEK",
+          "id": "_clone_T8S3",
           "name": "disabled",
           "presentable": false,
           "required": false,
@@ -1880,7 +1880,7 @@ migrate((app) => {
         {
           "autogeneratePattern": "",
           "hidden": false,
-          "id": "_clone_GLjl",
+          "id": "_clone_Fxnt",
           "max": 0,
           "min": 0,
           "name": "remarks",
@@ -1893,7 +1893,7 @@ migrate((app) => {
         },
         {
           "hidden": false,
-          "id": "_clone_IpsS",
+          "id": "_clone_5WT8",
           "name": "created",
           "onCreate": true,
           "onUpdate": false,
@@ -1903,7 +1903,7 @@ migrate((app) => {
         },
         {
           "hidden": false,
-          "id": "_clone_N3TE",
+          "id": "_clone_rN7h",
           "name": "updated",
           "onCreate": true,
           "onUpdate": true,
