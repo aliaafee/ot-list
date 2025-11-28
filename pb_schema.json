@@ -1,12 +1,12 @@
 [
   {
-    "id": "pbc_3142635823",
-    "listRule": null,
-    "viewRule": null,
-    "createRule": null,
-    "updateRule": null,
+    "id": "_pb_users_auth_",
+    "listRule": "id = @request.auth.id || (@request.auth.id != \"\" && @request.auth.role = \"admin\")",
+    "viewRule": "id = @request.auth.id || (@request.auth.id != \"\" && @request.auth.role = \"admin\")",
+    "createRule": "@request.auth.id != \"\" && @request.auth.role = \"admin\"",
+    "updateRule": "id = @request.auth.id && (@request.body.role:isset = false)",
     "deleteRule": null,
-    "name": "_superusers",
+    "name": "users",
     "type": "auth",
     "fields": [
       {
@@ -80,13 +80,62 @@
         "type": "bool"
       },
       {
+        "autogeneratePattern": "",
+        "hidden": false,
+        "id": "text1579384326",
+        "max": 255,
+        "min": 0,
+        "name": "name",
+        "pattern": "",
+        "presentable": false,
+        "primaryKey": false,
+        "required": true,
+        "system": false,
+        "type": "text"
+      },
+      {
+        "hidden": false,
+        "id": "file376926767",
+        "maxSelect": 1,
+        "maxSize": 0,
+        "mimeTypes": [
+          "image/jpeg",
+          "image/png",
+          "image/svg+xml",
+          "image/gif",
+          "image/webp"
+        ],
+        "name": "avatar",
+        "presentable": false,
+        "protected": false,
+        "required": false,
+        "system": false,
+        "thumbs": null,
+        "type": "file"
+      },
+      {
+        "hidden": false,
+        "id": "select1466534506",
+        "maxSelect": 1,
+        "name": "role",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "select",
+        "values": [
+          "doctor",
+          "receptionist",
+          "admin"
+        ]
+      },
+      {
         "hidden": false,
         "id": "autodate2990389176",
         "name": "created",
         "onCreate": true,
         "onUpdate": false,
         "presentable": false,
-        "system": true,
+        "system": false,
         "type": "autodate"
       },
       {
@@ -96,15 +145,15 @@
         "onCreate": true,
         "onUpdate": true,
         "presentable": false,
-        "system": true,
+        "system": false,
         "type": "autodate"
       }
     ],
     "indexes": [
-      "CREATE UNIQUE INDEX `idx_tokenKey_pbc_3142635823` ON `_superusers` (`tokenKey`)",
-      "CREATE UNIQUE INDEX `idx_email_pbc_3142635823` ON `_superusers` (`email`) WHERE `email` != ''"
+      "CREATE UNIQUE INDEX `idx_tokenKey__pb_users_auth_` ON `users` (`tokenKey`)",
+      "CREATE UNIQUE INDEX `idx_email__pb_users_auth_` ON `users` (`email`) WHERE `email` != ''"
     ],
-    "system": true,
+    "system": false,
     "authRule": "",
     "manageRule": null,
     "authAlert": {
@@ -117,9 +166,9 @@
     "oauth2": {
       "mappedFields": {
         "id": "",
-        "name": "",
+        "name": "name",
         "username": "",
-        "avatarURL": ""
+        "avatarURL": "avatar"
       },
       "enabled": false
     },
@@ -144,7 +193,7 @@
       }
     },
     "authToken": {
-      "duration": 86400
+      "duration": 604800
     },
     "passwordResetToken": {
       "duration": 1800
@@ -1158,7 +1207,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "_clone_ubGh",
+        "id": "_clone_shlx",
         "max": 0,
         "min": 0,
         "name": "name",
@@ -1173,7 +1222,7 @@
         "cascadeDelete": false,
         "collectionId": "pbc_3865025440",
         "hidden": false,
-        "id": "_clone_rsUE",
+        "id": "_clone_uw7e",
         "maxSelect": 1,
         "minSelect": 0,
         "name": "department",
@@ -1184,7 +1233,7 @@
       },
       {
         "hidden": false,
-        "id": "_clone_R49Q",
+        "id": "_clone_ZgDe",
         "name": "created",
         "onCreate": true,
         "onUpdate": false,
@@ -1194,7 +1243,7 @@
       },
       {
         "hidden": false,
-        "id": "_clone_i5JL",
+        "id": "_clone_RQpD",
         "name": "updated",
         "onCreate": true,
         "onUpdate": true,
@@ -1233,7 +1282,7 @@
       },
       {
         "hidden": false,
-        "id": "_clone_ZTYx",
+        "id": "_clone_2B2U",
         "max": "",
         "min": "",
         "name": "date",
@@ -1246,7 +1295,7 @@
         "cascadeDelete": false,
         "collectionId": "pbc_4005008627",
         "hidden": false,
-        "id": "_clone_MTsl",
+        "id": "_clone_DK02",
         "maxSelect": 1,
         "minSelect": 0,
         "name": "otList",
@@ -1257,7 +1306,7 @@
       },
       {
         "hidden": false,
-        "id": "_clone_498j",
+        "id": "_clone_xjM0",
         "name": "disabled",
         "presentable": false,
         "required": false,
@@ -1267,7 +1316,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "_clone_76pL",
+        "id": "_clone_SaJk",
         "max": 0,
         "min": 0,
         "name": "remarks",
@@ -1280,7 +1329,7 @@
       },
       {
         "hidden": false,
-        "id": "_clone_67Y5",
+        "id": "_clone_qpyq",
         "name": "created",
         "onCreate": true,
         "onUpdate": false,
@@ -1290,7 +1339,7 @@
       },
       {
         "hidden": false,
-        "id": "_clone_WJXL",
+        "id": "_clone_iwH3",
         "name": "updated",
         "onCreate": true,
         "onUpdate": true,

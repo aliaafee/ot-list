@@ -585,8 +585,8 @@ migrate((app) => {
         "body": "<p>Hello,</p>\n<p>Click on the button below to confirm your new email address.</p>\n<p>\n  <a class=\"btn\" href=\"{APP_URL}/_/#/auth/confirm-email-change/{TOKEN}\" target=\"_blank\" rel=\"noopener\">Confirm new email</a>\n</p>\n<p><i>If you didn't ask to change your email address, you can ignore this email.</i></p>\n<p>\n  Thanks,<br/>\n  {APP_NAME} team\n</p>",
         "subject": "Confirm your {APP_NAME} new email address"
       },
-      "createRule": "",
-      "deleteRule": "id = @request.auth.id",
+      "createRule": "@request.auth.id != \"\" && @request.auth.role = \"admin\"",
+      "deleteRule": null,
       "emailChangeToken": {
         "duration": 1800
       },
@@ -671,7 +671,7 @@ migrate((app) => {
           "pattern": "",
           "presentable": false,
           "primaryKey": false,
-          "required": false,
+          "required": true,
           "system": false,
           "type": "text"
         },
@@ -701,12 +701,13 @@ migrate((app) => {
           "maxSelect": 1,
           "name": "role",
           "presentable": false,
-          "required": false,
+          "required": true,
           "system": false,
           "type": "select",
           "values": [
             "doctor",
-            "receptionist"
+            "receptionist",
+            "admin"
           ]
         },
         {
@@ -738,7 +739,7 @@ migrate((app) => {
         "CREATE UNIQUE INDEX `idx_tokenKey__pb_users_auth_` ON `users` (`tokenKey`)",
         "CREATE UNIQUE INDEX `idx_email__pb_users_auth_` ON `users` (`email`) WHERE `email` != ''"
       ],
-      "listRule": "id = @request.auth.id",
+      "listRule": "id = @request.auth.id || (@request.auth.id != \"\" && @request.auth.role = \"admin\")",
       "manageRule": null,
       "mfa": {
         "duration": 1800,
@@ -779,7 +780,7 @@ migrate((app) => {
       },
       "system": false,
       "type": "auth",
-      "updateRule": "id = @request.auth.id",
+      "updateRule": "id = @request.auth.id && (@request.body.role:isset = false)",
       "verificationTemplate": {
         "body": "<p>Hello,</p>\n<p>Thank you for joining us at {APP_NAME}.</p>\n<p>Click on the button below to verify your email address.</p>\n<p>\n  <a class=\"btn\" href=\"{APP_URL}/_/#/auth/confirm-verification/{TOKEN}\" target=\"_blank\" rel=\"noopener\">Verify</a>\n</p>\n<p>\n  Thanks,<br/>\n  {APP_NAME} team\n</p>",
         "subject": "Verify your {APP_NAME} email"
@@ -787,11 +788,11 @@ migrate((app) => {
       "verificationToken": {
         "duration": 259200
       },
-      "viewRule": "id = @request.auth.id"
+      "viewRule": "id = @request.auth.id || (@request.auth.id != \"\" && @request.auth.role = \"admin\")"
     },
     {
-      "createRule": "@request.auth.id != \"\" && @request.auth.role = \"doctor\"",
-      "deleteRule": null,
+      "createRule": "@request.auth.id != \"\" && @request.auth.role = \"admin\"",
+      "deleteRule": "@request.auth.id != \"\" && @request.auth.role = \"admin\"",
       "fields": [
         {
           "autogeneratePattern": "[a-z0-9]{15}",
@@ -876,12 +877,12 @@ migrate((app) => {
       "name": "departments",
       "system": false,
       "type": "base",
-      "updateRule": "@request.auth.id != \"\" && @request.auth.role = \"doctor\"",
+      "updateRule": "@request.auth.id != \"\" && @request.auth.role = \"admin\"",
       "viewRule": "@request.auth.id != \"\""
     },
     {
-      "createRule": "@request.auth.id != \"\" && @request.auth.role = \"doctor\"",
-      "deleteRule": null,
+      "createRule": "@request.auth.id != \"\" && @request.auth.role = \"admin\"",
+      "deleteRule": "@request.auth.id != \"\" && @request.auth.role = \"admin\"",
       "fields": [
         {
           "autogeneratePattern": "[a-z0-9]{15}",
@@ -961,12 +962,12 @@ migrate((app) => {
       "name": "operatingRooms",
       "system": false,
       "type": "base",
-      "updateRule": "@request.auth.id != \"\" && @request.auth.role = \"doctor\"",
+      "updateRule": "@request.auth.id != \"\" && @request.auth.role = \"admin\"",
       "viewRule": "@request.auth.id != \"\""
     },
     {
-      "createRule": "@request.auth.id != \"\" && @request.auth.role = \"doctor\"",
-      "deleteRule": null,
+      "createRule": "@request.auth.id != \"\" && (\n  @request.auth.role = \"doctor\" ||\n  @request.auth.role = \"admin\"\n)\n",
+      "deleteRule": "@request.auth.id != \"\" && @request.auth.role = \"admin\"",
       "fields": [
         {
           "autogeneratePattern": "[a-z0-9]{15}",
@@ -1058,12 +1059,12 @@ migrate((app) => {
       "name": "otDays",
       "system": false,
       "type": "base",
-      "updateRule": "@request.auth.id != \"\" && @request.auth.role = \"doctor\"",
+      "updateRule": "@request.auth.id != \"\" && (\n  @request.auth.role = \"doctor\" ||\n  @request.auth.role = \"admin\"\n)\n",
       "viewRule": "@request.auth.id != \"\""
     },
     {
-      "createRule": "@request.auth.id != \"\" && @request.auth.role = \"doctor\"",
-      "deleteRule": null,
+      "createRule": "@request.auth.id != \"\" && (\n  @request.auth.role = \"doctor\" ||\n  @request.auth.role = \"admin\"\n)",
+      "deleteRule": "@request.auth.id != \"\" && @request.auth.role = \"admin\"",
       "fields": [
         {
           "autogeneratePattern": "[a-z0-9]{15}",
@@ -1179,12 +1180,12 @@ migrate((app) => {
       "name": "otLists",
       "system": false,
       "type": "base",
-      "updateRule": "@request.auth.id != \"\" && @request.auth.role = \"doctor\"",
+      "updateRule": "@request.auth.id != \"\" && (\n  @request.auth.role = \"doctor\" ||\n  @request.auth.role = \"admin\"\n)",
       "viewRule": "@request.auth.id != \"\""
     },
     {
-      "createRule": "@request.auth.id != \"\" && @request.auth.role = \"doctor\"",
-      "deleteRule": null,
+      "createRule": "@request.auth.id != \"\" && (\n  @request.auth.role = \"doctor\" ||\n  @request.auth.role = \"admin\"\n)",
+      "deleteRule": "@request.auth.id != \"\" && @request.auth.role = \"admin\"",
       "fields": [
         {
           "autogeneratePattern": "[a-z0-9]{15}",
@@ -1238,7 +1239,7 @@ migrate((app) => {
           "pattern": "",
           "presentable": false,
           "primaryKey": false,
-          "required": false,
+          "required": true,
           "system": false,
           "type": "text"
         },
@@ -1322,12 +1323,109 @@ migrate((app) => {
       "name": "patients",
       "system": false,
       "type": "base",
-      "updateRule": "@request.auth.id != \"\" && @request.auth.role = \"doctor\"",
+      "updateRule": "@request.auth.id != \"\" && (\n  @request.auth.role = \"doctor\" ||\n  @request.auth.role = \"admin\"\n)",
       "viewRule": "@request.auth.id != \"\""
     },
     {
-      "createRule": "@request.auth.id != \"\" && @request.auth.role = \"doctor\"",
+      "createRule": "@request.auth.id != \"\"",
       "deleteRule": null,
+      "fields": [
+        {
+          "autogeneratePattern": "[a-z0-9]{15}",
+          "hidden": false,
+          "id": "text3208210256",
+          "max": 15,
+          "min": 15,
+          "name": "id",
+          "pattern": "^[a-z0-9]+$",
+          "presentable": false,
+          "primaryKey": true,
+          "required": true,
+          "system": true,
+          "type": "text"
+        },
+        {
+          "cascadeDelete": false,
+          "collectionId": "_pb_users_auth_",
+          "hidden": false,
+          "id": "relation3154569827",
+          "maxSelect": 1,
+          "minSelect": 0,
+          "name": "creator",
+          "presentable": false,
+          "required": false,
+          "system": false,
+          "type": "relation"
+        },
+        {
+          "autogeneratePattern": "",
+          "hidden": false,
+          "id": "text4274335913",
+          "max": 0,
+          "min": 0,
+          "name": "content",
+          "pattern": "",
+          "presentable": false,
+          "primaryKey": false,
+          "required": false,
+          "system": false,
+          "type": "text"
+        },
+        {
+          "hidden": false,
+          "id": "bool3194813053",
+          "name": "removed",
+          "presentable": false,
+          "required": false,
+          "system": false,
+          "type": "bool"
+        },
+        {
+          "cascadeDelete": false,
+          "collectionId": "pbc_1747635922",
+          "hidden": false,
+          "id": "relation2621226015",
+          "maxSelect": 1,
+          "minSelect": 0,
+          "name": "procedure",
+          "presentable": false,
+          "required": false,
+          "system": false,
+          "type": "relation"
+        },
+        {
+          "hidden": false,
+          "id": "autodate2990389176",
+          "name": "created",
+          "onCreate": true,
+          "onUpdate": false,
+          "presentable": false,
+          "system": false,
+          "type": "autodate"
+        },
+        {
+          "hidden": false,
+          "id": "autodate3332085495",
+          "name": "updated",
+          "onCreate": true,
+          "onUpdate": true,
+          "presentable": false,
+          "system": false,
+          "type": "autodate"
+        }
+      ],
+      "id": "pbc_505735161",
+      "indexes": [],
+      "listRule": "@request.auth.id != \"\"",
+      "name": "procedureComments",
+      "system": false,
+      "type": "base",
+      "updateRule": "@request.auth.id = creator &&\n(\n  @request.body.content:isset = false &&\n  @request.body.creator:isset = false\n)\n",
+      "viewRule": "@request.auth.id != \"\""
+    },
+    {
+      "createRule": "@request.auth.id != \"\" && (\n  @request.auth.role = \"doctor\" ||\n  @request.auth.role = \"admin\"\n)",
+      "deleteRule": "@request.auth.id != \"\" && @request.auth.role = \"admin\"",
       "fields": [
         {
           "autogeneratePattern": "[a-z0-9]{15}",
@@ -1366,7 +1464,7 @@ migrate((app) => {
           "pattern": "",
           "presentable": false,
           "primaryKey": false,
-          "required": false,
+          "required": true,
           "system": false,
           "type": "text"
         },
@@ -1380,7 +1478,7 @@ migrate((app) => {
           "pattern": "",
           "presentable": false,
           "primaryKey": false,
-          "required": false,
+          "required": true,
           "system": false,
           "type": "text"
         },
@@ -1565,12 +1663,12 @@ migrate((app) => {
       "name": "procedures",
       "system": false,
       "type": "base",
-      "updateRule": "@request.auth.id != \"\" && @request.auth.role = \"doctor\"",
+      "updateRule": "@request.auth.id != \"\" && (\n  @request.auth.role = \"doctor\" ||\n  @request.auth.role = \"admin\"\n)",
       "viewRule": "@request.auth.id != \"\""
     },
     {
-      "createRule": "@request.auth.id != \"\" && @request.auth.role = \"doctor\"",
-      "deleteRule": "",
+      "createRule": "@request.auth.id != \"\" && (\n  @request.auth.role = \"doctor\" ||\n  @request.auth.role = \"admin\"\n)",
+      "deleteRule": "@request.auth.id != \"\" && @request.auth.role = \"admin\"",
       "fields": [
         {
           "autogeneratePattern": "[a-z0-9]{15}",
@@ -1596,7 +1694,7 @@ migrate((app) => {
           "pattern": "",
           "presentable": false,
           "primaryKey": false,
-          "required": false,
+          "required": true,
           "system": false,
           "type": "text"
         },
@@ -1649,7 +1747,7 @@ migrate((app) => {
       "name": "surgeons",
       "system": false,
       "type": "base",
-      "updateRule": "@request.auth.id != \"\" && @request.auth.role = \"doctor\"",
+      "updateRule": "@request.auth.id != \"\" && (\n  @request.auth.role = \"doctor\" ||\n  @request.auth.role = \"admin\"\n)",
       "viewRule": "@request.auth.id != \"\""
     },
     {
@@ -1673,14 +1771,14 @@ migrate((app) => {
         {
           "autogeneratePattern": "",
           "hidden": false,
-          "id": "_clone_ZEjL",
+          "id": "_clone_4BLz",
           "max": 0,
           "min": 0,
           "name": "name",
           "pattern": "",
           "presentable": false,
           "primaryKey": false,
-          "required": false,
+          "required": true,
           "system": false,
           "type": "text"
         },
@@ -1688,7 +1786,7 @@ migrate((app) => {
           "cascadeDelete": false,
           "collectionId": "pbc_3865025440",
           "hidden": false,
-          "id": "_clone_KiwK",
+          "id": "_clone_qGD4",
           "maxSelect": 1,
           "minSelect": 0,
           "name": "department",
@@ -1699,7 +1797,7 @@ migrate((app) => {
         },
         {
           "hidden": false,
-          "id": "_clone_cvd0",
+          "id": "_clone_iwKz",
           "name": "created",
           "onCreate": true,
           "onUpdate": false,
@@ -1709,7 +1807,7 @@ migrate((app) => {
         },
         {
           "hidden": false,
-          "id": "_clone_I40o",
+          "id": "_clone_hNmG",
           "name": "updated",
           "onCreate": true,
           "onUpdate": true,
@@ -1748,7 +1846,7 @@ migrate((app) => {
         },
         {
           "hidden": false,
-          "id": "_clone_ZemY",
+          "id": "_clone_5gtv",
           "max": "",
           "min": "",
           "name": "date",
@@ -1761,7 +1859,7 @@ migrate((app) => {
           "cascadeDelete": false,
           "collectionId": "pbc_4005008627",
           "hidden": false,
-          "id": "_clone_KFGe",
+          "id": "_clone_JE4S",
           "maxSelect": 1,
           "minSelect": 0,
           "name": "otList",
@@ -1772,7 +1870,7 @@ migrate((app) => {
         },
         {
           "hidden": false,
-          "id": "_clone_YjLr",
+          "id": "_clone_YKEK",
           "name": "disabled",
           "presentable": false,
           "required": false,
@@ -1782,7 +1880,7 @@ migrate((app) => {
         {
           "autogeneratePattern": "",
           "hidden": false,
-          "id": "_clone_rBfB",
+          "id": "_clone_GLjl",
           "max": 0,
           "min": 0,
           "name": "remarks",
@@ -1795,7 +1893,7 @@ migrate((app) => {
         },
         {
           "hidden": false,
-          "id": "_clone_xLIm",
+          "id": "_clone_IpsS",
           "name": "created",
           "onCreate": true,
           "onUpdate": false,
@@ -1805,7 +1903,7 @@ migrate((app) => {
         },
         {
           "hidden": false,
-          "id": "_clone_nGBK",
+          "id": "_clone_N3TE",
           "name": "updated",
           "onCreate": true,
           "onUpdate": true,
