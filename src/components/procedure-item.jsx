@@ -11,6 +11,7 @@ import {
     TrashIcon,
     CalendarArrowDownIcon,
     UndoDotIcon,
+    UserPenIcon,
 } from "lucide-react";
 
 import { age } from "@/utils/dates";
@@ -22,6 +23,7 @@ import ModalWindow from "@/modals/modal-window";
 import { JSONTree } from "react-json-tree";
 import ProcedureComments from "./procedure-comments";
 import PatientInfo from "./patient-info";
+import EditPatientModal from "@/modals/edit-patient-modal";
 
 function ProcedureItem({
     procedure,
@@ -40,12 +42,14 @@ function ProcedureItem({
         isBusy,
         getProcedureError,
         discardProcedureUpdate,
+        reloadProcedure,
         otDay,
     } = useProcedureList();
 
     const recordError = getProcedureError(procedure);
     const [editing, setEditing] = useState(false);
     const [confirmRemove, setConfirmRemove] = useState(false);
+    const [editingPatient, setEditingPatient] = useState(false);
 
     const SimplifiedView = () => {
         return (
@@ -74,9 +78,11 @@ function ProcedureItem({
                 />
                 <LabelValue
                     // label="Age/Sex"
-                    value={`${age(
-                        procedure?.expand?.patient?.dateOfBirth
-                    )} / ${procedure?.expand?.patient?.sex[0].toUpperCase()}`}
+                    value={`${
+                        !!procedure?.expand?.patient?.dateOfBirth
+                            ? age(procedure?.expand?.patient?.dateOfBirth)
+                            : "-"
+                    } / ${procedure?.expand?.patient?.sex[0].toUpperCase()}`}
                     className="col-span-1 hidden lg:inline"
                 />
                 <LabelValue
@@ -183,6 +189,16 @@ function ProcedureItem({
                             <ToolBarButtonLabel>Restore</ToolBarButtonLabel>
                         </ToolBarButton>
                     )}
+                    <ToolBarButton
+                        title="Edit Patient Info"
+                        disabled={isBusy()}
+                        onClick={() => setEditingPatient(true)}
+                    >
+                        <UserPenIcon className="" width={16} height={16} />
+                        <ToolBarButtonLabel className="hidden sm:inline">
+                            Edit Patient
+                        </ToolBarButtonLabel>
+                    </ToolBarButton>
                     <div className="flex-grow"></div>
                     <ToolBarButton
                         title="close"
@@ -275,6 +291,16 @@ function ProcedureItem({
                         <p>Remove the selected procedure?</p>
                     </ModalWindow>
                 )}
+                {editingPatient && (
+                    <EditPatientModal
+                        patient={procedure?.expand?.patient}
+                        onCancel={() => setEditingPatient(false)}
+                        onSuccess={() => {
+                            setEditingPatient(false);
+                            reloadProcedure(procedure.id);
+                        }}
+                    />
+                )}
             </div>
         );
     };
@@ -319,7 +345,11 @@ function ProcedureItem({
     }
 
     if (proceduresList.selected === procedure.id) {
-        return <ExpandedView />;
+        return (
+            <>
+                <ExpandedView />
+            </>
+        );
     }
 
     return <SimplifiedView />;

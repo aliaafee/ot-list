@@ -89,6 +89,21 @@ export function ProcedureListProvider({ children }) {
         }
     };
 
+    const reloadProcedure = async (procedureId) => {
+        try {
+            const procedure = await pb
+                .collection("procedures")
+                .getOne(procedureId, proceduresCollectionOptions);
+            dispatchData({
+                type: "UPDATE_PROCEDURE",
+                payload: procedure,
+            });
+        } catch (e) {
+            console.log("Fetch Error: ", JSON.parse(JSON.stringify(e)));
+            setError(e);
+        }
+    };
+
     const createUnsubscribeProcedures = (procedureDayId) => {
         return () => {
             setSubscribed(false);
@@ -558,6 +573,7 @@ export function ProcedureListProvider({ children }) {
             isBusy,
             getProcedureError,
             discardProcedureUpdate,
+            reloadProcedure,
             loading,
             error,
         };
