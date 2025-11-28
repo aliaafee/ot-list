@@ -9,15 +9,18 @@ SERVICE_NAME="otlist"
 
 # Function to display usage
 usage() {
-    echo "Usage: $0 {install|uninstall} [VERSION]"
+    echo "Usage: $0 {install|update|uninstall} [VERSION]"
     echo ""
     echo "Commands:"
     echo "  install [VERSION]   Install OT List (default version: 0.0.1)"
+    echo "  update [VERSION]    Update OT List to a new version"
     echo "  uninstall           Uninstall OT List completely"
     echo ""
     echo "Examples:"
     echo "  $0 install 0.0.2    # Install version 0.0.2"
     echo "  $0 install          # Install default version"
+    echo "  $0 update 0.0.3     # Update to version 0.0.3"
+    echo "  $0 update           # Update to default version"
     echo "  $0 uninstall        # Remove OT List"
     exit 1
 }
@@ -156,6 +159,140 @@ install() {
     echo ""
 }
 
+# Function to update
+update() {
+    VERSION="${1:-0.0.1}"  # Default version or passed as argument
+    RELEASE_URL="https://github.com/aliaafee/ot-list/releases/download/v${VERSION}/ot-list-v${VERSION}.zip"
+
+    echo "[*] OT List Update Script"
+    echo "[*] Version: $VERSION"
+    echo "[*] Install directory: $ROOT_DIR"
+    echo ""
+
+    # Check if running as root or with sudo
+    if [ "$EUID" -ne 0 ]; then 
+        echo "Please run as root or with sudo"
+        exit 1
+    fi
+
+    # Check if OT List is installed
+    if [ ! -d "$ROOT_DIR" ]; then
+        echo "Error: OT List is not installed at $ROOT_DIR"
+        echo "Please run the install command first"
+        exit 1
+    fi
+
+    # Stop the service
+    echo "[*] Stopping $SERVICE_NAME service..."
+    if systemctl is-active --quiet $SERVICE_NAME.service; then
+        systemctl stop $SERVICE_NAME.service
+        echo "Service stopped"
+    fi
+
+    # Backup current installation
+    echo "[*] Creating backup of current installation..."
+    BACKUP_DIR="${ROOT_DIR}.backup.$(date +%s)"
+    cp -r "$ROOT_DIR" "$BACKUP_DIR"
+    echo "Backup created at: $BACKUP_DIR"
+
+    # Backup pb_data directory (preserve database and migrations)
+    echo "[*] Preserving database..."
+    TEMP_DATA_DIR="/tmp/ot-list-data-$(date +%s)"
+    if [ -d "$PB_DIR/pb_data" ]; then
+        cp -r "$PB_DIR/pb_data" "$TEMP_DATA_DIR"
+        echo "Database backed up to temp location"
+    fi
+
+    # Download and extract new release
+    echo "[*] Downloading new release from GitHub..."
+    TMPFILE="/tmp/ot-list-release-$(date +%s).zip"
+
+    if curl -L -f "$RELEASE_URL" -o "$TMPFILE"; then
+        echo "[*] Release downloaded successfully"
+    else
+        echo "Error: Could not download release from $RELEASE_URL"
+        echo "Please check that the release exists on GitHub"
+        echo "Backup is available at: $BACKUP_DIR"
+        exit 1
+    fi
+
+    echo "[*] Extracting release..."
+    # Remove old application files (but keep pb_data)
+    find "$ROOT_DIR" -mindepth 1 -maxdepth 1 ! -name 'pb' -exec rm -rf {} +
+    if [ -d "$PB_DIR" ]; then
+        find "$PB_DIR" -mindepth 1 -maxdepth 1 ! -name 'pb_data' -exec rm -rf {} +
+    fi
+    
+    unzip -o "$TMPFILE" -d "$ROOT_DIR"
+    rm "$TMPFILE"
+
+    # Restore pb_data directory
+    if [ -d "$TEMP_DATA_DIR" ]; then
+        echo "[*] Restoring database..."
+        mkdir -p "$PB_DIR"
+        cp -r "$TEMP_DATA_DIR" "$PB_DIR/pb_data"
+        rm -rf "$TEMP_DATA_DIR"
+        echo "Database restored"
+    fi
+
+    # Download latest PocketBase binary
+    echo "[*] Downloading latest PocketBase binary..."
+    mkdir -p "$PB_DIR"
+
+    LATEST_URL=$(curl -s https://api.github.com/repos/pocketbase/pocketbase/releases/latest \
+        | grep "browser_download_url.*linux_amd64.zip" \
+        | cut -d '"' -f 4 | head -n1)
+
+    if [ -z "$LATEST_URL" ]; then
+        echo "Error: Could not fetch PocketBase release URL"
+        echo "Backup is available at: $BACKUP_DIR"
+        exit 1
+    fi
+
+    PB_TMPFILE="/tmp/pocketbase-$(date +%s).zip"
+    curl -L "$LATEST_URL" -o "$PB_TMPFILE"
+    unzip -o "$PB_TMPFILE" -d "$PB_DIR"
+    rm "$PB_TMPFILE"
+    echo "[*] PocketBase binary updated"
+
+    # Set ownership
+    echo "[*] Setting ownership..."
+    chown -R $PB_USER:$PB_USER $ROOT_DIR
+    chown root:$PB_USER "$PB_DIR/pocketbase"
+    chmod 750 "$PB_DIR/pocketbase"
+
+    # Apply the migrations
+    echo "[*] Applying database migrations..."
+    sudo -u $PB_USER "$PB_DIR/pocketbase" migrate up
+
+    # Update systemd service file
+    echo "[*] Updating systemd service..."
+    if [ -f "$ROOT_DIR/scripts/pocketbase.service" ]; then
+        cp "$ROOT_DIR/scripts/pocketbase.service" "/etc/systemd/system/$SERVICE_NAME.service"
+        systemctl daemon-reload
+        echo "Service file updated"
+    else
+        echo "Warning: pocketbase.service file not found in scripts/"
+    fi
+
+    # Start the service
+    echo "[*] Starting $SERVICE_NAME service..."
+    systemctl start $SERVICE_NAME.service
+    
+    echo "[*] Service status:"
+    systemctl status $SERVICE_NAME.service --no-pager
+
+    echo ""
+    echo "✓ Update complete!"
+    echo ""
+    echo "Updated to version: $VERSION"
+    echo "Backup available at: $BACKUP_DIR"
+    echo ""
+    echo "You can delete the backup later with:"
+    echo "  sudo rm -rf $BACKUP_DIR"
+    echo ""
+}
+
 # Function to uninstall
 uninstall() {
     echo "[*] OT List Uninstall Script"
@@ -231,6 +368,9 @@ shift  # Remove first argument
 case "$COMMAND" in
     install)
         install "$@"
+        ;;
+    update)
+        update "$@"
         ;;
     uninstall)
         uninstall
