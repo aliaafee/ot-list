@@ -22,6 +22,9 @@ function MoveProcedureModal({
     } = useProcedureList();
 
     const [newOtDayId, setNewOtDayId] = useState(itemToMove?.procedureDay);
+    const [newOperatingRoomId, setNewOperatingRoomId] = useState(
+        operatingRoom?.id
+    );
     const [moving, setMoving] = useState(false);
     const [error, setError] = useState("");
 
@@ -34,16 +37,23 @@ function MoveProcedureModal({
                 (d) => d.id === newOtDayId
             );
 
-        if (itemToMove.procedureDay === newOtDay.id) {
+        const newOperatingRoom = otDay.expand.otList.expand.operatingRooms.find(
+            (room) => room.id === newOperatingRoomId
+        );
+
+        if (
+            itemToMove.procedureDay === newOtDay.id &&
+            operatingRoom.id === newOperatingRoom.id
+        ) {
             onSuccess();
-            return; // No change in date
+            return; // No change in date or room
         }
 
         let nextOrder = 1;
         try {
             const moveListData = await getProcedures(
                 newOtDay.id,
-                operatingRoom.id
+                newOperatingRoom.id
             );
             console.log("moveList", moveListData);
             if (moveListData && moveListData.length > 0) {
@@ -62,6 +72,7 @@ function MoveProcedureModal({
         const updatedItem = {
             id: itemToMove.id,
             procedureDay: newOtDay.id,
+            operatingRoom: newOperatingRoom.id,
             order: nextOrder,
             removed: false,
         };
@@ -103,7 +114,10 @@ function MoveProcedureModal({
                     "DD MMM YYYY"
                 )}
             </p>
-            <p className="mb-2">Move the selected procedure to another date?</p>
+            <p className="mb-2">
+                Move the selected procedure to another date and/or operating
+                room?
+            </p>
             <form>
                 <FormField
                     label=""
@@ -111,12 +125,29 @@ function MoveProcedureModal({
                     value={newOtDayId}
                     onChange={(e) => setNewOtDayId(e.target.value)}
                     type="select"
+                    className="mb-2"
                 >
                     <option value="">Select a new date</option>
-                    {otDay.expand.otList.expand.upcomingOtDays_via_otList.map(
+                    {otDay?.expand?.otList?.expand?.upcomingOtDays_via_otList.map(
                         (day) => (
                             <option key={day.id} value={day.id}>
                                 {dayjs(day.date).format("ddd, DD MMM YYYY")}
+                            </option>
+                        )
+                    )}
+                </FormField>
+                <FormField
+                    label=""
+                    name="newOperatingRoom"
+                    value={newOperatingRoomId}
+                    onChange={(e) => setNewOperatingRoomId(e.target.value)}
+                    type="select"
+                >
+                    <option value="">Select a new operating room</option>
+                    {otDay?.expand?.otList?.expand?.operatingRooms.map(
+                        (room) => (
+                            <option key={room.id} value={room.id}>
+                                {room.name}
                             </option>
                         )
                     )}
