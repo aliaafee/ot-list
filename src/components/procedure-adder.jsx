@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { XIcon, ClipboardPasteIcon } from "lucide-react";
+import { XIcon, ClipboardPasteIcon, SearchIcon, UserPlusIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
@@ -19,6 +19,8 @@ import {
     bedInfoFromHINAIHeader,
     patientInfoFromHINAIHeader,
 } from "@/utils/test-parsers";
+import PatientSearchModal from "@/modals/patient-search-modal";
+import PatientInfo from "./patient-info";
 
 function ProcedureAdder({
     operatingRoom,
@@ -29,9 +31,11 @@ function ProcedureAdder({
     const { otDay, addProcedure, isBusy } = useProcedureList();
     const [newPatient, setNewPatient] = useState(initialPatientValue);
     const [newPatientErrors, setNewPatientErrors] = useState({});
+    const [selectedPatient, setSelectedPatient] = useState(null);
     const [newProcedure, setNewProcedure] = useState(initialProcedureValue);
     const [newProcedureErrors, setNewProcedureErrors] = useState({});
     const [addError, setAddError] = useState(null);
+    const [showPatientSearch, setShowPatientSearch] = useState(false);
 
     const handleSampleData = () => {
         const sampleData = GenerateProdecureFormData(
@@ -57,6 +61,7 @@ function ProcedureAdder({
 
             // Clear any previous error
             setAddError(null);
+            setSelectedPatient(null);
         } catch (err) {
             console.error("Failed to paste patient information:", err);
             // Show error to user
@@ -65,6 +70,31 @@ function ProcedureAdder({
                     "Failed to paste patient information. Please check the clipboard format.",
             });
         }
+    };
+
+    const handleFindPatient = async () => {
+        setShowPatientSearch(true);
+    };
+
+    const handleNewPatient = () => {
+        setSelectedPatient(null);
+        setNewPatient(initialPatientValue);
+        setAddError(null);
+    }
+
+    const handlePatientSelected = (patient) => {
+        setNewPatient({
+            nid: patient.nid,
+            hospitalId: patient.hospitalId,
+            name: patient.name,
+            dateOfBirth: patient.dateOfBirth,
+            sex: patient.sex,
+            phone: patient.phone,
+            address: patient.address || "",
+        });
+        setSelectedPatient(patient);
+        setShowPatientSearch(false);
+        setAddError(null);
     };
 
     const handleAddProcedure = () => {
@@ -142,13 +172,35 @@ function ProcedureAdder({
                 <ToolBarButton disabled={true}>Add OT Procedure</ToolBarButton>
 
                 <ToolBarButton
+                    title="New Patient"
+                    disabled={isBusy()}
+                    onClick={handleNewPatient}
+                >
+                    <UserPlusIcon className="" width={16} height={16} />
+                    <ToolBarButtonLabel>
+                        New Patient
+                    </ToolBarButtonLabel>
+                </ToolBarButton>
+
+                <ToolBarButton
                     title="Paste Patient Details from Clipboard"
                     disabled={isBusy()}
                     onClick={handlePastePatient}
                 >
                     <ClipboardPasteIcon className="" width={16} height={16} />
                     <ToolBarButtonLabel>
-                        Paste Patient Information
+                        Paste Patient Details
+                    </ToolBarButtonLabel>
+                </ToolBarButton>
+
+                <ToolBarButton
+                    title="Find Existing Patient"
+                    disabled={isBusy()}
+                    onClick={handleFindPatient}
+                >
+                    <SearchIcon className="" width={16} height={16} />
+                    <ToolBarButtonLabel>
+                        Find Patient
                     </ToolBarButtonLabel>
                 </ToolBarButton>
 
@@ -167,14 +219,15 @@ function ProcedureAdder({
                 </div>
             )}
             <div className="p-2 flex flex-col gap-2">
-                <PatientForm
+                {!!selectedPatient ? (<PatientInfo patient={newPatient} />) : (<PatientForm
                     value={newPatient}
                     onChange={(value) => setNewPatient(value)}
                     errorFields={{
                         ...newPatientErrors,
                         ...addError?.response?.data,
                     }}
-                />
+                />)}
+                
                 <ProcedureForm
                     value={newProcedure}
                     onChange={(value) => setNewProcedure(value)}
@@ -211,6 +264,12 @@ function ProcedureAdder({
                     </button>
                 </div>
             </div>
+            {showPatientSearch && (
+                <PatientSearchModal
+                    onSelect={handlePatientSelected}
+                    onCancel={() => setShowPatientSearch(false)}
+                />
+            )}
         </div>
     );
 }
