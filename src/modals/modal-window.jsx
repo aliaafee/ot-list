@@ -15,10 +15,11 @@ export default function ModalWindow({
     okColor = "bg-red-600 hover:bg-red-500",
     showButtons = true,
     loading = false,
+    large = false,
     children,
 }) {
     return (
-        <ModalContainer>
+        <ModalContainer large={large}>
             <div className="bg-gray-100 px-4 pt-4 pb-4 sm:p-6 sm:pb-4">
                 <div className="sm:flex sm:items-start">
                     <div
@@ -43,29 +44,34 @@ export default function ModalWindow({
             {showButtons && (
                 <div className="bg-gray-200 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     {!!onOk && (
-                    <button
-                        type="button"
-                        className={twMerge(
-                            "cursor-pointer inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-xs  sm:ml-3 sm:w-auto",
-                            okColor
-                        )}
-                        onClick={() => onOk()}
-                        disabled={loading}
-                    >
-                        {loading && (
-                            <LoadingSpinner size="small" className={"mr-2"} />
-                        )}
-                        {okLabel}
-                    </button>)}
+                        <button
+                            type="button"
+                            className={twMerge(
+                                "cursor-pointer inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-xs  sm:ml-3 sm:w-auto",
+                                okColor
+                            )}
+                            onClick={() => onOk()}
+                            disabled={loading}
+                        >
+                            {loading && (
+                                <LoadingSpinner
+                                    size="small"
+                                    className={"mr-2"}
+                                />
+                            )}
+                            {okLabel}
+                        </button>
+                    )}
                     {!!onCancel && (
-                    <button
-                        type="button"
-                        className="cursor-pointer mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                        onClick={() => onCancel()}
-                        disabled={loading}
-                    >
-                        {cancelLabel}
-                    </button>)}
+                        <button
+                            type="button"
+                            className="cursor-pointer mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                            onClick={() => onCancel()}
+                            disabled={loading}
+                        >
+                            {cancelLabel}
+                        </button>
+                    )}
                 </div>
             )}
         </ModalContainer>

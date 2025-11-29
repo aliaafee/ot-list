@@ -18,7 +18,7 @@ export default function FormField({
     if (type === "select") {
         return (
             <div className={twMerge("flex flex-col", className)}>
-                <label className="text-xs">{label}</label>
+                <label className="text-xs text-left">{label}</label>
                 <select
                     name={name}
                     value={value}
@@ -44,7 +44,7 @@ export default function FormField({
         <div className={twMerge("flex flex-col", className)}>
             <label
                 className={twMerge(
-                    "text-xs opacity-0",
+                    "text-xs opacity-0 text-left",
                     !!value && "opacity-100"
                 )}
             >

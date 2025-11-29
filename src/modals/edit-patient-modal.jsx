@@ -52,6 +52,7 @@ export default function EditPatientModal({ patient, onCancel, onSuccess }) {
             onOk={handleSave}
             onCancel={onCancel}
             loading={loading}
+            large={true}
         >
             <div className="mt-2">
                 {updateError && (
