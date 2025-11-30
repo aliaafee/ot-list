@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { XIcon, ClipboardPasteIcon, SearchIcon, UserPlusIcon } from "lucide-react";
+import {
+    XIcon,
+    ClipboardPasteIcon,
+    SearchIcon,
+    UserPlusIcon,
+} from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
@@ -42,7 +47,9 @@ function ProcedureAdder({
             otDay.expand.otList.expand.department.expand
                 .activeSurgeons_via_department
         );
-        setNewPatient(sampleData);
+        if (!selectedPatient) {
+            setNewPatient(sampleData);
+        }
         setNewProcedure(sampleData);
     };
 
@@ -80,7 +87,7 @@ function ProcedureAdder({
         setSelectedPatient(null);
         setNewPatient(initialPatientValue);
         setAddError(null);
-    }
+    };
 
     const handlePatientSelected = (patient) => {
         setNewPatient({
@@ -177,9 +184,7 @@ function ProcedureAdder({
                     onClick={handleNewPatient}
                 >
                     <UserPlusIcon className="" width={16} height={16} />
-                    <ToolBarButtonLabel>
-                        New Patient
-                    </ToolBarButtonLabel>
+                    <ToolBarButtonLabel>New Patient</ToolBarButtonLabel>
                 </ToolBarButton>
 
                 <ToolBarButton
@@ -199,9 +204,7 @@ function ProcedureAdder({
                     onClick={handleFindPatient}
                 >
                     <SearchIcon className="" width={16} height={16} />
-                    <ToolBarButtonLabel>
-                        Find Patient
-                    </ToolBarButtonLabel>
+                    <ToolBarButtonLabel>Find Patient</ToolBarButtonLabel>
                 </ToolBarButton>
 
                 <div className="flex-grow"></div>
@@ -219,15 +222,19 @@ function ProcedureAdder({
                 </div>
             )}
             <div className="p-2 flex flex-col gap-2">
-                {!!selectedPatient ? (<PatientInfo patient={newPatient} />) : (<PatientForm
-                    value={newPatient}
-                    onChange={(value) => setNewPatient(value)}
-                    errorFields={{
-                        ...newPatientErrors,
-                        ...addError?.response?.data,
-                    }}
-                />)}
-                
+                {!!selectedPatient ? (
+                    <PatientInfo patient={newPatient} showAddress={true} />
+                ) : (
+                    <PatientForm
+                        value={newPatient}
+                        onChange={(value) => setNewPatient(value)}
+                        errorFields={{
+                            ...newPatientErrors,
+                            ...addError?.response?.data,
+                        }}
+                    />
+                )}
+
                 <ProcedureForm
                     value={newProcedure}
                     onChange={(value) => setNewProcedure(value)}

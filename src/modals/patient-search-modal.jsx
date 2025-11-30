@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { SearchIcon } from "lucide-react";
 import { pb } from "@/lib/pb";
 import ModalWindow from "./modal-window";
-import FormField from "@/components/form-field";
+import PatientInfo from "@/components/patient-info";
 import { age } from "@/utils/dates";
 
 function PatientSearchModal({ onSelect, onCancel }) {
@@ -23,7 +23,7 @@ function PatientSearchModal({ onSelect, onCancel }) {
 
         try {
             const filter = `nid ~ "${searchQuery}" || hospitalId ~ "${searchQuery}" || name ~ "${searchQuery}" || phone ~ "${searchQuery}"`;
-            
+
             const records = await pb.collection("patients").getList(1, 50, {
                 filter: filter,
                 sort: "-created",
@@ -129,7 +129,9 @@ function PatientSearchModal({ onSelect, onCancel }) {
                                 {patients.map((patient) => (
                                     <tr
                                         key={patient.id}
-                                        onClick={() => setSelectedPatient(patient)}
+                                        onClick={() =>
+                                            setSelectedPatient(patient)
+                                        }
                                         className={`cursor-pointer hover:bg-gray-50 ${
                                             selectedPatient?.id === patient.id
                                                 ? "bg-blue-50"
@@ -139,18 +141,33 @@ function PatientSearchModal({ onSelect, onCancel }) {
                                         <td className="px-3 py-2 text-sm">
                                             <input
                                                 type="radio"
-                                                checked={selectedPatient?.id === patient.id}
-                                                onChange={() => setSelectedPatient(patient)}
+                                                checked={
+                                                    selectedPatient?.id ===
+                                                    patient.id
+                                                }
+                                                onChange={() =>
+                                                    setSelectedPatient(patient)
+                                                }
                                                 className="cursor-pointer"
                                             />
                                         </td>
-                                        <td className="px-3 py-2 text-sm">{patient.nid}</td>
-                                        <td className="px-3 py-2 text-sm">{patient.hospitalId}</td>
-                                        <td className="px-3 py-2 text-sm">{patient.name}</td>
                                         <td className="px-3 py-2 text-sm">
-                                            {age(patient.dateOfBirth)} / {patient.sex?.[0]?.toUpperCase() || ""}
+                                            {patient.nid}
                                         </td>
-                                        <td className="px-3 py-2 text-sm">{patient.phone}</td>
+                                        <td className="px-3 py-2 text-sm">
+                                            {patient.hospitalId}
+                                        </td>
+                                        <td className="px-3 py-2 text-sm">
+                                            {patient.name}
+                                        </td>
+                                        <td className="px-3 py-2 text-sm">
+                                            {age(patient.dateOfBirth)} /{" "}
+                                            {patient.sex?.[0]?.toUpperCase() ||
+                                                ""}
+                                        </td>
+                                        <td className="px-3 py-2 text-sm">
+                                            {patient.phone}
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -159,32 +176,14 @@ function PatientSearchModal({ onSelect, onCancel }) {
                 )}
 
                 {selectedPatient && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+                    <div>
                         <p className="text-sm font-semibold text-blue-900 mb-2">
                             Selected Patient:
                         </p>
-                        <div className="grid grid-cols-2 gap-2 text-sm text-blue-800">
-                            <div>
-                                <span className="font-medium">NID:</span> {selectedPatient.nid}
-                            </div>
-                            <div>
-                                <span className="font-medium">Hospital ID:</span>{" "}
-                                {selectedPatient.hospitalId}
-                            </div>
-                            <div className="col-span-2">
-                                <span className="font-medium">Name:</span> {selectedPatient.name}
-                            </div>
-                            <div>
-                                <span className="font-medium">Age/Sex:</span>{" "}
-                                {age(selectedPatient.dateOfBirth)} / {selectedPatient.sex}
-                            </div>
-                            <div>
-                                <span className="font-medium">Phone:</span> {selectedPatient.phone}
-                            </div>
-                            <div>
-                                <span className="font-medium">Address:</span> {selectedPatient.address}
-                            </div>
-                        </div>
+                        <PatientInfo
+                            patient={selectedPatient}
+                            showAddress={true}
+                        />
                     </div>
                 )}
             </div>

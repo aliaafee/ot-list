@@ -1,7 +1,7 @@
 import { age } from "@/utils/dates";
 import LabelValue from "./label-value";
 
-function PatientInfo({ patient, className = "" }) {
+function PatientInfo({ patient, className = "", showAddress = false }) {
     return (
         <div
             className={`p-2 grid grid-cols-1 md:grid-cols-4 gap-2 ${className}`}
@@ -23,6 +23,13 @@ function PatientInfo({ patient, className = "" }) {
                 value={!!patient?.dateOfBirth ? age(patient?.dateOfBirth) : ""}
             />
             <LabelValue label="Sex" value={patient?.sex} />
+            {showAddress && (
+                <LabelValue
+                    className="md:col-span-4"
+                    label="Address"
+                    value={patient?.address}
+                />
+            )}
         </div>
     );
 }
