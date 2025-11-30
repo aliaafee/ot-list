@@ -217,7 +217,7 @@ export function ProcedureListProvider({ children }) {
                 addedBy: addedBy,
                 patient: {
                     ...patient,
-                    id: tempPatientId,
+                    id: patient?.id || tempPatientId,
                 },
                 procedureDay: otDay,
             },
@@ -236,7 +236,10 @@ export function ProcedureListProvider({ children }) {
                 payload: [placeholderProcedure.id],
             });
 
-            const newPatient = await pb.collection("patients").create(patient);
+            // Create patient if needed
+            const newPatient = patient?.id
+                ? patient
+                : await pb.collection("patients").create(patient);
 
             const newProcedure = await pb
                 .collection("procedures")

@@ -26,6 +26,8 @@ import {
 } from "@/utils/test-parsers";
 import PatientSearchModal from "@/modals/patient-search-modal";
 import PatientInfo from "./patient-info";
+import { LoadingSpinner } from "./loading-spinner";
+import { pb } from "@/lib/pb";
 
 function ProcedureAdder({
     operatingRoom,
@@ -41,6 +43,7 @@ function ProcedureAdder({
     const [newProcedureErrors, setNewProcedureErrors] = useState({});
     const [addError, setAddError] = useState(null);
     const [showPatientSearch, setShowPatientSearch] = useState(false);
+    const [checking, setChecking] = useState(false);
 
     const handleSampleData = () => {
         const sampleData = GenerateProdecureFormData(
@@ -104,15 +107,22 @@ function ProcedureAdder({
         setAddError(null);
     };
 
-    const handleAddProcedure = () => {
+    const handleAddProcedure = async () => {
+        // Clear previous errors
         setAddError(null);
 
+        // Validate procedure input
         const procedureInputErrors = validateProcedure(newProcedure);
-        const patientInputErrors = validatePatient(newPatient);
-
         setNewProcedureErrors(procedureInputErrors);
-        setNewPatientErrors(patientInputErrors);
 
+        // Validate patient input only if creating new patient
+        let patientInputErrors = {};
+        if (!selectedPatient) {
+            patientInputErrors = validatePatient(newPatient);
+            setNewPatientErrors(patientInputErrors);
+        }
+
+        // Check for validation errors
         if (
             Object.keys(procedureInputErrors).length > 0 ||
             Object.keys(patientInputErrors).length > 0
@@ -120,22 +130,16 @@ function ProcedureAdder({
             return;
         }
 
-        const patient = {
-            dateOfBirth: newPatient.dateOfBirth,
-            hospitalId: newPatient.hospitalId,
-            name: newPatient.name,
-            nid: newPatient.nid,
-            phone: newPatient.phone,
-            sex: newPatient.sex,
-            address: newPatient.address,
+        // Helper function to calculate next order
+        const calculateNextOrder = () => {
+            if (proceduresByRoom && proceduresByRoom.length > 0) {
+                return proceduresByRoom[proceduresByRoom.length - 1].order + 1;
+            }
+            return 1;
         };
 
-        let nextOrder = 1;
-        if (proceduresByRoom && proceduresByRoom.length > 0) {
-            nextOrder = proceduresByRoom[proceduresByRoom.length - 1].order + 1;
-        }
-
-        const procedure = {
+        // Helper function to build procedure object
+        const buildProcedure = (order) => ({
             addedBy: newProcedure.addedBy,
             addedDate: newProcedure.addedDate,
             anesthesia: newProcedure.anesthesia,
@@ -149,17 +153,82 @@ function ProcedureAdder({
             remarks: newProcedure.remarks,
             removed: newProcedure.removed,
             requirements: newProcedure.requirements,
-            order: nextOrder,
-        };
+            order,
+        });
 
-        (async () => {
-            const resultError = await addProcedure(patient, procedure, otDay);
+        try {
+            let patientData;
+
+            if (selectedPatient) {
+                // Use existing patient
+                patientData = selectedPatient;
+            } else {
+                // Check for duplicate patient
+                setChecking(true);
+
+                try {
+                    const records = await pb
+                        .collection("patients")
+                        .getList(1, 50, {
+                            filter: `nid ~ "${newPatient.nid}" || hospitalId ~ "${newPatient.hospitalId}"`,
+                            sort: "-created",
+                        });
+
+                    if (records.totalItems > 0) {
+                        setAddError({
+                            message:
+                                "A patient with the same NID or Hospital ID already exists. Please use 'Find Patient' to select the existing patient.",
+                        });
+                        return;
+                    }
+                } catch (checkError) {
+                    console.error(
+                        "Error checking for duplicate patient:",
+                        checkError
+                    );
+                    setAddError({
+                        message:
+                            "Failed to verify patient uniqueness. Please try again.",
+                    });
+                    return;
+                } finally {
+                    setChecking(false);
+                }
+
+                // Build new patient object
+                patientData = {
+                    dateOfBirth: newPatient.dateOfBirth,
+                    hospitalId: newPatient.hospitalId,
+                    name: newPatient.name,
+                    nid: newPatient.nid,
+                    phone: newPatient.phone,
+                    sex: newPatient.sex,
+                    address: newPatient.address,
+                };
+            }
+
+            // Create procedure with calculated order
+            const nextOrder = calculateNextOrder();
+            const procedure = buildProcedure(nextOrder);
+
+            // Add procedure
+            const resultError = await addProcedure(
+                patientData,
+                procedure,
+                otDay
+            );
+
             if (resultError) {
                 setAddError(resultError);
             } else {
                 onAfterSave?.();
             }
-        })();
+        } catch (error) {
+            console.error("Unexpected error in handleAddProcedure:", error);
+            setAddError({
+                message: "An unexpected error occurred. Please try again.",
+            });
+        }
     };
 
     const handleCancel = () => {
@@ -180,7 +249,7 @@ function ProcedureAdder({
 
                 <ToolBarButton
                     title="New Patient"
-                    disabled={isBusy()}
+                    disabled={isBusy() || checking}
                     onClick={handleNewPatient}
                 >
                     <UserPlusIcon className="" width={16} height={16} />
@@ -189,7 +258,7 @@ function ProcedureAdder({
 
                 <ToolBarButton
                     title="Paste Patient Details from Clipboard"
-                    disabled={isBusy()}
+                    disabled={isBusy() || checking}
                     onClick={handlePastePatient}
                 >
                     <ClipboardPasteIcon className="" width={16} height={16} />
@@ -200,7 +269,7 @@ function ProcedureAdder({
 
                 <ToolBarButton
                     title="Find Existing Patient"
-                    disabled={isBusy()}
+                    disabled={isBusy() || checking}
                     onClick={handleFindPatient}
                 >
                     <SearchIcon className="" width={16} height={16} />
@@ -210,7 +279,7 @@ function ProcedureAdder({
                 <div className="flex-grow"></div>
                 <ToolBarButton
                     title="close"
-                    disabled={isBusy()}
+                    disabled={isBusy() || checking}
                     onClick={handleCancel}
                 >
                     <XIcon className="" width={16} height={16} />
@@ -252,13 +321,21 @@ function ProcedureAdder({
                         type="button"
                         onClick={handleAddProcedure}
                         className="inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-xs  sm:ml-3 sm:w-auto bg-blue-600 hover:bg-blue-500"
+                        disabled={isBusy() || checking}
                     >
-                        Save
+                        {checking ? (
+                            <>
+                                <LoadingSpinner /> "Checking..."
+                            </>
+                        ) : (
+                            "Save"
+                        )}
                     </button>
                     <button
                         type="button"
                         onClick={handleSampleData}
                         className="mt-3 sm:ml-3 sm:mt-0 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:w-auto"
+                        disabled={isBusy() || checking}
                     >
                         Generate Sample
                     </button>
@@ -266,6 +343,7 @@ function ProcedureAdder({
                         type="button"
                         onClick={handleCancel}
                         className="mt-3 sm:mt-0 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50  sm:w-auto"
+                        disabled={isBusy() || checking}
                     >
                         Cancel
                     </button>
