@@ -247,35 +247,6 @@ function ProcedureAdder({
             >
                 <ToolBarButton disabled={true}>Add OT Procedure</ToolBarButton>
 
-                <ToolBarButton
-                    title="New Patient"
-                    disabled={isBusy() || checking}
-                    onClick={handleNewPatient}
-                >
-                    <UserPlusIcon className="" width={16} height={16} />
-                    <ToolBarButtonLabel>New Patient</ToolBarButtonLabel>
-                </ToolBarButton>
-
-                <ToolBarButton
-                    title="Paste Patient Details from Clipboard"
-                    disabled={isBusy() || checking}
-                    onClick={handlePastePatient}
-                >
-                    <ClipboardPasteIcon className="" width={16} height={16} />
-                    <ToolBarButtonLabel>
-                        Paste Patient Details
-                    </ToolBarButtonLabel>
-                </ToolBarButton>
-
-                <ToolBarButton
-                    title="Find Existing Patient"
-                    disabled={isBusy() || checking}
-                    onClick={handleFindPatient}
-                >
-                    <SearchIcon className="" width={16} height={16} />
-                    <ToolBarButtonLabel>Find Patient</ToolBarButtonLabel>
-                </ToolBarButton>
-
                 <div className="flex-grow"></div>
                 <ToolBarButton
                     title="close"
@@ -291,8 +262,47 @@ function ProcedureAdder({
                 </div>
             )}
             <div className="p-2 flex flex-col gap-2">
+                <ToolBar className="bg-gray-200 rounded-lg sm:w-fit">
+                    <ToolBarButton disabled={true}>Patient</ToolBarButton>
+
+                    <ToolBarButton
+                        title="New Patient"
+                        disabled={isBusy() || checking}
+                        onClick={handleNewPatient}
+                    >
+                        <UserPlusIcon className="" width={16} height={16} />
+                        <ToolBarButtonLabel>New</ToolBarButtonLabel>
+                    </ToolBarButton>
+
+                    <ToolBarButton
+                        title="Paste Patient Details from Clipboard"
+                        disabled={isBusy() || checking}
+                        onClick={handlePastePatient}
+                    >
+                        <ClipboardPasteIcon
+                            className=""
+                            width={16}
+                            height={16}
+                        />
+                        <ToolBarButtonLabel>Paste</ToolBarButtonLabel>
+                    </ToolBarButton>
+
+                    <ToolBarButton
+                        title="Find Existing Patient"
+                        disabled={isBusy() || checking}
+                        onClick={handleFindPatient}
+                    >
+                        <SearchIcon className="" width={16} height={16} />
+                        <ToolBarButtonLabel>Find</ToolBarButtonLabel>
+                    </ToolBarButton>
+                </ToolBar>
+
                 {!!selectedPatient ? (
-                    <PatientInfo patient={newPatient} showAddress={true} />
+                    <PatientInfo
+                        patient={newPatient}
+                        showAddress={true}
+                        className="p-0"
+                    />
                 ) : (
                     <PatientForm
                         value={newPatient}

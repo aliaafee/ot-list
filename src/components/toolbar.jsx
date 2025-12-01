@@ -129,7 +129,9 @@ const ToolBarPill = ({
 
 const ToolBar = ({ className, children }) => {
     return (
-        <div className={twMerge("flex items-center", className)}>
+        <div
+            className={twMerge("flex items-center overflow-hidden", className)}
+        >
             {children}
         </div>
     );

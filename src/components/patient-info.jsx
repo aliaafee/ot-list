@@ -1,10 +1,14 @@
 import { age } from "@/utils/dates";
 import LabelValue from "./label-value";
+import { twMerge } from "tailwind-merge";
 
 function PatientInfo({ patient, className = "", showAddress = false }) {
     return (
         <div
-            className={`p-2 grid grid-cols-1 md:grid-cols-4 gap-2 ${className}`}
+            className={twMerge(
+                "p-2 grid grid-cols-1 md:grid-cols-4 gap-2",
+                className
+            )}
         >
             <LabelValue label="NID" value={patient?.nid} />
             <LabelValue
