@@ -28,6 +28,7 @@ import PatientSearchModal from "@/modals/patient-search-modal";
 import PatientInfo from "./patient-info";
 import { LoadingSpinner } from "./loading-spinner";
 import { pb } from "@/lib/pb";
+import dayjs from "dayjs";
 
 function ProcedureAdder({
     operatingRoom,
@@ -39,7 +40,10 @@ function ProcedureAdder({
     const [newPatient, setNewPatient] = useState(initialPatientValue);
     const [newPatientErrors, setNewPatientErrors] = useState({});
     const [selectedPatient, setSelectedPatient] = useState(null);
-    const [newProcedure, setNewProcedure] = useState(initialProcedureValue);
+    const [newProcedure, setNewProcedure] = useState({
+        ...initialProcedureValue,
+        addedDate: dayjs().format("YYYY-MM-DD"),
+    });
     const [newProcedureErrors, setNewProcedureErrors] = useState({});
     const [addError, setAddError] = useState(null);
     const [showPatientSearch, setShowPatientSearch] = useState(false);
