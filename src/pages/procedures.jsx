@@ -28,13 +28,12 @@ function Procedures() {
 
                 <div
                     className={twMerge(
-                        "bg-gray-600/50 top-0 h-full w-full fixed overflow-hidden lg:static lg:w-72 lg:min-w-72 flex",
+                        "bg-gray-600/50 top-0 h-[calc(100%-4rem)] w-full fixed overflow-hidden lg:static lg:w-72 lg:min-w-72 flex mt-16 lg:mt-0 lg:h-auto",
                         !showDaysList && "hidden lg:flex"
                     )}
                 >
                     <div className="w-full sm:max-w-72 lg:mt-0 lg:grow flex flex-col">
-                        <div className="bg-gray-300 lg:hidden min-h-26 flex flex-col">
-                            <div className="bg-gray-300 grow"></div>
+                        <div className="bg-gray-300 lg:hidden flex flex-col">
                             <ToolBar className="h-10 bg-gray-200">
                                 <div className="grow" />
                                 <ToolBarButton

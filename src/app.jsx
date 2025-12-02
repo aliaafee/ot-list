@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router";
+import { Routes, Route, Navigate } from "react-router";
 import ProtectedRoute from "@/components/protected-route";
 import Login from "@/pages/login";
 import Home from "@/pages/home";
@@ -22,7 +22,10 @@ export default function App() {
             <Route element={<ProtectedRoute />}>
                 {/* <Route path="/" element={<Home />} /> */}
                 <Route element={<MainLayout />}>
-                    <Route path="/" element={<Procedures />} />
+                    <Route
+                        path="/"
+                        element={<Navigate to="/procedures" replace />}
+                    />
                     <Route path="/procedures" element={<Procedures />} />
                     <Route
                         path="/procedures/:otDayId"
