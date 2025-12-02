@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/auth-context";
 import UserFormModal from "@/modals/user-form-modal";
 import UserEditModal from "@/modals/user-edit-modal";
 import UserEmailChangeModal from "@/modals/user-email-change-modal";
+import { twMerge } from "tailwind-merge";
 
 function EditUser() {
     const [users, setUsers] = useState([]);
@@ -13,17 +14,21 @@ function EditUser() {
     const [showEmailChangeModal, setShowEmailChangeModal] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
     const [changingEmailUser, setChangingEmailUser] = useState(null);
+    const [listLoading, setListLoading] = useState(false);
     const [userLoading, setUserLoading] = useState(false);
     const [userErrors, setUserErrors] = useState({});
 
     const { user } = useAuth();
 
     const fetchUsers = async () => {
+        setListLoading(true);
         try {
             const gotUsers = await pb.collection("users").getFullList();
             setUsers(gotUsers);
         } catch (err) {
             console.error("Error fetching users:", err);
+        } finally {
+            setListLoading(false);
         }
     };
 
@@ -69,7 +74,9 @@ function EditUser() {
             await pb.collection("users").requestEmailChange(newEmail);
             setShowEmailChangeModal(false);
             setChangingEmailUser(null);
-            alert("Email change request sent! The user must confirm the new email address.");
+            alert(
+                "Email change request sent! The user must confirm the new email address."
+            );
         } catch (err) {
             console.error("Error requesting email change:", err);
             if (err.response?.data) {
@@ -97,18 +104,35 @@ function EditUser() {
                     </button>
                 </div>
             )}
-            <table className="table-auto w-full text-left">
+            <table
+                className={twMerge(
+                    "table-auto w-full text-left",
+                    listLoading ? "pointer-events-none animate-pulse" : ""
+                )}
+            >
                 <thead className="bg-gray-400">
                     <tr>
                         <th className="px-2 py-1">Name</th>
                         <th className="px-2 py-1">Email</th>
                         <th className="px-2 py-1">Role</th>
-                        {user?.role === "admin" && <th className="px-2 py-1 w-24"></th>}
+                        {user?.role === "admin" && (
+                            <th className="px-2 py-1 w-24"></th>
+                        )}
                     </tr>
                 </thead>
                 <tbody>
+                    {listLoading && users.length === 0 && (
+                        <tr className="odd:bg-gray-200 even:bg-gray-300">
+                            <td colSpan={4} className="px-2 py-1">
+                                Loading...
+                            </td>
+                        </tr>
+                    )}
                     {users.map((u) => (
-                        <tr key={u.id} className="odd:bg-gray-200 even:bg-gray-300">
+                        <tr
+                            key={u.id}
+                            className="odd:bg-gray-200 even:bg-gray-300"
+                        >
                             <td className="px-2 py-1">{u.name}</td>
                             <td className="px-2 py-1">{u.email}</td>
                             <td className="px-2 py-1">{u.role}</td>

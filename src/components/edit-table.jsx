@@ -103,7 +103,7 @@ export default function EditTable({
     return (
         <div
             className={twMerge(
-                loading ? "opacity-50 pointer-events-none animate-pulse" : ""
+                loading ? "pointer-events-none animate-pulse" : ""
             )}
         >
             {error && <p className="text-red-500">{error}</p>}
@@ -119,7 +119,7 @@ export default function EditTable({
                     </tr>
                 </thead>
                 <tbody>
-                    {loading && (
+                    {loading && data.length === 0 && (
                         <tr className="odd:bg-gray-200 even:bg-gray-300">
                             <td
                                 colSpan={columns.length + 1}
