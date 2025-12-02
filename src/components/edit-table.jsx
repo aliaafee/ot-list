@@ -119,6 +119,16 @@ export default function EditTable({
                     </tr>
                 </thead>
                 <tbody>
+                    {loading && (
+                        <tr className="odd:bg-gray-200 even:bg-gray-300">
+                            <td
+                                colSpan={columns.length + 1}
+                                className="px-2 py-1"
+                            >
+                                Loading...
+                            </td>
+                        </tr>
+                    )}
                     {data.map((row) => (
                         <tr
                             key={row.id}
