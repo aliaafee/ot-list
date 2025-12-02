@@ -101,7 +101,7 @@ function PatientSearchModal({ onSelect, onCancel }) {
                 )}
 
                 {!loading && patients.length > 0 && (
-                    <div className="border border-gray-300 rounded-md overflow-hidden max-h-96 overflow-y-auto">
+                    <div className="border border-gray-300 rounded-md max-h-96 overflow-y-auto">
                         <table className="min-w-full divide-y divide-gray-300">
                             <thead className="bg-gray-50 sticky top-0">
                                 <tr>
@@ -111,7 +111,7 @@ function PatientSearchModal({ onSelect, onCancel }) {
                                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                         NID
                                     </th>
-                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase hidden md:table-cell">
                                         Hospital ID
                                     </th>
                                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
@@ -120,7 +120,7 @@ function PatientSearchModal({ onSelect, onCancel }) {
                                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                         Age/Sex
                                     </th>
-                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase  hidden md:table-cell">
                                         Phone
                                     </th>
                                 </tr>
@@ -151,21 +151,21 @@ function PatientSearchModal({ onSelect, onCancel }) {
                                                 className="cursor-pointer"
                                             />
                                         </td>
-                                        <td className="px-3 py-2 text-sm">
+                                        <td className="px-3 py-2 text-sm overflow-ellipsis">
                                             {patient.nid}
                                         </td>
-                                        <td className="px-3 py-2 text-sm">
+                                        <td className="px-3 py-2 text-sm  hidden md:table-cell  overflow-ellipsis">
                                             {patient.hospitalId}
                                         </td>
-                                        <td className="px-3 py-2 text-sm">
+                                        <td className="px-3 py-2 text-sm  overflow-ellipsis">
                                             {patient.name}
                                         </td>
-                                        <td className="px-3 py-2 text-sm">
+                                        <td className="px-3 py-2 text-sm  overflow-ellipsis">
                                             {age(patient.dateOfBirth)} /{" "}
                                             {patient.sex?.[0]?.toUpperCase() ||
                                                 ""}
                                         </td>
-                                        <td className="px-3 py-2 text-sm">
+                                        <td className="px-3 py-2 text-sm  hidden md:table-cell overflow-ellipsis">
                                             {patient.phone}
                                         </td>
                                     </tr>
@@ -176,8 +176,8 @@ function PatientSearchModal({ onSelect, onCancel }) {
                 )}
 
                 {selectedPatient && (
-                    <div>
-                        <p className="text-sm font-semibold text-blue-900 mb-2">
+                    <div className="border border-gray-300 rounded-md">
+                        <p className="text-sm font-semibold text-blue-900 p-2">
                             Selected Patient:
                         </p>
                         <PatientInfo

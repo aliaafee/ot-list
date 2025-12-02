@@ -6,7 +6,7 @@ function PatientInfo({ patient, className = "", showAddress = false }) {
     return (
         <div
             className={twMerge(
-                "p-2 grid grid-cols-1 md:grid-cols-4 gap-2",
+                "p-2 grid grid-cols-1 md:grid-cols-4 gap-2 text-left",
                 className
             )}
         >
