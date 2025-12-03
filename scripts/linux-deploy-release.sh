@@ -48,21 +48,32 @@ build_from_source() {
     
     # Install build dependencies
     echo "[*] Installing build dependencies..."
-    apt install -y git curl
+    apt install -y git curl || {
+        echo "Error: Failed to install build dependencies (git, curl)"
+        exit 1
+    }
     
     # Clone the repository
     echo "[*] Cloning repository..."
-    git clone --depth 1 --branch "$BRANCH" "$REPO_URL" "$BUILD_DIR"
+    git clone --depth 1 --branch "$BRANCH" "$REPO_URL" "$BUILD_DIR" || {
+        echo "Error: Failed to clone repository from $REPO_URL (branch: $BRANCH)"
+        echo "Please check that the branch exists and you have network connectivity"
+        exit 1
+    }
     cd "$BUILD_DIR"
     
     # Install Node.js v22 using nvm if not already installed
     echo "[*] Checking Node.js installation..."
     if ! command -v node &> /dev/null || ! node --version | grep -q "v22"; then
         echo "[*] Installing Node.js v22 using nvm..."
+        echo "[*] Note: Installing from nvm-sh/nvm repository (v0.40.1)"
         
         # Install nvm if not present
         if [ ! -d "$HOME/.nvm" ]; then
-            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash || {
+                echo "Error: Failed to install nvm"
+                exit 1
+            }
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         else
@@ -70,7 +81,10 @@ build_from_source() {
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         fi
         
-        nvm install 22
+        nvm install 22 || {
+            echo "Error: Failed to install Node.js v22"
+            exit 1
+        }
         nvm use 22
     else
         echo "[*] Node.js $(node --version) is already installed"
@@ -78,11 +92,17 @@ build_from_source() {
     
     # Install npm dependencies
     echo "[*] Installing npm dependencies..."
-    npm install
+    npm install || {
+        echo "Error: Failed to install npm dependencies"
+        exit 1
+    }
     
     # Build the frontend
     echo "[*] Building frontend..."
-    npm run build
+    npm run build || {
+        echo "Error: Frontend build failed"
+        exit 1
+    }
     
     # Copy build artifacts to ROOT_DIR
     echo "[*] Copying build artifacts to $ROOT_DIR..."
