@@ -98,7 +98,7 @@ function ProcedureListEditor({
             <div className="px-2 hidden md:inline">
                 <span className="invisible">⠿</span>
             </div>
-            <div className="grow flex-auto pl-2 pr-2 grid grid-cols-8 lg:grid-cols-12 font-bold gap-1">
+            <div className="grow flex-auto pl-2 pr-2 grid grid-cols-8 lg:grid-cols-12 gap-1 uppercase font-medium text-gray-500 text-xs">
                 <div className="col-span-1 overflow-clip overflow-ellipsis">
                     #
                 </div>
