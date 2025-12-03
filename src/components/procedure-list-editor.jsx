@@ -5,6 +5,8 @@ import {
     CalendarCheckIcon,
     CalendarOffIcon,
     ChevronLeftIcon,
+    EyeIcon,
+    EyeOffIcon,
     PrinterIcon,
 } from "lucide-react";
 
@@ -34,6 +36,11 @@ function ProcedureListEditor({
     } = useProcedureList();
 
     const [showDisable, setShowDisable] = useState(false);
+    const [showRemoved, setShowRemoved] = useState(false);
+
+    const handleToggleShowRemoved = () => {
+        setShowRemoved(!showRemoved);
+    };
 
     useEffect(() => {
         loadProcedures(procedureDayId);
@@ -64,6 +71,25 @@ function ProcedureListEditor({
                 <ToolBarButtonLabel>Print</ToolBarButtonLabel>
             </ToolBarLink>
             <div className="flex-grow"></div>
+            <ToolBarButton
+                title={
+                    showRemoved
+                        ? "Hide Removed Procedures"
+                        : "Show Removed Procedures"
+                }
+                disabled={false}
+                onClick={handleToggleShowRemoved}
+            >
+                {showRemoved ? (
+                    <>
+                        <EyeOffIcon width={16} height={16} />
+                    </>
+                ) : (
+                    <>
+                        <EyeIcon width={16} height={16} />
+                    </>
+                )}
+            </ToolBarButton>
             {otDay &&
                 (!otDay?.disabled ? (
                     <ToolBarButton
@@ -188,6 +214,7 @@ function ProcedureListEditor({
                             <ProcedureSublist
                                 procedures={proceduresList.procedures}
                                 operatingRoom={operatingRoom}
+                                showRemoved={showRemoved}
                             />
                         </li>
                     )
