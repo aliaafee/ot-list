@@ -90,8 +90,12 @@ build_from_source() {
     # Copy dist directory
     if [ -d "dist" ]; then
         mkdir -p "$ROOT_DIR/dist"
-        cp -r dist/* "$ROOT_DIR/dist/"
-        echo "  ✓ Copied dist/"
+        if [ "$(ls -A dist)" ]; then
+            cp -r dist/. "$ROOT_DIR/dist/"
+            echo "  ✓ Copied dist/"
+        else
+            echo "  ✗ Warning: dist/ directory is empty"
+        fi
     else
         echo "  ✗ Warning: dist/ directory not found"
     fi
@@ -99,8 +103,12 @@ build_from_source() {
     # Copy pb_migrations directory
     if [ -d "pb/pb_migrations" ]; then
         mkdir -p "$ROOT_DIR/pb/pb_migrations"
-        cp -r pb/pb_migrations/* "$ROOT_DIR/pb/pb_migrations/"
-        echo "  ✓ Copied pb/pb_migrations/"
+        if [ "$(ls -A pb/pb_migrations)" ]; then
+            cp -r pb/pb_migrations/. "$ROOT_DIR/pb/pb_migrations/"
+            echo "  ✓ Copied pb/pb_migrations/"
+        else
+            echo "  ✗ Warning: pb/pb_migrations/ directory is empty"
+        fi
     else
         echo "  ✗ Warning: pb/pb_migrations/ directory not found"
     fi
@@ -116,8 +124,12 @@ build_from_source() {
     # Copy scripts directory
     if [ -d "scripts" ]; then
         mkdir -p "$ROOT_DIR/scripts"
-        cp -r scripts/* "$ROOT_DIR/scripts/"
-        echo "  ✓ Copied scripts/"
+        if [ "$(ls -A scripts)" ]; then
+            cp -r scripts/. "$ROOT_DIR/scripts/"
+            echo "  ✓ Copied scripts/"
+        else
+            echo "  ✗ Warning: scripts/ directory is empty"
+        fi
     else
         echo "  ✗ Warning: scripts/ directory not found"
     fi
@@ -146,6 +158,10 @@ install() {
     while [ $# -gt 0 ]; do
         case "$1" in
             --version)
+                if [ $# -lt 2 ] || [[ "$2" =~ ^-- ]]; then
+                    echo "Error: --version requires a value"
+                    usage
+                fi
                 VERSION="$2"
                 shift 2
                 ;;
@@ -154,6 +170,10 @@ install() {
                 shift
                 ;;
             --branch)
+                if [ $# -lt 2 ] || [[ "$2" =~ ^-- ]]; then
+                    echo "Error: --branch requires a value"
+                    usage
+                fi
                 BRANCH="$2"
                 shift 2
                 ;;
@@ -163,6 +183,12 @@ install() {
                 ;;
         esac
     done
+    
+    # Validate that --branch is only used with --from-source
+    if [ "$FROM_SOURCE" = false ] && [ "$BRANCH" != "main" ]; then
+        echo "Warning: --branch is only meaningful with --from-source flag, ignoring branch setting"
+        BRANCH="main"
+    fi
     
     RELEASE_URL="https://github.com/aliaafee/ot-list/releases/download/v${VERSION}/ot-list-v${VERSION}.zip"
 
@@ -322,6 +348,10 @@ update() {
     while [ $# -gt 0 ]; do
         case "$1" in
             --version)
+                if [ $# -lt 2 ] || [[ "$2" =~ ^-- ]]; then
+                    echo "Error: --version requires a value"
+                    usage
+                fi
                 VERSION="$2"
                 shift 2
                 ;;
@@ -330,6 +360,10 @@ update() {
                 shift
                 ;;
             --branch)
+                if [ $# -lt 2 ] || [[ "$2" =~ ^-- ]]; then
+                    echo "Error: --branch requires a value"
+                    usage
+                fi
                 BRANCH="$2"
                 shift 2
                 ;;
@@ -339,6 +373,12 @@ update() {
                 ;;
         esac
     done
+    
+    # Validate that --branch is only used with --from-source
+    if [ "$FROM_SOURCE" = false ] && [ "$BRANCH" != "main" ]; then
+        echo "Warning: --branch is only meaningful with --from-source flag, ignoring branch setting"
+        BRANCH="main"
+    fi
     
     RELEASE_URL="https://github.com/aliaafee/ot-list/releases/download/v${VERSION}/ot-list-v${VERSION}.zip"
 
