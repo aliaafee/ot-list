@@ -9,29 +9,217 @@ SERVICE_NAME="otlist"
 
 # Function to display usage
 usage() {
-    echo "Usage: $0 {install|update|uninstall} [VERSION]"
+    echo "Usage: $0 {install|update|uninstall} [OPTIONS]"
     echo ""
     echo "Commands:"
-    echo "  install [VERSION]   Install OT List (default version: 0.0.1)"
-    echo "  update [VERSION]    Update OT List to a new version"
+    echo "  install             Install OT List"
+    echo "  update              Update OT List to a new version"
     echo "  uninstall           Uninstall OT List completely"
     echo ""
+    echo "Options:"
+    echo "  --version VERSION   Specify release version to install (default: 0.0.1)"
+    echo "  --from-source       Build and install from Git repository instead of downloading release"
+    echo "  --branch BRANCH     Specify branch to build from when using --from-source (default: main)"
+    echo ""
     echo "Examples:"
-    echo "  $0 install 0.0.2    # Install version 0.0.2"
-    echo "  $0 install          # Install default version"
-    echo "  $0 update 0.0.3     # Update to version 0.0.3"
-    echo "  $0 update           # Update to default version"
-    echo "  $0 uninstall        # Remove OT List"
+    echo "  $0 install --version 0.0.2              # Install from release v0.0.2"
+    echo "  $0 install                              # Install default version from release"
+    echo "  $0 install --from-source                # Build and install from main branch"
+    echo "  $0 install --from-source --branch dev   # Build and install from dev branch"
+    echo "  $0 update --version 0.0.3               # Update to release v0.0.3"
+    echo "  $0 update --from-source                 # Update by building from main branch"
+    echo "  $0 uninstall                            # Remove OT List"
+    echo ""
+    echo "Backward compatibility:"
+    echo "  $0 install 0.0.2    # Still works - installs version 0.0.2"
+    echo "  $0 update 0.0.3     # Still works - updates to version 0.0.3"
     exit 1
+}
+
+# Function to build from source
+build_from_source() {
+    local BRANCH="${1:-main}"
+    local REPO_URL="https://github.com/aliaafee/ot-list.git"
+    local BUILD_DIR="/tmp/ot-list-build-$(date +%s)"
+    
+    echo "[*] Building OT List from source..."
+    echo "[*] Branch: $BRANCH"
+    echo "[*] Build directory: $BUILD_DIR"
+    
+    # Install build dependencies
+    echo "[*] Installing build dependencies..."
+    apt install -y git curl || {
+        echo "Error: Failed to install build dependencies (git, curl)"
+        exit 1
+    }
+    
+    # Clone the repository
+    echo "[*] Cloning repository..."
+    git clone --depth 1 --branch "$BRANCH" "$REPO_URL" "$BUILD_DIR" || {
+        echo "Error: Failed to clone repository from $REPO_URL (branch: $BRANCH)"
+        echo "Please check that the branch exists and you have network connectivity"
+        exit 1
+    }
+    cd "$BUILD_DIR"
+    
+    # Install Node.js v22 using nvm if not already installed
+    echo "[*] Checking Node.js installation..."
+    if ! command -v node &> /dev/null || ! node --version | grep -q "v22"; then
+        echo "[*] Installing Node.js v22 using nvm..."
+        echo "[*] Note: Installing from nvm-sh/nvm repository (v0.40.1)"
+        
+        # Install nvm if not present
+        if [ ! -d "$HOME/.nvm" ]; then
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash || {
+                echo "Error: Failed to install nvm"
+                exit 1
+            }
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        else
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+        fi
+        
+        nvm install 22 || {
+            echo "Error: Failed to install Node.js v22"
+            exit 1
+        }
+        nvm use 22
+    else
+        echo "[*] Node.js $(node --version) is already installed"
+    fi
+    
+    # Install npm dependencies
+    echo "[*] Installing npm dependencies..."
+    npm install || {
+        echo "Error: Failed to install npm dependencies"
+        exit 1
+    }
+    
+    # Build the frontend
+    echo "[*] Building frontend..."
+    npm run build || {
+        echo "Error: Frontend build failed"
+        exit 1
+    }
+    
+    # Copy build artifacts to ROOT_DIR
+    echo "[*] Copying build artifacts to $ROOT_DIR..."
+    
+    # Copy dist directory
+    if [ -d "dist" ]; then
+        mkdir -p "$ROOT_DIR/dist"
+        if [ "$(ls -A dist)" ]; then
+            cp -r dist/. "$ROOT_DIR/dist/"
+            echo "  ✓ Copied dist/"
+        else
+            echo "  ✗ Warning: dist/ directory is empty"
+        fi
+    else
+        echo "  ✗ Warning: dist/ directory not found"
+    fi
+    
+    # Copy pb_migrations directory
+    if [ -d "pb/pb_migrations" ]; then
+        mkdir -p "$ROOT_DIR/pb/pb_migrations"
+        if [ "$(ls -A pb/pb_migrations)" ]; then
+            cp -r pb/pb_migrations/. "$ROOT_DIR/pb/pb_migrations/"
+            echo "  ✓ Copied pb/pb_migrations/"
+        else
+            echo "  ✗ Warning: pb/pb_migrations/ directory is empty"
+        fi
+    else
+        echo "  ✗ Warning: pb/pb_migrations/ directory not found"
+    fi
+    
+    # Copy pb_schema.json
+    if [ -f "pb_schema.json" ]; then
+        cp pb_schema.json "$ROOT_DIR/"
+        echo "  ✓ Copied pb_schema.json"
+    else
+        echo "  ✗ Warning: pb_schema.json not found"
+    fi
+    
+    # Copy scripts directory
+    if [ -d "scripts" ]; then
+        mkdir -p "$ROOT_DIR/scripts"
+        if [ "$(ls -A scripts)" ]; then
+            cp -r scripts/. "$ROOT_DIR/scripts/"
+            echo "  ✓ Copied scripts/"
+        else
+            echo "  ✗ Warning: scripts/ directory is empty"
+        fi
+    else
+        echo "  ✗ Warning: scripts/ directory not found"
+    fi
+    
+    # Clean up build directory
+    echo "[*] Cleaning up build directory..."
+    cd /
+    rm -rf "$BUILD_DIR"
+    echo "[*] Build complete!"
 }
 
 # Function to install
 install() {
-    VERSION="${1:-0.0.1}"  # Default version or passed as argument
+    # Parse arguments
+    VERSION="0.0.1"
+    FROM_SOURCE=false
+    BRANCH="main"
+    
+    # Check for positional argument (backward compatibility)
+    if [ $# -gt 0 ] && [[ ! "$1" =~ ^-- ]]; then
+        VERSION="$1"
+        shift
+    fi
+    
+    # Parse named arguments
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --version)
+                if [ $# -lt 2 ] || [[ "$2" =~ ^-- ]]; then
+                    echo "Error: --version requires a value"
+                    usage
+                fi
+                VERSION="$2"
+                shift 2
+                ;;
+            --from-source)
+                FROM_SOURCE=true
+                shift
+                ;;
+            --branch)
+                if [ $# -lt 2 ] || [[ "$2" =~ ^-- ]]; then
+                    echo "Error: --branch requires a value"
+                    usage
+                fi
+                BRANCH="$2"
+                shift 2
+                ;;
+            *)
+                echo "Error: Unknown option '$1'"
+                usage
+                ;;
+        esac
+    done
+    
+    # Validate that --branch is only used with --from-source
+    if [ "$FROM_SOURCE" = false ] && [ "$BRANCH" != "main" ]; then
+        echo "Warning: --branch is only meaningful with --from-source flag, ignoring branch setting"
+        BRANCH="main"
+    fi
+    
     RELEASE_URL="https://github.com/aliaafee/ot-list/releases/download/v${VERSION}/ot-list-v${VERSION}.zip"
 
     echo "[*] OT List Release Deployment Script"
-    echo "[*] Version: $VERSION"
+    if [ "$FROM_SOURCE" = true ]; then
+        echo "[*] Deployment mode: Build from source"
+        echo "[*] Branch: $BRANCH"
+    else
+        echo "[*] Deployment mode: Release download"
+        echo "[*] Version: $VERSION"
+    fi
     echo "[*] Install directory: $ROOT_DIR"
     echo ""
 
@@ -60,21 +248,25 @@ install() {
     mkdir -p $ROOT_DIR
     cd $ROOT_DIR
 
-    # Download and extract release
-    echo "[*] Downloading release from GitHub..."
-    TMPFILE="$ROOT_DIR/ot-list-release.zip"
-
-    if curl -L -f "$RELEASE_URL" -o "$TMPFILE"; then
-        echo "[*] Release downloaded successfully"
+    # Download and extract release OR build from source
+    if [ "$FROM_SOURCE" = true ]; then
+        build_from_source "$BRANCH"
     else
-        echo "Error: Could not download release from $RELEASE_URL"
-        echo "Please check that the release exists on GitHub"
-        exit 1
-    fi
+        echo "[*] Downloading release from GitHub..."
+        TMPFILE="$ROOT_DIR/ot-list-release.zip"
 
-    echo "[*] Extracting release..."
-    unzip -o "$TMPFILE" -d "$ROOT_DIR"
-    rm "$TMPFILE"
+        if curl -L -f "$RELEASE_URL" -o "$TMPFILE"; then
+            echo "[*] Release downloaded successfully"
+        else
+            echo "Error: Could not download release from $RELEASE_URL"
+            echo "Please check that the release exists on GitHub"
+            exit 1
+        fi
+
+        echo "[*] Extracting release..."
+        unzip -o "$TMPFILE" -d "$ROOT_DIR"
+        rm "$TMPFILE"
+    fi
 
     # Download PocketBase binary
     echo "[*] Downloading latest PocketBase binary..."
@@ -161,11 +353,63 @@ install() {
 
 # Function to update
 update() {
-    VERSION="${1:-0.0.1}"  # Default version or passed as argument
+    # Parse arguments
+    VERSION="0.0.1"
+    FROM_SOURCE=false
+    BRANCH="main"
+    
+    # Check for positional argument (backward compatibility)
+    if [ $# -gt 0 ] && [[ ! "$1" =~ ^-- ]]; then
+        VERSION="$1"
+        shift
+    fi
+    
+    # Parse named arguments
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --version)
+                if [ $# -lt 2 ] || [[ "$2" =~ ^-- ]]; then
+                    echo "Error: --version requires a value"
+                    usage
+                fi
+                VERSION="$2"
+                shift 2
+                ;;
+            --from-source)
+                FROM_SOURCE=true
+                shift
+                ;;
+            --branch)
+                if [ $# -lt 2 ] || [[ "$2" =~ ^-- ]]; then
+                    echo "Error: --branch requires a value"
+                    usage
+                fi
+                BRANCH="$2"
+                shift 2
+                ;;
+            *)
+                echo "Error: Unknown option '$1'"
+                usage
+                ;;
+        esac
+    done
+    
+    # Validate that --branch is only used with --from-source
+    if [ "$FROM_SOURCE" = false ] && [ "$BRANCH" != "main" ]; then
+        echo "Warning: --branch is only meaningful with --from-source flag, ignoring branch setting"
+        BRANCH="main"
+    fi
+    
     RELEASE_URL="https://github.com/aliaafee/ot-list/releases/download/v${VERSION}/ot-list-v${VERSION}.zip"
 
     echo "[*] OT List Update Script"
-    echo "[*] Version: $VERSION"
+    if [ "$FROM_SOURCE" = true ]; then
+        echo "[*] Deployment mode: Build from source"
+        echo "[*] Branch: $BRANCH"
+    else
+        echo "[*] Deployment mode: Release download"
+        echo "[*] Version: $VERSION"
+    fi
     echo "[*] Install directory: $ROOT_DIR"
     echo ""
 
@@ -203,28 +447,39 @@ update() {
         echo "Database backed up to temp location"
     fi
 
-    # Download and extract new release
-    echo "[*] Downloading new release from GitHub..."
-    TMPFILE="/tmp/ot-list-release-$(date +%s).zip"
-
-    if curl -L -f "$RELEASE_URL" -o "$TMPFILE"; then
-        echo "[*] Release downloaded successfully"
+    # Download and extract new release OR build from source
+    if [ "$FROM_SOURCE" = true ]; then
+        echo "[*] Building from source..."
+        # Remove old application files (but keep pb_data)
+        find "$ROOT_DIR" -mindepth 1 -maxdepth 1 ! -name 'pb' -exec rm -rf {} +
+        if [ -d "$PB_DIR" ]; then
+            find "$PB_DIR" -mindepth 1 -maxdepth 1 ! -name 'pb_data' -exec rm -rf {} +
+        fi
+        
+        build_from_source "$BRANCH"
     else
-        echo "Error: Could not download release from $RELEASE_URL"
-        echo "Please check that the release exists on GitHub"
-        echo "Backup is available at: $BACKUP_DIR"
-        exit 1
-    fi
+        echo "[*] Downloading new release from GitHub..."
+        TMPFILE="/tmp/ot-list-release-$(date +%s).zip"
 
-    echo "[*] Extracting release..."
-    # Remove old application files (but keep pb_data)
-    find "$ROOT_DIR" -mindepth 1 -maxdepth 1 ! -name 'pb' -exec rm -rf {} +
-    if [ -d "$PB_DIR" ]; then
-        find "$PB_DIR" -mindepth 1 -maxdepth 1 ! -name 'pb_data' -exec rm -rf {} +
+        if curl -L -f "$RELEASE_URL" -o "$TMPFILE"; then
+            echo "[*] Release downloaded successfully"
+        else
+            echo "Error: Could not download release from $RELEASE_URL"
+            echo "Please check that the release exists on GitHub"
+            echo "Backup is available at: $BACKUP_DIR"
+            exit 1
+        fi
+
+        echo "[*] Extracting release..."
+        # Remove old application files (but keep pb_data)
+        find "$ROOT_DIR" -mindepth 1 -maxdepth 1 ! -name 'pb' -exec rm -rf {} +
+        if [ -d "$PB_DIR" ]; then
+            find "$PB_DIR" -mindepth 1 -maxdepth 1 ! -name 'pb_data' -exec rm -rf {} +
+        fi
+        
+        unzip -o "$TMPFILE" -d "$ROOT_DIR"
+        rm "$TMPFILE"
     fi
-    
-    unzip -o "$TMPFILE" -d "$ROOT_DIR"
-    rm "$TMPFILE"
 
     # Restore pb_data directory
     if [ -d "$TEMP_DATA_DIR" ]; then
@@ -285,7 +540,11 @@ update() {
     echo ""
     echo "✓ Update complete!"
     echo ""
-    echo "Updated to version: $VERSION"
+    if [ "$FROM_SOURCE" = true ]; then
+        echo "Updated from branch: $BRANCH"
+    else
+        echo "Updated to version: $VERSION"
+    fi
     echo "Backup available at: $BACKUP_DIR"
     echo ""
     echo "You can delete the backup later with:"
