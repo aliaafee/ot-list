@@ -5,6 +5,7 @@ import {
     CalendarCheckIcon,
     CalendarOffIcon,
     ChevronLeftIcon,
+    EyeClosedIcon,
     EyeIcon,
     EyeOffIcon,
     PrinterIcon,
@@ -71,25 +72,6 @@ function ProcedureListEditor({
                 <ToolBarButtonLabel>Print</ToolBarButtonLabel>
             </ToolBarLink>
             <div className="flex-grow"></div>
-            <ToolBarButton
-                title={
-                    showRemoved
-                        ? "Hide Removed Procedures"
-                        : "Show Removed Procedures"
-                }
-                disabled={false}
-                onClick={handleToggleShowRemoved}
-            >
-                {showRemoved ? (
-                    <>
-                        <EyeOffIcon width={16} height={16} />
-                    </>
-                ) : (
-                    <>
-                        <EyeIcon width={16} height={16} />
-                    </>
-                )}
-            </ToolBarButton>
             {otDay &&
                 (!otDay?.disabled ? (
                     <ToolBarButton
@@ -116,6 +98,25 @@ function ProcedureListEditor({
                         </ToolBarButtonLabel>
                     </ToolBarButton>
                 ))}
+            <ToolBarButton
+                title={
+                    showRemoved
+                        ? "Hide Removed Procedures"
+                        : "Show Removed Procedures"
+                }
+                disabled={false}
+                onClick={handleToggleShowRemoved}
+            >
+                {showRemoved ? (
+                    <>
+                        <EyeIcon width={16} height={16} />
+                    </>
+                ) : (
+                    <>
+                        <EyeClosedIcon width={16} height={16} />
+                    </>
+                )}
+            </ToolBarButton>
         </ToolBar>
     );
 

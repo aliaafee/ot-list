@@ -35,7 +35,9 @@ function Procedures() {
                     <div className="w-full sm:max-w-72 lg:mt-0 lg:grow flex flex-col">
                         <div className="bg-gray-300 lg:hidden flex flex-col">
                             <ToolBar className="h-10 bg-gray-200">
-                                <div className="grow" />
+                                <div className="grow px-3 uppercase font-medium text-gray-500 text-xs">
+                                    Operating Lists
+                                </div>
                                 <ToolBarButton
                                     title="close"
                                     disabled={false}
