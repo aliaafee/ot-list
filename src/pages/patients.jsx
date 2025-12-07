@@ -7,14 +7,18 @@ import {
     XIcon,
     ChevronDownIcon,
     ChevronUpIcon,
+    Trash,
+    ChevronsDownIcon,
 } from "lucide-react";
 import BodyLayout from "@/components/body-layout";
 import { ToolBar, ToolBarButtonLabel, ToolBarLink } from "@/components/toolbar";
 import { pb } from "@/lib/pb";
 import { age } from "@/utils/dates";
 import dayjs from "dayjs";
+import { useAuth } from "@/contexts/auth-context";
 
 function Patients({}) {
+    const { user } = useAuth();
     const [patients, setPatients] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -77,14 +81,16 @@ function Patients({}) {
         } else {
             setExpandedPatient(patient);
             setLoadingProcedures(true);
-            
+
             try {
-                const result = await pb.collection("procedures").getList(1, 100, {
-                    filter: `patient = "${patient.id}"`,
-                    sort: "-created",
-                    expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom",
-                });
-                
+                const result = await pb
+                    .collection("procedures")
+                    .getList(1, 100, {
+                        filter: `patient = "${patient.id}"`,
+                        sort: "-created",
+                        expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom",
+                    });
+
                 setPatientProcedures(result.items);
             } catch (err) {
                 console.error("Error fetching procedures:", err);
@@ -92,6 +98,32 @@ function Patients({}) {
             } finally {
                 setLoadingProcedures(false);
             }
+        }
+    };
+
+    const handleDeleteProcedure = async (procedureId, patientId) => {
+        if (
+            !window.confirm(
+                "Are you sure you want to delete this procedure? This action cannot be undone."
+            )
+        ) {
+            return;
+        }
+
+        try {
+            await pb.collection("procedures").delete(procedureId);
+
+            // Refresh the procedures list for the current patient
+            const result = await pb.collection("procedures").getList(1, 100, {
+                filter: `patient = "${patientId}"`,
+                sort: "-created",
+                expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom",
+            });
+
+            setPatientProcedures(result.items);
+        } catch (err) {
+            console.error("Error deleting procedure:", err);
+            alert("Failed to delete procedure. Please try again.");
         }
     };
 
@@ -165,8 +197,7 @@ function Patients({}) {
                         <table className="min-w-full divide-y divide-gray-300">
                             <thead className="bg-gray-50">
                                 <tr>
-                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase w-8">
-                                    </th>
+                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase w-8"></th>
                                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                         NID
                                     </th>
@@ -193,13 +224,22 @@ function Patients({}) {
                                         <tr
                                             key={patient.id}
                                             className="hover:bg-gray-50 cursor-pointer"
-                                            onClick={() => handleTogglePatient(patient)}
+                                            onClick={() =>
+                                                handleTogglePatient(patient)
+                                            }
                                         >
                                             <td className="px-3 py-2 text-sm">
-                                                {expandedPatient?.id === patient.id ? (
-                                                    <ChevronUpIcon width={16} height={16} />
+                                                {expandedPatient?.id ===
+                                                patient.id ? (
+                                                    <ChevronDownIcon
+                                                        width={16}
+                                                        height={16}
+                                                    />
                                                 ) : (
-                                                    <ChevronDownIcon width={16} height={16} />
+                                                    <ChevronRightIcon
+                                                        width={16}
+                                                        height={16}
+                                                    />
                                                 )}
                                             </td>
                                             <td className="px-3 py-2 text-sm">
@@ -225,70 +265,167 @@ function Patients({}) {
                                         </tr>
                                         {expandedPatient?.id === patient.id && (
                                             <tr key={`${patient.id}-details`}>
-                                                <td colSpan="7" className="px-3 py-3 bg-gray-50">
+                                                <td
+                                                    colSpan="7"
+                                                    className="px-3 py-3 bg-gray-50"
+                                                >
                                                     <div className="pl-8">
-                                                        <h3 className="text-sm font-semibold mb-2">Procedures</h3>
+                                                        <h3 className="text-sm font-semibold mb-2">
+                                                            Procedures
+                                                        </h3>
                                                         {loadingProcedures ? (
-                                                            <div className="text-sm text-gray-500">Loading procedures...</div>
-                                                        ) : patientProcedures.length === 0 ? (
-                                                            <div className="text-sm text-gray-500">No procedures found for this patient.</div>
+                                                            <div className="text-sm text-gray-500">
+                                                                Loading
+                                                                procedures...
+                                                            </div>
+                                                        ) : patientProcedures.length ===
+                                                          0 ? (
+                                                            <div className="text-sm text-gray-500">
+                                                                No procedures
+                                                                found for this
+                                                                patient.
+                                                            </div>
                                                         ) : (
                                                             <div className="space-y-2">
-                                                                {patientProcedures.map((proc) => (
-                                                                    <div key={proc.id} className="border border-gray-200 rounded-md p-2 bg-white text-sm">
-                                                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                                                            <div>
-                                                                                <span className="font-medium">Date:</span>{" "}
-                                                                                {proc.expand?.procedureDay?.date ? dayjs(proc.expand.procedureDay.date).format("DD MMM YYYY") : "N/A"}
+                                                                {patientProcedures.map(
+                                                                    (proc) => (
+                                                                        <div
+                                                                            key={
+                                                                                proc.id
+                                                                            }
+                                                                            className="border border-gray-200 rounded-md p-2 bg-white text-sm relative"
+                                                                        >
+                                                                            {user?.role ===
+                                                                                "admin" && (
+                                                                                <button
+                                                                                    onClick={() =>
+                                                                                        handleDeleteProcedure(
+                                                                                            proc.id,
+                                                                                            patient.id
+                                                                                        )
+                                                                                    }
+                                                                                    className="absolute top-2 right-2 p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                                                                                    title="Delete procedure"
+                                                                                >
+                                                                                    <Trash
+                                                                                        size={
+                                                                                            16
+                                                                                        }
+                                                                                    />
+                                                                                </button>
+                                                                            )}
+                                                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                                                                <div>
+                                                                                    <span className="font-medium">
+                                                                                        Date:
+                                                                                    </span>{" "}
+                                                                                    {proc
+                                                                                        .expand
+                                                                                        ?.procedureDay
+                                                                                        ?.date
+                                                                                        ? dayjs(
+                                                                                              proc
+                                                                                                  .expand
+                                                                                                  .procedureDay
+                                                                                                  .date
+                                                                                          ).format(
+                                                                                              "DD MMM YYYY"
+                                                                                          )
+                                                                                        : "N/A"}
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span className="font-medium">
+                                                                                        OT
+                                                                                        List:
+                                                                                    </span>{" "}
+                                                                                    {proc
+                                                                                        .expand
+                                                                                        ?.procedureDay
+                                                                                        ?.expand
+                                                                                        ?.otList
+                                                                                        ?.name ||
+                                                                                        "N/A"}
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span className="font-medium">
+                                                                                        Room:
+                                                                                    </span>{" "}
+                                                                                    {proc
+                                                                                        .expand
+                                                                                        ?.operatingRoom
+                                                                                        ?.name ||
+                                                                                        "N/A"}
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span className="font-medium">
+                                                                                        Bed:
+                                                                                    </span>{" "}
+                                                                                    {proc.bed ||
+                                                                                        "N/A"}
+                                                                                </div>
                                                                             </div>
-                                                                            <div>
-                                                                                <span className="font-medium">OT List:</span>{" "}
-                                                                                {proc.expand?.procedureDay?.expand?.otList?.name || "N/A"}
-                                                                            </div>
-                                                                            <div>
-                                                                                <span className="font-medium">Room:</span>{" "}
-                                                                                {proc.expand?.operatingRoom?.name || "N/A"}
-                                                                            </div>
-                                                                            <div>
-                                                                                <span className="font-medium">Bed:</span>{" "}
-                                                                                {proc.bed || "N/A"}
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className="mt-1">
-                                                                            <span className="font-medium">Diagnosis:</span>{" "}
-                                                                            {proc.diagnosis}
-                                                                        </div>
-                                                                        <div className="mt-1">
-                                                                            <span className="font-medium">Procedure:</span>{" "}
-                                                                            {proc.procedure}
-                                                                        </div>
-                                                                        {proc.comorbids && (
                                                                             <div className="mt-1">
-                                                                                <span className="font-medium">Comorbidities:</span>{" "}
-                                                                                {proc.comorbids}
+                                                                                <span className="font-medium">
+                                                                                    Diagnosis:
+                                                                                </span>{" "}
+                                                                                {
+                                                                                    proc.diagnosis
+                                                                                }
                                                                             </div>
-                                                                        )}
-                                                                        <div className="mt-1 grid grid-cols-2 md:grid-cols-3 gap-2">
-                                                                            <div>
-                                                                                <span className="font-medium">Anesthesia:</span>{" "}
-                                                                                {proc.anesthesia || "N/A"}
+                                                                            <div className="mt-1">
+                                                                                <span className="font-medium">
+                                                                                    Procedure:
+                                                                                </span>{" "}
+                                                                                {
+                                                                                    proc.procedure
+                                                                                }
                                                                             </div>
-                                                                            <div>
-                                                                                <span className="font-medium">Duration:</span>{" "}
-                                                                                {proc.duration ? `${proc.duration} min` : "N/A"}
+                                                                            {proc.comorbids && (
+                                                                                <div className="mt-1">
+                                                                                    <span className="font-medium">
+                                                                                        Comorbidities:
+                                                                                    </span>{" "}
+                                                                                    {
+                                                                                        proc.comorbids
+                                                                                    }
+                                                                                </div>
+                                                                            )}
+                                                                            <div className="mt-1 grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                                                <div>
+                                                                                    <span className="font-medium">
+                                                                                        Anesthesia:
+                                                                                    </span>{" "}
+                                                                                    {proc.anesthesia ||
+                                                                                        "N/A"}
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span className="font-medium">
+                                                                                        Duration:
+                                                                                    </span>{" "}
+                                                                                    {proc.duration
+                                                                                        ? `${proc.duration} min`
+                                                                                        : "N/A"}
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span className="font-medium">
+                                                                                        Added
+                                                                                        By:
+                                                                                    </span>{" "}
+                                                                                    {proc
+                                                                                        .expand
+                                                                                        ?.addedBy
+                                                                                        ?.name ||
+                                                                                        "N/A"}
+                                                                                </div>
                                                                             </div>
-                                                                            <div>
-                                                                                <span className="font-medium">Added By:</span>{" "}
-                                                                                {proc.expand?.addedBy?.name || "N/A"}
-                                                                            </div>
+                                                                            {proc.removed && (
+                                                                                <div className="mt-1 text-red-600 font-medium">
+                                                                                    [REMOVED]
+                                                                                </div>
+                                                                            )}
                                                                         </div>
-                                                                        {proc.removed && (
-                                                                            <div className="mt-1 text-red-600 font-medium">
-                                                                                [REMOVED]
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                ))}
+                                                                    )
+                                                                )}
                                                             </div>
                                                         )}
                                                     </div>
