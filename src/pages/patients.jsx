@@ -5,11 +5,14 @@ import {
     ChevronRightIcon,
     SearchIcon,
     XIcon,
+    ChevronDownIcon,
+    ChevronUpIcon,
 } from "lucide-react";
 import BodyLayout from "@/components/body-layout";
 import { ToolBar, ToolBarButtonLabel, ToolBarLink } from "@/components/toolbar";
 import { pb } from "@/lib/pb";
 import { age } from "@/utils/dates";
+import dayjs from "dayjs";
 
 function Patients({}) {
     const [patients, setPatients] = useState([]);
@@ -18,6 +21,9 @@ function Patients({}) {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [searchQuery, setSearchQuery] = useState("");
+    const [expandedPatient, setExpandedPatient] = useState(null);
+    const [patientProcedures, setPatientProcedures] = useState([]);
+    const [loadingProcedures, setLoadingProcedures] = useState(false);
     const pageSize = 50;
 
     useEffect(() => {
@@ -62,6 +68,31 @@ function Patients({}) {
         setSearchQuery("");
         setPage(1);
         fetchPatients(1, "");
+    };
+
+    const handleTogglePatient = async (patient) => {
+        if (expandedPatient?.id === patient.id) {
+            setExpandedPatient(null);
+            setPatientProcedures([]);
+        } else {
+            setExpandedPatient(patient);
+            setLoadingProcedures(true);
+            
+            try {
+                const result = await pb.collection("procedures").getList(1, 100, {
+                    filter: `patient = "${patient.id}"`,
+                    sort: "-created",
+                    expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom",
+                });
+                
+                setPatientProcedures(result.items);
+            } catch (err) {
+                console.error("Error fetching procedures:", err);
+                setPatientProcedures([]);
+            } finally {
+                setLoadingProcedures(false);
+            }
+        }
     };
 
     const Tools = () => (
@@ -134,6 +165,8 @@ function Patients({}) {
                         <table className="min-w-full divide-y divide-gray-300">
                             <thead className="bg-gray-50">
                                 <tr>
+                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase w-8">
+                                    </th>
                                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                         NID
                                     </th>
@@ -156,31 +189,113 @@ function Patients({}) {
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
                                 {patients.map((patient) => (
-                                    <tr
-                                        key={patient.id}
-                                        className="hover:bg-gray-50"
-                                    >
-                                        <td className="px-3 py-2 text-sm">
-                                            {patient.nid}
-                                        </td>
-                                        <td className="px-3 py-2 text-sm">
-                                            {patient.hospitalId}
-                                        </td>
-                                        <td className="px-3 py-2 text-sm">
-                                            {patient.name}
-                                        </td>
-                                        <td className="px-3 py-2 text-sm">
-                                            {age(patient.dateOfBirth)} /{" "}
-                                            {patient.sex?.[0]?.toUpperCase() ||
-                                                ""}
-                                        </td>
-                                        <td className="px-3 py-2 text-sm">
-                                            {patient.phone}
-                                        </td>
-                                        <td className="px-3 py-2 text-sm">
-                                            {patient.address}
-                                        </td>
-                                    </tr>
+                                    <>
+                                        <tr
+                                            key={patient.id}
+                                            className="hover:bg-gray-50 cursor-pointer"
+                                            onClick={() => handleTogglePatient(patient)}
+                                        >
+                                            <td className="px-3 py-2 text-sm">
+                                                {expandedPatient?.id === patient.id ? (
+                                                    <ChevronUpIcon width={16} height={16} />
+                                                ) : (
+                                                    <ChevronDownIcon width={16} height={16} />
+                                                )}
+                                            </td>
+                                            <td className="px-3 py-2 text-sm">
+                                                {patient.nid}
+                                            </td>
+                                            <td className="px-3 py-2 text-sm">
+                                                {patient.hospitalId}
+                                            </td>
+                                            <td className="px-3 py-2 text-sm">
+                                                {patient.name}
+                                            </td>
+                                            <td className="px-3 py-2 text-sm">
+                                                {age(patient.dateOfBirth)} /{" "}
+                                                {patient.sex?.[0]?.toUpperCase() ||
+                                                    ""}
+                                            </td>
+                                            <td className="px-3 py-2 text-sm">
+                                                {patient.phone}
+                                            </td>
+                                            <td className="px-3 py-2 text-sm">
+                                                {patient.address}
+                                            </td>
+                                        </tr>
+                                        {expandedPatient?.id === patient.id && (
+                                            <tr key={`${patient.id}-details`}>
+                                                <td colSpan="7" className="px-3 py-3 bg-gray-50">
+                                                    <div className="pl-8">
+                                                        <h3 className="text-sm font-semibold mb-2">Procedures</h3>
+                                                        {loadingProcedures ? (
+                                                            <div className="text-sm text-gray-500">Loading procedures...</div>
+                                                        ) : patientProcedures.length === 0 ? (
+                                                            <div className="text-sm text-gray-500">No procedures found for this patient.</div>
+                                                        ) : (
+                                                            <div className="space-y-2">
+                                                                {patientProcedures.map((proc) => (
+                                                                    <div key={proc.id} className="border border-gray-200 rounded-md p-2 bg-white text-sm">
+                                                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                                                            <div>
+                                                                                <span className="font-medium">Date:</span>{" "}
+                                                                                {proc.expand?.procedureDay?.date ? dayjs(proc.expand.procedureDay.date).format("DD MMM YYYY") : "N/A"}
+                                                                            </div>
+                                                                            <div>
+                                                                                <span className="font-medium">OT List:</span>{" "}
+                                                                                {proc.expand?.procedureDay?.expand?.otList?.name || "N/A"}
+                                                                            </div>
+                                                                            <div>
+                                                                                <span className="font-medium">Room:</span>{" "}
+                                                                                {proc.expand?.operatingRoom?.name || "N/A"}
+                                                                            </div>
+                                                                            <div>
+                                                                                <span className="font-medium">Bed:</span>{" "}
+                                                                                {proc.bed || "N/A"}
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="mt-1">
+                                                                            <span className="font-medium">Diagnosis:</span>{" "}
+                                                                            {proc.diagnosis}
+                                                                        </div>
+                                                                        <div className="mt-1">
+                                                                            <span className="font-medium">Procedure:</span>{" "}
+                                                                            {proc.procedure}
+                                                                        </div>
+                                                                        {proc.comorbids && (
+                                                                            <div className="mt-1">
+                                                                                <span className="font-medium">Comorbidities:</span>{" "}
+                                                                                {proc.comorbids}
+                                                                            </div>
+                                                                        )}
+                                                                        <div className="mt-1 grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                                            <div>
+                                                                                <span className="font-medium">Anesthesia:</span>{" "}
+                                                                                {proc.anesthesia || "N/A"}
+                                                                            </div>
+                                                                            <div>
+                                                                                <span className="font-medium">Duration:</span>{" "}
+                                                                                {proc.duration ? `${proc.duration} min` : "N/A"}
+                                                                            </div>
+                                                                            <div>
+                                                                                <span className="font-medium">Added By:</span>{" "}
+                                                                                {proc.expand?.addedBy?.name || "N/A"}
+                                                                            </div>
+                                                                        </div>
+                                                                        {proc.removed && (
+                                                                            <div className="mt-1 text-red-600 font-medium">
+                                                                                [REMOVED]
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </>
                                 ))}
                             </tbody>
                         </table>
