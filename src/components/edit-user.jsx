@@ -104,53 +104,57 @@ function EditUser() {
                     </button>
                 </div>
             )}
-            <table
+            <div
                 className={twMerge(
-                    "table-auto w-full text-left",
+                    "border border-gray-300 rounded-md overflow-x-auto",
                     listLoading ? "pointer-events-none animate-pulse" : ""
                 )}
             >
-                <thead className="bg-gray-400">
-                    <tr>
-                        <th className="px-2 py-1">Name</th>
-                        <th className="px-2 py-1">Email</th>
-                        <th className="px-2 py-1">Role</th>
-                        {user?.role === "admin" && (
-                            <th className="px-2 py-1 w-24"></th>
-                        )}
-                    </tr>
-                </thead>
-                <tbody>
-                    {listLoading && users.length === 0 && (
-                        <tr className="odd:bg-gray-200 even:bg-gray-300">
-                            <td colSpan={4} className="px-2 py-1">
-                                Loading...
-                            </td>
-                        </tr>
-                    )}
-                    {users.map((u) => (
-                        <tr
-                            key={u.id}
-                            className="odd:bg-gray-200 even:bg-gray-300"
-                        >
-                            <td className="px-2 py-1">{u.name}</td>
-                            <td className="px-2 py-1">{u.email}</td>
-                            <td className="px-2 py-1">{u.role}</td>
+                <table className="text-left table-auto w-full divide-y divide-gray-300">
+                    <thead className="bg-gray-50">
+                        <tr>
+                            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                Name
+                            </th>
+                            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                Email
+                            </th>
+                            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                Role
+                            </th>
                             {user?.role === "admin" && (
-                                <td className="px-2 py-1">
-                                    <div className="flex gap-1 justify-end">
-                                        <button
-                                            className="p-1.5 rounded-full hover:bg-gray-400 cursor-pointer"
-                                            onClick={() => {
-                                                setEditingUser(u);
-                                                setShowEditModal(true);
-                                                setUserErrors({});
-                                            }}
-                                            title="Edit user name and role"
-                                        >
-                                            <EditIcon size={16} />
-                                        </button>
-                                        {/* <button
+                                <th className="px-3 py-2 w-14"></th>
+                            )}
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 bg-white">
+                        {listLoading && users.length === 0 && (
+                            <tr>
+                                <td colSpan={4} className="px-3 py-2">
+                                    Loading...
+                                </td>
+                            </tr>
+                        )}
+                        {users.map((u) => (
+                            <tr key={u.id}>
+                                <td className="px-3 py-2">{u.name}</td>
+                                <td className="px-3 py-2">{u.email}</td>
+                                <td className="px-3 py-2">{u.role}</td>
+                                {user?.role === "admin" && (
+                                    <td className="px-3 py-2">
+                                        <div className="flex gap-1 justify-end">
+                                            <button
+                                                className="p-1.5 rounded-full hover:bg-gray-400 cursor-pointer"
+                                                onClick={() => {
+                                                    setEditingUser(u);
+                                                    setShowEditModal(true);
+                                                    setUserErrors({});
+                                                }}
+                                                title="Edit user name and role"
+                                            >
+                                                <EditIcon size={16} />
+                                            </button>
+                                            {/* <button
                                             className="p-1.5 rounded-full hover:bg-gray-400 cursor-pointer"
                                             onClick={() => {
                                                 setChangingEmailUser(u);
@@ -161,13 +165,14 @@ function EditUser() {
                                         >
                                             <MailIcon size={16} />
                                         </button> */}
-                                    </div>
-                                </td>
-                            )}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+                                        </div>
+                                    </td>
+                                )}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
             {showUserModal && (
                 <UserFormModal
                     onSave={handleSaveUser}
