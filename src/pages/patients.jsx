@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router";
 import {
     ChevronLeft,
     ChevronLeftIcon,
@@ -19,20 +20,23 @@ import { useAuth } from "@/contexts/auth-context";
 
 function Patients({}) {
     const { user } = useAuth();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [patients, setPatients] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const [searchQuery, setSearchQuery] = useState("");
     const [expandedPatient, setExpandedPatient] = useState(null);
     const [patientProcedures, setPatientProcedures] = useState([]);
     const [loadingProcedures, setLoadingProcedures] = useState(false);
     const pageSize = 50;
 
+    // Get page and search from URL, with defaults
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const searchQuery = searchParams.get("search") || "";
+
     useEffect(() => {
         fetchPatients(page, searchQuery);
-    }, [page]);
+    }, [page, searchQuery]);
 
     const fetchPatients = async (pageNumber, query = "") => {
         setLoading(true);
@@ -64,40 +68,44 @@ function Patients({}) {
     };
 
     const handleSearch = () => {
-        setPage(1);
-        fetchPatients(1, searchQuery);
+        const params = new URLSearchParams();
+        if (searchQuery.trim()) {
+            params.set("search", searchQuery.trim());
+        }
+        params.set("page", "1");
+        setSearchParams(params);
     };
 
     const handleClearSearch = () => {
-        setSearchQuery("");
-        setPage(1);
-        fetchPatients(1, "");
+        setSearchParams({});
     };
 
-    const handleTogglePatient = async (patient) => {
+    const loadPatientProcedures = async (patient) => {
+        setExpandedPatient(patient);
+        setLoadingProcedures(true);
+
+        try {
+            const result = await pb.collection("procedures").getList(1, 100, {
+                filter: `patient = "${patient.id}"`,
+                sort: "-created",
+                expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom",
+            });
+
+            setPatientProcedures(result.items);
+        } catch (err) {
+            console.error("Error fetching procedures:", err);
+            setPatientProcedures([]);
+        } finally {
+            setLoadingProcedures(false);
+        }
+    };
+
+    const handleTogglePatient = (patient) => {
         if (expandedPatient?.id === patient.id) {
             setExpandedPatient(null);
             setPatientProcedures([]);
         } else {
-            setExpandedPatient(patient);
-            setLoadingProcedures(true);
-
-            try {
-                const result = await pb
-                    .collection("procedures")
-                    .getList(1, 100, {
-                        filter: `patient = "${patient.id}"`,
-                        sort: "-created",
-                        expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom",
-                    });
-
-                setPatientProcedures(result.items);
-            } catch (err) {
-                console.error("Error fetching procedures:", err);
-                setPatientProcedures([]);
-            } finally {
-                setLoadingProcedures(false);
-            }
+            loadPatientProcedures(patient);
         }
     };
 
@@ -114,13 +122,17 @@ function Patients({}) {
             await pb.collection("procedures").delete(procedureId);
 
             // Refresh the procedures list for the current patient
-            const result = await pb.collection("procedures").getList(1, 100, {
-                filter: `patient = "${patientId}"`,
-                sort: "-created",
-                expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom",
-            });
+            if (expandedPatient) {
+                const result = await pb
+                    .collection("procedures")
+                    .getList(1, 100, {
+                        filter: `patient = "${patientId}"`,
+                        sort: "-created",
+                        expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom",
+                    });
 
-            setPatientProcedures(result.items);
+                setPatientProcedures(result.items);
+            }
         } catch (err) {
             console.error("Error deleting procedure:", err);
             alert("Failed to delete procedure. Please try again.");
@@ -146,7 +158,16 @@ function Patients({}) {
                     <input
                         type="text"
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={(e) => {
+                            const params = new URLSearchParams(searchParams);
+                            if (e.target.value.trim()) {
+                                params.set("search", e.target.value);
+                            } else {
+                                params.delete("search");
+                            }
+                            params.set("page", "1");
+                            setSearchParams(params);
+                        }}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
                                 handleSearch();
@@ -451,7 +472,13 @@ function Patients({}) {
                             <div className="flex gap-2">
                                 <button
                                     type="button"
-                                    onClick={() => setPage(page - 1)}
+                                    onClick={() => {
+                                        const params = new URLSearchParams(
+                                            searchParams
+                                        );
+                                        params.set("page", String(page - 1));
+                                        setSearchParams(params);
+                                    }}
                                     disabled={page === 1}
                                     className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
@@ -464,7 +491,13 @@ function Patients({}) {
                                 </button>
                                 <button
                                     type="button"
-                                    onClick={() => setPage(page + 1)}
+                                    onClick={() => {
+                                        const params = new URLSearchParams(
+                                            searchParams
+                                        );
+                                        params.set("page", String(page + 1));
+                                        setSearchParams(params);
+                                    }}
                                     disabled={page === totalPages}
                                     className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
