@@ -214,7 +214,7 @@ function Patients({}) {
                 </div>
             ) : (
                 <>
-                    <div className="border border-gray-300 rounded-md overflow-hidden">
+                    <div className="border border-gray-300 rounded-md overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-300">
                             <thead className="bg-gray-50">
                                 <tr>
