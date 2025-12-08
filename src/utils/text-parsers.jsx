@@ -148,3 +148,96 @@ export function bedInfoFromHINAIHeader(text) {
     }
     return "";
 }
+
+export function patientInfoFromVinavi(text) {
+    const patientData = { ...initialPatientValue };
+    const lines = text
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line);
+
+    // Accepts text like:
+    // Firstname Lastname Othername
+    // 40 years 1 month
+    // A0123456
+    // xxxxxxx
+    // Male
+    //
+    // 17 Jan 1980
+    //
+    // Some House , K. Someisland
+    //
+    // 7123456
+
+    if (lines.length < 6) {
+        throw new Error(
+            "Invalid format: Expected at least 6 lines of patient information"
+        );
+    }
+
+    // Line 0: Name
+    if (lines[0]) {
+        patientData.name = lines[0];
+    }
+
+    // Line 2: National ID (e.g., A046974)
+    if (lines[2] && /^[A-Z]?\d+$/.test(lines[2])) {
+        patientData.nid = lines[2];
+    }
+
+    // Line 4: Sex (Male/Female)
+    if (lines[4] && /^(male|female)$/i.test(lines[4])) {
+        patientData.sex = lines[4].toLowerCase();
+    }
+
+    // Line 5: Date of Birth (e.g., "17 Oct 1985")
+    if (lines[5]) {
+        const date = new Date(lines[5]);
+        if (!isNaN(date.getTime())) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            patientData.dateOfBirth = `${year}-${month}-${day}`;
+        }
+    }
+
+    // Line 6: Address (e.g., "Morning Sun , S. Hulhudhoo")
+    if (lines[6]) {
+        patientData.address = lines[6];
+    }
+
+    // Line 7: Phone number
+    if (lines[7] && /^\d+$/.test(lines[7])) {
+        patientData.phone = lines[7];
+    }
+
+    return patientData;
+}
+
+export function patientInfoFromText(text) {
+    // Differentiate between HINAI and Vinavi formats
+    // HINAI format characteristics:
+    // - Has "NATIONAL ID" keyword in second line
+    // - Has parentheses with patient info in first line
+    // - Typically 2 lines
+
+    // Vinavi format characteristics:
+    // - Multiple short lines (name, age, NID, hospital ID, sex, DOB, address, phone)
+    // - No "NATIONAL ID" keyword
+    // - No parentheses with structured info
+    // - Typically 7-8+ lines
+
+    const lines = text.split("\n");
+
+    // Check for HINAI format indicators
+    const hasNationalIdKeyword = text.match(/NATIONAL\s+ID\s*:/i);
+    const hasParentheses = lines[0]?.match(/\([^)]+\)/);
+
+    if (hasNationalIdKeyword && hasParentheses) {
+        // HINAI format
+        return patientInfoFromHINAIHeader(text);
+    } else {
+        // Vinavi format
+        return patientInfoFromVinavi(text);
+    }
+}

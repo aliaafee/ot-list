@@ -23,6 +23,7 @@ import { GenerateProdecureFormData } from "@/utils/sample-data";
 import {
     bedInfoFromHINAIHeader,
     patientInfoFromHINAIHeader,
+    patientInfoFromText,
 } from "@/utils/text-parsers";
 import PatientSearchModal from "@/modals/patient-search-modal";
 import PatientInfo from "./patient-info";
@@ -64,7 +65,7 @@ function ProcedureAdder({
         try {
             const text = await navigator.clipboard.readText();
 
-            setNewPatient(patientInfoFromHINAIHeader(text));
+            setNewPatient(patientInfoFromText(text));
 
             const bedNumber = bedInfoFromHINAIHeader(text);
 
