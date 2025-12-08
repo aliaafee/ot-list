@@ -23,7 +23,7 @@ import { GenerateProdecureFormData } from "@/utils/sample-data";
 import {
     bedInfoFromHINAIHeader,
     patientInfoFromHINAIHeader,
-} from "@/utils/test-parsers";
+} from "@/utils/text-parsers";
 import PatientSearchModal from "@/modals/patient-search-modal";
 import PatientInfo from "./patient-info";
 import { LoadingSpinner } from "./loading-spinner";
