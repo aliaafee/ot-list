@@ -103,24 +103,28 @@ export default function EditTable({
     return (
         <div
             className={twMerge(
+                "border border-gray-300 rounded-md overflow-x-auto",
                 loading ? "pointer-events-none animate-pulse" : ""
             )}
         >
             {error && <p className="text-red-500">{error}</p>}
-            <table className="table-auto w-full text-left ">
-                <thead className="bg-gray-400">
+            <table className="text-left table-auto w-full divide-y divide-gray-300">
+                <thead className="bg-gray-50 ">
                     <tr>
                         {columns.map((col) => (
-                            <th key={col.field} className="px-2 py-1">
+                            <th
+                                key={col.field}
+                                className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase"
+                            >
                                 {col.label}
                             </th>
                         ))}
                         {!!!readOnly && <th className="w-14"></th>}
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-gray-200 bg-white">
                     {loading && data.length === 0 && (
-                        <tr className="odd:bg-gray-200 even:bg-gray-300">
+                        <tr className="">
                             <td
                                 colSpan={columns.length + 1}
                                 className="px-2 py-1"
@@ -130,10 +134,7 @@ export default function EditTable({
                         </tr>
                     )}
                     {data.map((row) => (
-                        <tr
-                            key={row.id}
-                            className="odd:bg-gray-200 even:bg-gray-300"
-                        >
+                        <tr key={row.id} className="">
                             {columns.map((col) => (
                                 <TableCell
                                     key={col.field}
@@ -169,12 +170,7 @@ export default function EditTable({
                                         </>
                                     ) : (
                                         <>
-                                            <button
-                                                className="p-2 hover:bg-gray-400 cursor-pointer invisible"
-                                                disabled={true}
-                                            >
-                                                <EditIcon size={16} />
-                                            </button>
+                                            <span className="inline-block w-[20px] h-[16px] mx-1.5"></span>
                                             <button
                                                 className="m-0.5 p-1.5 rounded-full hover:bg-gray-400 cursor-pointer"
                                                 onClick={() => {
@@ -192,7 +188,7 @@ export default function EditTable({
                         </tr>
                     ))}
                     {newRow && (
-                        <tr className="odd:bg-gray-200 even:bg-gray-300">
+                        <tr>
                             {columns.map((col) => (
                                 <TableCell
                                     key={col.field}
@@ -223,15 +219,10 @@ export default function EditTable({
                         </tr>
                     )}
                     {!!!readOnly && !newRow && (
-                        <tr className="odd:bg-gray-200 even:bg-gray-300">
+                        <tr className="">
                             <td colSpan={columns.length}></td>
                             <td className="flex items-center justify-end">
-                                <button
-                                    className="m-0.5 p-1.5 rounded-full hover:bg-gray-400 cursor-pointer invisible"
-                                    disabled={true}
-                                >
-                                    <EditIcon size={16} />
-                                </button>
+                                <span className="inline-block w-[20px] h-[16px] mx-1.5"></span>
                                 <button
                                     className="m-0.5 p-1.5 rounded-full hover:bg-gray-400 cursor-pointer"
                                     onClick={() => {

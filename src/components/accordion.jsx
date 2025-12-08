@@ -10,7 +10,7 @@ const Accordion = ({ items }) => {
     };
 
     return (
-        <div className="flex flex-col gap-4">
+        <div className="space-y-4">
             {items.map((item, index) => (
                 <div key={index} className="">
                     <div
@@ -28,6 +28,7 @@ const Accordion = ({ items }) => {
                         />
                         {item.title}
                     </div>
+
                     {activeIndex === index && item.content}
                 </div>
             ))}
