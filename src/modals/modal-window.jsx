@@ -17,6 +17,7 @@ export default function ModalWindow({
     loading = false,
     large = false,
     children,
+    customButtons = null,
 }) {
     return (
         <ModalContainer large={large}>
@@ -72,6 +73,7 @@ export default function ModalWindow({
                             {cancelLabel}
                         </button>
                     )}
+                    {customButtons}
                 </div>
             )}
         </ModalContainer>

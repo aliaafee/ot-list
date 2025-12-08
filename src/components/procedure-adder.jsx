@@ -4,6 +4,7 @@ import {
     ClipboardPasteIcon,
     SearchIcon,
     UserPlusIcon,
+    CameraIcon,
 } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
@@ -30,6 +31,7 @@ import PatientInfo from "./patient-info";
 import { LoadingSpinner } from "./loading-spinner";
 import { pb } from "@/lib/pb";
 import dayjs from "dayjs";
+import IdCardScanModal from "@/modals/id-card-scan-modal";
 
 function ProcedureAdder({
     operatingRoom,
@@ -48,6 +50,7 @@ function ProcedureAdder({
     const [newProcedureErrors, setNewProcedureErrors] = useState({});
     const [addError, setAddError] = useState(null);
     const [showPatientSearch, setShowPatientSearch] = useState(false);
+    const [showIdCardScan, setShowIdCardScan] = useState(false);
     const [checking, setChecking] = useState(false);
 
     const handleSampleData = () => {
@@ -85,6 +88,21 @@ function ProcedureAdder({
                     "Failed to paste patient information. Please check the clipboard format.",
             });
         }
+    };
+
+    const handleScanPatient = async () => {
+        setShowIdCardScan(true);
+    };
+
+    const handleIdCardScanned = (patientInfo) => {
+        // Merge scanned info with existing patient data
+        setNewPatient({
+            ...newPatient,
+            ...patientInfo,
+        });
+        setShowIdCardScan(false);
+        setSelectedPatient(null);
+        setAddError(null);
     };
 
     const handleFindPatient = async () => {
@@ -300,6 +318,15 @@ function ProcedureAdder({
                         <SearchIcon className="" width={16} height={16} />
                         <ToolBarButtonLabel>Find</ToolBarButtonLabel>
                     </ToolBarButton>
+
+                    <ToolBarButton
+                        title="Scan ID Card"
+                        disabled={isBusy() || checking}
+                        onClick={handleScanPatient}
+                    >
+                        <CameraIcon className="" width={16} height={16} />
+                        <ToolBarButtonLabel>Scan</ToolBarButtonLabel>
+                    </ToolBarButton>
                 </ToolBar>
 
                 {!!selectedPatient ? (
@@ -368,6 +395,12 @@ function ProcedureAdder({
                 <PatientSearchModal
                     onSelect={handlePatientSelected}
                     onCancel={() => setShowPatientSearch(false)}
+                />
+            )}
+            {showIdCardScan && (
+                <IdCardScanModal
+                    onComplete={handleIdCardScanned}
+                    onCancel={() => setShowIdCardScan(false)}
                 />
             )}
         </div>
