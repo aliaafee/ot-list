@@ -11,46 +11,400 @@ export async function extractInfoFromNationalIdCard(
     statusCallback
 ) {
     try {
-        // Perform OCR on the image
+        // Preprocess the image before OCR
         if (statusCallback) {
-            statusCallback(0, "Initializing OCR...");
+            statusCallback(0, "Preprocessing image...");
+        }
+
+        const preprocessedImage = await preprocessIdCardImage(
+            imageSource,
+            statusCallback
+        );
+
+        // Perform OCR on the preprocessed image
+        if (statusCallback) {
+            statusCallback(0.3, "Initializing OCR...");
         }
 
         const result = await Tesseract.recognize(
-            imageSource,
+            preprocessedImage,
             "eng", // Maldivian ID cards use English
             {
                 logger: (info) => {
                     // Optional: Log progress
                     if (info.status === "recognizing text") {
-                        const progress = Math.round(info.progress * 100);
-                        console.log(`OCR Progress: ${progress}%`);
+                        // Scale progress from 0.3 to 0.9 (60% of total progress)
+                        const progress = 0.3 + info.progress * 0.6;
+                        const progressPercent = Math.round(progress * 100);
+                        console.log(`OCR Progress: ${progressPercent}%`);
                         if (statusCallback) {
                             statusCallback(
-                                info.progress,
-                                `Recognizing text... ${progress}%`
+                                progress,
+                                `Recognizing text... ${progressPercent}%`
                             );
                         }
                     } else if (statusCallback) {
-                        statusCallback(info.progress || 0, info.status);
+                        const progress = 0.3 + (info.progress || 0) * 0.6;
+                        statusCallback(progress, info.status);
                     }
                 },
             }
         );
 
         if (statusCallback) {
-            statusCallback(1, "Parsing extracted text...");
+            statusCallback(0.95, "Parsing extracted text...");
         }
 
         const text = result.data.text;
         console.log("OCR Text:", text);
 
         // Parse the extracted text
-        return parseNationalIdText(text);
+        const parsedData = parseNationalIdText(text);
+
+        if (statusCallback) {
+            statusCallback(1, "Complete!");
+        }
+
+        return parsedData;
     } catch (error) {
         console.error("Error extracting ID card information:", error);
         throw new Error("Failed to extract information from ID card image");
     }
+}
+
+/**
+ * Preprocess ID card image by detecting and aligning the card
+ * @param {File|Blob|string} imageSource - Image file, blob, or data URL
+ * @param {Function} statusCallback - Optional callback for progress updates
+ * @returns {Promise<string>} Preprocessed image as data URL
+ */
+async function preprocessIdCardImage(imageSource, statusCallback) {
+    try {
+        // Dynamically import OpenCV
+        if (statusCallback) {
+            statusCallback(0.05, "Loading image processor...");
+        }
+
+        const cv = await loadOpenCV();
+
+        if (statusCallback) {
+            statusCallback(0.1, "Loading image...");
+        }
+
+        // Convert image source to Image element
+        const img = await loadImageElement(imageSource);
+
+        if (statusCallback) {
+            statusCallback(0.15, "Detecting ID card...");
+        }
+
+        // Create canvas and get image data
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        // Load image into OpenCV Mat
+        const src = cv.imread(canvas);
+
+        // Try to detect and align the ID card
+        const aligned = detectAndAlignIdCard(cv, src, statusCallback);
+
+        // Convert back to data URL
+        if (statusCallback) {
+            statusCallback(0.25, "Finalizing preprocessed image...");
+        }
+
+        const outputCanvas = document.createElement("canvas");
+        cv.imshow(outputCanvas, aligned);
+        const dataUrl = outputCanvas.toDataURL("image/png");
+
+        // Clean up
+        src.delete();
+        aligned.delete();
+
+        if (statusCallback) {
+            statusCallback(0.3, "Image preprocessing complete");
+        }
+
+        return dataUrl;
+    } catch (error) {
+        console.error("Error preprocessing image:", error);
+        console.log("Falling back to original image");
+        // If preprocessing fails, fall back to original image
+        if (imageSource instanceof Blob || imageSource instanceof File) {
+            return await blobToDataURL(imageSource);
+        }
+        return imageSource;
+    }
+}
+
+/**
+ * Detect and align ID card in the image using perspective transformation
+ * @param {Object} cv - OpenCV.js instance
+ * @param {Mat} src - Source image
+ * @param {Function} statusCallback - Optional callback for progress updates
+ * @returns {Mat} Aligned image
+ */
+function detectAndAlignIdCard(cv, src, statusCallback) {
+    try {
+        // Convert to grayscale
+        if (statusCallback) {
+            statusCallback(0.16, "Converting to grayscale...");
+        }
+        const gray = new cv.Mat();
+        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY, 0);
+
+        // Apply Gaussian blur to reduce noise
+        if (statusCallback) {
+            statusCallback(0.17, "Reducing noise...");
+        }
+        const blurred = new cv.Mat();
+        cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0, 0, cv.BORDER_DEFAULT);
+
+        // Detect edges using Canny edge detection
+        if (statusCallback) {
+            statusCallback(0.18, "Detecting edges...");
+        }
+        const edges = new cv.Mat();
+        cv.Canny(blurred, edges, 50, 150, 3, false);
+
+        // Find contours
+        if (statusCallback) {
+            statusCallback(0.19, "Finding contours...");
+        }
+        const contours = new cv.MatVector();
+        const hierarchy = new cv.Mat();
+        cv.findContours(
+            edges,
+            contours,
+            hierarchy,
+            cv.RETR_EXTERNAL,
+            cv.CHAIN_APPROX_SIMPLE
+        );
+
+        // Find the largest quadrilateral contour
+        if (statusCallback) {
+            statusCallback(0.2, "Identifying ID card...");
+        }
+        let maxArea = 0;
+        let bestContour = null;
+
+        for (let i = 0; i < contours.size(); i++) {
+            const contour = contours.get(i);
+            const area = cv.contourArea(contour);
+
+            // Approximate the contour to a polygon
+            const peri = cv.arcLength(contour, true);
+            const approx = new cv.Mat();
+            cv.approxPolyDP(contour, approx, 0.02 * peri, true);
+
+            // Check if it's a quadrilateral and has significant area
+            if (approx.rows === 4 && area > maxArea) {
+                maxArea = area;
+                if (bestContour) {
+                    bestContour.delete();
+                }
+                bestContour = approx.clone();
+            }
+
+            approx.delete();
+        }
+
+        // Clean up temporary Mats
+        gray.delete();
+        blurred.delete();
+        edges.delete();
+        contours.delete();
+        hierarchy.delete();
+
+        // If we found a quadrilateral, perform perspective transformation
+        if (bestContour && maxArea > src.rows * src.cols * 0.1) {
+            if (statusCallback) {
+                statusCallback(0.22, "Aligning ID card...");
+            }
+
+            const result = performPerspectiveTransform(cv, src, bestContour);
+            bestContour.delete();
+            return result;
+        }
+
+        // If no suitable contour found, return original
+        if (bestContour) {
+            bestContour.delete();
+        }
+        console.log("No ID card detected, using original image");
+        return src.clone();
+    } catch (error) {
+        console.error("Error in detectAndAlignIdCard:", error);
+        // Return original image on error
+        return src.clone();
+    }
+}
+
+/**
+ * Perform perspective transformation to align the ID card
+ * @param {Object} cv - OpenCV.js instance
+ * @param {Mat} src - Source image
+ * @param {Mat} contour - Quadrilateral contour points
+ * @returns {Mat} Transformed image
+ */
+function performPerspectiveTransform(cv, src, contour) {
+    try {
+        // Get the four corner points
+        const points = [];
+        for (let i = 0; i < 4; i++) {
+            points.push({
+                x: contour.data32S[i * 2],
+                y: contour.data32S[i * 2 + 1],
+            });
+        }
+
+        // Order points: top-left, top-right, bottom-right, bottom-left
+        points.sort((a, b) => a.y - b.y);
+        const topPoints = points.slice(0, 2).sort((a, b) => a.x - b.x);
+        const bottomPoints = points.slice(2, 4).sort((a, b) => a.x - b.x);
+        const orderedPoints = [
+            topPoints[0],
+            topPoints[1],
+            bottomPoints[1],
+            bottomPoints[0],
+        ];
+
+        // Calculate the width and height of the output image
+        const widthTop = Math.sqrt(
+            Math.pow(orderedPoints[1].x - orderedPoints[0].x, 2) +
+                Math.pow(orderedPoints[1].y - orderedPoints[0].y, 2)
+        );
+        const widthBottom = Math.sqrt(
+            Math.pow(orderedPoints[2].x - orderedPoints[3].x, 2) +
+                Math.pow(orderedPoints[2].y - orderedPoints[3].y, 2)
+        );
+        const maxWidth = Math.max(widthTop, widthBottom);
+
+        const heightLeft = Math.sqrt(
+            Math.pow(orderedPoints[3].x - orderedPoints[0].x, 2) +
+                Math.pow(orderedPoints[3].y - orderedPoints[0].y, 2)
+        );
+        const heightRight = Math.sqrt(
+            Math.pow(orderedPoints[2].x - orderedPoints[1].x, 2) +
+                Math.pow(orderedPoints[2].y - orderedPoints[1].y, 2)
+        );
+        const maxHeight = Math.max(heightLeft, heightRight);
+
+        // Create source and destination point matrices
+        const srcPoints = cv.matFromArray(4, 1, cv.CV_32FC2, [
+            orderedPoints[0].x,
+            orderedPoints[0].y,
+            orderedPoints[1].x,
+            orderedPoints[1].y,
+            orderedPoints[2].x,
+            orderedPoints[2].y,
+            orderedPoints[3].x,
+            orderedPoints[3].y,
+        ]);
+
+        const dstPoints = cv.matFromArray(4, 1, cv.CV_32FC2, [
+            0,
+            0,
+            maxWidth,
+            0,
+            maxWidth,
+            maxHeight,
+            0,
+            maxHeight,
+        ]);
+
+        // Get perspective transformation matrix
+        const M = cv.getPerspectiveTransform(srcPoints, dstPoints);
+
+        // Apply transformation
+        const dst = new cv.Mat();
+        const dsize = new cv.Size(maxWidth, maxHeight);
+        cv.warpPerspective(
+            src,
+            dst,
+            M,
+            dsize,
+            cv.INTER_LINEAR,
+            cv.BORDER_CONSTANT,
+            new cv.Scalar()
+        );
+
+        // Clean up
+        srcPoints.delete();
+        dstPoints.delete();
+        M.delete();
+
+        return dst;
+    } catch (error) {
+        console.error("Error in performPerspectiveTransform:", error);
+        return src.clone();
+    }
+}
+
+/**
+ * Load OpenCV.js dynamically
+ * @returns {Promise<Object>} OpenCV.js instance
+ */
+async function loadOpenCV() {
+    // Check if OpenCV is already loaded
+    if (window.cv && window.cv.Mat) {
+        return window.cv;
+    }
+
+    // Import OpenCV
+    const cv = await import("@techstark/opencv-js");
+
+    // Wait for OpenCV to be ready
+    return new Promise((resolve) => {
+        cv.default().then((cvInstance) => {
+            window.cv = cvInstance;
+            resolve(cvInstance);
+        });
+    });
+}
+
+/**
+ * Load image from various sources into an Image element
+ * @param {File|Blob|string} imageSource - Image source
+ * @returns {Promise<HTMLImageElement>} Image element
+ */
+function loadImageElement(imageSource) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+
+        if (typeof imageSource === "string") {
+            img.src = imageSource;
+        } else if (imageSource instanceof Blob || imageSource instanceof File) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                img.src = e.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(imageSource);
+        } else {
+            reject(new Error("Unsupported image source type"));
+        }
+    });
+}
+
+/**
+ * Convert Blob to Data URL
+ * @param {Blob} blob - Blob to convert
+ * @returns {Promise<string>} Data URL
+ */
+function blobToDataURL(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
 }
 
 /**
@@ -87,7 +441,7 @@ function parseNationalIdText(text) {
     // Formats: DD MMM YYYY, DD/MM/YYYY, DD-MM-YYYY
     const dobPatterns = [
         /\b(\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4})\b/i,
-        /\b(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4})\b/,
+        /\b(\d{1,2}[/-]\d{1,2}[/-]\d{4})\b/,
     ];
 
     for (const pattern of dobPatterns) {
