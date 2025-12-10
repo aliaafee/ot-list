@@ -106,10 +106,15 @@ function EditUser() {
             )}
             <div
                 className={twMerge(
-                    "border border-gray-300 rounded-md overflow-x-auto",
+                    "border border-gray-300 rounded-md overflow-x-auto relative",
                     listLoading ? "pointer-events-none animate-pulse" : ""
                 )}
             >
+                {listLoading && (
+                    <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10">
+                        <span className="border-[3px] border-black/80 border-t-black/30 animate-spin rounded-full w-6 h-6"></span>
+                    </div>
+                )}
                 <table className="text-left table-auto w-full divide-y divide-gray-300">
                     <thead className="bg-gray-50">
                         <tr>
