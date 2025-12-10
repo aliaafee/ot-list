@@ -103,14 +103,19 @@ export default function EditTable({
     return (
         <div
             className={twMerge(
-                "border border-gray-300 rounded-md overflow-x-auto",
+                "border border-gray-300 rounded-md overflow-x-auto relative",
                 loading ? "pointer-events-none animate-pulse" : ""
             )}
         >
-            {error && <p className="text-red-500">{error}</p>}
-            <table className="text-left table-auto w-full divide-y divide-gray-300">
+            {loading && (
+                <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10">
+                    <span className="border-[3px] border-black/80 border-t-black/30 animate-spin rounded-full w-6 h-6"></span>
+                </div>
+            )}
+            <table className="text-left table-auto w-full divide-y divide-gray-300 mb-0.5">
                 <thead className="bg-gray-50 ">
                     <tr>
+                        <th className="pl-1"></th>
                         {columns.map((col) => (
                             <th
                                 key={col.field}
@@ -125,6 +130,7 @@ export default function EditTable({
                 <tbody className="divide-y divide-gray-200 bg-white">
                     {loading && data.length === 0 && (
                         <tr className="">
+                            <td></td>
                             <td
                                 colSpan={columns.length + 1}
                                 className="px-2 py-1"
@@ -133,8 +139,20 @@ export default function EditTable({
                             </td>
                         </tr>
                     )}
+                    {error && (
+                        <tr className="bg-red-50">
+                            <td></td>
+                            <td
+                                colSpan={columns.length + 1}
+                                className="px-2 py-1"
+                            >
+                                <span className="text-red-500">{error}</span>
+                            </td>
+                        </tr>
+                    )}
                     {data.map((row) => (
                         <tr key={row.id} className="">
+                            <td></td>
                             {columns.map((col) => (
                                 <TableCell
                                     key={col.field}
@@ -189,6 +207,7 @@ export default function EditTable({
                     ))}
                     {newRow && (
                         <tr>
+                            <td></td>
                             {columns.map((col) => (
                                 <TableCell
                                     key={col.field}
@@ -219,7 +238,8 @@ export default function EditTable({
                         </tr>
                     )}
                     {!!!readOnly && !newRow && (
-                        <tr className="">
+                        <tr>
+                            <td></td>
                             <td colSpan={columns.length}></td>
                             <td className="flex items-center justify-end">
                                 <span className="inline-block w-[20px] h-[16px] mx-1.5"></span>
