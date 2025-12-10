@@ -285,7 +285,7 @@ function ProcedureAdder({
                 </div>
             )}
             <div className="p-2 flex flex-col gap-2">
-                <ToolBar className="bg-gray-200 rounded-lg sm:w-fit">
+                <ToolBar className="bg-gray-200 rounded-lg sm:w-fit flex-wrap sm:flex-nowrap">
                     <ToolBarButton disabled={true}>Patient</ToolBarButton>
 
                     <ToolBarButton

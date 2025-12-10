@@ -1,9 +1,90 @@
 import Tesseract from "tesseract.js";
+const { getOpenCv } = await import("@/lib/opencv.js");
+
+/**
+ * Preprocess National ID card image to improve OCR accuracy
+ * @param {File|Blob|string} imageSource - Image file, blob, or data URL
+ * @param {Function} statusCallback - Optional callback for progress updates
+ * @returns {Promise<string>} Preprocessed image as data URL
+ */
+async function preprocessNationalIdCard(imageSource, statusCallback) {
+    if (statusCallback) {
+        statusCallback(0, "Preprocessing image...");
+    }
+
+    try {
+        const { cv } = await getOpenCv();
+
+        // Convert image source to data URL if needed
+        let imageDataUrl;
+        if (imageSource instanceof File || imageSource instanceof Blob) {
+            imageDataUrl = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(imageSource);
+            });
+        } else {
+            imageDataUrl = imageSource;
+        }
+
+        // Load image into an HTML Image element
+        const img = await new Promise((resolve, reject) => {
+            const image = new Image();
+            image.onload = () => resolve(image);
+            image.onerror = reject;
+            image.src = imageDataUrl;
+        });
+
+        // Create canvas and draw image
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        // Read image into OpenCV matrix
+        const src = cv.imread(canvas);
+        let gray = new cv.Mat();
+        const dst = new cv.Mat();
+
+        // Convert to grayscale
+        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+
+        // Apply Gaussian blur to denoise
+        // ksize = (10, 10), sigmaX = 0 (calculated from kernel size)
+        const ksize = new cv.Size(1, 1);
+        cv.GaussianBlur(gray, dst, ksize, 0, 0, cv.BORDER_DEFAULT);
+
+        // Write processed image back to canvas
+        cv.imshow(canvas, dst);
+
+        // Clean up
+        src.delete();
+        gray.delete();
+        dst.delete();
+
+        // Convert canvas to data URL
+        return canvas.toDataURL("image/png");
+    } catch (error) {
+        console.error("Error preprocessing image:", error);
+        // Fallback: return original image if preprocessing fails
+        if (imageSource instanceof File || imageSource instanceof Blob) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(imageSource);
+            });
+        }
+        return imageSource;
+    }
+}
 
 /**
  * Extract information from a Maldives National ID card image
  * @param {File|Blob|string} imageSource - Image file, blob, or data URL
- * @param {Function} statusCallback - Optional callback for progress updates (progress, message)
+ * @param {Function} statusCallback - Optional callback for progress updates (progress, message, preprocessedImageUrl)
  * @returns {Promise<Object>} Extracted patient information
  */
 export async function extractInfoFromNationalIdCard(
@@ -11,15 +92,45 @@ export async function extractInfoFromNationalIdCard(
     statusCallback
 ) {
     try {
+        // Preprocess the image
+        const preprocessedImage = await preprocessNationalIdCard(
+            imageSource,
+            statusCallback
+        );
+
+        // Send preprocessed image to callback
+        if (statusCallback) {
+            statusCallback(0, "Image preprocessed", preprocessedImage);
+        }
+
         // Perform OCR on the image
         if (statusCallback) {
             statusCallback(0, "Initializing OCR...");
         }
 
+        const worker = Tesseract.createWorker({
+            logger: (info) => {
+                // Optional: Log progress
+                if (info.status === "initializing tesseract") {
+                    const progress = Math.round(info.progress * 100);
+                    console.log(`Tesseract Init Progress: ${progress}%`);
+                    if (statusCallback) {
+                        statusCallback(
+                            info.progress,
+                            `Initializing OCR... ${progress}%`
+                        );
+                    }
+                } else if (statusCallback) {
+                    statusCallback(info.progress || 0, info.status);
+                }
+            },
+        });
+
         const result = await Tesseract.recognize(
-            imageSource,
+            preprocessedImage,
             "eng", // Maldivian ID cards use English
             {
+                tessedit_pageseg_mode: Tesseract.PSM.SINGLE_WORD,
                 logger: (info) => {
                     // Optional: Log progress
                     if (info.status === "recognizing text") {
@@ -44,6 +155,7 @@ export async function extractInfoFromNationalIdCard(
 
         const text = result.data.text;
         console.log("OCR Text:", text);
+        console.log(result);
 
         // Parse the extracted text
         return parseNationalIdText(text);
