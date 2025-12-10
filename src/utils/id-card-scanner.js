@@ -1,5 +1,11 @@
 import Tesseract from "tesseract.js";
 
+// Image preprocessing constants
+const CANNY_THRESHOLD_LOW = 50;
+const CANNY_THRESHOLD_HIGH = 150;
+const CANNY_APERTURE_SIZE = 3;
+const MIN_CONTOUR_AREA_RATIO = 0.1; // Minimum 10% of image area
+
 /**
  * Extract information from a Maldives National ID card image
  * @param {File|Blob|string} imageSource - Image file, blob, or data URL
@@ -168,7 +174,14 @@ function detectAndAlignIdCard(cv, src, statusCallback) {
             statusCallback(0.18, "Detecting edges...");
         }
         const edges = new cv.Mat();
-        cv.Canny(blurred, edges, 50, 150, 3, false);
+        cv.Canny(
+            blurred,
+            edges,
+            CANNY_THRESHOLD_LOW,
+            CANNY_THRESHOLD_HIGH,
+            CANNY_APERTURE_SIZE,
+            false
+        );
 
         // Find contours
         if (statusCallback) {
@@ -220,7 +233,10 @@ function detectAndAlignIdCard(cv, src, statusCallback) {
         hierarchy.delete();
 
         // If we found a quadrilateral, perform perspective transformation
-        if (bestContour && maxArea > src.rows * src.cols * 0.1) {
+        if (
+            bestContour &&
+            maxArea > src.rows * src.cols * MIN_CONTOUR_AREA_RATIO
+        ) {
             if (statusCallback) {
                 statusCallback(0.22, "Aligning ID card...");
             }
