@@ -9,8 +9,13 @@ import { Link, useLocation } from "react-router";
 import { twMerge } from "tailwind-merge";
 
 const Sections = [
-    { name: "otlists", label: "Operating Lists", link: "/lists" },
+    { name: "lists", label: "Operating Lists", link: "/lists" },
     { name: "patients", label: "Patients", link: "/patients" },
+    {
+        name: "procedures",
+        label: "Procedures",
+        link: "/procedures?upcoming=true",
+    },
     {
         name: "settings",
         label: "Settings",
@@ -28,7 +33,7 @@ function TitleBar() {
 
     useEffect(() => {
         const currentSection = Sections.find((sec) =>
-            location.pathname.startsWith(sec.link)
+            location.pathname.startsWith(`/${sec.name}`)
         );
         if (currentSection) {
             setSection(currentSection.name);
