@@ -45,24 +45,22 @@ async function preprocessNationalIdCard(imageSource, statusCallback) {
 
         // Read image into OpenCV matrix
         const src = cv.imread(canvas);
+
+        // Detect and crop to largest quadrilateral (ID card)
+        const cropped = detectAndCropIdCard(cv, src);
+
         let gray = new cv.Mat();
-        const dst = new cv.Mat();
 
         // Convert to grayscale
-        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-
-        // Apply Gaussian blur to denoise
-        // ksize = (10, 10), sigmaX = 0 (calculated from kernel size)
-        const ksize = new cv.Size(1, 1);
-        cv.GaussianBlur(gray, dst, ksize, 0, 0, cv.BORDER_DEFAULT);
+        cv.cvtColor(cropped, gray, cv.COLOR_RGBA2GRAY);
 
         // Write processed image back to canvas
-        cv.imshow(canvas, dst);
+        cv.imshow(canvas, gray);
 
         // Clean up
         src.delete();
+        cropped.delete();
         gray.delete();
-        dst.delete();
 
         // Convert canvas to data URL
         return canvas.toDataURL("image/png");
@@ -78,6 +76,210 @@ async function preprocessNationalIdCard(imageSource, statusCallback) {
             });
         }
         return imageSource;
+    }
+}
+
+/**
+ * Detect and crop the largest quadrilateral in the image (ID card)
+ * @param {Object} cv - OpenCV instance
+ * @param {Mat} src - Source image
+ * @returns {Mat} Cropped and perspective-transformed image
+ */
+function detectAndCropIdCard(cv, src) {
+    try {
+        console.log("Detecting ID card...");
+
+        // Convert to grayscale for edge detection
+        const gray = new cv.Mat();
+        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+
+        // Apply Gaussian blur to reduce noise
+        const blurred = new cv.Mat();
+        cv.GaussianBlur(
+            gray,
+            blurred,
+            new cv.Size(5, 5),
+            0,
+            0,
+            cv.BORDER_DEFAULT
+        );
+
+        // Apply Canny edge detection
+        const edges = new cv.Mat();
+        cv.Canny(blurred, edges, 50, 150);
+
+        // Find contours
+        const contours = new cv.MatVector();
+        const hierarchy = new cv.Mat();
+        cv.findContours(
+            edges,
+            contours,
+            hierarchy,
+            cv.RETR_EXTERNAL,
+            cv.CHAIN_APPROX_SIMPLE
+        );
+
+        console.log(`Found ${contours.size()} contours`);
+
+        // Find the largest quadrilateral contour
+        let maxArea = 0;
+        let bestContour = null;
+        const minArea = src.rows * src.cols * 0.1; // At least 10% of image
+
+        for (let i = 0; i < contours.size(); i++) {
+            const contour = contours.get(i);
+            const area = cv.contourArea(contour);
+
+            // Approximate contour to polygon
+            const peri = cv.arcLength(contour, true);
+            const approx = new cv.Mat();
+            cv.approxPolyDP(contour, approx, 0.02 * peri, true);
+
+            // Check if it's a quadrilateral with significant area
+            if (approx.rows === 4 && area > maxArea && area > minArea) {
+                maxArea = area;
+                if (bestContour) {
+                    bestContour.delete();
+                }
+                bestContour = approx.clone();
+                console.log(
+                    `Found quadrilateral with area: ${area} (${(
+                        (area / (src.rows * src.cols)) *
+                        100
+                    ).toFixed(1)}%)`
+                );
+            }
+
+            approx.delete();
+        }
+
+        // Clean up
+        gray.delete();
+        blurred.delete();
+        edges.delete();
+        contours.delete();
+        hierarchy.delete();
+
+        // If we found a good quadrilateral, perform perspective transform
+        if (bestContour) {
+            console.log("Applying perspective transform...");
+            const transformed = applyPerspectiveTransform(cv, src, bestContour);
+            bestContour.delete();
+            return transformed;
+        }
+
+        console.log("No quadrilateral found, using original image");
+        return src.clone();
+    } catch (error) {
+        console.error("Error in detectAndCropIdCard:", error);
+        return src.clone();
+    }
+}
+
+/**
+ * Apply perspective transformation to straighten the ID card
+ * @param {Object} cv - OpenCV instance
+ * @param {Mat} src - Source image
+ * @param {Mat} contour - Quadrilateral contour (4 points)
+ * @returns {Mat} Transformed image
+ */
+function applyPerspectiveTransform(cv, src, contour) {
+    try {
+        // Extract the 4 corner points
+        const points = [];
+        for (let i = 0; i < 4; i++) {
+            points.push({
+                x: contour.data32S[i * 2],
+                y: contour.data32S[i * 2 + 1],
+            });
+        }
+
+        // Order points: top-left, top-right, bottom-right, bottom-left
+        points.sort((a, b) => a.y - b.y);
+        const topPoints = points.slice(0, 2).sort((a, b) => a.x - b.x);
+        const bottomPoints = points.slice(2, 4).sort((a, b) => a.x - b.x);
+        const ordered = [
+            topPoints[0], // top-left
+            topPoints[1], // top-right
+            bottomPoints[1], // bottom-right
+            bottomPoints[0], // bottom-left
+        ];
+
+        // Calculate dimensions of the output rectangle
+        const widthTop = Math.sqrt(
+            Math.pow(ordered[1].x - ordered[0].x, 2) +
+                Math.pow(ordered[1].y - ordered[0].y, 2)
+        );
+        const widthBottom = Math.sqrt(
+            Math.pow(ordered[2].x - ordered[3].x, 2) +
+                Math.pow(ordered[2].y - ordered[3].y, 2)
+        );
+        const maxWidth = Math.max(widthTop, widthBottom);
+
+        const heightLeft = Math.sqrt(
+            Math.pow(ordered[3].x - ordered[0].x, 2) +
+                Math.pow(ordered[3].y - ordered[0].y, 2)
+        );
+        const heightRight = Math.sqrt(
+            Math.pow(ordered[2].x - ordered[1].x, 2) +
+                Math.pow(ordered[2].y - ordered[1].y, 2)
+        );
+        const maxHeight = Math.max(heightLeft, heightRight);
+
+        console.log(
+            `Transform to dimensions: ${maxWidth.toFixed(
+                0
+            )}x${maxHeight.toFixed(0)}`
+        );
+
+        // Create source and destination point matrices
+        const srcPoints = cv.matFromArray(4, 1, cv.CV_32FC2, [
+            ordered[0].x,
+            ordered[0].y,
+            ordered[1].x,
+            ordered[1].y,
+            ordered[2].x,
+            ordered[2].y,
+            ordered[3].x,
+            ordered[3].y,
+        ]);
+
+        const dstPoints = cv.matFromArray(4, 1, cv.CV_32FC2, [
+            0,
+            0,
+            maxWidth,
+            0,
+            maxWidth,
+            maxHeight,
+            0,
+            maxHeight,
+        ]);
+
+        // Get perspective transformation matrix
+        const M = cv.getPerspectiveTransform(srcPoints, dstPoints);
+
+        // Apply perspective transformation
+        const dst = new cv.Mat();
+        const dsize = new cv.Size(maxWidth, maxHeight);
+        cv.warpPerspective(
+            src,
+            dst,
+            M,
+            dsize,
+            cv.INTER_LINEAR,
+            cv.BORDER_CONSTANT,
+            new cv.Scalar()
+        );
+
+        // Clean up
+        srcPoints.delete();
+        dstPoints.delete();
+        M.delete();
+
+        return dst;
+    } catch (error) {
+        console.error("Error in applyPerspectiveTransform:", error);
+        return src.clone();
     }
 }
 
@@ -108,7 +310,7 @@ export async function extractInfoFromNationalIdCard(
             statusCallback(0, "Initializing OCR...");
         }
 
-        const worker = Tesseract.createWorker({
+        const worker = await Tesseract.createWorker("eng", 1, {
             logger: (info) => {
                 // Optional: Log progress
                 if (info.status === "initializing tesseract") {
@@ -126,28 +328,11 @@ export async function extractInfoFromNationalIdCard(
             },
         });
 
-        const result = await Tesseract.recognize(
-            preprocessedImage,
-            "eng", // Maldivian ID cards use English
-            {
-                tessedit_pageseg_mode: Tesseract.PSM.SINGLE_WORD,
-                logger: (info) => {
-                    // Optional: Log progress
-                    if (info.status === "recognizing text") {
-                        const progress = Math.round(info.progress * 100);
-                        console.log(`OCR Progress: ${progress}%`);
-                        if (statusCallback) {
-                            statusCallback(
-                                info.progress,
-                                `Recognizing text... ${progress}%`
-                            );
-                        }
-                    } else if (statusCallback) {
-                        statusCallback(info.progress || 0, info.status);
-                    }
-                },
-            }
-        );
+        const result = await worker.recognize(preprocessedImage, {
+            tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
+        });
+
+        await worker.terminate();
 
         if (statusCallback) {
             statusCallback(1, "Parsing extracted text...");
