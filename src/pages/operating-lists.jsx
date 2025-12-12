@@ -7,7 +7,7 @@ import ProcedureListEditor from "@/components/procedure-list-editor";
 import { twMerge } from "tailwind-merge";
 import { ToolBar, ToolBarButton } from "@/components/toolbar";
 
-function Procedures() {
+function OperatingLists() {
     const { otDayId } = useParams();
     const [showDaysList, setShowDaysList] = useState(false);
 
@@ -65,4 +65,4 @@ function Procedures() {
     );
 }
 
-export default Procedures;
+export default OperatingLists;

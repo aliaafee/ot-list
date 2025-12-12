@@ -9,7 +9,7 @@ import { Link, useLocation } from "react-router";
 import { twMerge } from "tailwind-merge";
 
 const Sections = [
-    { name: "otlists", label: "Operating Lists", link: "/procedures" },
+    { name: "otlists", label: "Operating Lists", link: "/lists" },
     { name: "patients", label: "Patients", link: "/patients" },
     {
         name: "settings",
@@ -39,7 +39,7 @@ function TitleBar() {
 
     return (
         <>
-            <div className="fixed lg:static w-full top-0 h-16 min-h-16 bg-gray-300 flex items-center justify-center gap-1 flex-col">
+            <div className="fixed lg:static w-full top-0 h-16 min-h-16 bg-gray-300 flex items-center justify-center gap-1 flex-col z-20">
                 <div className="flex h-full w-full">
                     <div className="grow"></div>
                     <div className=" items-end gap-1 hidden sm:flex">

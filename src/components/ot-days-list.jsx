@@ -76,7 +76,7 @@ function OtDaysList({
                                     )}
                                     onClick={() => onSelectDay(otDay.id)}
                                 >
-                                    <Link to={`/procedures/${otDay.id}`}>
+                                    <Link to={`/lists/${otDay.id}`}>
                                         <span className="flex overflow-clip">
                                             <span className="overflow-clip whitespace-nowrap min-w-12">
                                                 {dayjs(otDay.date).format(

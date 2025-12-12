@@ -4,7 +4,7 @@ import Login from "@/pages/login";
 import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
 import Test from "./pages/test";
-import Procedures from "./pages/procedures";
+import OperatingLists from "./pages/operating-lists";
 import MainLayout from "./pages/main-layout";
 import OtListPrint from "./pages/otlist-print";
 import Settings from "./pages/settings";
@@ -24,12 +24,12 @@ export default function App() {
                 <Route element={<MainLayout />}>
                     <Route
                         path="/"
-                        element={<Navigate to="/procedures" replace />}
+                        element={<Navigate to="/lists" replace />}
                     />
-                    <Route path="/procedures" element={<Procedures />} />
+                    <Route path="/lists" element={<OperatingLists />} />
                     <Route
-                        path="/procedures/:otDayId"
-                        element={<Procedures />}
+                        path="/lists/:otDayId"
+                        element={<OperatingLists />}
                     />
 
                     <Route path="/dashboard" element={<Dashboard />} />
