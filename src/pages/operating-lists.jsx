@@ -28,7 +28,7 @@ function OperatingLists() {
 
                 <div
                     className={twMerge(
-                        "bg-gray-600/50 top-0 h-[calc(100%-4rem)] w-full fixed overflow-hidden lg:static lg:w-72 lg:min-w-72 flex mt-16 lg:mt-0 lg:h-auto",
+                        "bg-gray-600/50 top-0 h-[calc(100%-4rem)] w-full fixed overflow-hidden lg:static lg:w-72 lg:min-w-72 flex mt-16 lg:mt-0 lg:h-auto z-30",
                         !showDaysList && "hidden lg:flex"
                     )}
                 >
