@@ -114,6 +114,10 @@ export function ProcedureListProvider({ children }) {
     };
 
     const subscribeProcedures = (procedureDayId) => {
+        if (procedureDayId === undefined || !procedureDayId) {
+            return () => {};
+        }
+
         setSubscribed(true);
 
         pb.collection("procedures").subscribe(
