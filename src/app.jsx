@@ -38,10 +38,7 @@ export default function App() {
                     <Route path="/patients" element={<Patients />} />
                     <Route path="/procedures" element={<AllProcedures />} />
                 </Route>
-                <Route
-                    path="/procedures/:otDayId/print"
-                    element={<OtListPrint />}
-                />
+                <Route path="/lists/:otDayId/print" element={<OtListPrint />} />
             </Route>
 
             {/* Fallback */}
