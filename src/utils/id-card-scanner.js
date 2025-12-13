@@ -307,20 +307,14 @@ export async function extractInfoFromNationalIdCard(
 
         // Perform OCR on the image
         if (statusCallback) {
-            statusCallback(0, "Initializing OCR...");
+            statusCallback(0, "Initializing OCR");
         }
 
         const worker = await Tesseract.createWorker("eng", 1, {
             logger: (info) => {
-                // Optional: Log progress
                 if (info.status === "initializing tesseract") {
-                    const progress = Math.round(info.progress * 100);
-                    console.log(`Tesseract Init Progress: ${progress}%`);
                     if (statusCallback) {
-                        statusCallback(
-                            info.progress,
-                            `Initializing OCR... ${progress}%`
-                        );
+                        statusCallback(info.progress || 0, `Initializing OCR`);
                     }
                 } else if (statusCallback) {
                     statusCallback(info.progress || 0, info.status);
@@ -335,7 +329,7 @@ export async function extractInfoFromNationalIdCard(
         await worker.terminate();
 
         if (statusCallback) {
-            statusCallback(1, "Parsing extracted text...");
+            statusCallback(1, "Parsing extracted text");
         }
 
         const text = result.data.text;

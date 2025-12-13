@@ -133,10 +133,22 @@ function IdCardScanModal({ onComplete, onCancel }) {
                                     className="absolute object-contain border border-gray-300 rounded-md h-full  w-full"
                                 />
                             )}
-                            <div className="absolute w-full h-full flex items-center justify-center">
-                                <p className="text-gray-600 p-2 bg-white/90 rounded-md">
-                                    {status}
+                            <div className="absolute w-full h-full flex flex-col items-center justify-center bg-white/70">
+                                <p className="text-gray-600 p-2">
+                                    {status.charAt(0).toUpperCase() +
+                                        status.slice(1)}
+                                    ...
                                 </p>
+                                <div className="bg-white rounded-md border border-gray-300 h-2 w-[50%] overflow-hidden mt-2">
+                                    <div
+                                        className="bg-blue-400 h-2"
+                                        style={{
+                                            width: `${Math.round(
+                                                progress * 100
+                                            )}%`,
+                                        }}
+                                    ></div>
+                                </div>
                             </div>
                         </>
                     ) : extractedInfo ? (
@@ -147,8 +159,11 @@ function IdCardScanModal({ onComplete, onCancel }) {
                                     alt="Preprocessed ID card"
                                     className="absolute object-contain border border-gray-300 rounded-md h-full w-full"
                                 />
-                                <div className="absolute w-full h-full flex items-center justify-center bg-white/70">
-                                    <p className="text-gray-600">{status}</p>
+                                <div className="absolute w-full h-full flex flex-col items-center justify-center bg-white/70">
+                                    <p className="text-gray-600">
+                                        {status.charAt(0).toUpperCase() +
+                                            status.slice(1)}
+                                    </p>
                                 </div>
                             </div>
                         )
