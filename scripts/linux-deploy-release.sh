@@ -441,10 +441,10 @@ update() {
 
     # Backup pb_data directory (preserve database and migrations)
     echo "[*] Preserving database..."
-    TEMP_DATA_DIR="/tmp/ot-list-data-$(date +%s)"
+    TEMP_DATA_DIR="/tmp/ot-list-data-x-$(date +%s)"
     if [ -d "$PB_DIR/pb_data" ]; then
         cp -r "$PB_DIR/pb_data" "$TEMP_DATA_DIR"
-        echo "Database backed up to temp location"
+        echo "Database backed up to temp location: $TEMP_DATA_DIR"
     fi
 
     # Download and extract new release OR build from source
@@ -485,7 +485,7 @@ update() {
     if [ -d "$TEMP_DATA_DIR" ]; then
         echo "[*] Restoring database..."
         mkdir -p "$PB_DIR"
-        cp -r "$TEMP_DATA_DIR" "$PB_DIR/pb_data"
+        cp -r "$TEMP_DATA_DIR"/* "$PB_DIR/pb_data"
         rm -rf "$TEMP_DATA_DIR"
         echo "Database restored"
     fi
