@@ -439,13 +439,13 @@ update() {
     cp -r "$ROOT_DIR" "$BACKUP_DIR"
     echo "Backup created at: $BACKUP_DIR"
 
-    # # Backup pb_data directory (preserve database and migrations)
-    # echo "[*] Preserving database..."
-    # TEMP_DATA_DIR="/tmp/ot-list-data-$(date +%s)"
-    # if [ -d "$PB_DIR/pb_data" ]; then
-    #     cp -r "$PB_DIR/pb_data" "$TEMP_DATA_DIR"
-    #     echo "Database backed up to temp location"
-    # fi
+    # Backup pb_data directory (preserve database and migrations)
+    echo "[*] Preserving database..."
+    TEMP_DATA_DIR="/tmp/ot-list-data-$(date +%s)"
+    if [ -d "$PB_DIR/pb_data" ]; then
+        cp -r "$PB_DIR/pb_data" "$TEMP_DATA_DIR"
+        echo "Database backed up to temp location"
+    fi
 
     # Download and extract new release OR build from source
     if [ "$FROM_SOURCE" = true ]; then
