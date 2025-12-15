@@ -25,6 +25,13 @@ function OtDaysReducer(state, action) {
                 ),
             };
 
+        case "ADD_DAYS":
+            // Add multiple OT days to the list (for pagination)
+            return {
+                ...state,
+                otDays: [...state.otDays, ...action.payload], // payload: array of OT days
+            };
+
         default:
             return state;
     }

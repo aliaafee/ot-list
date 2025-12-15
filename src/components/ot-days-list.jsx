@@ -23,16 +23,21 @@ function OtDaysList({
     selectedDayId = null,
     onSelectDay = (otDay) => {},
     selectedOtList = null,
+    loadMorePages = () => {},
+    loadMorePagesDisabled = false,
+    loadingMore = false,
 }) {
     const groupDaysByMonth = (datesList) => {
-        return datesList.reduce((acc, otDay) => {
-            const month = dayjs(otDay.date).format("YYYY-MM");
-            if (!acc[month]) {
-                acc[month] = [];
-            }
-            acc[month].push(otDay);
-            return acc;
-        }, {});
+        return datesList
+            .sort((a, b) => new Date(a.date) - new Date(b.date))
+            .reduce((acc, otDay) => {
+                const month = dayjs(otDay.date).format("YYYY-MM");
+                if (!acc[month]) {
+                    acc[month] = [];
+                }
+                acc[month].push(otDay);
+                return acc;
+            }, {});
     };
 
     const daysByMonth = useMemo(() => {
@@ -103,6 +108,26 @@ function OtDaysList({
                                     </Link>
                                 </li>
                             ))}
+                        {index === Object.keys(daysByMonth).length - 1 && (
+                            <li className="p-2 text-center mb-6">
+                                <button
+                                    className={twMerge(
+                                        "text-sm px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-200",
+                                        loadMorePagesDisabled
+                                            ? "opacity-50 cursor-not-allowed"
+                                            : "cursor-pointer"
+                                    )}
+                                    onClick={loadMorePages}
+                                    disabled={loadMorePagesDisabled}
+                                >
+                                    {loadingMore
+                                        ? "Loading..."
+                                        : loadMorePagesDisabled
+                                        ? "No more dates"
+                                        : "Load more dates"}
+                                </button>
+                            </li>
+                        )}
                     </ul>
                 </li>
             ))}

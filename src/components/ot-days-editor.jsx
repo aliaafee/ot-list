@@ -31,6 +31,10 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
     const [showAll, setShowAll] = useState(false);
     const [otDaysList, dispatchOtDaysList] = useReducer(OtDaysReducer, null);
     const [showAddDates, setShowAddDates] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const pageSize = 50;
 
     useEffect(() => {
         (async () => {
@@ -46,6 +50,37 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
         })();
     }, []);
 
+    const loadMorePages = async () => {
+        if (currentPage >= totalPages || loadingMore || !selectedDepartmentId)
+            return;
+
+        setLoadingMore(true);
+        try {
+            const collectionName = showAll ? "otDays" : "upcomingOtDays";
+            const nextPage = currentPage + 1;
+
+            const result = await pb
+                .collection(collectionName)
+                .getList(nextPage, pageSize, {
+                    ...otDaysCollectionOptions,
+                    filter: pb.filter("otList.department = {:departmentId}", {
+                        departmentId: selectedDepartmentId,
+                    }),
+                });
+
+            dispatchOtDaysList({
+                type: "ADD_DAYS",
+                payload: result.items,
+            });
+            setCurrentPage(nextPage);
+        } catch (e) {
+            console.log(e);
+            setError(e.message);
+        } finally {
+            setLoadingMore(false);
+        }
+    };
+
     useEffect(() => {
         if (!selectedDepartmentId) {
             setOtLists([]);
@@ -56,6 +91,7 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
         (async () => {
             console.log("fetch otDays for department", selectedDepartmentId);
             setLoading(true);
+            setCurrentPage(1);
             dispatchOtDaysList({ type: "SET_LIST", payload: [] });
             try {
                 const lists = await pb.collection("otLists").getFullList({
@@ -69,14 +105,20 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
 
                 const collectionName = showAll ? "otDays" : "upcomingOtDays";
 
-                const days = await pb.collection(collectionName).getFullList({
-                    ...otDaysCollectionOptions,
-                    filter: pb.filter("otList.department = {:departmentId}", {
-                        departmentId: selectedDepartmentId,
-                    }),
-                });
-                dispatchOtDaysList({ type: "SET_LIST", payload: days });
-                console.log("otDays", days);
+                const result = await pb
+                    .collection(collectionName)
+                    .getList(1, pageSize, {
+                        ...otDaysCollectionOptions,
+                        filter: pb.filter(
+                            "otList.department = {:departmentId}",
+                            {
+                                departmentId: selectedDepartmentId,
+                            }
+                        ),
+                    });
+                dispatchOtDaysList({ type: "SET_LIST", payload: result.items });
+                setTotalPages(result.totalPages);
+                console.log("otDays", result.items);
             } catch (e) {
                 console.log(e);
                 setError(e.message);
@@ -209,12 +251,17 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
             {loading ? (
                 <div className="p-2">Loading...</div>
             ) : (
-                <OtDaysList
-                    otDays={otDaysList?.otDays}
-                    selectedDayId={selectedDayId}
-                    onSelectDay={onSelectDay}
-                    selectedOtList={selectedOtList}
-                />
+                <>
+                    <OtDaysList
+                        otDays={otDaysList?.otDays}
+                        selectedDayId={selectedDayId}
+                        onSelectDay={onSelectDay}
+                        selectedOtList={selectedOtList}
+                        loadMorePages={loadMorePages}
+                        loadMorePagesDisabled={currentPage >= totalPages}
+                        loadingMore={loadingMore}
+                    />
+                </>
             )}
 
             {!!showAddDates && (
