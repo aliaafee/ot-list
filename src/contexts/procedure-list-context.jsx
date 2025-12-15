@@ -209,42 +209,7 @@ export function ProcedureListProvider({ children }) {
     };
 
     const addProcedure = async (patient, procedure, otDay) => {
-        const tempPatientId = `tempid-${getTempId()}`;
-        const tempProcedureId = `tempid-${getTempId()}`;
-
-        const addedBy =
-            otDay.expand.otList.expand.department.expand.surgeons_via_department.find(
-                (s) => s.id === procedure.addedBy
-            );
-
-        const placeholderProcedure = {
-            ...procedure,
-            id: tempProcedureId,
-            patient: tempPatientId,
-            expand: {
-                addedBy: addedBy,
-                patient: {
-                    ...patient,
-                    id: patient?.id || tempPatientId,
-                },
-                procedureDay: otDay,
-            },
-        };
-
-        dispatchData({
-            type: "ADD_PROCEDURE",
-            payload: placeholderProcedure,
-        });
-
-        setSelected(placeholderProcedure.id);
-
         try {
-            dispatchData({
-                type: "ADD_UPDATING",
-                payload: [placeholderProcedure.id],
-            });
-
-            // Create patient if needed
             const newPatient = patient?.id
                 ? patient
                 : await pb.collection("patients").create(patient);
@@ -254,41 +219,26 @@ export function ProcedureListProvider({ children }) {
                 .create({ ...procedure, patient: newPatient.id });
 
             if (subscribed) {
-                dispatchData({
-                    type: "REMOVE_PROCEDURE",
-                    payload: placeholderProcedure,
-                });
                 setSelected(newProcedure.id);
             } else {
                 dispatchData({
-                    type: "UPDATE_ID",
-                    payload: {
-                        id: placeholderProcedure.id,
-                        newId: newProcedure.id,
-                        newPatientId: newPatient.id,
-                    },
+                    type: "ADD_PROCEDURE",
+                    payload: newProcedure,
                 });
+                setSelected(newProcedure.id);
             }
         } catch (e) {
             console.log(
                 "Failed to add procedure",
                 JSON.parse(JSON.stringify(e))
             );
-            dispatchData({
-                type: "REMOVE_PROCEDURE",
-                payload: placeholderProcedure,
-            });
+
             return {
                 message: `Failed to add procedure`,
                 error: e,
                 data: { patient: patient, procedure: procedure },
                 response: e?.response,
             };
-        } finally {
-            dispatchData({
-                type: "DONE_UPDATING",
-                payload: [placeholderProcedure.id],
-            });
         }
     };
 

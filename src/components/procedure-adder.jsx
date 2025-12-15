@@ -52,6 +52,7 @@ function ProcedureAdder({
     const [showPatientSearch, setShowPatientSearch] = useState(false);
     const [showIdCardScan, setShowIdCardScan] = useState(false);
     const [checking, setChecking] = useState(false);
+    const [adding, setAdding] = useState(false);
 
     const handleSampleData = () => {
         const sampleData = GenerateProdecureFormData(
@@ -234,12 +235,14 @@ function ProcedureAdder({
             const nextOrder = calculateNextOrder();
             const procedure = buildProcedure(nextOrder);
 
+            setAdding(true);
             // Add procedure
             const resultError = await addProcedure(
                 patientData,
                 procedure,
                 otDay
             );
+            setAdding(false);
 
             if (resultError) {
                 setAddError(resultError);
@@ -251,6 +254,8 @@ function ProcedureAdder({
             setAddError({
                 message: "An unexpected error occurred. Please try again.",
             });
+            setChecking(false);
+            setAdding(false);
         }
     };
 
@@ -367,7 +372,13 @@ function ProcedureAdder({
                     >
                         {checking ? (
                             <>
-                                <LoadingSpinner /> "Checking..."
+                                <LoadingSpinner />{" "}
+                                <span className="ml-2">Checking...</span>
+                            </>
+                        ) : adding ? (
+                            <>
+                                <LoadingSpinner />{" "}
+                                <span className="ml-2">Adding...</span>
                             </>
                         ) : (
                             "Save"
