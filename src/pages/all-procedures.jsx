@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import {
     ChevronLeft,
     ChevronLeftIcon,
     ChevronRightIcon,
+    ExternalLinkIcon,
     SearchIcon,
     XIcon,
 } from "lucide-react";
@@ -193,6 +194,7 @@ function AllProcedures() {
                         <table className="min-w-full divide-y divide-gray-300">
                             <thead className="bg-gray-50">
                                 <tr>
+                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase w-8"></th>
                                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                         Date
                                     </th>
@@ -220,8 +222,20 @@ function AllProcedures() {
                                 {procedures.map((proc) => (
                                     <tr
                                         key={proc.id}
-                                        className="hover:bg-gray-50"
+                                        className="hover:bg-gray-50 group"
                                     >
+                                        <td className="px-1.5 py-0.5 text-sm  ">
+                                            <Link
+                                                to={`/lists/${proc.procedureDay}?procedureId=${proc.id}`}
+                                                className="inline-block rounded-full p-1.5 hover:bg-gray-400"
+                                                title="View in List"
+                                            >
+                                                <ExternalLinkIcon
+                                                    width={16}
+                                                    height={16}
+                                                />
+                                            </Link>
+                                        </td>
                                         <td className="px-3 py-2 text-sm whitespace-nowrap">
                                             {dayjs(
                                                 proc.expand?.procedureDay?.date
