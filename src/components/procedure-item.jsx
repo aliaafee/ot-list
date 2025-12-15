@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router";
 import { twMerge } from "tailwind-merge";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
@@ -50,6 +51,9 @@ function ProcedureItem({
     const [editing, setEditing] = useState(false);
     const [confirmRemove, setConfirmRemove] = useState(false);
     const [editingPatient, setEditingPatient] = useState(false);
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const selectedProcedureId = searchParams.get("procedureId");
 
     const SimplifiedView = () => {
         return (
@@ -344,7 +348,7 @@ function ProcedureItem({
         );
     }
 
-    if (proceduresList.selected === procedure.id) {
+    if (procedure.id === selectedProcedureId) {
         return (
             <>
                 <ExpandedView />

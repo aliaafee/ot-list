@@ -13,11 +13,6 @@ function ProcedureListReducer(state, action) {
                 ...state,
                 procedures: action.payload,
             };
-        case "SET_SELECTED":
-            return {
-                ...state,
-                selected: action.payload,
-            };
         case "ADD_PROCEDURE":
             return {
                 ...state,

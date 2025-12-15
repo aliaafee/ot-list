@@ -9,6 +9,7 @@ import { pb } from "@/lib/pb";
 import ProcedureListReducer from "@/reducers/procedure-list-reducer";
 import FatalErrorModal from "@/modals/fatal-error-modal";
 import ErrorModal from "@/modals/error-modal";
+import { useSearchParams } from "react-router";
 
 const ProcedureListContext = createContext(null);
 
@@ -32,6 +33,8 @@ export function ProcedureListProvider({ children }) {
     const [error, setError] = useState("");
     const [subscribed, setSubscribed] = useState(false);
     const [tempId, setTempId] = useState(1000);
+
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const getTempId = () => {
         setTempId(tempId + 1);
@@ -198,10 +201,11 @@ export function ProcedureListProvider({ children }) {
     };
 
     const setSelected = (procedureId) => {
-        dispatchData({
-            type: "SET_SELECTED",
-            payload: procedureId,
-        });
+        const params = new URLSearchParams();
+        if (procedureId !== null) {
+            params.set("procedureId", procedureId);
+        }
+        setSearchParams(params);
     };
 
     const addProcedure = async (patient, procedure, otDay) => {
