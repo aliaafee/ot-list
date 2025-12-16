@@ -171,7 +171,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                             onMoveDate={handleMoveDate}
                         />
                     )}
-                    itemClassName="group select-none flex bg-gray-100 rounded-lg hover:shadow-md mt-2 has-[.selected]:drop-shadow-md "
+                    itemClassName="group select-none flex bg-gray-100 rounded-lg hover:bg-blue-200 mt-2 has-[.selected]:ring-2 ring-blue-300 has-[.selected]:bg-blue-300"
                     onChange={handleChangeOrder}
                     disabled={isBusy()}
                 />
@@ -180,7 +180,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                         removedProcedures.map((procedure, index) => (
                             <li
                                 key={index}
-                                className="select-none flex bg-gray-100 rounded-lg hover:shadow-md mt-2"
+                                className="select-none flex bg-gray-100 rounded-lg hover:bg-blue-200 mt-2 has-[.selected]:ring-2 ring-blue-300 has-[.selected]:bg-blue-300"
                             >
                                 <div className="p-2 hidden md:block">
                                     <span className="invisible">⠿</span>

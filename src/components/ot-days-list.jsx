@@ -70,9 +70,9 @@ function OtDaysList({
                                 <li
                                     key={subIndex}
                                     className={twMerge(
-                                        "hover:bg-gray-300 cursor-pointer p-1 pl-4",
+                                        "hover:bg-blue-200 cursor-pointer p-1 pl-4",
                                         selectedDayId === otDay.id
-                                            ? "bg-gray-400 hover:bg-gray-400"
+                                            ? "bg-blue-300 hover:bg-blue-300"
                                             : "bg-transparent",
                                         otDay?.disabled && "text-red-600",
                                         otDay?.disabled &&

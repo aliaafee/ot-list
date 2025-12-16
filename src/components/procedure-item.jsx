@@ -107,14 +107,14 @@ function ProcedureItem({
         return (
             <div
                 className={twMerge(
-                    "flex-auto selected",
+                    "flex-auto selected bg-gray-100 rounded-lg",
                     isUpdating(procedure) ? "animate-pulse" : "",
                     className
                 )}
             >
                 <ToolBar
                     className={twMerge(
-                        "col-span-4 bg-gray-200 rounded-tr-lg rounded-tl-lg md:rounded-tl-none transition-colors"
+                        "col-span-4 bg-gray-200 rounded-tr-lg rounded-tl-lg transition-colors"
                     )}
                 >
                     <ToolBarButton disabled={true}>
@@ -337,7 +337,7 @@ function ProcedureItem({
                 }}
                 onClose={() => {
                     setEditing(false);
-                    if (proceduresList.selected === procedure.id) {
+                    if (selectedProcedureId === procedure.id) {
                         setSelected(null);
                     }
                 }}

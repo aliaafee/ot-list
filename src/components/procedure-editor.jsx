@@ -43,7 +43,7 @@ function ProcedureEditor({
         if (Object.keys(inputErrors).length > 0) {
             return;
         }
-        
+
         const updatedProcedureRecord = {
             id: procedure.id,
             addedBy: updatedProcedure.addedBy,
@@ -65,10 +65,15 @@ function ProcedureEditor({
     };
 
     return (
-        <div className={twMerge("flex-auto bg-gray-100 rounded-lg", className)}>
+        <div
+            className={twMerge(
+                "flex-auto bg-gray-100 rounded-lg selected",
+                className
+            )}
+        >
             <ToolBar
                 className={twMerge(
-                    "col-span-4 bg-gray-200 rounded-tr-lg rounded-tl-lg md:rounded-tl-none transition-colors"
+                    "col-span-4 bg-gray-200 rounded-tr-lg rounded-tl-lg"
                 )}
             >
                 <ToolBarButton disabled={true}>

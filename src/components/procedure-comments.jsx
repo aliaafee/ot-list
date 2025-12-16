@@ -3,6 +3,7 @@ import { formatDateTime } from "@/utils/dates";
 import { SendHorizonalIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { pb } from "@/lib/pb";
+import { twMerge } from "tailwind-merge";
 
 function ProcedureComments({ procedureId }) {
     const [comments, setComments] = useState([]);
@@ -48,9 +49,7 @@ function ProcedureComments({ procedureId }) {
                 } else if (e.action === "update") {
                     // Update comment (including removed status)
                     setComments((prev) =>
-                        prev.map((c) =>
-                            c.id === e.record.id ? e.record : c
-                        )
+                        prev.map((c) => (c.id === e.record.id ? e.record : c))
                     );
                 } else if (e.action === "delete") {
                     // Remove deleted comment
@@ -127,58 +126,67 @@ function ProcedureComments({ procedureId }) {
                         comments.map((comment) => (
                             <li
                                 key={comment.id}
-                                className={`text-sm mb-2 py-1 px-2 rounded-md select-text flex justify-between items-start gap-2 ${
-                                    comment.removed
-                                        ? "bg-gray-200/50 opacity-60"
-                                        : "bg-blue-400/20"
-                                }`}
+                                className={twMerge(
+                                    "text-sm mb-2 py-1 px-2 rounded-md select-text flex justify-between items-start gap-2 border border-gray-200 bg-gray-50"
+                                )}
                             >
                                 <div className="flex-1">
                                     <span
-                                        className={comment.removed ? "line-through" : ""}
+                                        className={
+                                            comment.removed
+                                                ? "line-through"
+                                                : ""
+                                        }
                                     >
                                         {comment.content}
                                     </span>
                                     <div className="text-xs text-gray-500 text-right flex gap-2 justify-end">
-                                        {comment.creator === user.id && !comment.removed && (
-                                            <button
-                                                className="text-red-600 rounded hover:bg-red-100 px-1 flex-shrink-0 cursor-pointer"
-                                                onClick={() =>
-                                                    handleRemoveComment(comment.id)
-                                                }
-                                                title="Remove comment"
-                                                type="button"
-                                            >
-                                                remove
-                                            </button>
-                                        )}
-                                        {comment.creator === user.id && comment.removed && (
-                                            <button
-                                                className="text-blue-600 rounded hover:bg-blue-200 px-1 flex-shrink-0 cursor-pointer"
-                                                onClick={() =>
-                                                    handleRestoreComment(comment.id)
-                                                }
-                                                title="Restore comment"
-                                                type="button"
-                                            >
-                                                restore
-                                            </button>
-                                        )}
+                                        {comment.creator === user.id &&
+                                            !comment.removed && (
+                                                <button
+                                                    className="text-red-600 rounded hover:bg-red-100 px-1 flex-shrink-0 cursor-pointer"
+                                                    onClick={() =>
+                                                        handleRemoveComment(
+                                                            comment.id
+                                                        )
+                                                    }
+                                                    title="Remove comment"
+                                                    type="button"
+                                                >
+                                                    remove
+                                                </button>
+                                            )}
+                                        {comment.creator === user.id &&
+                                            comment.removed && (
+                                                <button
+                                                    className="text-blue-600 rounded hover:bg-blue-200 px-1 flex-shrink-0 cursor-pointer"
+                                                    onClick={() =>
+                                                        handleRestoreComment(
+                                                            comment.id
+                                                        )
+                                                    }
+                                                    title="Restore comment"
+                                                    type="button"
+                                                >
+                                                    restore
+                                                </button>
+                                            )}
                                         <span className="font-semibold">
                                             {comment.expand?.creator?.name ||
-                                            comment.expand?.creator?.email ||
-                                            comment.creator ||
-                                            "Unknown"}
+                                                comment.expand?.creator
+                                                    ?.email ||
+                                                comment.creator ||
+                                                "Unknown"}
                                         </span>
                                         <span>
-                                            {comment.expand?.creator?.role || "user"}
+                                            {comment.expand?.creator?.role ||
+                                                "user"}
                                         </span>
                                         <span>
-                                        {formatDateTime(comment.created)}
+                                            {formatDateTime(comment.created)}
                                         </span>
                                     </div>
                                 </div>
-                                
                             </li>
                         ))
                     )}
