@@ -1,7 +1,8 @@
 import { useAuth } from "@/contexts/auth-context";
 import { twMerge } from "tailwind-merge";
+import Button from "@/components/button";
+import ButtonLink from "@/components/button-link";
 import ModalContainer from "./modal-container";
-import { Link } from "react-router";
 
 function UserModal({ userIcon, onClose }) {
     const { user, logout } = useAuth();
@@ -18,20 +19,18 @@ function UserModal({ userIcon, onClose }) {
                 <div className="text-center">{user?.email}</div>
             </div>
             <div className="bg-gray-200 px-4 py-3 ">
-                <button
-                    type="button"
-                    className="bg-red-600 hover:bg-red-500 cursor-pointer inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-xs"
-                    onClick={() => logout()}
-                >
+                <Button variant="danger" fullWidth onClick={() => logout()}>
                     Logout
-                </button>
-                <Link
+                </Button>
+                <ButtonLink
                     to="/dashboard"
-                    className="cursor-pointer mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 "
+                    variant="secondary"
+                    fullWidth
+                    className="mt-3"
                     onClick={() => onClose()}
                 >
                     Dashboard
-                </Link>
+                </ButtonLink>
             </div>
         </ModalContainer>
     );

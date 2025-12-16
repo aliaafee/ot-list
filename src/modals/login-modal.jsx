@@ -1,6 +1,7 @@
 import { useAuth } from "@/contexts/auth-context";
 import ModalContainer from "./modal-container";
 import FormField from "@/components/form-field";
+import Button from "@/components/button";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { LoadingSpinner } from "@/components/loading-spinner";
@@ -63,21 +64,15 @@ function LoginModal({}) {
                     </div>
                 )}
                 <div className="bg-gray-200 px-4 py-3 ">
-                    <button
+                    <Button
                         type="submit"
-                        className=" bg-blue-600 hover:bg-blue-500 cursor-pointer inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-xs"
+                        fullWidth
                         disabled={loading}
+                        loading={loading}
+                        className="gap-2"
                     >
-                        {loading ? (
-                            <>
-                                <>&nbsp;</>
-                                <LoadingSpinner size="small" />
-                                <>&nbsp;</>
-                            </>
-                        ) : (
-                            "Login"
-                        )}
-                    </button>
+                        Login
+                    </Button>
                 </div>
             </form>
         </ModalContainer>

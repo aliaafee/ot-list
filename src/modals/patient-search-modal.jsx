@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { SearchIcon } from "lucide-react";
 import { pb } from "@/lib/pb";
+import Button from "@/components/button";
 import ModalWindow from "./modal-window";
 import PatientInfo from "@/components/patient-info";
 import { age } from "@/utils/dates";
@@ -71,15 +72,14 @@ function PatientSearchModal({ onSelect, onCancel }) {
                         }}
                         className="text-sm py-1 px-2 rounded-md bg-white w-full resize-none border border-gray-300 flex-1"
                     />
-                    <button
-                        type="button"
+                    <Button
                         onClick={handleSearch}
                         disabled={loading}
-                        className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-blue-500 disabled:opacity-50"
+                        loading={loading}
                     >
                         <SearchIcon width={16} height={16} className="mr-2" />
                         Search
-                    </button>
+                    </Button>
                 </div>
 
                 {error && (

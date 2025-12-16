@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CameraIcon, XIcon, UploadIcon, CheckCircleIcon } from "lucide-react";
 import ModalWindow from "./modal-window";
+import Button from "@/components/button";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import LabelValue from "@/components/label-value";
 
@@ -82,29 +83,28 @@ function IdCardScanModal({ onComplete, onCancel }) {
         <>
             {!!extractedInfo && (
                 <>
-                    <button
-                        type="button"
+                    <Button
                         onClick={handleConfirm}
-                        className="cursor-pointer inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-xs  sm:ml-3 sm:w-auto bg-blue-600 hover:bg-blue-500"
+                        className="w-full sm:ml-3 sm:w-auto"
                     >
                         Confirm & Use
-                    </button>
-                    <button
-                        type="button"
+                    </Button>
+                    <Button
+                        variant="secondary"
                         onClick={handleRetry}
-                        className="cursor-pointer mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 sm:ml-3 ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                        className="mt-3 sm:ml-3 sm:mt-0 w-full sm:w-auto"
                     >
                         Scan Again
-                    </button>
+                    </Button>
                 </>
             )}
-            <button
-                type="button"
+            <Button
+                variant="secondary"
                 onClick={onCancel}
-                className="cursor-pointer mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                className="mt-3 sm:mt-0 w-full sm:w-auto"
             >
                 {!extractedInfo ? "Cancel" : "Discard"}
-            </button>
+            </Button>
         </>
     );
 

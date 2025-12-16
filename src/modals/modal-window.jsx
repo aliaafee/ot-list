@@ -1,6 +1,7 @@
 import React from "react";
 import { AlertTriangleIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
+import Button from "@/components/button";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import ModalContainer from "./modal-container";
 
@@ -45,33 +46,27 @@ export default function ModalWindow({
             {showButtons && (
                 <div className="bg-gray-200 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     {!!onOk && (
-                        <button
-                            type="button"
-                            className={twMerge(
-                                "cursor-pointer inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-xs  sm:ml-3 sm:w-auto",
-                                okColor
-                            )}
+                        <Button
+                            variant={
+                                okColor.includes("red") ? "danger" : "primary"
+                            }
                             onClick={() => onOk()}
                             disabled={loading}
+                            loading={loading}
+                            className="w-full sm:ml-3 sm:w-auto"
                         >
-                            {loading && (
-                                <LoadingSpinner
-                                    size="small"
-                                    className={"mr-2"}
-                                />
-                            )}
                             {okLabel}
-                        </button>
+                        </Button>
                     )}
                     {!!onCancel && (
-                        <button
-                            type="button"
-                            className="cursor-pointer mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                        <Button
+                            variant="secondary"
                             onClick={() => onCancel()}
                             disabled={loading}
+                            className="mt-3 sm:mt-0 w-full sm:w-auto"
                         >
                             {cancelLabel}
-                        </button>
+                        </Button>
                     )}
                     {customButtons}
                 </div>
