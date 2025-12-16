@@ -36,7 +36,7 @@ function OperatingLists() {
                         <div className="bg-gray-300 lg:hidden flex flex-col">
                             <ToolBar className="h-10 bg-gray-200">
                                 <div className="grow px-3 uppercase font-medium text-gray-500 text-xs">
-                                    Operating Lists
+                                    Lists
                                 </div>
                                 <ToolBarButton
                                     title="close"

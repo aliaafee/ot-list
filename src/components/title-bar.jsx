@@ -7,9 +7,10 @@ import { Menu, SettingsIcon, UserIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { twMerge } from "tailwind-merge";
+import Logo from "./logo";
 
 const Sections = [
-    { name: "lists", label: "Operating Lists", link: "/lists" },
+    { name: "lists", label: "Lists", link: "/lists" },
     { name: "patients", label: "Patients", link: "/patients" },
     {
         name: "procedures",
@@ -46,8 +47,10 @@ function TitleBar() {
         <>
             <div className="fixed lg:static w-full top-0 h-16 min-h-16 bg-gray-300 flex items-center justify-center gap-1 flex-col z-20">
                 <div className="flex h-full w-full">
-                    <div className="grow"></div>
-                    <div className=" items-end gap-1 hidden sm:flex">
+                    <div className="grow flex items-center overflow-hidden whitespace-nowrap px-4">
+                        <Logo />
+                    </div>
+                    <div className="items-end gap-1 hidden sm:flex">
                         {Sections.map(({ name, label, link, icon }) => (
                             <Link
                                 key={name}

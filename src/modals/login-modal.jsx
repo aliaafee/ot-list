@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { backendUrl } from "@/lib/pb";
+import Logo from "@/components/logo";
 
 function LoginModal({}) {
     const { login, loading } = useAuth();
@@ -30,8 +31,8 @@ function LoginModal({}) {
     return (
         <ModalContainer className={"sm:max-w-xs"}>
             <form onSubmit={onSubmit}>
-                <div className="bg-gray-100 px-4 pt-4 pb-4 sm:p-6 sm:pb-4">
-                    <div className="text-center text-xl">Operating Lists</div>
+                <div className="bg-gray-300 px-4 pt-4 pb-4 sm:p-6 sm:pb-4 flex items-center justify-center">
+                    <Logo />
                 </div>
                 <div className="p-4 flex flex-col gap-4">
                     <FormField
