@@ -15,6 +15,7 @@ import OtDaysList from "@/components/ot-days-list";
 import AddDatesModal from "@/modals/add-dates-modal";
 import { twMerge } from "tailwind-merge";
 import OtDaysReducer from "@/reducers/ot-days-reducer";
+import { OtListColours } from "@/utils/colours";
 
 const otDaysCollectionOptions = {
     sort: "+date",
@@ -208,7 +209,9 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                             ...otLists.map((otList, index) => ({
                                 value: otList.id,
                                 label: otList.name,
-                                color: "bg-gray-300",
+                                color:
+                                    OtListColours[otList.colour ?? ""] ||
+                                    "bg-gray-300",
                             })),
                             {
                                 value: null,

@@ -112,11 +112,11 @@ const ToolBarPill = ({
                     <div
                         className={twMerge(
                             "rounded-sm flex items-center justify-center px-1 py-0.5 gap-1 whitespace-nowrap overflow-clip text-sm text-white text-center",
-                            disabled
+                            value === item.value
+                                ? twMerge(item.color, "text-black")
+                                : disabled
                                 ? "hover:bg-transparent"
-                                : `hover:bg-gray-400 hover:text-black cursor-pointer`,
-                            value === item.value &&
-                                twMerge(item.color, "text-black")
+                                : `hover:bg-gray-400 hover:text-black cursor-pointer`
                         )}
                     >
                         {item.label}
