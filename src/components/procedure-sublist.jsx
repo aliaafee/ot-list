@@ -171,7 +171,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                             onMoveDate={handleMoveDate}
                         />
                     )}
-                    itemClassName="group select-none flex bg-gray-100 rounded-lg hover:shadow-md mt-2"
+                    itemClassName="group select-none flex bg-gray-100 rounded-lg hover:shadow-md mt-2 has-[.selected]:drop-shadow-md "
                     onChange={handleChangeOrder}
                     disabled={isBusy()}
                 />

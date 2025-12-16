@@ -107,7 +107,7 @@ function ProcedureItem({
         return (
             <div
                 className={twMerge(
-                    "flex-auto",
+                    "flex-auto selected",
                     isUpdating(procedure) ? "animate-pulse" : "",
                     className
                 )}
