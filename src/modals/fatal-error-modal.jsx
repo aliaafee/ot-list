@@ -3,6 +3,11 @@ import ModalWindow from "./modal-window";
 import { useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
+/**
+ * FatalErrorModal - Modal for displaying critical errors without close option
+ * @param {string} message - Fatal error message to display
+ * @param {Object} data - Additional error data to show in expandable JSON tree
+ */
 function FatalErrorModal({ message, data = {} }) {
     const [showDetails, setShowDetails] = useState(false);
     return (

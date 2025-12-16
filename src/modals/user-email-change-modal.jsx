@@ -3,6 +3,14 @@ import { MailIcon } from "lucide-react";
 import ModalWindow from "./modal-window";
 import FormField from "@/components/form-field";
 
+/**
+ * UserEmailChangeModal - Modal for requesting a user email change
+ * @param {Object} user - User object whose email will be changed
+ * @param {Function} onSave - Callback with (userId, newEmail) when requesting change
+ * @param {Function} onCancel - Callback when modal is cancelled
+ * @param {boolean} loading - Whether the request operation is in progress
+ * @param {Object} errors - Validation errors object with field names as keys
+ */
 function UserEmailChangeModal({ user, onSave, onCancel, loading = false, errors = {} }) {
     const [newEmail, setNewEmail] = useState("");
 

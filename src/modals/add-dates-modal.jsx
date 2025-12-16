@@ -15,6 +15,13 @@ import {
 } from "@/components/toolbar";
 import DaysOfWeekSelector from "@/components/days-of-week-selector";
 
+/**
+ * AddDatesModal - Modal for adding single or multiple OT days to a list
+ * @param {Function} onCancel - Callback when modal is cancelled
+ * @param {Function} onSuccess - Callback when dates are successfully added
+ * @param {string} initialOtList - Initial OT list ID to pre-select
+ * @param {Array} otLists - Array of available OT lists
+ */
 export default function AddDatesModal({
     onCancel = () => {},
     onSuccess = () => {},

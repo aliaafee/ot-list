@@ -2,6 +2,13 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 
+/**
+ * Accordion - A collapsible content component
+ *
+ * @param {Array} items - Array of accordion items
+ * @param {string} items[].title - Title text displayed in the accordion header
+ * @param {ReactNode} items[].content - Content to display when accordion item is expanded
+ */
 const Accordion = ({ items }) => {
     const [activeIndex, setActiveIndex] = useState(null);
 

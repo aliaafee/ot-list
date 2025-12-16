@@ -6,6 +6,11 @@ import ModalWindow from "./modal-window";
 import PatientInfo from "@/components/patient-info";
 import { age } from "@/utils/dates";
 
+/**
+ * PatientSearchModal - Modal for searching and selecting existing patients
+ * @param {Function} onSelect - Callback with selected patient when confirmed
+ * @param {Function} onCancel - Callback when modal is cancelled
+ */
 function PatientSearchModal({ onSelect, onCancel }) {
     const [searchQuery, setSearchQuery] = useState("");
     const [patients, setPatients] = useState([]);

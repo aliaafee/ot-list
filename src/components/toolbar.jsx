@@ -1,6 +1,17 @@
 import { Link } from "react-router";
 import { twMerge } from "tailwind-merge";
 
+/**
+ * ToolBarButton - Button component for toolbars with hover and active states
+ *
+ * @param {string} className - Additional CSS classes for the inner container
+ * @param {string} buttonClassName - Additional CSS classes for the button element
+ * @param {ReactNode} children - Button content
+ * @param {boolean} disabled - Whether the button is disabled
+ * @param {string} title - Tooltip text
+ * @param {boolean} active - Whether the button is in active state
+ * @param {function} onClick - Click handler function
+ */
 const ToolBarButton = ({
     className,
     buttonClassName,
@@ -33,6 +44,17 @@ const ToolBarButton = ({
     );
 };
 
+/**
+ * ToolBarLink - Link component styled as a toolbar button
+ *
+ * @param {string} className - Additional CSS classes for the inner container
+ * @param {string} buttonClassName - Additional CSS classes for the link element
+ * @param {ReactNode} children - Link content
+ * @param {string} title - Tooltip text
+ * @param {string} to - Navigation path
+ * @param {string} target - Link target attribute
+ * @param {boolean} disabled - Whether the link is disabled
+ */
 const ToolBarLink = ({
     className,
     buttonClassName,
@@ -73,6 +95,12 @@ const ToolBarLink = ({
     );
 };
 
+/**
+ * ToolBarButtonLabel - Label component for toolbar buttons
+ *
+ * @param {string} className - Additional CSS classes
+ * @param {ReactNode} children - Label text content
+ */
 const ToolBarButtonLabel = ({ className, children }) => (
     <div
         className={twMerge(
@@ -84,6 +112,16 @@ const ToolBarButtonLabel = ({ className, children }) => (
     </div>
 );
 
+/**
+ * ToolBarPill - Segmented control/pill selector for toolbars
+ *
+ * @param {string} className - Additional CSS classes for the container
+ * @param {Array} items - Array of {value, label, color} objects for each option
+ * @param {string} value - Currently selected value
+ * @param {boolean} disabled - Whether the pill selector is disabled
+ * @param {function} setValue - Callback when a value is selected
+ * @param {function} onClick - Additional click handler
+ */
 const ToolBarPill = ({
     className,
     items = [{ value: "a", label: "A", color: "" }],
@@ -127,6 +165,12 @@ const ToolBarPill = ({
     );
 };
 
+/**
+ * ToolBar - Container component for toolbar buttons and controls
+ *
+ * @param {string} className - Additional CSS classes for the toolbar
+ * @param {ReactNode} children - Toolbar content (buttons, links, etc.)
+ */
 const ToolBar = ({ className, children }) => {
     return (
         <div className={twMerge("flex items-center", className)}>

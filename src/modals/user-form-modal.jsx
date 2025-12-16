@@ -3,6 +3,13 @@ import { UserPlusIcon } from "lucide-react";
 import ModalWindow from "./modal-window";
 import FormField from "@/components/form-field";
 
+/**
+ * UserFormModal - Modal for creating a new user with credentials
+ * @param {Function} onSave - Callback with formData when creating user
+ * @param {Function} onCancel - Callback when modal is cancelled
+ * @param {boolean} loading - Whether the create operation is in progress
+ * @param {Object} errors - Validation errors object with field names as keys
+ */
 function UserFormModal({ onSave, onCancel, loading = false, errors = {} }) {
     const [formData, setFormData] = useState({
         name: "",

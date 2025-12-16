@@ -1,5 +1,13 @@
 import { twMerge } from "tailwind-merge";
 
+/**
+ * Panels - Two-panel layout with sidebar and main content
+ *
+ * @param {ReactNode} title - Title content to display at the top
+ * @param {ReactNode} sidebar - Sidebar content (left panel)
+ * @param {ReactNode} content - Main content (right panel)
+ * @param {boolean} showSideBar - Whether to show the sidebar (default: true)
+ */
 function Panels({ title, sidebar, content, showSideBar = true }) {
     return (
         <div className="flex flex-col h-full overflow-hidden grow">

@@ -6,6 +6,11 @@ import Button from "@/components/button";
 import { pb } from "@/lib/pb";
 import { twMerge } from "tailwind-merge";
 
+/**
+ * ProcedureComments - Display and manage comments for a procedure
+ *
+ * @param {string} procedureId - ID of the procedure to show comments for
+ */
 function ProcedureComments({ procedureId }) {
     const [comments, setComments] = useState([]);
     const [commentText, setCommentText] = useState("");

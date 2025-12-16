@@ -3,6 +3,14 @@ import { UserCogIcon } from "lucide-react";
 import ModalWindow from "./modal-window";
 import FormField from "@/components/form-field";
 
+/**
+ * UserEditModal - Modal for editing user name and role
+ * @param {Object} user - User object to edit
+ * @param {Function} onSave - Callback with (userId, formData) when saving
+ * @param {Function} onCancel - Callback when modal is cancelled
+ * @param {boolean} loading - Whether the save operation is in progress
+ * @param {Object} errors - Validation errors object with field names as keys
+ */
 function UserEditModal({ user, onSave, onCancel, loading = false, errors = {} }) {
     const [formData, setFormData] = useState({
         name: user.name || "",

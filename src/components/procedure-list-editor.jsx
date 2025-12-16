@@ -22,6 +22,13 @@ import { useProcedureList } from "@/contexts/procedure-list-context";
 import DisableOtDayModal from "@/modals/disable-ot-day-modal";
 import BodyLayout from "./body-layout";
 
+/**
+ * ProcedureListEditor - Main editor for viewing and managing procedures for an OT day
+ *
+ * @param {string} procedureDayId - ID of the OT day to display procedures for
+ * @param {string} className - Additional CSS classes for the container
+ * @param {function} handleShowDaysList - Callback to show the days list sidebar
+ */
 function ProcedureListEditor({
     procedureDayId,
     className,

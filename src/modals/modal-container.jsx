@@ -1,5 +1,12 @@
 import { twMerge } from "tailwind-merge";
 
+/**
+ * ModalContainer - Base container for modal dialogs with overlay
+ * @param {Function} onClickOutside - Callback when clicking outside the modal
+ * @param {string} className - Additional CSS classes for the modal container
+ * @param {React.ReactNode} children - Content to display inside the modal
+ * @param {boolean} large - Whether to use large modal size (max-w-3xl vs max-w-lg)
+ */
 function ModalContainer({
     onClickOutside = () => {},
     className,

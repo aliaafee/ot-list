@@ -5,6 +5,12 @@ import { PatientForm, validatePatient } from "@/forms/patient-form";
 import { pb } from "@/lib/pb";
 import dayjs from "dayjs";
 
+/**
+ * EditPatientModal - Modal for editing patient information
+ * @param {Object} patient - Patient object to edit
+ * @param {Function} onCancel - Callback when modal is cancelled
+ * @param {Function} onSuccess - Callback when patient is successfully updated
+ */
 export default function EditPatientModal({ patient, onCancel, onSuccess }) {
     const [editedPatient, setEditedPatient] = useState({
         nid: patient?.nid || "",

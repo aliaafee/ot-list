@@ -12,6 +12,16 @@ import { useProcedureList } from "@/contexts/procedure-list-context";
 import { ProcedureForm, validateProcedure } from "@/forms/procedure-form";
 import PatientInfo from "./patient-info";
 
+/**
+ * ProcedureEditor - Form component for editing existing OT procedures
+ *
+ * @param {Object} procedure - Procedure object to edit
+ * @param {string} className - Additional CSS classes for the container
+ * @param {function} onDiscard - Callback function when edits are discarded
+ * @param {function} onClose - Callback function when editor is closed
+ * @param {function} onAfterSave - Callback function after successful procedure update
+ * @param {Object} error - Error object containing error details
+ */
 function ProcedureEditor({
     procedure,
     className,

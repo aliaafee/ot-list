@@ -6,6 +6,14 @@ import ModalWindow from "./modal-window";
 import FormField from "@/components/form-field";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 
+/**
+ * MoveProcedureModal - Modal for moving a procedure to a different OT day or operating room
+ * @param {Function} onCancel - Callback when modal is cancelled
+ * @param {Function} onSuccess - Callback when procedure is successfully moved
+ * @param {Object} itemToMove - Procedure object to move
+ * @param {Object} operatingRoom - Current operating room of the procedure
+ * @param {Object} proceduresByRoom - Object mapping room IDs to procedure arrays
+ */
 function MoveProcedureModal({
     onCancel = () => {},
     onSuccess = () => {},

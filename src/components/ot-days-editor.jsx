@@ -22,6 +22,13 @@ const otDaysCollectionOptions = {
     expand: "otList",
 };
 
+/**
+ * OtDaysEditor - Sidebar component for viewing and managing OT days by department
+ *
+ * @param {string} selectedDayId - ID of currently selected OT day
+ * @param {function} onSelectDay - Callback when an OT day is selected
+ * @param {string} className - Additional CSS classes for the container
+ */
 function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");

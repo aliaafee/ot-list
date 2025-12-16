@@ -9,6 +9,13 @@ import { twMerge } from "tailwind-merge";
 import MoveProcedureModal from "@/modals/move-procedure-modal";
 import ProcedureAdder from "./procedure-adder";
 
+/**
+ * ProcedureSublist - Display and manage procedures for a specific operating room
+ *
+ * @param {Array} procedures - Array of all procedures for the day
+ * @param {Object} operatingRoom - Operating room object to filter procedures
+ * @param {boolean} showRemoved - Whether to show removed procedures (default: true)
+ */
 function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
     const { otDay, isBusy, updateProcedures, proceduresList, setSelected } =
         useProcedureList();

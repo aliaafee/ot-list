@@ -1,6 +1,12 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
 
+/**
+ * LoadingSpinner - Small inline loading spinner
+ *
+ * @param {string} message - Optional loading message (currently unused)
+ * @param {string} className - Additional CSS classes for the spinner container
+ */
 export function LoadingSpinner({ message, className }) {
     return (
         <div
@@ -14,6 +20,13 @@ export function LoadingSpinner({ message, className }) {
     );
 }
 
+/**
+ * LoadingSpinnerFull - Full-screen or large loading spinner with optional message
+ *
+ * @param {string} size - Size variant: 'small' or 'large' (default: 'large')
+ * @param {string} message - Optional loading message to display
+ * @param {string} className - Additional CSS classes for the spinner container
+ */
 export function LoadingSpinnerFull({ size = "large", message, className }) {
     if (size === "small") {
         return (

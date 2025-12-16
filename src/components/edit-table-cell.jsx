@@ -3,6 +3,15 @@ import { useMemo, useState } from "react";
 import FormField from "@/components/form-field";
 import ModalWindow from "@/modals/modal-window";
 
+/**
+ * TableCell - Editable table cell component for EditTable
+ *
+ * @param {Object} column - Column definition object with type, options, etc.
+ * @param {any} value - Current cell value
+ * @param {function} onChange - Callback when value changes
+ * @param {boolean} readOnly - Whether the cell is read-only
+ * @param {boolean|string} error - Error state or message for the cell
+ */
 function TableCell({ column, value, onChange, readOnly, error }) {
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedItems, setSelectedItems] = useState([]);

@@ -8,6 +8,9 @@ import { LoadingSpinner } from "@/components/loading-spinner";
 import { backendUrl } from "@/lib/pb";
 import Logo from "@/components/logo";
 
+/**
+ * LoginModal - Modal for user authentication
+ */
 function LoginModal({}) {
     const { login, loading } = useAuth();
     const [email, setEmail] = useState("");

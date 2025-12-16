@@ -4,6 +4,11 @@ import Button from "@/components/button";
 import ButtonLink from "@/components/button-link";
 import ModalContainer from "./modal-container";
 
+/**
+ * UserModal - Modal displaying current user information and actions
+ * @param {React.ReactNode} userIcon - Icon element to display for the user
+ * @param {Function} onClose - Callback when modal is closed
+ */
 function UserModal({ userIcon, onClose }) {
     const { user, logout } = useAuth();
 

@@ -4,6 +4,14 @@ import TableCell from "./edit-table-cell";
 import { EditIcon, PlusIcon, Save, SaveIcon, XIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
+/**
+ * EditTable - Editable table component with add/edit/save functionality
+ *
+ * @param {string} collectionName - PocketBase collection name to fetch/edit data
+ * @param {Array} columns - Array of column definitions with field, label, type, etc.
+ * @param {function} afterSave - Callback function called after successful save
+ * @param {boolean} readOnly - Whether the table is in read-only mode
+ */
 export default function EditTable({
     collectionName,
     columns,

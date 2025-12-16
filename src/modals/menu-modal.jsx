@@ -3,6 +3,12 @@ import { twMerge } from "tailwind-merge";
 import ModalContainer from "./modal-container";
 import { Link } from "react-router";
 
+/**
+ * MenuModal - Modal displaying navigation menu sections
+ * @param {Array} sections - Array of menu section objects with name, label, link, and icon
+ * @param {Function} onClose - Callback when modal is closed
+ * @param {string} className - Additional CSS classes for the modal
+ */
 function MenuModal({ sections, onClose, className }) {
     const { user, logout } = useAuth();
 

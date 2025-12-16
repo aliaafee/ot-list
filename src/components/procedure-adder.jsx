@@ -34,6 +34,14 @@ import { pb } from "@/lib/pb";
 import dayjs from "dayjs";
 import IdCardScanModal from "@/modals/id-card-scan-modal";
 
+/**
+ * ProcedureAdder - Form component for adding new OT procedures with patient information
+ *
+ * @param {Object} operatingRoom - Operating room object where procedure will be added
+ * @param {Array} proceduresByRoom - Existing procedures in the room for order calculation
+ * @param {function} onClose - Callback function when form is closed/cancelled
+ * @param {function} onAfterSave - Callback function after successful procedure addition
+ */
 function ProcedureAdder({
     operatingRoom,
     proceduresByRoom,

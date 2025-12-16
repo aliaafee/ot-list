@@ -1,6 +1,22 @@
 import React from "react";
 import { twMerge } from "tailwind-merge";
 
+/**
+ * FormField - Reusable form input field with label and error handling
+ *
+ * @param {string} label - Label text for the input field
+ * @param {string} name - Name attribute for the input
+ * @param {string} value - Current value of the input
+ * @param {function} onChange - Change handler function
+ * @param {ReactNode} children - Options for select type (optional)
+ * @param {string} type - Input type: 'text', 'email', 'password', 'number', 'date', 'textarea', 'select'
+ * @param {boolean} error - Whether the field has an error
+ * @param {string} errorMessage - Error message to display
+ * @param {string} className - Additional CSS classes for the container
+ * @param {string} inputClassName - Additional CSS classes for the input element
+ * @param {boolean} disabled - Whether the input is disabled
+ * @param {string} placeholder - Placeholder text for the input
+ */
 export default function FormField({
     label,
     name,

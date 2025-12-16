@@ -1,5 +1,12 @@
 import { twMerge } from "tailwind-merge";
 
+/**
+ * BodyLayout - Main content layout wrapper with fixed header
+ *
+ * @param {string} className - Additional CSS classes to apply to the container
+ * @param {ReactNode} header - Header content (usually toolbar or navigation)
+ * @param {ReactNode} children - Main content to display in the body
+ */
 function BodyLayout({ className, header, children }) {
     return (
         <div

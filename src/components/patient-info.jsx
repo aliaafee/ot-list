@@ -2,6 +2,20 @@ import { age } from "@/utils/dates";
 import LabelValue from "./label-value";
 import { twMerge } from "tailwind-merge";
 
+/**
+ * PatientInfo - Display patient information in a formatted grid
+ *
+ * @param {Object} patient - Patient object containing patient details
+ * @param {string} patient.nid - National ID
+ * @param {string} patient.hospitalId - Hospital ID
+ * @param {string} patient.name - Patient name
+ * @param {string} patient.dateOfBirth - Date of birth
+ * @param {string} patient.sex - Sex/gender
+ * @param {string} patient.phone - Phone number
+ * @param {string} patient.address - Address (optional)
+ * @param {string} className - Additional CSS classes for the container
+ * @param {boolean} showAddress - Whether to display the address field
+ */
 function PatientInfo({ patient, className = "", showAddress = false }) {
     return (
         <div

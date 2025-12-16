@@ -2,10 +2,13 @@ import React, { useMemo, useRef } from "react";
 import { twMerge } from "tailwind-merge";
 
 /**
- * Controlled DnD list (Tailwind-styled)
- * @param {Object[]} items - [{id, order, label}]
- * @param {(nextItems: Object[]) => void} onChange - updated array (orders normalized 0..n-1)
- * @param {(item: Object) => React.ReactNode} itemRender - optional custom renderer
+ * ReorderList - Drag and drop reorderable list component
+ *
+ * @param {Object[]} items - Array of items with {id, order, label} structure
+ * @param {function} onChange - Callback with updated array (orders normalized 0..n-1)
+ * @param {function} itemRender - Optional custom renderer function for each item
+ * @param {boolean} disabled - Whether drag and drop is disabled (default: false)
+ * @param {string} itemClassName - Additional CSS classes for each item
  */
 export default function ReorderList({
     items,

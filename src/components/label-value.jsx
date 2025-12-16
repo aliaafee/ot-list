@@ -1,5 +1,13 @@
 import { twMerge } from "tailwind-merge";
 
+/**
+ * LabelValue - Display a label with its corresponding value
+ *
+ * @param {string} label - Label text to display above the value
+ * @param {string|ReactNode} value - Value to display
+ * @param {string} className - Additional CSS classes for the container
+ * @param {ReactNode} blank - Content to display when value is empty (default: —)
+ */
 function LabelValue({ label, value, className, blank = <>&mdash;</> }) {
     return (
         <div className={twMerge("flex flex-col", className)}>

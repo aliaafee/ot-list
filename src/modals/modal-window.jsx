@@ -5,6 +5,22 @@ import Button from "@/components/button";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import ModalContainer from "./modal-container";
 
+/**
+ * ModalWindow - Reusable modal dialog with customizable title, icon, and buttons
+ * @param {string} title - Modal title text
+ * @param {string} okLabel - Label for the OK/confirm button
+ * @param {string} cancelLabel - Label for the cancel button
+ * @param {Function} onOk - Callback when OK button is clicked
+ * @param {Function} onCancel - Callback when cancel button is clicked
+ * @param {React.ReactNode} icon - Icon element to display in the header
+ * @param {string} iconColor - Tailwind classes for icon background and text color
+ * @param {string} okColor - Tailwind classes for OK button color
+ * @param {boolean} showButtons - Whether to show the button footer
+ * @param {boolean} loading - Whether to show loading state on buttons
+ * @param {boolean} large - Whether to use large modal size
+ * @param {React.ReactNode} children - Content to display in the modal body
+ * @param {React.ReactNode} customButtons - Custom button elements to replace default buttons
+ */
 export default function ModalWindow({
     title = "Alert",
     okLabel = "Ok",

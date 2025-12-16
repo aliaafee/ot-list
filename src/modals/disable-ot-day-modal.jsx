@@ -6,6 +6,11 @@ import ModalWindow from "./modal-window";
 import FormField from "@/components/form-field";
 import { useEffect, useState } from "react";
 
+/**
+ * DisableOtDayModal - Modal for disabling/enabling an OT day with remarks
+ * @param {Function} onCancel - Callback when modal is cancelled
+ * @param {Function} onSuccess - Callback when OT day is successfully updated
+ */
 function DisableOtDayModal({ onCancel = () => {}, onSuccess = () => {} }) {
     const { otDay, updateOtDay } = useProcedureList();
     const [displayedOtDay, setDisplayedOtDay] = useState(null);

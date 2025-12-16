@@ -1,3 +1,9 @@
+/**
+ * DaysOfWeekSelector - Checkbox selector for days of the week
+ *
+ * @param {number[]} value - Array of selected day values (0=Sunday, 1=Monday, etc.)
+ * @param {function} onChange - Callback function called with updated array of selected days
+ */
 const DaysOfWeekSelector = ({ value = [], onChange }) => {
     // Sunday = 0, Monday = 1, ..., Saturday = 6
     const days = [

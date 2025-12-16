@@ -3,6 +3,12 @@ import ModalWindow from "./modal-window";
 import { useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 
+/**
+ * ErrorModal - Modal for displaying errors with expandable details
+ * @param {string} message - Error message to display
+ * @param {Function} onClose - Callback when modal is closed
+ * @param {Object} data - Additional error data to show in expandable JSON tree
+ */
 function ErrorModal({ message, onClose, data = {} }) {
     const [showDetails, setShowDetails] = useState(false);
     return (

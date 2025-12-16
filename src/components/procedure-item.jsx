@@ -26,6 +26,17 @@ import ProcedureComments from "./procedure-comments";
 import PatientInfo from "./patient-info";
 import EditPatientModal from "@/modals/edit-patient-modal";
 
+/**
+ * ProcedureItem - Display and manage a single OT procedure item
+ *
+ * @param {Object} procedure - Procedure object with patient and details
+ * @param {string} className - Additional CSS classes for the container
+ * @param {function} onMoveUp - Callback to move procedure up in order
+ * @param {function} onMoveDown - Callback to move procedure down in order
+ * @param {function} onRemove - Callback to remove/mark procedure as removed
+ * @param {function} onRestore - Callback to restore a removed procedure
+ * @param {function} onMoveDate - Callback to move procedure to different date
+ */
 function ProcedureItem({
     procedure,
     className,

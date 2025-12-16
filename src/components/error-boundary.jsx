@@ -1,6 +1,10 @@
 import FatalErrorModal from "@/modals/fatal-error-modal";
 import React from "react";
 
+/**
+ * ErrorBoundary - React error boundary component for catching and displaying errors
+ * Wraps the application to catch unhandled errors and show a fallback UI
+ */
 class ErrorBoundary extends React.Component {
     constructor(props) {
         super(props);

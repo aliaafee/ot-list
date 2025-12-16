@@ -5,6 +5,11 @@ import Button from "@/components/button";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import LabelValue from "@/components/label-value";
 
+/**
+ * IdCardScanModal - Modal for scanning and extracting information from national ID cards using OCR
+ * @param {Function} onComplete - Callback with extracted info when scan is complete
+ * @param {Function} onCancel - Callback when modal is cancelled
+ */
 function IdCardScanModal({ onComplete, onCancel }) {
     const [scanning, setScanning] = useState(false);
     const [status, setStatus] = useState("");

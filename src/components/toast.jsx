@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
 
+/**
+ * Toast - Temporary notification message component
+ *
+ * @param {string} message - Message text to display
+ * @param {number} duration - Duration in milliseconds before auto-close (default: 3000)
+ * @param {function} onClose - Callback function when toast closes
+ * @param {string} type - Toast type: 'success', 'error', or 'info' (default: 'success')
+ */
 export function Toast({ message, duration = 3000, onClose, type = "success" }) {
     const [isVisible, setIsVisible] = useState(true);
 

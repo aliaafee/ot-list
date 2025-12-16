@@ -25,6 +25,9 @@ const Sections = [
     },
 ];
 
+/**
+ * TitleBar - Main application navigation bar with user menu
+ */
 function TitleBar() {
     const { user, logout } = useAuth();
     const [showDetails, setShowDetails] = useState(false);
