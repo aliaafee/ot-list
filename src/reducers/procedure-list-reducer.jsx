@@ -14,6 +14,22 @@ function ProcedureListReducer(state, action) {
                 procedures: action.payload,
             };
         case "ADD_PROCEDURE":
+            // Check if procedure with same id already exists
+            const existingProcedure = state.procedures.find(
+                (p) => p.id === action.payload.id
+            );
+            if (existingProcedure) {
+                // Update existing procedure instead of adding
+                return {
+                    ...state,
+                    procedures: state.procedures.map((p) =>
+                        p.id === action.payload.id
+                            ? { ...p, ...action.payload }
+                            : p
+                    ),
+                };
+            }
+            // Add new procedure
             return {
                 ...state,
                 procedures: [...state.procedures, action.payload],

@@ -225,19 +225,19 @@ export function ProcedureListProvider({ children }) {
                 ? patient
                 : await pb.collection("patients").create(patient);
 
-            const newProcedure = await pb
-                .collection("procedures")
-                .create({ ...procedure, patient: newPatient.id });
+            const newProcedure = await pb.collection("procedures").create(
+                {
+                    ...procedure,
+                    patient: newPatient.id,
+                },
+                { ...proceduresCollectionOptions }
+            );
 
-            if (subscribed) {
-                setSelected(newProcedure.id);
-            } else {
-                dispatchData({
-                    type: "ADD_PROCEDURE",
-                    payload: newProcedure,
-                });
-                setSelected(newProcedure.id);
-            }
+            dispatchData({
+                type: "ADD_PROCEDURE",
+                payload: newProcedure,
+            });
+            setSelected(newProcedure.id);
 
             // Show success toast
             showToast("Procedure added successfully", "success");
@@ -355,15 +355,15 @@ export function ProcedureListProvider({ children }) {
                         ...proceduresCollectionOptions,
                     });
 
-                if (!subscribed) {
-                    if (updatedProcedure.procedureDay === otDay.id) {
-                        // Only update the procedures in this otDay
-                        dispatchData({
-                            type: "UPDATE_PROCEDURE",
-                            payload: updatedProcedure,
-                        });
-                    }
+                // if (!subscribed) {
+                if (updatedProcedure.procedureDay === otDay.id) {
+                    // Only update the procedures in this otDay
+                    dispatchData({
+                        type: "UPDATE_PROCEDURE",
+                        payload: updatedProcedure,
+                    });
                 }
+                // }
             }
 
             // Show success toast for procedure updates
@@ -448,103 +448,6 @@ export function ProcedureListProvider({ children }) {
         }
     };
 
-    const updateProcedureAndPatient = async (
-        patientId,
-        patientData,
-        procedureId,
-        procedureData,
-        otDay
-    ) => {
-        const original =
-            getProcedureError({ id: procedureId })?.original ||
-            proceduresList.procedures.find((p) => p.id === procedureId);
-
-        discardProcedureUpdate(procedureId);
-
-        const placeholderProcedure = {
-            ...original,
-            ...procedureData,
-            expand: {
-                ...original.expand,
-                patient: {
-                    ...original.expand.patient,
-                    ...patientData,
-                },
-                procedureDay: otDay,
-                addedBy:
-                    otDay.expand.otList.expand.department.expand.surgeons_via_department.find(
-                        (s) => s.id === procedureData.addedBy
-                    ),
-            },
-        };
-
-        dispatchData({
-            type: "UPDATE_PROCEDURE",
-            payload: placeholderProcedure,
-        });
-
-        try {
-            dispatchData({
-                type: "ADD_UPDATING",
-                payload: [placeholderProcedure.id],
-            });
-
-            if (patientId !== null) {
-                const updatedPatient = await pb
-                    .collection("patients")
-                    .update(patientId, patientData);
-            }
-
-            const updatedProcedure = await pb
-                .collection("procedures")
-                .update(procedureId, procedureData, {
-                    expand: "patient,addedBy,procedureDay.otList,procedureDay",
-                });
-
-            if (!subscribed) {
-                dispatchData({
-                    type: "UPDATE_PROCEDURE",
-                    payload: updatedProcedure,
-                });
-            }
-
-            // Show success toast
-            showToast("Procedure updated successfully", "success");
-        } catch (e) {
-            console.log(
-                "Failed to update procedure",
-                JSON.parse(JSON.stringify(e))
-            );
-            dispatchData({
-                type: "ADD_FAILED",
-                payload: [
-                    {
-                        id: placeholderProcedure.id,
-                        type: "update",
-                        message: `Failed to update procedure. ${e?.message} ${e?.originalError?.message}`,
-                        original: original,
-                        data: {
-                            patientId: patientId,
-                            patientData: patientData,
-                            procedureId: procedureId,
-                            procedureData: procedureData,
-                        },
-                        response: e?.response,
-                        error: e,
-                    },
-                ],
-            });
-
-            // Show error toast
-            showToast("Failed to update procedure", "error");
-        } finally {
-            dispatchData({
-                type: "DONE_UPDATING",
-                payload: [placeholderProcedure.id],
-            });
-        }
-    };
-
     const updateOtDay = async (newOtDay) => {
         try {
             const { id: otDayId, ...changes } = newOtDay;
@@ -571,7 +474,6 @@ export function ProcedureListProvider({ children }) {
             subscribeProcedures,
             addProcedure,
             updateProcedures,
-            updateProcedureAndPatient,
             updateOtDay,
             setSelected,
             isUpdating,
