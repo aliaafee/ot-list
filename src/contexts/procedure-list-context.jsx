@@ -9,6 +9,7 @@ import { pb } from "@/lib/pb";
 import ProcedureListReducer from "@/reducers/procedure-list-reducer";
 import FatalErrorModal from "@/modals/fatal-error-modal";
 import ErrorModal from "@/modals/error-modal";
+import { ToastContainer } from "@/components/toast";
 import { useSearchParams } from "react-router";
 
 const ProcedureListContext = createContext(null);
@@ -33,8 +34,18 @@ export function ProcedureListProvider({ children }) {
     const [error, setError] = useState("");
     const [subscribed, setSubscribed] = useState(false);
     const [tempId, setTempId] = useState(1000);
+    const [toasts, setToasts] = useState([]);
 
     const [searchParams, setSearchParams] = useSearchParams();
+
+    const showToast = (message, type = "success", duration = 3000) => {
+        const id = Date.now();
+        setToasts((prev) => [...prev, { id, message, type, duration }]);
+    };
+
+    const removeToast = (id) => {
+        setToasts((prev) => prev.filter((toast) => toast.id !== id));
+    };
 
     const getTempId = () => {
         setTempId(tempId + 1);
@@ -227,11 +238,17 @@ export function ProcedureListProvider({ children }) {
                 });
                 setSelected(newProcedure.id);
             }
+
+            // Show success toast
+            showToast("Procedure added successfully", "success");
         } catch (e) {
             console.log(
                 "Failed to add procedure",
                 JSON.parse(JSON.stringify(e))
             );
+
+            // Show error toast
+            showToast("Failed to add procedure", "error");
 
             return {
                 message: `Failed to add procedure`,
@@ -348,6 +365,16 @@ export function ProcedureListProvider({ children }) {
                     }
                 }
             }
+
+            // Show success toast for procedure updates
+            if (newProcedures.length === 1) {
+                showToast("Procedure updated successfully", "success");
+            } else {
+                showToast(
+                    `${newProcedures.length} procedures updated successfully`,
+                    "success"
+                );
+            }
         } catch (e) {
             if (revertOnFail) {
                 console.log(
@@ -376,6 +403,12 @@ export function ProcedureListProvider({ children }) {
                     data: e,
                 });
 
+                // Show error toast
+                showToast(
+                    "Failed to update procedures. Changes reverted.",
+                    "error"
+                );
+
                 throw e;
             } else {
                 console.log(
@@ -401,6 +434,10 @@ export function ProcedureListProvider({ children }) {
                         error: e,
                     })),
                 });
+
+                // Show error toast
+                showToast("Failed to update procedure", "error");
+
                 throw e;
             }
         } finally {
@@ -470,6 +507,9 @@ export function ProcedureListProvider({ children }) {
                     payload: updatedProcedure,
                 });
             }
+
+            // Show success toast
+            showToast("Procedure updated successfully", "success");
         } catch (e) {
             console.log(
                 "Failed to update procedure",
@@ -494,6 +534,9 @@ export function ProcedureListProvider({ children }) {
                     },
                 ],
             });
+
+            // Show error toast
+            showToast("Failed to update procedure", "error");
         } finally {
             dispatchData({
                 type: "DONE_UPDATING",
@@ -511,6 +554,7 @@ export function ProcedureListProvider({ children }) {
             if (!subscribed) {
                 setOtDay(updateOtDay);
             }
+            showToast("OT Day updated successfully", "success");
         } catch (e) {
             console.log("Update otDay Error: ", JSON.parse(JSON.stringify(e)));
             throw e;
@@ -559,6 +603,7 @@ export function ProcedureListProvider({ children }) {
                     onClose={() => setUpdateError(null)}
                 />
             )}
+            <ToastContainer toasts={toasts} removeToast={removeToast} />
         </ProcedureListContext.Provider>
     );
 }
