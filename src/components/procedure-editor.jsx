@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
+import Button from "@/components/button";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 dayjs.extend(isSameOrAfter);
@@ -121,20 +122,19 @@ function ProcedureEditor({
                     }}
                 />
                 <div className="sm:flex sm:flex-row-reverse col-span-full mt-3">
-                    <button
-                        type="button"
+                    <Button
                         onClick={handleUpdateProcedure}
-                        className="inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-xs  sm:ml-3 sm:w-auto bg-blue-600 hover:bg-blue-500 disabled:bg-gray-500"
+                        className="w-full sm:ml-3 sm:w-auto"
                     >
                         Save
-                    </button>
-                    <button
-                        type="button"
+                    </Button>
+                    <Button
+                        variant="secondary"
                         onClick={onDiscard}
-                        className="mt-3 sm:mt-0 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50  sm:w-auto"
+                        className="mt-3 sm:mt-0 w-full sm:w-auto"
                     >
                         Discard
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { PlusIcon, EditIcon, MailIcon } from "lucide-react";
+import Button from "@/components/button";
 import { pb } from "@/lib/pb";
 import { useAuth } from "@/contexts/auth-context";
 import UserFormModal from "@/modals/user-form-modal";
@@ -95,13 +96,13 @@ function EditUser() {
         <div>
             {user?.role === "admin" && (
                 <div className="mb-2 flex justify-end">
-                    <button
-                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-md text-sm cursor-pointer"
+                    <Button
+                        className="gap-2"
                         onClick={() => setShowUserModal(true)}
                     >
                         <PlusIcon size={16} />
                         Add User
-                    </button>
+                    </Button>
                 </div>
             )}
             <div

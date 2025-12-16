@@ -2,6 +2,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { formatDateTime } from "@/utils/dates";
 import { SendHorizonalIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
+import Button from "@/components/button";
 import { pb } from "@/lib/pb";
 import { twMerge } from "tailwind-merge";
 
@@ -201,14 +202,16 @@ function ProcedureComments({ procedureId }) {
                     type="text"
                     disabled={sending}
                 />
-                <button
-                    className="text-sm rounded-md p-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed ml-2 text-white cursor-pointer"
+                <Button
+                    className="ml-2"
                     title="Send Comment"
                     type="submit"
+                    size="sm"
                     disabled={sending || !commentText.trim()}
+                    loading={sending}
                 >
                     <SendHorizonalIcon size={16} />
-                </button>
+                </Button>
             </form>
         </div>
     );

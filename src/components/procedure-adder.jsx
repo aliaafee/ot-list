@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
+import Button from "@/components/button";
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import {
     ProcedureForm,
@@ -364,42 +365,34 @@ function ProcedureAdder({
                     }}
                 />
                 <div className="sm:flex sm:flex-row-reverse col-span-full mt-3">
-                    <button
-                        type="button"
+                    <Button
                         onClick={handleAddProcedure}
-                        className="inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-xs  sm:ml-3 sm:w-auto bg-blue-600 hover:bg-blue-500"
+                        className="w-full sm:ml-3 sm:w-auto"
                         disabled={isBusy() || checking}
+                        loading={checking || adding}
                     >
-                        {checking ? (
-                            <>
-                                <LoadingSpinner />{" "}
-                                <span className="ml-2">Checking...</span>
-                            </>
-                        ) : adding ? (
-                            <>
-                                <LoadingSpinner />{" "}
-                                <span className="ml-2">Adding...</span>
-                            </>
-                        ) : (
-                            "Save"
-                        )}
-                    </button>
-                    <button
-                        type="button"
+                        {checking
+                            ? "Checking..."
+                            : adding
+                            ? "Adding..."
+                            : "Save"}
+                    </Button>
+                    <Button
+                        variant="secondary"
                         onClick={handleSampleData}
-                        className="mt-3 sm:ml-3 sm:mt-0 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 sm:w-auto"
+                        className="mt-3 sm:ml-3 sm:mt-0 w-full sm:w-auto"
                         disabled={isBusy() || checking}
                     >
                         Generate Sample
-                    </button>
-                    <button
-                        type="button"
+                    </Button>
+                    <Button
+                        variant="secondary"
                         onClick={handleCancel}
-                        className="mt-3 sm:mt-0 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50  sm:w-auto"
+                        className="mt-3 sm:mt-0 w-full sm:w-auto"
                         disabled={isBusy() || checking}
                     >
                         Cancel
-                    </button>
+                    </Button>
                 </div>
             </div>
             {showPatientSearch && (

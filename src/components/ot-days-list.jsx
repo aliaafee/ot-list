@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 import { Link } from "react-router";
+import Button from "@/components/button";
 import { OtListColours } from "@/utils/colours";
 
 function OtListMarker({ otList }) {
@@ -110,22 +111,17 @@ function OtDaysList({
                             ))}
                         {index === Object.keys(daysByMonth).length - 1 && (
                             <li className="p-2 text-center mb-6">
-                                <button
-                                    className={twMerge(
-                                        "text-sm px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-200",
-                                        loadMorePagesDisabled
-                                            ? "opacity-50 cursor-not-allowed"
-                                            : "cursor-pointer"
-                                    )}
+                                <Button
+                                    variant="secondary"
+                                    size="sm"
                                     onClick={loadMorePages}
                                     disabled={loadMorePagesDisabled}
+                                    loading={loadingMore}
                                 >
-                                    {loadingMore
-                                        ? "Loading..."
-                                        : loadMorePagesDisabled
+                                    {loadMorePagesDisabled
                                         ? "No more dates"
                                         : "Load more dates"}
-                                </button>
+                                </Button>
                             </li>
                         )}
                     </ul>
