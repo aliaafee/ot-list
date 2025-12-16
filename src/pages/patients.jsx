@@ -7,9 +7,7 @@ import {
     SearchIcon,
     XIcon,
     ChevronDownIcon,
-    ChevronUpIcon,
     Trash,
-    ChevronsDownIcon,
 } from "lucide-react";
 import BodyLayout from "@/components/body-layout";
 import { ToolBar, ToolBarButtonLabel, ToolBarLink } from "@/components/toolbar";
@@ -17,6 +15,7 @@ import { pb } from "@/lib/pb";
 import { age } from "@/utils/dates";
 import dayjs from "dayjs";
 import { useAuth } from "@/contexts/auth-context";
+import { twMerge } from "tailwind-merge";
 
 function Patients({}) {
     const { user } = useAuth();
@@ -244,7 +243,13 @@ function Patients({}) {
                                     <>
                                         <tr
                                             key={patient.id}
-                                            className="hover:bg-gray-50 cursor-pointer"
+                                            className={twMerge(
+                                                " cursor-pointer",
+                                                expandedPatient?.id ===
+                                                    patient.id
+                                                    ? "bg-blue-300"
+                                                    : "hover:bg-blue-200"
+                                            )}
                                             onClick={() =>
                                                 handleTogglePatient(patient)
                                             }
@@ -288,7 +293,7 @@ function Patients({}) {
                                             <tr key={`${patient.id}-details`}>
                                                 <td
                                                     colSpan="7"
-                                                    className="px-3 py-3 bg-gray-50"
+                                                    className="px-3 py-3 bg-blue-50"
                                                 >
                                                     <div className="pl-8">
                                                         <h3 className="text-sm font-semibold mb-2">

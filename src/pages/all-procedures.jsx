@@ -222,7 +222,7 @@ function AllProcedures() {
                                 {procedures.map((proc) => (
                                     <tr
                                         key={proc.id}
-                                        className="hover:bg-gray-50 group"
+                                        className="hover:bg-blue-200 group"
                                     >
                                         <td className="px-1.5 py-0.5 text-sm  ">
                                             <Link
