@@ -12,7 +12,12 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 function ErrorModal({ message, onClose, data = {} }) {
     const [showDetails, setShowDetails] = useState(false);
     return (
-        <ModalWindow title="Error" showButtons={true} onOk={onClose} okLabel="Close">
+        <ModalWindow
+            title="Error"
+            showButtons={true}
+            onOk={onClose}
+            okLabel="Close"
+        >
             <p>{message}</p>
             {!!data && (
                 <>

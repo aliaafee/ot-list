@@ -11,7 +11,13 @@ import FormField from "@/components/form-field";
  * @param {boolean} loading - Whether the save operation is in progress
  * @param {Object} errors - Validation errors object with field names as keys
  */
-function UserEditModal({ user, onSave, onCancel, loading = false, errors = {} }) {
+function UserEditModal({
+    user,
+    onSave,
+    onCancel,
+    loading = false,
+    errors = {},
+}) {
     const [formData, setFormData] = useState({
         name: user.name || "",
         role: user.role || "",

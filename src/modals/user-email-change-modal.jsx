@@ -11,7 +11,13 @@ import FormField from "@/components/form-field";
  * @param {boolean} loading - Whether the request operation is in progress
  * @param {Object} errors - Validation errors object with field names as keys
  */
-function UserEmailChangeModal({ user, onSave, onCancel, loading = false, errors = {} }) {
+function UserEmailChangeModal({
+    user,
+    onSave,
+    onCancel,
+    loading = false,
+    errors = {},
+}) {
     const [newEmail, setNewEmail] = useState("");
 
     const handleSubmit = () => {
@@ -37,7 +43,9 @@ function UserEmailChangeModal({ user, onSave, onCancel, loading = false, errors 
                     </label>
                     <div className="px-2 py-1 bg-gray-100 rounded border border-gray-300">
                         <div className="font-semibold">{user.name}</div>
-                        <div className="text-sm text-gray-600">{user.email}</div>
+                        <div className="text-sm text-gray-600">
+                            {user.email}
+                        </div>
                     </div>
                 </div>
 
@@ -59,8 +67,9 @@ function UserEmailChangeModal({ user, onSave, onCancel, loading = false, errors 
                 </div>
 
                 <div className="bg-blue-50 border border-blue-200 rounded p-3 text-sm text-blue-800">
-                    <strong>Note:</strong> This will send a confirmation email to the new address. 
-                    The user must confirm the change before it takes effect.
+                    <strong>Note:</strong> This will send a confirmation email
+                    to the new address. The user must confirm the change before
+                    it takes effect.
                 </div>
             </div>
         </ModalWindow>
