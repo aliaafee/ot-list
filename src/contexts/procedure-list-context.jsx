@@ -124,6 +124,7 @@ export function ProcedureListProvider({ children }) {
 
             pb.collection("procedures").unsubscribe();
             pb.collection("otDays").unsubscribe(procedureDayId);
+            pb.collection("patients").unsubscribe();
         };
     };
 
@@ -178,6 +179,21 @@ export function ProcedureListProvider({ children }) {
             {
                 ...otDayCollectionOptions,
             }
+        );
+
+        pb.collection("patients").subscribe(
+            "*",
+            (e) => {
+                console.log("Patient event:", e.action, e.record);
+                if (e.action === "update") {
+                    // Update all procedures with this patient
+                    dispatchData({
+                        type: "UPDATE_PATIENT_IN_PROCEDURES",
+                        payload: e.record,
+                    });
+                }
+            },
+            { expand: "procedures_via_patient" }
         );
 
         return createUnsubscribeProcedures(procedureDayId);

@@ -94,7 +94,22 @@ function ProcedureListReducer(state, action) {
                     },
                 ],
             };
-
+        case "UPDATE_PATIENT_IN_PROCEDURES":
+            return {
+                ...state,
+                procedures: state.procedures.map((procedure) => {
+                    if (procedure.patient === action.payload.id) {
+                        return {
+                            ...procedure,
+                            expand: {
+                                ...procedure.expand,
+                                patient: action.payload,
+                            },
+                        };
+                    }
+                    return procedure;
+                }),
+            };
         case "ADD_UPDATING":
             return {
                 ...state,
