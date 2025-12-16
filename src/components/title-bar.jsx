@@ -64,27 +64,29 @@ function TitleBar() {
                             </Link>
                         ))}
                     </div>
-                    <div className="flex sm:hidden items-center cursor-pointer">
-                        <div
-                            className="w-10 h-10 rounded-full bg-gray-200 flex justify-center items-center hover:outline-3 outline-gray-400"
-                            onClick={() => setShowMenu(true)}
-                        >
-                            <Menu className="m-2" size={16} />
+                    <div className="flex p-4 gap-4">
+                        <div className="flex items-center">
+                            <div
+                                className={twMerge(
+                                    "w-10 h-10 rounded-full bg-amber-400 flex justify-center items-center cursor-pointer hover:outline-3 outline-gray-400",
+                                    UserColours[
+                                        user?.name.length % UserColours.length
+                                    ]
+                                )}
+                                title={user?.name || user?.email}
+                                onClick={() => setShowDetails(true)}
+                            >
+                                <div className="text-2xl text-black/60">
+                                    {user?.name[0]}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div className="flex items-center px-4">
-                        <div
-                            className={twMerge(
-                                "w-10 h-10 rounded-full bg-amber-400 flex justify-center items-center cursor-pointer hover:outline-3 outline-gray-400",
-                                UserColours[
-                                    user?.name.length % UserColours.length
-                                ]
-                            )}
-                            title={user?.name || user?.email}
-                            onClick={() => setShowDetails(true)}
-                        >
-                            <div className="text-2xl text-black/60">
-                                {user?.name[0]}
+                        <div className="flex sm:hidden items-center cursor-pointer">
+                            <div
+                                className="w-10 h-10 rounded-full bg-gray-200 flex justify-center items-center hover:outline-3 outline-gray-400"
+                                onClick={() => setShowMenu(true)}
+                            >
+                                <Menu className="m-2" size={16} />
                             </div>
                         </div>
                     </div>
