@@ -144,7 +144,7 @@ const ToolBarPill = ({
     return (
         <div
             className={twMerge(
-                "rounded-lg bg-gray-600 flex gap-1 p-1 m-1",
+                "rounded-lg bg-gray-500 flex gap-1 p-1 m-1",
                 className
             )}
         >
