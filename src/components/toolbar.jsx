@@ -115,7 +115,7 @@ const ToolBarButtonLabel = ({ className, children }) => (
 const ToolBarTitle = ({ className, children }) => (
     <div
         className={twMerge(
-            "text-xs font-medium text-gray-500 uppercase px-1.5 mx-1",
+            "text-xs font-medium text-gray-500 uppercase px-1.5 py-1.5 mx-1",
             className
         )}
     >
