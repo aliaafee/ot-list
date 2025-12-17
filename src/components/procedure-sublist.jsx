@@ -8,6 +8,7 @@ import { ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { twMerge } from "tailwind-merge";
 import MoveProcedureModal from "@/modals/move-procedure-modal";
 import ProcedureAdder from "./procedure-adder";
+import { useSearchParams } from "react-router";
 
 /**
  * ProcedureSublist - Display and manage procedures for a specific operating room
@@ -17,10 +18,12 @@ import ProcedureAdder from "./procedure-adder";
  * @param {boolean} showRemoved - Whether to show removed procedures (default: true)
  */
 function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
-    const { otDay, isBusy, updateProcedures, proceduresList, setSelected } =
-        useProcedureList();
+    const { otDay, isBusy, updateProcedures, setSelected } = useProcedureList();
     const [showAddForm, setShowAddForm] = useState(false);
     const [procedureToMove, setProcedureToMove] = useState(null);
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const selectedProcedureId = searchParams.get("procedureId");
 
     const proceduresByRoom = useMemo(
         () =>
@@ -136,7 +139,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                 order: row.order - 1,
             }));
 
-        if (proceduresList.selected === item.id) {
+        if (selectedProcedureId === item.id) {
             setSelected(null);
         }
 
