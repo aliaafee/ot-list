@@ -5,6 +5,7 @@ import { CalendarArrowDownIcon, FastForward } from "lucide-react";
 import ModalWindow from "./modal-window";
 import FormField from "@/components/form-field";
 import { useProcedureList } from "@/contexts/procedure-list-context";
+import { useSearchParams } from "react-router";
 
 /**
  * MoveProcedureModal - Modal for moving a procedure to a different OT day or operating room
@@ -21,13 +22,8 @@ function MoveProcedureModal({
     operatingRoom,
     proceduresByRoom,
 }) {
-    const {
-        otDay,
-        updateProcedures,
-        proceduresList,
-        setSelected,
-        getProcedures,
-    } = useProcedureList();
+    const { otDay, updateProcedures, setSelected, getProcedures } =
+        useProcedureList();
 
     const [newOtDayId, setNewOtDayId] = useState(itemToMove?.procedureDay);
     const [newOperatingRoomId, setNewOperatingRoomId] = useState(
@@ -35,6 +31,9 @@ function MoveProcedureModal({
     );
     const [moving, setMoving] = useState(false);
     const [error, setError] = useState("");
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const selectedProcedureId = searchParams.get("procedureId");
 
     const handleMoveProcedure = async () => {
         setMoving(true);
@@ -84,8 +83,10 @@ function MoveProcedureModal({
             order: nextOrder,
             removed: false,
         };
-        if (proceduresList.selected === itemToMove.id) {
-            setSelected(null);
+        if (selectedProcedureId === itemToMove.id) {
+            if (newOtDay.id !== itemToMove.procedureDay) {
+                setSelected(null);
+            }
         }
 
         if (itemToMove.order < 0) {
