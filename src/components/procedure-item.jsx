@@ -17,7 +17,13 @@ import {
 
 import { age } from "@/utils/dates";
 import LabelValue from "./label-value";
-import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
+import {
+    ToolBar,
+    ToolBarButton,
+    ToolBarButtonLabel,
+    ToolBarPill,
+    ToolBarTitle,
+} from "./toolbar";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import ProcedureEditor from "./procedure-editor";
 import ModalWindow from "@/modals/modal-window";
@@ -70,7 +76,7 @@ function ProcedureItem({
         return (
             <div
                 className={twMerge(
-                    "flex-auto p-2 grid grid-cols-8 lg:grid-cols-12 cursor-pointer gap-1 rounded-lg md:rounded-l-none",
+                    "flex-auto p-2 grid grid-cols-10 lg:grid-cols-14 cursor-pointer gap-1 rounded-lg md:rounded-l-none",
                     isUpdating(procedure) ? "animate-pulse" : "",
                     !!procedure.removed && "line-through",
                     className
@@ -84,10 +90,10 @@ function ProcedureItem({
                 <LabelValue
                     // label="NID"
                     value={procedure?.expand?.patient?.nid}
-                    className="col-span-2 lg:col-span-1"
+                    className="col-span-2 lg:col-span-2"
                 />
                 <LabelValue
-                    className="col-span-2 lg:col-span-3"
+                    className="col-span-2 lg:col-span-2"
                     // label="Name"
                     value={procedure?.expand?.patient?.name}
                 />
@@ -110,6 +116,31 @@ function ProcedureItem({
                     // label="Procedure"
                     value={procedure.procedure}
                 />
+                <div className="col-span-2">
+                    {!procedure.removed && (
+                        <>
+                            <span className="bg-transparent rounded-e-full rounded-l-full px-3 py-0.5 text-xs uppercase">
+                                N/A
+                            </span>
+                            <br />
+                            <span className="bg-blue-400 rounded-e-full rounded-l-full px-3 py-0.5 text-xs uppercase">
+                                Referred
+                            </span>
+                            <br />
+                            <span className="bg-yellow-400 rounded-e-full rounded-l-full px-3 py-0.5 text-xs uppercase">
+                                In&nbsp;Review
+                            </span>
+                            <br />
+                            <span className="bg-green-400 rounded-e-full rounded-l-full px-3 py-0.5 text-xs uppercase">
+                                Cleared
+                            </span>
+                            <br />
+                            <span className="bg-red-400 rounded-e-full rounded-l-full px-3 py-0.5 text-xs uppercase">
+                                Unfit
+                            </span>
+                        </>
+                    )}
+                </div>
             </div>
         );
     };
@@ -233,6 +264,40 @@ function ProcedureItem({
                         Removed
                     </div>
                 )}
+                <ToolBar className="bg-gray-200 rounded-lg sm:w-xl flex-wrap sm:flex-nowrap m-2">
+                    <ToolBarTitle className="">PAC Status</ToolBarTitle>
+                    <ToolBarPill
+                        items={[
+                            {
+                                value: null,
+                                label: "N/A",
+                                color: "bg-gray-400",
+                            },
+                            {
+                                value: "referred",
+                                label: "Referred",
+                                color: "bg-blue-400",
+                            },
+                            {
+                                value: "in_review",
+                                label: "In Review",
+                                color: "bg-yellow-400",
+                            },
+                            {
+                                value: "cleared",
+                                label: "Cleared",
+                                color: "bg-green-400",
+                            },
+                            {
+                                value: "unfit",
+                                label: "Unfit",
+                                color: "bg-red-400",
+                            },
+                        ]}
+                        value={"unfit"}
+                        className="grid  grid-cols-3 sm:grid-cols-5 grow bg-gray-500"
+                    />
+                </ToolBar>
                 <PatientInfo patient={procedure?.expand?.patient} />
                 <div className=" p-2 grid grid-cols-1 md:grid-cols-4 gap-2">
                     <LabelValue
