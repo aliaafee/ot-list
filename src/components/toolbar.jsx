@@ -112,6 +112,17 @@ const ToolBarButtonLabel = ({ className, children }) => (
     </div>
 );
 
+const ToolBarTitle = ({ className, children }) => (
+    <div
+        className={twMerge(
+            "text-xs font-medium text-gray-500 uppercase px-1.5 mx-1",
+            className
+        )}
+    >
+        {children}
+    </div>
+);
+
 /**
  * ToolBarPill - Segmented control/pill selector for toolbars
  *
@@ -179,4 +190,11 @@ const ToolBar = ({ className, children }) => {
     );
 };
 
-export { ToolBar, ToolBarButton, ToolBarButtonLabel, ToolBarPill, ToolBarLink };
+export {
+    ToolBar,
+    ToolBarButton,
+    ToolBarButtonLabel,
+    ToolBarPill,
+    ToolBarLink,
+    ToolBarTitle,
+};

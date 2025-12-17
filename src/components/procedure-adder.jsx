@@ -9,7 +9,12 @@ import {
 import { twMerge } from "tailwind-merge";
 
 import Button from "@/components/button";
-import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
+import {
+    ToolBar,
+    ToolBarButton,
+    ToolBarButtonLabel,
+    ToolBarTitle,
+} from "./toolbar";
 import {
     ProcedureForm,
     initialProcedureValue,
@@ -282,7 +287,7 @@ function ProcedureAdder({
                     "col-span-4 bg-gray-200 rounded-t-lg transition-colors"
                 )}
             >
-                <ToolBarButton disabled={true}>Add OT Procedure</ToolBarButton>
+                <ToolBarTitle>Add Procedure</ToolBarTitle>
 
                 <div className="flex-grow"></div>
                 <ToolBarButton
@@ -300,7 +305,7 @@ function ProcedureAdder({
             )}
             <div className="p-2 flex flex-col gap-2">
                 <ToolBar className="bg-gray-200 rounded-lg sm:w-fit flex-wrap sm:flex-nowrap">
-                    <ToolBarButton disabled={true}>Patient</ToolBarButton>
+                    <ToolBarTitle>Patient</ToolBarTitle>
 
                     <ToolBarButton
                         title="New Patient"
