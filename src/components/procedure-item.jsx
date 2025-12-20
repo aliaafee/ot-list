@@ -145,14 +145,15 @@ function ProcedureItem({
                     <LabelValue
                         value={!procedure.removed && procedure.order}
                         blank={<>&nbsp;</>}
+                        className="font-medium"
                     />
                     <LabelValue
                         // label="NID"
                         value={procedure?.expand?.patient?.nid}
-                        className="col-span-2 lg:col-span-2"
+                        className="col-span-2 lg:col-span-2 font-medium"
                     />
                     <LabelValue
-                        className="col-span-2 lg:col-span-2"
+                        className="col-span-2 lg:col-span-2 font-medium"
                         // label="Name"
                         value={procedure?.expand?.patient?.name}
                     />
@@ -163,15 +164,15 @@ function ProcedureItem({
                                 ? age(procedure?.expand?.patient?.dateOfBirth)
                                 : "-"
                         } / ${procedure?.expand?.patient?.sex[0].toUpperCase()}`}
-                        className="col-span-1 hidden lg:inline"
+                        className="col-span-1 hidden lg:inline font-medium"
                     />
                     <LabelValue
-                        className="col-span-3 hidden lg:inline"
+                        className="col-span-3 hidden lg:inline font-medium"
                         // label="Diagnosis"
                         value={procedure.diagnosis}
                     />
                     <LabelValue
-                        className="col-span-3"
+                        className="col-span-3 font-medium"
                         // label="Procedure"
                         value={procedure.procedure}
                     />
@@ -329,7 +330,7 @@ function ProcedureItem({
                         Removed
                     </div>
                 )}
-                <PacStatus procedureId={procedure.id} className="p-2" />
+                <PacStatus procedureId={procedure?.id} className="p-2" />
                 <div className=" p-2 grid grid-cols-1 md:grid-cols-4 gap-2">
                     <LabelValue
                         className="md:col-span-2"

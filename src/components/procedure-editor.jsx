@@ -11,6 +11,7 @@ import { useProcedureList } from "@/contexts/procedure-list-context";
 
 import { ProcedureForm, validateProcedure } from "@/forms/procedure-form";
 import PatientInfo from "./patient-info";
+import { PacStatus } from "./pac-status";
 
 /**
  * ProcedureEditor - Form component for editing existing OT procedures
@@ -112,7 +113,7 @@ function ProcedureEditor({
                     Removed
                 </div>
             )}
-            <PatientInfo patient={procedure?.expand?.patient} />
+            <PacStatus procedureId={procedure?.id} className="p-2" />
             <div className="p-2">
                 <ProcedureForm
                     value={updatedProcedure}
