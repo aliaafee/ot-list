@@ -15,3 +15,11 @@ export function age(dateOfBirth) {
 export function formatDateTime(dateTime) {
     return dayjs(dateTime).format("D MMM YYYY HH:mm");
 }
+
+export function formatDate(dateTime) {
+    return dayjs(dateTime).format("D MMM YYYY");
+}
+
+export function formatTime(dateTime) {
+    return dayjs(dateTime).format("HH:mm");
+}

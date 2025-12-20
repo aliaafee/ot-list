@@ -87,11 +87,6 @@ function ProcedureEditor({
                     "col-span-4 bg-gray-200 rounded-tr-lg rounded-tl-lg"
                 )}
             >
-                <ToolBarButton disabled={true}>
-                    <ToolBarButtonLabel className={"min-w-0"}>
-                        {!procedure.removed ? procedure.order : <>&nbsp;</>}
-                    </ToolBarButtonLabel>
-                </ToolBarButton>
                 <ToolBarButton title="Discard" onClick={onDiscard}>
                     <PencilOffIcon width={16} height={16} />
                     <ToolBarButtonLabel>Discard</ToolBarButtonLabel>

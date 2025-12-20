@@ -13,6 +13,7 @@ import {
     CalendarArrowDownIcon,
     UndoDotIcon,
     UserPenIcon,
+    ChevronRight,
 } from "lucide-react";
 
 import { age } from "@/utils/dates";
@@ -31,6 +32,7 @@ import { JSONTree } from "react-json-tree";
 import ProcedureComments from "./procedure-comments";
 import PatientInfo from "./patient-info";
 import EditPatientModal from "@/modals/edit-patient-modal";
+import { PacStatus, PacStatusSmall } from "./pac-status";
 
 /**
  * ProcedureItem - Display and manage a single OT procedure item
@@ -68,6 +70,7 @@ function ProcedureItem({
     const [editing, setEditing] = useState(false);
     const [confirmRemove, setConfirmRemove] = useState(false);
     const [editingPatient, setEditingPatient] = useState(false);
+    const [showPatientDetails, setShowPatientDetails] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
 
     const selectedProcedureId = searchParams.get("procedureId");
@@ -117,53 +120,115 @@ function ProcedureItem({
                     value={procedure.procedure}
                 />
                 <div className="col-span-2">
-                    {!procedure.removed && (
-                        <>
-                            <span className="bg-transparent rounded-e-full rounded-l-full px-3 py-0.5 text-xs uppercase">
-                                N/A
-                            </span>
-                            <br />
-                            <span className="bg-blue-400 rounded-e-full rounded-l-full px-3 py-0.5 text-xs uppercase">
-                                Referred
-                            </span>
-                            <br />
-                            <span className="bg-yellow-400 rounded-e-full rounded-l-full px-3 py-0.5 text-xs uppercase">
-                                In&nbsp;Review
-                            </span>
-                            <br />
-                            <span className="bg-green-400 rounded-e-full rounded-l-full px-3 py-0.5 text-xs uppercase">
-                                Cleared
-                            </span>
-                            <br />
-                            <span className="bg-red-400 rounded-e-full rounded-l-full px-3 py-0.5 text-xs uppercase">
-                                Unfit
-                            </span>
-                        </>
-                    )}
+                    <PacStatusSmall status={"cleared"} />
                 </div>
             </div>
         );
     };
 
-    const ExpandedView = () => {
+    const ExpandedView = ({ children }) => {
         return (
             <div
                 className={twMerge(
-                    "flex-auto selected bg-gray-100 rounded-lg",
+                    "flex-auto selected  rounded-lg",
                     isUpdating(procedure) ? "animate-pulse" : "",
                     className
                 )}
             >
+                <div
+                    className={twMerge(
+                        "flex-auto p-2 grid grid-cols-10 lg:grid-cols-14 cursor-pointer gap-1 rounded-lg md:rounded-l-none",
+                        !!procedure.removed && "line-through"
+                    )}
+                    onClick={() => setSelected(null)}
+                >
+                    <LabelValue
+                        value={!procedure.removed && procedure.order}
+                        blank={<>&nbsp;</>}
+                    />
+                    <LabelValue
+                        // label="NID"
+                        value={procedure?.expand?.patient?.nid}
+                        className="col-span-2 lg:col-span-2"
+                    />
+                    <LabelValue
+                        className="col-span-2 lg:col-span-2"
+                        // label="Name"
+                        value={procedure?.expand?.patient?.name}
+                    />
+                    <LabelValue
+                        // label="Age/Sex"
+                        value={`${
+                            !!procedure?.expand?.patient?.dateOfBirth
+                                ? age(procedure?.expand?.patient?.dateOfBirth)
+                                : "-"
+                        } / ${procedure?.expand?.patient?.sex[0].toUpperCase()}`}
+                        className="col-span-1 hidden lg:inline"
+                    />
+                    <LabelValue
+                        className="col-span-3 hidden lg:inline"
+                        // label="Diagnosis"
+                        value={procedure.diagnosis}
+                    />
+                    <LabelValue
+                        className="col-span-3"
+                        // label="Procedure"
+                        value={procedure.procedure}
+                    />
+                    <div className="col-span-2">
+                        <PacStatusSmall status={"cleared"} />
+                    </div>
+                </div>
+                <div
+                    className="flex items-center cursor-pointer md:hidden p-2"
+                    onClick={() => setShowPatientDetails(!showPatientDetails)}
+                >
+                    <ChevronRight
+                        width={16}
+                        height={16}
+                        className={twMerge(
+                            "transition-transform",
+                            showPatientDetails && "rotate-90"
+                        )}
+                    />{" "}
+                    Patient Details
+                </div>
+                <div
+                    className={twMerge(
+                        "p-2 grid grid-cols-1 md:grid-cols-14 gap-2",
+                        !showPatientDetails && "hidden md:grid"
+                    )}
+                >
+                    <div className="hidden md:inline-block"></div>
+                    <LabelValue
+                        label="Hospital ID"
+                        value={procedure?.expand?.patient?.hospitalId}
+                        className="col-span-1 md:col-span-3"
+                    />
+                    <LabelValue
+                        label="Phone"
+                        value={procedure?.expand?.patient?.phone}
+                        className="col-span-1 md:col-span-2"
+                    />
+                    <LabelValue
+                        label="Address"
+                        value={procedure?.expand?.patient?.address}
+                        className="col-span-1 md:col-span-7"
+                    />
+                </div>
+                {children}
+            </div>
+        );
+    };
+
+    const ProcedureView = () => {
+        return (
+            <div className="bg-gray-100 rounded-lg">
                 <ToolBar
                     className={twMerge(
                         "col-span-4 bg-gray-200 rounded-tr-lg rounded-tl-lg transition-colors"
                     )}
                 >
-                    <ToolBarButton disabled={true}>
-                        <ToolBarButtonLabel className={"min-w-0"}>
-                            {!procedure.removed ? procedure.order : <>&nbsp;</>}
-                        </ToolBarButtonLabel>
-                    </ToolBarButton>
                     {!procedure.removed && (
                         <>
                             <ToolBarButton
@@ -264,41 +329,7 @@ function ProcedureItem({
                         Removed
                     </div>
                 )}
-                <ToolBar className="bg-gray-200 rounded-lg sm:w-xl flex-wrap sm:flex-nowrap m-2">
-                    <ToolBarTitle className="">PAC Status</ToolBarTitle>
-                    <ToolBarPill
-                        items={[
-                            {
-                                value: null,
-                                label: "N/A",
-                                color: "bg-gray-400",
-                            },
-                            {
-                                value: "referred",
-                                label: "Referred",
-                                color: "bg-blue-400",
-                            },
-                            {
-                                value: "in_review",
-                                label: "In Review",
-                                color: "bg-yellow-400",
-                            },
-                            {
-                                value: "cleared",
-                                label: "Cleared",
-                                color: "bg-green-400",
-                            },
-                            {
-                                value: "unfit",
-                                label: "Unfit",
-                                color: "bg-red-400",
-                            },
-                        ]}
-                        value={"unfit"}
-                        className="grid  grid-cols-3 sm:grid-cols-5 grow bg-gray-500"
-                    />
-                </ToolBar>
-                <PatientInfo patient={procedure?.expand?.patient} />
+                <PacStatus procedureId={procedure.id} className="p-2" />
                 <div className=" p-2 grid grid-cols-1 md:grid-cols-4 gap-2">
                     <LabelValue
                         className="md:col-span-2"
@@ -387,48 +418,52 @@ function ProcedureItem({
 
     if (recordError?.type === "update") {
         return (
-            <ProcedureEditor
-                procedure={procedure}
-                className={className}
-                onDiscard={() => {
-                    setEditing(false);
-                    discardProcedureUpdate(procedure.id);
-                }}
-                onClose={null}
-                onAfterSave={() => {
-                    setEditing(false);
-                }}
-                error={recordError}
-            />
+            <ExpandedView>
+                <ProcedureEditor
+                    procedure={procedure}
+                    className={className}
+                    onDiscard={() => {
+                        setEditing(false);
+                        discardProcedureUpdate(procedure.id);
+                    }}
+                    onClose={null}
+                    onAfterSave={() => {
+                        setEditing(false);
+                    }}
+                    error={recordError}
+                />
+            </ExpandedView>
         );
     }
 
     if (editing) {
         return (
-            <ProcedureEditor
-                procedure={procedure}
-                className={className}
-                onDiscard={() => {
-                    setEditing(false);
-                }}
-                onClose={() => {
-                    setEditing(false);
-                    if (selectedProcedureId === procedure.id) {
-                        setSelected(null);
-                    }
-                }}
-                onAfterSave={() => {
-                    setEditing(false);
-                }}
-            />
+            <ExpandedView>
+                <ProcedureEditor
+                    procedure={procedure}
+                    className={className}
+                    onDiscard={() => {
+                        setEditing(false);
+                    }}
+                    onClose={() => {
+                        setEditing(false);
+                        if (selectedProcedureId === procedure.id) {
+                            setSelected(null);
+                        }
+                    }}
+                    onAfterSave={() => {
+                        setEditing(false);
+                    }}
+                />
+            </ExpandedView>
         );
     }
 
     if (procedure.id === selectedProcedureId) {
         return (
-            <>
-                <ExpandedView />
-            </>
+            <ExpandedView>
+                <ProcedureView />
+            </ExpandedView>
         );
     }
 
