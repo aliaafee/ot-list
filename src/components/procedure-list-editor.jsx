@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router";
 import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
 import {
@@ -7,7 +8,6 @@ import {
     ChevronLeftIcon,
     EyeClosedIcon,
     EyeIcon,
-    EyeOffIcon,
     PrinterIcon,
 } from "lucide-react";
 
@@ -44,10 +44,18 @@ function ProcedureListEditor({
     } = useProcedureList();
 
     const [showDisable, setShowDisable] = useState(false);
-    const [showRemoved, setShowRemoved] = useState(false);
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const showRemoved = searchParams.get("showRemoved") === "true";
 
     const handleToggleShowRemoved = () => {
-        setShowRemoved(!showRemoved);
+        const params = new URLSearchParams(searchParams);
+        if (showRemoved) {
+            params.delete("showRemoved");
+        } else {
+            params.set("showRemoved", "true");
+        }
+        setSearchParams(params);
     };
 
     useEffect(() => {
