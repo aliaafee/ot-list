@@ -11,8 +11,8 @@ import {
 import BodyLayout from "@/components/body-layout";
 import { ToolBar, ToolBarButtonLabel, ToolBarLink } from "@/components/toolbar";
 import { pb } from "@/lib/pb";
-import { age } from "@/utils/dates";
 import dayjs from "dayjs";
+import { twMerge } from "tailwind-merge";
 
 function AllProcedures() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -26,22 +26,24 @@ function AllProcedures() {
     const page = parseInt(searchParams.get("page") || "1", 10);
     const searchQuery = searchParams.get("search") || "";
     const showUpcoming = searchParams.get("upcoming") === "true";
+    const showRemoved = searchParams.get("showRemoved") === "true";
 
     useEffect(() => {
-        fetchProcedures(page, searchQuery, showUpcoming);
-    }, [page, searchQuery, showUpcoming]);
+        fetchProcedures(page, searchQuery, showUpcoming, showRemoved);
+    }, [page, searchQuery, showUpcoming, showRemoved]);
 
     const fetchProcedures = async (
         pageNumber,
         query = "",
-        upcoming = false
+        upcoming = false,
+        includeRemoved = false
     ) => {
         setLoading(true);
         setError(null);
 
         try {
             const options = {
-                sort: "-created",
+                sort: "procedureDay.date",
                 expand: "patient,addedBy,procedureDay,procedureDay.otList,operatingRoom",
             };
 
@@ -56,6 +58,10 @@ function AllProcedures() {
             if (upcoming) {
                 const today = dayjs().format("YYYY-MM-DD");
                 filters.push(`procedureDay.date >= "${today}"`);
+            }
+
+            if (!includeRemoved) {
+                filters.push(`removed = false`);
             }
 
             if (filters.length > 0) {
@@ -151,7 +157,7 @@ function AllProcedures() {
             </div>
 
             {/* Toggle for Upcoming Procedures */}
-            <div className="mb-4 flex items-center">
+            <div className="mb-4 flex flex-wrap gap-4">
                 <label className="flex items-center cursor-pointer">
                     <input
                         type="checkbox"
@@ -169,7 +175,27 @@ function AllProcedures() {
                         className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                     <span className="text-sm font-medium text-gray-700">
-                        Show upcoming procedures only
+                        Upcoming only
+                    </span>
+                </label>
+                <label className="flex items-center cursor-pointer">
+                    <input
+                        type="checkbox"
+                        checked={showRemoved}
+                        onChange={(e) => {
+                            const params = new URLSearchParams(searchParams);
+                            if (e.target.checked) {
+                                params.set("showRemoved", "true");
+                            } else {
+                                params.delete("showRemoved");
+                            }
+                            params.set("page", "1");
+                            setSearchParams(params);
+                        }}
+                        className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700">
+                        Show removed
                     </span>
                 </label>
             </div>
@@ -199,10 +225,10 @@ function AllProcedures() {
                                         Date
                                     </th>
                                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Patient NID
+                                        NID
                                     </th>
                                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Patient Name
+                                        Name
                                     </th>
                                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                         Diagnosis
@@ -211,7 +237,7 @@ function AllProcedures() {
                                         Procedure
                                     </th>
                                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                                        OT List
+                                        List
                                     </th>
                                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                         Room
@@ -222,11 +248,18 @@ function AllProcedures() {
                                 {procedures.map((proc) => (
                                     <tr
                                         key={proc.id}
-                                        className="hover:bg-blue-200 group"
+                                        className={twMerge(
+                                            "hover:bg-blue-200 group",
+                                            proc?.removed && "line-through"
+                                        )}
                                     >
                                         <td className="px-1.5 py-0.5 text-sm  ">
                                             <Link
-                                                to={`/lists/${proc.procedureDay}?procedureId=${proc.id}`}
+                                                to={
+                                                    proc?.removed
+                                                        ? `/lists/${proc.procedureDay}?procedureId=${proc.id}&showRemoved=true`
+                                                        : `/lists/${proc.procedureDay}?procedureId=${proc.id}`
+                                                }
                                                 className="inline-block rounded-full p-1.5 hover:bg-gray-400"
                                                 title="View in List"
                                             >
