@@ -157,7 +157,7 @@
     "authRule": "",
     "manageRule": null,
     "authAlert": {
-      "enabled": true,
+      "enabled": false,
       "emailTemplate": {
         "subject": "Login from a new location",
         "body": "<p>Hello,</p>\n<p>We noticed a login to your {APP_NAME} account from a new location.</p>\n<p>If this was you, you may disregard this email.</p>\n<p><strong>If this wasn't you, you should immediately change your {APP_NAME} account password to revoke access from all other locations.</strong></p>\n<p>\n  Thanks,<br/>\n  {APP_NAME} team\n</p>"
@@ -854,11 +854,101 @@
     "system": false
   },
   {
+    "id": "pbc_2341800723",
+    "listRule": "@request.auth.id != \"\"",
+    "viewRule": "@request.auth.id != \"\"",
+    "createRule": "@request.auth.id != \"\"",
+    "updateRule": null,
+    "deleteRule": null,
+    "name": "procedurePacStatuses",
+    "type": "base",
+    "fields": [
+      {
+        "autogeneratePattern": "[a-z0-9]{15}",
+        "hidden": false,
+        "id": "text3208210256",
+        "max": 15,
+        "min": 15,
+        "name": "id",
+        "pattern": "^[a-z0-9]+$",
+        "presentable": false,
+        "primaryKey": true,
+        "required": true,
+        "system": true,
+        "type": "text"
+      },
+      {
+        "cascadeDelete": false,
+        "collectionId": "pbc_1747635922",
+        "hidden": false,
+        "id": "relation2621226015",
+        "maxSelect": 1,
+        "minSelect": 0,
+        "name": "procedure",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "hidden": false,
+        "id": "select2111561903",
+        "maxSelect": 1,
+        "name": "pacStatus",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "select",
+        "values": [
+          "referred",
+          "inReview",
+          "cleared",
+          "unfit"
+        ]
+      },
+      {
+        "cascadeDelete": false,
+        "collectionId": "_pb_users_auth_",
+        "hidden": false,
+        "id": "relation3154569827",
+        "maxSelect": 1,
+        "minSelect": 0,
+        "name": "creator",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "relation"
+      },
+      {
+        "hidden": false,
+        "id": "autodate2990389176",
+        "name": "created",
+        "onCreate": true,
+        "onUpdate": false,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      },
+      {
+        "hidden": false,
+        "id": "autodate3332085495",
+        "name": "updated",
+        "onCreate": true,
+        "onUpdate": true,
+        "presentable": false,
+        "system": false,
+        "type": "autodate"
+      }
+    ],
+    "indexes": [],
+    "system": false
+  },
+  {
     "id": "pbc_1747635922",
     "listRule": "@request.auth.id != \"\"",
     "viewRule": "@request.auth.id != \"\"",
     "createRule": "@request.auth.id != \"\" && (\n  @request.auth.role = \"doctor\" ||\n  @request.auth.role = \"admin\"\n)",
-    "updateRule": "@request.auth.id != \"\" && (\n  @request.auth.role = \"doctor\" ||\n  @request.auth.role = \"admin\"\n)",
+    "updateRule": "@request.auth.id != \"\" && ((\n  @request.auth.role = \"doctor\" ||\n  @request.auth.role = \"admin\"\n) ||  (@request.body.pacStatus:isset = true))",
     "deleteRule": "@request.auth.id != \"\" && @request.auth.role = \"admin\"",
     "name": "procedures",
     "type": "base",
@@ -1074,6 +1164,22 @@
       },
       {
         "hidden": false,
+        "id": "select2111561903",
+        "maxSelect": 1,
+        "name": "pacStatus",
+        "presentable": false,
+        "required": false,
+        "system": false,
+        "type": "select",
+        "values": [
+          "referred",
+          "inReview",
+          "cleared",
+          "unfit"
+        ]
+      },
+      {
+        "hidden": false,
         "id": "autodate2990389176",
         "name": "created",
         "onCreate": true,
@@ -1207,7 +1313,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "_clone_shlx",
+        "id": "_clone_ksIr",
         "max": 0,
         "min": 0,
         "name": "name",
@@ -1222,7 +1328,7 @@
         "cascadeDelete": false,
         "collectionId": "pbc_3865025440",
         "hidden": false,
-        "id": "_clone_uw7e",
+        "id": "_clone_bCvk",
         "maxSelect": 1,
         "minSelect": 0,
         "name": "department",
@@ -1233,7 +1339,7 @@
       },
       {
         "hidden": false,
-        "id": "_clone_ZgDe",
+        "id": "_clone_c7bf",
         "name": "created",
         "onCreate": true,
         "onUpdate": false,
@@ -1243,7 +1349,7 @@
       },
       {
         "hidden": false,
-        "id": "_clone_RQpD",
+        "id": "_clone_tYnH",
         "name": "updated",
         "onCreate": true,
         "onUpdate": true,
@@ -1282,7 +1388,7 @@
       },
       {
         "hidden": false,
-        "id": "_clone_2B2U",
+        "id": "_clone_4lBQ",
         "max": "",
         "min": "",
         "name": "date",
@@ -1295,7 +1401,7 @@
         "cascadeDelete": false,
         "collectionId": "pbc_4005008627",
         "hidden": false,
-        "id": "_clone_DK02",
+        "id": "_clone_3MDd",
         "maxSelect": 1,
         "minSelect": 0,
         "name": "otList",
@@ -1306,7 +1412,7 @@
       },
       {
         "hidden": false,
-        "id": "_clone_xjM0",
+        "id": "_clone_DKfA",
         "name": "disabled",
         "presentable": false,
         "required": false,
@@ -1316,7 +1422,7 @@
       {
         "autogeneratePattern": "",
         "hidden": false,
-        "id": "_clone_SaJk",
+        "id": "_clone_ocm6",
         "max": 0,
         "min": 0,
         "name": "remarks",
@@ -1329,7 +1435,7 @@
       },
       {
         "hidden": false,
-        "id": "_clone_qpyq",
+        "id": "_clone_SRNF",
         "name": "created",
         "onCreate": true,
         "onUpdate": false,
@@ -1339,7 +1445,7 @@
       },
       {
         "hidden": false,
-        "id": "_clone_iwH3",
+        "id": "_clone_jjuH",
         "name": "updated",
         "onCreate": true,
         "onUpdate": true,

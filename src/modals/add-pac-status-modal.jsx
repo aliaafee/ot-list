@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import { PlusIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
 import ModalWindow from "./modal-window";
-// import { pb } from "@/lib/pb";
+import { pb } from "@/lib/pb";
+import { useAuth } from "@/contexts/auth-context";
+import { getStatusColor } from "@/utils/colours";
 
 /**
  * AddPacStatusModal - Modal for adding a PAC status to a procedure
@@ -19,27 +21,28 @@ function AddPacStatusModal({
     const [selectedStatus, setSelectedStatus] = useState("");
     const [adding, setAdding] = useState(false);
     const [error, setError] = useState("");
+    const { user } = useAuth();
 
     const statusOptions = [
         {
             value: "referred",
             label: "Referred",
-            color: "bg-yellow-100 text-yellow-800 border-yellow-300",
+            description: "Patient referred to Preanesthetic Clinic",
         },
         {
-            value: "in-review",
+            value: "inReview",
             label: "In Review",
-            color: "bg-blue-100 text-blue-800 border-blue-300",
+            description: "Patient is currently under review at PAC",
         },
         {
             value: "cleared",
             label: "Cleared",
-            color: "bg-green-100 text-green-800 border-green-300",
+            description: "Patient has been cleared for surgery",
         },
         {
             value: "unfit",
             label: "Unfit",
-            color: "bg-red-100 text-red-800 border-red-300",
+            description: "Patient deemed unfit for surgery at this time",
         },
     ];
 
@@ -53,13 +56,6 @@ function AddPacStatusModal({
         setError("");
 
         try {
-            // TODO: Replace with actual PocketBase create
-            // const newStatus = await pb.collection("pacStatuses").create({
-            //   procedure: procedureId,
-            //   status: selectedStatus,
-            //   time: new Date().toISOString(),
-            // });
-
             console.log(
                 "Adding PAC status:",
                 selectedStatus,
@@ -67,15 +63,22 @@ function AddPacStatusModal({
                 procedureId
             );
 
-            // Simulate async operation
-            await new Promise((resolve) => setTimeout(resolve, 500));
+            const newStatus = await pb
+                .collection("procedurePacStatuses")
+                .create({
+                    procedure: procedureId,
+                    creator: user.id,
+                    pacStatus: selectedStatus,
+                });
+
+            const updatedProcedure = await pb
+                .collection("procedures")
+                .update(procedureId, {
+                    pacStatus: selectedStatus,
+                });
 
             setAdding(false);
-            onSuccess({
-                id: Date.now().toString(),
-                status: selectedStatus,
-                time: new Date().toISOString(),
-            });
+            onSuccess(newStatus, updatedProcedure);
         } catch (e) {
             console.error("Failed to add PAC status:", e);
             setError(e.message || "Failed to add PAC status");
@@ -122,11 +125,14 @@ function AddPacStatusModal({
                             />
                             <span
                                 className={twMerge(
-                                    "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border",
-                                    option.color
+                                    "inline-flex items-center px-3 py-1 rounded-lg text-sm border whitespace-nowrap",
+                                    getStatusColor(option.value)
                                 )}
                             >
                                 {option.label}
+                            </span>
+                            <span className="ml-4 text-sm ">
+                                {option.description}
                             </span>
                         </label>
                     ))}

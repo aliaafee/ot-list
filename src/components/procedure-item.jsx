@@ -120,7 +120,7 @@ function ProcedureItem({
                     value={procedure.procedure}
                 />
                 <div className="col-span-2">
-                    <PacStatusSmall status={"cleared"} />
+                    <PacStatusSmall status={procedure?.pacStatus} />
                 </div>
             </div>
         );
@@ -145,15 +145,14 @@ function ProcedureItem({
                     <LabelValue
                         value={!procedure.removed && procedure.order}
                         blank={<>&nbsp;</>}
-                        className="font-medium"
                     />
                     <LabelValue
                         // label="NID"
                         value={procedure?.expand?.patient?.nid}
-                        className="col-span-2 lg:col-span-2 font-medium"
+                        className="col-span-2 lg:col-span-2"
                     />
                     <LabelValue
-                        className="col-span-2 lg:col-span-2 font-medium"
+                        className="col-span-2 lg:col-span-2"
                         // label="Name"
                         value={procedure?.expand?.patient?.name}
                     />
@@ -164,20 +163,20 @@ function ProcedureItem({
                                 ? age(procedure?.expand?.patient?.dateOfBirth)
                                 : "-"
                         } / ${procedure?.expand?.patient?.sex[0].toUpperCase()}`}
-                        className="col-span-1 hidden lg:inline font-medium"
+                        className="col-span-1 hidden lg:inline"
                     />
                     <LabelValue
-                        className="col-span-3 hidden lg:inline font-medium"
+                        className="col-span-3 hidden lg:inline"
                         // label="Diagnosis"
                         value={procedure.diagnosis}
                     />
                     <LabelValue
-                        className="col-span-3 font-medium"
+                        className="col-span-3"
                         // label="Procedure"
                         value={procedure.procedure}
                     />
                     <div className="col-span-2">
-                        <PacStatusSmall status={"cleared"} />
+                        <PacStatusSmall status={procedure?.pacStatus} />
                     </div>
                 </div>
                 <div
