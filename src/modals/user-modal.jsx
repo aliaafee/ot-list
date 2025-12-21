@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 import Button from "@/components/button";
 import ButtonLink from "@/components/button-link";
 import ModalContainer from "./modal-container";
+import { RoleLabels } from "@/utils/labels";
 
 /**
  * UserModal - Modal displaying current user information and actions
@@ -19,7 +20,7 @@ function UserModal({ userIcon, onClose }) {
 
                 <div className="text-center text-xl">{user?.name}</div>
                 <div className="text-center text-xs text-gray-600">
-                    {user?.role}
+                    {RoleLabels?.[user?.role] || user?.role}
                 </div>
                 <div className="text-center">{user?.email}</div>
             </div>

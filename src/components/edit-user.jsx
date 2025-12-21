@@ -7,6 +7,7 @@ import UserFormModal from "@/modals/user-form-modal";
 import UserEditModal from "@/modals/user-edit-modal";
 import UserEmailChangeModal from "@/modals/user-email-change-modal";
 import { twMerge } from "tailwind-merge";
+import { RoleLabels } from "@/utils/labels";
 
 function EditUser() {
     const [users, setUsers] = useState([]);
@@ -145,7 +146,9 @@ function EditUser() {
                             <tr key={u.id}>
                                 <td className="px-3 py-2">{u.name}</td>
                                 <td className="px-3 py-2">{u.email}</td>
-                                <td className="px-3 py-2">{u.role}</td>
+                                <td className="px-3 py-2">
+                                    {RoleLabels?.[u.role] || u.role}
+                                </td>
                                 {user?.role === "admin" && (
                                     <td className="px-3 py-2">
                                         <div className="flex gap-1 justify-end">

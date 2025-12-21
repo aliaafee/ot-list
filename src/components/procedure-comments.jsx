@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Button from "@/components/button";
 import { pb } from "@/lib/pb";
 import { twMerge } from "tailwind-merge";
+import { RoleLabels } from "@/utils/labels";
 
 /**
  * ProcedureComments - Display and manage comments for a procedure
@@ -185,7 +186,10 @@ function ProcedureComments({ procedureId }) {
                                                 "Unknown"}
                                         </span>
                                         <span>
-                                            {comment.expand?.creator?.role ||
+                                            {RoleLabels?.[
+                                                comment.expand?.creator?.role
+                                            ] ||
+                                                comment.expand?.creator?.role ||
                                                 "user"}
                                         </span>
                                         <span>

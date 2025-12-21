@@ -2,6 +2,7 @@ import { useState } from "react";
 import { UserPlusIcon } from "lucide-react";
 import ModalWindow from "./modal-window";
 import FormField from "@/components/form-field";
+import { RoleLabels } from "@/utils/labels";
 
 /**
  * UserFormModal - Modal for creating a new user with credentials
@@ -84,9 +85,11 @@ function UserFormModal({ onSave, onCancel, loading = false, errors = {} }) {
                         required
                     >
                         <option value="">Select role...</option>
-                        <option value="admin">Admin</option>
-                        <option value="doctor">Doctor</option>
-                        <option value="receptionist">Receptionist</option>
+                        {Object.entries(RoleLabels).map(([key, label]) => (
+                            <option key={key} value={key}>
+                                {label}
+                            </option>
+                        ))}
                     </FormField>
                     {errors.role && (
                         <p className="text-sm text-red-600 mt-1">
