@@ -205,10 +205,21 @@ function ProcedureAdder({
                 setChecking(true);
 
                 try {
+                    let filter = "";
+                    if (newPatient.nid) {
+                        filter += `nid ~ "${newPatient.nid}"`;
+                    }
+                    if (newPatient.hospitalId) {
+                        if (filter.length > 0) {
+                            filter += " || ";
+                        }
+                        filter += `hospitalId ~ "${newPatient.hospitalId}"`;
+                    }
+
                     const records = await pb
                         .collection("patients")
                         .getList(1, 50, {
-                            filter: `nid ~ "${newPatient.nid}" || hospitalId ~ "${newPatient.hospitalId}"`,
+                            filter: filter,
                             sort: "-created",
                         });
 

@@ -12,8 +12,26 @@ export const initialPatientValue = {
 
 export const validatePatient = (patient) => {
     const errorFields = {};
-    const requiredFields = ["nid", "hospitalId", "phone", "name"];
-    requiredFields.forEach((field) => {
+
+    // Check if at least one of nid or hospitalId is provided
+    const hasNid = patient.nid && patient.nid.toString().trim() !== "";
+    const hasHospitalId =
+        patient.hospitalId && patient.hospitalId.toString().trim() !== "";
+
+    if (!hasNid && !hasHospitalId) {
+        errorFields["nid"] = {
+            name: "nid",
+            message: "Either NID or Hospital ID is required.",
+        };
+        errorFields["hospitalId"] = {
+            name: "hospitalId",
+            message: "Either NID or Hospital ID is required.",
+        };
+    }
+
+    // Check other required fields
+    const otherRequiredFields = ["phone", "name"];
+    otherRequiredFields.forEach((field) => {
         if (!patient[field] || patient[field].toString().trim() === "") {
             errorFields[field] = {
                 name: field,
@@ -21,6 +39,7 @@ export const validatePatient = (patient) => {
             };
         }
     });
+
     return errorFields;
 };
 
