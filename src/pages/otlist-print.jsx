@@ -1,4 +1,5 @@
 import CenterBox from "@/components/center-box";
+import { LoadingSpinnerFull } from "@/components/loading-spinner";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import { age } from "@/utils/dates";
 import dayjs from "dayjs";
@@ -108,7 +109,7 @@ function OtListPrint({}) {
     console.log("yo");
 
     if (loading) {
-        return <CenterBox>Loading...</CenterBox>;
+        return <LoadingSpinnerFull />;
     }
 
     if (error) {

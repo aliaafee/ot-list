@@ -34,7 +34,6 @@ import {
 } from "@/utils/text-parsers";
 import PatientSearchModal from "@/modals/patient-search-modal";
 import PatientInfo from "./patient-info";
-import { LoadingSpinner } from "./loading-spinner";
 import { pb } from "@/lib/pb";
 import dayjs from "dayjs";
 import IdCardScanModal from "@/modals/id-card-scan-modal";

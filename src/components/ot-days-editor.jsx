@@ -16,6 +16,7 @@ import AddDatesModal from "@/modals/add-dates-modal";
 import { twMerge } from "tailwind-merge";
 import OtDaysReducer from "@/reducers/ot-days-reducer";
 import { OtListColours } from "@/utils/colours";
+import { LoadingSpinner } from "./loading-spinner";
 
 const otDaysCollectionOptions = {
     sort: "+date",
@@ -41,19 +42,24 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
     const [showAddDates, setShowAddDates] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [loadingList, setLoadingList] = useState(false);
     const [loadingMore, setLoadingMore] = useState(false);
     const pageSize = 50;
 
     useEffect(() => {
         (async () => {
             try {
+                setLoading(true);
                 const depts = await pb.collection("departments").getFullList();
                 setDepartments(depts);
+                setLoading(false);
                 if (depts.length > 0) {
                     setSelectedDepartmentId(depts[0].id);
                 }
             } catch (e) {
                 console.log(e);
+                setLoading(false);
+                setError(e.message);
             }
         })();
     }, []);
@@ -98,7 +104,7 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
 
         (async () => {
             console.log("fetch otDays for department", selectedDepartmentId);
-            setLoading(true);
+            setLoadingList(true);
             setCurrentPage(1);
             dispatchOtDaysList({ type: "SET_LIST", payload: [] });
             try {
@@ -131,7 +137,7 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                 console.log(e);
                 setError(e.message);
             } finally {
-                setLoading(false);
+                setLoadingList(false);
             }
         })();
 
@@ -179,6 +185,10 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
             pb.collection("otDays").unsubscribe("*");
         };
     }, [showAll, selectedDepartmentId]);
+
+    if (loading) {
+        return <LoadingSpinner className={twMerge("bg-gray-200", className)} />;
+    }
 
     if (error) {
         return <div className={twMerge("bg-gray-200", className)}>{error}</div>;
@@ -258,8 +268,8 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                 </ToolBarButton>
             </ToolBar>
 
-            {loading ? (
-                <div className="p-2">Loading...</div>
+            {loadingList ? (
+                <LoadingSpinner className={twMerge("bg-gray-200", className)} />
             ) : (
                 <>
                     <OtDaysList

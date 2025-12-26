@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from "react-router";
 import { useAuth } from "@/contexts/auth-context";
 import CenterBox from "./center-box";
+import { LoadingSpinnerFull } from "./loading-spinner";
 
 /**
  * ProtectedRoute - Route wrapper that requires authentication
@@ -10,7 +11,7 @@ export default function ProtectedRoute() {
     const { isAuthed, loading } = useAuth();
     const location = useLocation();
 
-    if (loading) return <CenterBox>Loading...</CenterBox>;
+    if (loading) return <LoadingSpinnerFull />;
 
     return isAuthed ? (
         <Outlet />

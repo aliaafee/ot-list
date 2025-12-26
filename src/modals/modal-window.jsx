@@ -2,7 +2,6 @@ import React from "react";
 import { AlertTriangleIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 import Button from "@/components/button";
-import { LoadingSpinner } from "@/components/loading-spinner";
 import ModalContainer from "./modal-container";
 
 /**

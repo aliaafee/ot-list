@@ -4,7 +4,7 @@ import { ChevronLeft } from "lucide-react";
 import BodyLayout from "@/components/body-layout";
 import { pb } from "@/lib/pb";
 import { ToolBar, ToolBarButtonLabel, ToolBarLink } from "@/components/toolbar";
-import { LoadingSpinner } from "@/components/loading-spinner";
+import Button from "@/components/button";
 import ChangePasswordForm from "@/forms/change-password-form";
 
 export default function Dashboard() {
@@ -63,16 +63,14 @@ export default function Dashboard() {
                     errors={passwordErrors}
                 />
                 <div className="sm:flex sm:flex-row-reverse col-span-full mt-3">
-                    <button
+                    <Button
                         type="button"
                         onClick={handleUpdatePassword}
-                        className="inline-flex w-full justify-center rounded-md  px-3 py-2 text-sm font-semibold text-white shadow-xs  sm:ml-3 sm:w-auto bg-blue-600 hover:bg-blue-500"
+                        loading={updatingPassword}
+                        className="w-full sm:ml-3 sm:w-auto"
                     >
-                        {updatingPassword && (
-                            <LoadingSpinner size="small" className={"mr-2"} />
-                        )}
                         Save
-                    </button>
+                    </Button>
                 </div>
             </div>
         </BodyLayout>

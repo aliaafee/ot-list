@@ -4,7 +4,6 @@ import FormField from "@/components/form-field";
 import Button from "@/components/button";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { LoadingSpinner } from "@/components/loading-spinner";
 import { backendUrl } from "@/lib/pb";
 import Logo from "@/components/logo";
 

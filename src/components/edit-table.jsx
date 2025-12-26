@@ -3,6 +3,7 @@ import { pb } from "@/lib/pb";
 import TableCell from "./edit-table-cell";
 import { EditIcon, PlusIcon, Save, SaveIcon, XIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
+import { LoadingSpinnerFull } from "./loading-spinner";
 
 /**
  * EditTable - Editable table component with add/edit/save functionality
@@ -112,13 +113,11 @@ export default function EditTable({
         <div
             className={twMerge(
                 "border border-gray-300 rounded-md overflow-x-auto relative",
-                loading ? "pointer-events-none animate-pulse" : ""
+                loading ? "pointer-events-none" : ""
             )}
         >
             {loading && (
-                <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10">
-                    <span className="border-[3px] border-black/80 border-t-black/30 animate-spin rounded-full w-6 h-6"></span>
-                </div>
+                <LoadingSpinnerFull className="absolute inset-0 w-full h-full" />
             )}
             <table className="text-left table-auto w-full divide-y divide-gray-300 mb-0.5">
                 <thead className="bg-gray-50 ">

@@ -8,6 +8,7 @@ import UserEditModal from "@/modals/user-edit-modal";
 import UserEmailChangeModal from "@/modals/user-email-change-modal";
 import { twMerge } from "tailwind-merge";
 import { RoleLabels } from "@/utils/labels";
+import { LoadingSpinnerFull } from "./loading-spinner";
 
 function EditUser() {
     const [users, setUsers] = useState([]);
@@ -109,13 +110,11 @@ function EditUser() {
             <div
                 className={twMerge(
                     "border border-gray-300 rounded-md overflow-x-auto relative",
-                    listLoading ? "pointer-events-none animate-pulse" : ""
+                    listLoading ? "pointer-events-none" : ""
                 )}
             >
                 {listLoading && (
-                    <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10">
-                        <span className="border-[3px] border-black/80 border-t-black/30 animate-spin rounded-full w-6 h-6"></span>
-                    </div>
+                    <LoadingSpinnerFull className="absolute inset-0 w-full h-full" />
                 )}
                 <table className="text-left table-auto w-full divide-y divide-gray-300">
                     <thead className="bg-gray-50">
