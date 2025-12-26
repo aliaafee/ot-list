@@ -1,4 +1,3 @@
-import CenterBox from "@/components/center-box";
 import { LoadingSpinnerFull } from "@/components/loading-spinner";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import { age } from "@/utils/dates";
