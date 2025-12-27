@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { PlusIcon } from "lucide-react";
 
 import ReorderList from "./reorder-list";
@@ -22,8 +22,10 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
     const [showAddForm, setShowAddForm] = useState(false);
     const [procedureToMove, setProcedureToMove] = useState(null);
     const [searchParams, setSearchParams] = useSearchParams();
+    const procedureRefs = useRef({});
 
     const selectedProcedureId = searchParams.get("procedureId");
+    const scrollToProcedureId = searchParams.get("scrollTo");
 
     const proceduresByRoom = useMemo(
         () =>
@@ -45,6 +47,17 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                 .filter((procedure) => procedure.removed),
         [procedures, operatingRoom]
     );
+
+    // Scroll to procedure when scrollTo param is set
+    useEffect(() => {
+        if (scrollToProcedureId && procedureRefs.current[scrollToProcedureId]) {
+            procedureRefs.current[scrollToProcedureId].scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+                inline: "nearest",
+            });
+        }
+    }, [scrollToProcedureId, proceduresByRoom, removedProcedures]);
 
     const handleChangeOrder = (newList) => {
         updateProcedures(newList);
@@ -173,13 +186,20 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                 <ReorderList
                     items={proceduresByRoom}
                     itemRender={(procedure) => (
-                        <ProcedureItem
-                            procedure={procedure}
-                            onMoveUp={handleMoveUp}
-                            onMoveDown={handleMoveDown}
-                            onRemove={handleRemove}
-                            onMoveDate={handleMoveDate}
-                        />
+                        <div
+                            ref={(el) =>
+                                (procedureRefs.current[procedure.id] = el)
+                            }
+                            className="scroll-mt-28 lg:scroll-mt-12"
+                        >
+                            <ProcedureItem
+                                procedure={procedure}
+                                onMoveUp={handleMoveUp}
+                                onMoveDown={handleMoveDown}
+                                onRemove={handleRemove}
+                                onMoveDate={handleMoveDate}
+                            />
+                        </div>
                     )}
                     itemClassName="group select-none flex bg-gray-100 rounded-lg hover:bg-blue-200 mt-2 has-[.selected]:ring-2 ring-blue-300 has-[.selected]:bg-blue-300"
                     onChange={handleChangeOrder}
@@ -190,6 +210,9 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                         removedProcedures.map((procedure, index) => (
                             <li
                                 key={index}
+                                ref={(el) =>
+                                    (procedureRefs.current[procedure.id] = el)
+                                }
                                 className="select-none flex bg-gray-100 rounded-lg hover:bg-blue-200 mt-2 has-[.selected]:ring-2 ring-blue-300 has-[.selected]:bg-blue-300"
                             >
                                 <div className="p-2 hidden md:block">

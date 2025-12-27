@@ -257,8 +257,8 @@ function AllProcedures() {
                                             <Link
                                                 to={
                                                     proc?.removed
-                                                        ? `/lists/${proc.procedureDay}?procedureId=${proc.id}&showRemoved=true`
-                                                        : `/lists/${proc.procedureDay}?procedureId=${proc.id}`
+                                                        ? `/lists/${proc.procedureDay}?procedureId=${proc.id}&scrollTo=${proc.id}&showRemoved=true`
+                                                        : `/lists/${proc.procedureDay}?procedureId=${proc.id}&scrollTo=${proc.id}`
                                                 }
                                                 className="inline-block rounded-full p-1.5 hover:bg-gray-400"
                                                 title="View in List"
