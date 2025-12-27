@@ -29,7 +29,7 @@ const Sections = [
  * TitleBar - Main application navigation bar with user menu
  */
 function TitleBar() {
-    const { user, logout } = useAuth();
+    const { user } = useAuth();
     const [showDetails, setShowDetails] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
     const [section, setSection] = useState("otlists");
@@ -97,12 +97,6 @@ function TitleBar() {
                         </div>
                     </div>
                 </div>
-                {/* <div className="grow"></div> */}
-                {/* <div className="flex w-full">
-                    <div className="grow h-full"></div>
-                    <div className="bg-gray-400">Patients</div>
-                    
-                </div> */}
             </div>
             {showDetails && (
                 <UserModal
@@ -130,33 +124,6 @@ function TitleBar() {
                     onClose={() => setShowMenu(false)}
                 />
             )}
-            {/* {showDetails && (
-                <ModalWindow
-                    title={`${user?.name || user?.email}`}
-                    showButtons={true}
-                    icon={
-                        <div
-                            className={twMerge(
-                                "w-10 h-10 rounded-full bg-amber-400 flex justify-center items-center cursor-pointer",
-                                UserColours[
-                                    user?.name.length % UserColours.length
-                                ]
-                            )}
-                        >
-                            <div className="text-2xl text-black/60">
-                                {user?.name[0]}
-                            </div>
-                        </div>
-                    }
-                    iconColor=""
-                    okLabel="Logout"
-                    cancelLabel="Cancel"
-                    onOk={logout}
-                    onCancel={() => setShowDetails(false)}
-                >
-                    <p>Would you like to logout?</p>
-                </ModalWindow>
-            )} */}
         </>
     );
 }

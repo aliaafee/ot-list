@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { PlusIcon, EditIcon, MailIcon } from "lucide-react";
+import { PlusIcon, EditIcon } from "lucide-react";
 import Button from "@/components/button";
 import { pb } from "@/lib/pb";
 import { useAuth } from "@/contexts/auth-context";

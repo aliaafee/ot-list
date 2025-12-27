@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/auth-context";
 import { formatDateTime } from "@/utils/dates";
-import { SendHorizonalIcon, Trash2Icon } from "lucide-react";
+import { SendHorizonalIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import Button from "@/components/button";
 import { pb } from "@/lib/pb";

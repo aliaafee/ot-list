@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { pb } from "@/lib/pb";
 import TableCell from "./edit-table-cell";
-import { EditIcon, PlusIcon, Save, SaveIcon, XIcon } from "lucide-react";
+import { EditIcon, PlusIcon, SaveIcon, XIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 import { LoadingSpinnerFull } from "./loading-spinner";
 

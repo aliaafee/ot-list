@@ -5,7 +5,6 @@ function MainLayout() {
     return (
         <div className="flex flex-col lg:h-screen">
             <TitleBar />
-            {/* will either be <Home/> or <Settings/> */}
             <Outlet />
         </div>
     );

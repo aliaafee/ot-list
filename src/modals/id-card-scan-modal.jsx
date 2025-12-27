@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CameraIcon, XIcon, UploadIcon, CheckCircleIcon } from "lucide-react";
+import { CameraIcon, UploadIcon, CheckCircleIcon } from "lucide-react";
 import ModalWindow from "./modal-window";
 import Button from "@/components/button";
 import LabelValue from "@/components/label-value";

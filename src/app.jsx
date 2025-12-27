@@ -3,7 +3,6 @@ import ProtectedRoute from "@/components/protected-route";
 import Login from "@/pages/login";
 import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
-import Test from "./pages/test";
 import OperatingLists from "./pages/operating-lists";
 import MainLayout from "./pages/main-layout";
 import OtListPrint from "./pages/otlist-print";
@@ -17,12 +16,10 @@ export default function App() {
             {/* Public */}
             <Route path="/login" element={<Login />} />
 
-            <Route path="/test" element={<Test />} />
-
             {/* Protected */}
             <Route element={<ProtectedRoute />}>
-                {/* <Route path="/" element={<Home />} /> */}
                 <Route element={<MainLayout />}>
+                    <Route path="/home" element={<Home />} />
                     <Route
                         path="/"
                         element={<Navigate to="/lists" replace />}

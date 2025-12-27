@@ -1,4 +1,4 @@
-import { formatDate, formatTime } from "@/utils/dates";
+import { formatDate } from "@/utils/dates";
 import { ArrowRight, PlusIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { twMerge } from "tailwind-merge";
@@ -8,8 +8,19 @@ import { getStatusColor } from "@/utils/colours";
 
 /**
  * Small compact PAC status indicator
+ * Displays a condensed badge showing the current PAC (Pre-Anesthetic Clearance) status
+ *
+ * @param {Object} props - Component props
+ * @param {string} props.status - The PAC status value (e.g., "cleared", "inreview", "referred", "unfit")
+ * @param {string} [props.className] - Optional additional CSS classes to apply
+ * @returns {JSX.Element} A compact status badge
  */
 export function PacStatusSmall({ status, className }) {
+    /**
+     * Convert status value to display label
+     * @param {string} status - The PAC status value
+     * @returns {string} Human-readable label for the status
+     */
     const getStatusLabel = (status) => {
         if (!status) return "N/A";
         switch (status.toLowerCase()) {
@@ -42,6 +53,14 @@ export function PacStatusSmall({ status, className }) {
 
 /**
  * Full PAC status display with timeline
+ * Shows the complete history of PAC statuses for a procedure with dates and transitions.
+ * Includes real-time updates via PocketBase subscriptions and allows adding new statuses.
+ *
+ * @param {Object} props - Component props
+ * @param {string} props.procedureId - The ID of the procedure to display PAC statuses for
+ * @param {string} [props.className] - Optional additional CSS classes to apply
+ * @param {boolean} [props.showLabel=true] - Whether to show the "PAC Status" label above the timeline
+ * @returns {JSX.Element} A timeline view of PAC status history with add functionality
  */
 export function PacStatus({ procedureId, className, showLabel = true }) {
     const [statuses, setStatuses] = useState([]);
@@ -74,6 +93,11 @@ export function PacStatus({ procedureId, className, showLabel = true }) {
         fetchPacStatuses();
     }, [procedureId]);
 
+    /**
+     * Convert status value to full display text
+     * @param {string} status - The PAC status value
+     * @returns {string} Full text description of the status
+     */
     const getStatusText = (status) => {
         if (!status) return "N/A";
         switch (status.toLowerCase()) {

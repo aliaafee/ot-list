@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import dayjs from "dayjs";
-import { CalendarArrowDownIcon, FastForward } from "lucide-react";
+import { CalendarArrowDownIcon } from "lucide-react";
 
 import ModalWindow from "./modal-window";
 import FormField from "@/components/form-field";

@@ -18,19 +18,11 @@ import {
 
 import { age } from "@/utils/dates";
 import LabelValue from "./label-value";
-import {
-    ToolBar,
-    ToolBarButton,
-    ToolBarButtonLabel,
-    ToolBarPill,
-    ToolBarTitle,
-} from "./toolbar";
+import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import ProcedureEditor from "./procedure-editor";
 import ModalWindow from "@/modals/modal-window";
-import { JSONTree } from "react-json-tree";
 import ProcedureComments from "./procedure-comments";
-import PatientInfo from "./patient-info";
 import EditPatientModal from "@/modals/edit-patient-modal";
 import { PacStatus, PacStatusSmall } from "./pac-status";
 
@@ -55,15 +47,12 @@ function ProcedureItem({
     onMoveDate = (item) => {},
 }) {
     const {
-        proceduresList,
         setSelected,
         isUpdating,
-        getUpdateError,
         isBusy,
         getProcedureError,
         discardProcedureUpdate,
         reloadProcedure,
-        otDay,
     } = useProcedureList();
 
     const recordError = getProcedureError(procedure);

@@ -1,6 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router";
 import { useAuth } from "@/contexts/auth-context";
-import CenterBox from "./center-box";
 import { LoadingSpinnerFull } from "./loading-spinner";
 
 /**
