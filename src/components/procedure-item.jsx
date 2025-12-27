@@ -169,7 +169,7 @@ function ProcedureItem({
                     </div>
                 </div>
                 <div
-                    className="flex items-center cursor-pointer md:hidden p-2"
+                    className="flex items-center cursor-pointer md:hidden p-2 gap-2 text-gray-600"
                     onClick={() => setShowPatientDetails(!showPatientDetails)}
                 >
                     <ChevronRight
@@ -180,7 +180,9 @@ function ProcedureItem({
                             showPatientDetails && "rotate-90"
                         )}
                     />{" "}
-                    Patient Details
+                    <span className="text-sm font-medium ">
+                        Patient Details
+                    </span>
                 </div>
                 <div
                     className={twMerge(
