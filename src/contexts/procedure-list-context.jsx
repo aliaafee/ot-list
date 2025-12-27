@@ -227,10 +227,13 @@ export function ProcedureListProvider({ children }) {
         });
     };
 
-    const setSelected = (procedureId) => {
+    const setSelected = (procedureId, scrollTo = false) => {
         const params = new URLSearchParams();
         if (procedureId !== null) {
             params.set("procedureId", procedureId);
+            if (scrollTo) {
+                params.set("scrollTo", procedureId);
+            }
         }
         setSearchParams(params);
     };
@@ -253,7 +256,7 @@ export function ProcedureListProvider({ children }) {
                 type: "ADD_PROCEDURE",
                 payload: newProcedure,
             });
-            setSelected(newProcedure.id);
+            setSelected(newProcedure.id, true);
 
             // Show success toast
             showToast("Procedure added successfully", "success");
