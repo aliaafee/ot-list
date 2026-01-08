@@ -14,6 +14,7 @@ import {
     ToolBarButtonLabel,
 } from "@/components/toolbar";
 import DaysOfWeekSelector from "@/components/days-of-week-selector";
+import { useAuth } from "@/contexts/auth-context";
 
 /**
  * AddDatesModal - Modal for adding single or multiple OT days to a list
@@ -37,6 +38,7 @@ export default function AddDatesModal({
     const [duplicateDates, setDuplicateDates] = useState([]);
     const [error, setError] = useState("");
     const [selectedOtList, setSelectedOtList] = useState("");
+    const { user } = useAuth();
 
     useEffect(() => {
         setSelectedOtList(!!initialOtList ? initialOtList : "");
@@ -93,7 +95,9 @@ export default function AddDatesModal({
         setAdding(true);
         try {
             for (const item of dateItems) {
-                const record = await pb.collection("otDays").create(item);
+                const record = await pb
+                    .collection("otDays")
+                    .create({ ...item, creator: user.id, updater: user.id });
             }
 
             setAdding(false);
