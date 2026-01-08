@@ -4,6 +4,7 @@ import ModalWindow from "./modal-window";
 import { PatientForm, validatePatient } from "@/forms/patient-form";
 import { pb } from "@/lib/pb";
 import dayjs from "dayjs";
+import { useAuth } from "@/contexts/auth-context";
 
 /**
  * EditPatientModal - Modal for editing patient information
@@ -24,6 +25,7 @@ export default function EditPatientModal({ patient, onCancel, onSuccess }) {
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [updateError, setUpdateError] = useState(null);
+    const { user } = useAuth();
 
     const handleSave = async () => {
         setUpdateError(null);
@@ -37,7 +39,9 @@ export default function EditPatientModal({ patient, onCancel, onSuccess }) {
 
         setLoading(true);
         try {
-            await pb.collection("patients").update(patient.id, editedPatient);
+            await pb
+                .collection("patients")
+                .update(patient.id, { ...editedPatient, updater: user.id });
             onSuccess?.();
         } catch (error) {
             console.error("Failed to update patient:", error);
