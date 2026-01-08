@@ -85,7 +85,9 @@ function Patients({}) {
 
         try {
             const result = await pb.collection("procedures").getList(1, 100, {
-                filter: `patient = "${patient.id}"`,
+                filter: pb.filter("patient = {:patientId}", {
+                    patientId: patient.id,
+                }),
                 sort: "-created",
                 expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom",
             });
@@ -125,7 +127,9 @@ function Patients({}) {
                 const result = await pb
                     .collection("procedures")
                     .getList(1, 100, {
-                        filter: `patient = "${patientId}"`,
+                        filter: pb.filter("patient = {:patientId}", {
+                            patientId: patientId,
+                        }),
                         sort: "-created",
                         expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom",
                     });

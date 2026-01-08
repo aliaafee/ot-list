@@ -205,14 +205,23 @@ function ProcedureAdder({
 
                 try {
                     let filter = "";
-                    if (newPatient.nid) {
-                        filter += `nid ~ "${newPatient.nid}"`;
-                    }
-                    if (newPatient.hospitalId) {
-                        if (filter.length > 0) {
-                            filter += " || ";
-                        }
-                        filter += `hospitalId ~ "${newPatient.hospitalId}"`;
+
+                    if (newPatient.nid && newPatient.hospitalId) {
+                        filter = pb.filter(
+                            "(nid ~ {:nid} || hospitalId ~ {:hospitalId})",
+                            {
+                                nid: newPatient.nid,
+                                hospitalId: newPatient.hospitalId,
+                            }
+                        );
+                    } else if (newPatient.nid) {
+                        filter = pb.filter("nid ~ {:nid}", {
+                            nid: newPatient.nid,
+                        });
+                    } else if (newPatient.hospitalId) {
+                        filter = pb.filter("hospitalId ~ {:hospitalId}", {
+                            hospitalId: newPatient.hospitalId,
+                        });
                     }
 
                     const records = await pb

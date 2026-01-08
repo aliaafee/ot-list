@@ -28,7 +28,10 @@ function PatientSearchModal({ onSelect, onCancel }) {
         setError(null);
 
         try {
-            const filter = `nid ~ "${searchQuery}" || hospitalId ~ "${searchQuery}" || name ~ "${searchQuery}" || phone ~ "${searchQuery}"`;
+            const filter = pb.filter(
+                "nid ~ {:query} || hospitalId ~ {:query} || name ~ {:query} || phone ~ {:query}",
+                { query: searchQuery }
+            );
 
             const records = await pb.collection("patients").getList(1, 50, {
                 filter: filter,

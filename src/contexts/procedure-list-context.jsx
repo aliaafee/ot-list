@@ -55,7 +55,13 @@ export function ProcedureListProvider({ children }) {
     const getProcedures = async (procedureDayId, operatingRoomId) => {
         return await pb.collection("procedures").getFullList({
             ...proceduresCollectionOptions,
-            filter: `procedureDay = "${procedureDayId}" && operatingRoom = "${operatingRoomId}"`,
+            filter: pb.filter(
+                "procedureDay = {:procedureDayId} && operatingRoom = {:operatingRoomId}",
+                {
+                    procedureDayId: procedureDayId,
+                    operatingRoomId: operatingRoomId,
+                }
+            ),
             sort: "order",
         });
     };
@@ -85,7 +91,9 @@ export function ProcedureListProvider({ children }) {
 
             const gotList = await pb.collection("procedures").getFullList({
                 ...proceduresCollectionOptions,
-                filter: `procedureDay = "${procedureDayId}"`,
+                filter: pb.filter("procedureDay = {:procedureDayId}", {
+                    procedureDayId: procedureDayId,
+                }),
             });
             dispatchData({
                 type: "SET_LIST",
@@ -165,7 +173,6 @@ export function ProcedureListProvider({ children }) {
             },
             {
                 ...proceduresCollectionOptions,
-                // filter: `procedureDay = "${procedureDayId}"`,
             }
         );
 

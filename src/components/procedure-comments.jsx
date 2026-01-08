@@ -29,7 +29,9 @@ function ProcedureComments({ procedureId }) {
                 const records = await pb
                     .collection("procedureComments")
                     .getFullList({
-                        filter: `procedure = "${procedureId}"`,
+                        filter: pb.filter("procedure = {:procedureId}", {
+                            procedureId: procedureId,
+                        }),
                         sort: "+created",
                         expand: "creator",
                     });

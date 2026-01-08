@@ -76,7 +76,9 @@ export function PacStatus({ procedureId, className, showLabel = true }) {
                 const records = await pb
                     .collection("procedurePacStatuses")
                     .getList(1, 50, {
-                        filter: `procedure = "${procedureId}"`,
+                        filter: pb.filter("procedure = {:procedureId}", {
+                            procedureId: procedureId,
+                        }),
                         sort: "+created",
                     });
                 setStatuses(records.items);
