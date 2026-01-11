@@ -45,7 +45,7 @@ function BodyLayout({
                 </div>
             )}
 
-            <div className="bg-white grow px-2 pt-4 pb-20 w-full max-w-4xl mx-auto">
+            <div className="bg-white grow px-2 pt-4 pb-20 w-full max-w-4xl mx-auto mt-10 lg:mt-0">
                 {children}
             </div>
         </div>
