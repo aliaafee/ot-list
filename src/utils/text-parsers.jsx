@@ -25,9 +25,11 @@ export function patientInfoFromHINAIHeader(text) {
         );
     }
 
-    // Check if second line has NATIONAL ID
-    if (!secondLine.match(/NATIONAL\s+ID\s*:/i)) {
-        throw new Error("Invalid format: Second line must contain NATIONAL ID");
+    // Check if first line has "IGMH" Hospital ID
+    if (!firstLine.match(/\s+IGMH\d{10}\s*$/i)) {
+        throw new Error(
+            "Invalid format: First line must contain IGMH Hospital ID at the end"
+        );
     }
 
     if (lines.length > 0) {
@@ -217,7 +219,7 @@ export function patientInfoFromVinavi(text) {
 export function patientInfoFromText(text) {
     // Differentiate between HINAI and Vinavi formats
     // HINAI format characteristics:
-    // - Has "NATIONAL ID" keyword in second line
+    // - Has "IGMH" hospital ID in the first line
     // - Has parentheses with patient info in first line
     // - Typically 2 lines
 
@@ -229,11 +231,10 @@ export function patientInfoFromText(text) {
 
     const lines = text.split("\n");
 
-    // Check for HINAI format indicators
-    const hasNationalIdKeyword = text.match(/NATIONAL\s+ID\s*:/i);
-    const hasParentheses = lines[0]?.match(/\([^)]+\)/);
+    // Check for "IGMH" hospital ID presence
+    const hasHospitalId = text.match(/IGMH\d{10}/i);
 
-    if (hasNationalIdKeyword && hasParentheses) {
+    if (hasHospitalId) {
         // HINAI format
         return patientInfoFromHINAIHeader(text);
     } else {
