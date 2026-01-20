@@ -45,9 +45,9 @@ function ProcedureItem({
     onRemove = (item) => {},
     onRestore = (item) => {},
     onMoveDate = (item) => {},
+    onSelected = (id, scrollTo = false) => {},
 }) {
     const {
-        setSelected,
         isUpdating,
         isBusy,
         getProcedureError,
@@ -73,7 +73,7 @@ function ProcedureItem({
                     !!procedure.removed && "line-through",
                     className
                 )}
-                onClick={() => setSelected(procedure.id)}
+                onClick={() => onSelected(procedure.id)}
             >
                 <LabelValue
                     value={!procedure.removed && procedure.order}
@@ -129,7 +129,7 @@ function ProcedureItem({
                         "flex-auto p-2 grid grid-cols-10 lg:grid-cols-14 cursor-pointer gap-1 rounded-lg md:rounded-l-none",
                         !!procedure.removed && "line-through"
                     )}
-                    onClick={() => setSelected(null)}
+                    onClick={() => onSelected(null)}
                 >
                     <LabelValue
                         value={!procedure.removed && procedure.order}
@@ -305,7 +305,7 @@ function ProcedureItem({
                     <ToolBarButton
                         title="close"
                         disabled={false}
-                        onClick={() => setSelected(null)}
+                        onClick={() => onSelected(null)}
                     >
                         <XIcon className="" width={16} height={16} />
                     </ToolBarButton>
@@ -439,7 +439,7 @@ function ProcedureItem({
                     onClose={() => {
                         setEditing(false);
                         if (selectedProcedureId === procedure.id) {
-                            setSelected(null);
+                            onSelected(null);
                         }
                     }}
                     onAfterSave={() => {

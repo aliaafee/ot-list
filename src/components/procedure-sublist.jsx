@@ -27,6 +27,20 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
     const selectedProcedureId = searchParams.get("procedureId");
     const scrollToProcedureId = searchParams.get("scrollTo");
 
+    const handleProcedureSelected = (id, scrollTo = false) => {
+        const params = new URLSearchParams();
+        if (id !== null) {
+            params.set("procedureId", id);
+        }
+        if (scrollTo) {
+            params.set("scrollTo", id);
+        }
+        if (showRemoved) {
+            params.set("showRemoved", "true");
+        }
+        setSearchParams(params);
+    };
+
     const proceduresByRoom = useMemo(
         () =>
             procedures
@@ -198,6 +212,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                                 onMoveDown={handleMoveDown}
                                 onRemove={handleRemove}
                                 onMoveDate={handleMoveDate}
+                                onSelected={handleProcedureSelected}
                             />
                         </div>
                     )}
@@ -223,6 +238,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                                         procedure={procedure}
                                         onRestore={handleRestore}
                                         onMoveDate={handleMoveDate}
+                                        onSelected={handleProcedureSelected}
                                     />
                                 </div>
                             </li>

@@ -237,12 +237,17 @@ export function ProcedureListProvider({ children }) {
     };
 
     const setSelected = (procedureId, scrollTo = false) => {
+        const showRemoved = searchParams.get("showRemoved") === "true";
+
         const params = new URLSearchParams();
         if (procedureId !== null) {
             params.set("procedureId", procedureId);
             if (scrollTo) {
                 params.set("scrollTo", procedureId);
             }
+        }
+        if (showRemoved) {
+            params.set("showRemoved", "true");
         }
         setSearchParams(params);
     };
