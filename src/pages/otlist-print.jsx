@@ -10,11 +10,12 @@ function SubOtListPrint({ procedures, operatingRoom }) {
         () =>
             procedures
                 .filter(
-                    (procedure) => procedure.operatingRoom === operatingRoom?.id
+                    (procedure) =>
+                        procedure.operatingRoom === operatingRoom?.id,
                 )
                 .filter((procedure) => !procedure.removed)
                 .sort((a, b) => a.order - b.order),
-        [procedures, operatingRoom]
+        [procedures, operatingRoom],
     );
 
     if (!!!operatingRoom) {
@@ -43,42 +44,44 @@ function SubOtListPrint({ procedures, operatingRoom }) {
             ) : (
                 proceduresByRoom.map((item, index) => (
                     <tr key={item.id}>
-                        <td className="border border-black p-1">
+                        <td className="border border-black p-1 pb-10">
                             {item.order}
                         </td>
-                        <td className="border border-black p-1">{item.bed}</td>
-                        <td className="border border-black p-1">
+                        <td className="border border-black p-1 align-text-top">
+                            {item.bed}
+                        </td>
+                        <td className="border border-black p-1 align-text-top">
                             {item.expand.patient.nid}
                         </td>
-                        <td className="border border-black p-1">
+                        <td className="border border-black p-1 align-text-top">
                             {item.expand.patient.name}
                         </td>
-                        <td className="border border-black p-1 text-center">
+                        <td className="border border-black p-1 text-center align-text-top">
                             {age(item.expand.patient.dateOfBirth)} /{" "}
                             {item.expand.patient.sex[0].toUpperCase()}
                         </td>
-                        <td className="border border-black p-1">
+                        <td className="border border-black p-1 align-text-top">
                             {item.diagnosis}
                         </td>
-                        <td className="border border-black p-1">
+                        <td className="border border-black p-1 align-text-top">
                             {item.procedure}
                         </td>
-                        <td className="border border-black p-1">
+                        <td className="border border-black p-1 align-text-top">
                             Neurosurgery Team
                         </td>
-                        <td className="border border-black p-1">
+                        <td className="border border-black p-1 align-text-top">
                             {item.comorbids}
                         </td>
-                        <td className="border border-black p-1">
+                        <td className="border border-black p-1 align-text-top">
                             {item.requirements}
                         </td>
-                        <td className="border border-black p-1">
+                        <td className="border border-black p-1 align-text-top">
                             {item.anesthesia}
                         </td>
-                        <td className="border border-black p-1">
+                        <td className="border border-black p-1 align-text-top">
                             {item.expand.patient.phone}
                         </td>
-                        <td className="border border-black p-1"></td>
+                        <td className="border border-black p-1 align-text-top"></td>
                     </tr>
                 ))
             )}
@@ -158,7 +161,7 @@ function OtListPrint({}) {
                                 procedures={proceduresList.procedures}
                                 operatingRoom={operatingRoom}
                             />
-                        )
+                        ),
                     )}
                 </tbody>
             </table>
