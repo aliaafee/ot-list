@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import {
     ChevronLeft,
     ChevronLeftIcon,
@@ -8,6 +8,7 @@ import {
     XIcon,
     ChevronDownIcon,
     Trash,
+    ExternalLinkIcon,
 } from "lucide-react";
 import BodyLayout from "@/components/body-layout";
 import { ToolBar, ToolBarButtonLabel, ToolBarLink } from "@/components/toolbar";
@@ -113,7 +114,7 @@ function Patients({}) {
     const handleDeleteProcedure = async (procedureId, patientId) => {
         if (
             !window.confirm(
-                "Are you sure you want to delete this procedure? This action cannot be undone."
+                "Are you sure you want to delete this procedure? This action cannot be undone.",
             )
         ) {
             return;
@@ -252,7 +253,7 @@ function Patients({}) {
                                                 expandedPatient?.id ===
                                                     patient.id
                                                     ? "bg-blue-300"
-                                                    : "hover:bg-blue-200"
+                                                    : "hover:bg-blue-200",
                                             )}
                                             onClick={() =>
                                                 handleTogglePatient(patient)
@@ -325,16 +326,34 @@ function Patients({}) {
                                                                             }
                                                                             className="border border-gray-200 rounded-md p-2 bg-white text-sm relative"
                                                                         >
+                                                                            <Link
+                                                                                to={
+                                                                                    proc?.removed
+                                                                                        ? `/lists/${proc.procedureDay}?procedureId=${proc.id}&scrollTo=${proc.id}&showRemoved=true`
+                                                                                        : `/lists/${proc.procedureDay}?procedureId=${proc.id}&scrollTo=${proc.id}`
+                                                                                }
+                                                                                className="inline-block rounded-full p-1.5 hover:bg-gray-400"
+                                                                                title="View in List"
+                                                                            >
+                                                                                <ExternalLinkIcon
+                                                                                    width={
+                                                                                        16
+                                                                                    }
+                                                                                    height={
+                                                                                        16
+                                                                                    }
+                                                                                />
+                                                                            </Link>
                                                                             {user?.role ===
                                                                                 "admin" && (
                                                                                 <button
                                                                                     onClick={() =>
                                                                                         handleDeleteProcedure(
                                                                                             proc.id,
-                                                                                            patient.id
+                                                                                            patient.id,
                                                                                         )
                                                                                     }
-                                                                                    className="absolute top-2 right-2 p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                                                                                    className="absolute top-2 right-2 text-red-600 rounded-full p-1.5 hover:bg-gray-400 cursor-pointer"
                                                                                     title="Delete procedure"
                                                                                 >
                                                                                     <Trash
@@ -357,9 +376,9 @@ function Patients({}) {
                                                                                               proc
                                                                                                   .expand
                                                                                                   .procedureDay
-                                                                                                  .date
+                                                                                                  .date,
                                                                                           ).format(
-                                                                                              "DD MMM YYYY"
+                                                                                              "DD MMM YYYY",
                                                                                           )
                                                                                         : "N/A"}
                                                                                 </div>
@@ -454,7 +473,7 @@ function Patients({}) {
                                                                                 </div>
                                                                             )}
                                                                         </div>
-                                                                    )
+                                                                    ),
                                                                 )}
                                                             </div>
                                                         )}
@@ -483,7 +502,7 @@ function Patients({}) {
                                     type="button"
                                     onClick={() => {
                                         const params = new URLSearchParams(
-                                            searchParams
+                                            searchParams,
                                         );
                                         params.set("page", String(page - 1));
                                         setSearchParams(params);
@@ -502,7 +521,7 @@ function Patients({}) {
                                     type="button"
                                     onClick={() => {
                                         const params = new URLSearchParams(
-                                            searchParams
+                                            searchParams,
                                         );
                                         params.set("page", String(page + 1));
                                         setSearchParams(params);
