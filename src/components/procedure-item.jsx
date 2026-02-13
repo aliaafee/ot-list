@@ -71,7 +71,7 @@ function ProcedureItem({
                     "flex-auto p-2 grid grid-cols-10 lg:grid-cols-14 cursor-pointer gap-1 rounded-lg md:rounded-l-none",
                     isUpdating(procedure) ? "animate-pulse" : "",
                     !!procedure.removed && "line-through",
-                    className
+                    className,
                 )}
                 onClick={() => onSelected(procedure.id)}
             >
@@ -95,7 +95,7 @@ function ProcedureItem({
                         !!procedure?.expand?.patient?.dateOfBirth
                             ? age(procedure?.expand?.patient?.dateOfBirth)
                             : "-"
-                    } / ${procedure?.expand?.patient?.sex[0].toUpperCase()}`}
+                    } / ${procedure?.expand?.patient?.sex[0]?.toUpperCase() || "-"}`}
                     className="col-span-1 hidden lg:inline"
                 />
                 <LabelValue
@@ -121,13 +121,13 @@ function ProcedureItem({
                 className={twMerge(
                     "flex-auto selected  rounded-lg",
                     isUpdating(procedure) ? "animate-pulse" : "",
-                    className
+                    className,
                 )}
             >
                 <div
                     className={twMerge(
                         "flex-auto p-2 grid grid-cols-10 lg:grid-cols-14 cursor-pointer gap-1 rounded-lg md:rounded-l-none",
-                        !!procedure.removed && "line-through"
+                        !!procedure.removed && "line-through",
                     )}
                     onClick={() => onSelected(null)}
                 >
@@ -151,7 +151,7 @@ function ProcedureItem({
                             !!procedure?.expand?.patient?.dateOfBirth
                                 ? age(procedure?.expand?.patient?.dateOfBirth)
                                 : "-"
-                        } / ${procedure?.expand?.patient?.sex[0].toUpperCase()}`}
+                        } / ${procedure?.expand?.patient?.sex[0]?.toUpperCase() || "-"}`}
                         className="col-span-1 hidden lg:inline"
                     />
                     <LabelValue
@@ -177,7 +177,7 @@ function ProcedureItem({
                         height={16}
                         className={twMerge(
                             "transition-transform",
-                            showPatientDetails && "rotate-90"
+                            showPatientDetails && "rotate-90",
                         )}
                     />{" "}
                     <span className="text-sm font-medium ">
@@ -187,7 +187,7 @@ function ProcedureItem({
                 <div
                     className={twMerge(
                         "p-2 grid grid-cols-1 md:grid-cols-14 gap-2",
-                        !showPatientDetails && "hidden md:grid"
+                        !showPatientDetails && "hidden md:grid",
                     )}
                 >
                     <div className="hidden md:inline-block"></div>
@@ -217,7 +217,7 @@ function ProcedureItem({
             <div className="bg-gray-100 rounded-lg">
                 <ToolBar
                     className={twMerge(
-                        "col-span-4 bg-gray-200 rounded-tr-lg rounded-tl-lg transition-colors"
+                        "col-span-4 bg-gray-200 rounded-tr-lg rounded-tl-lg transition-colors",
                     )}
                 >
                     {!procedure.removed && (
@@ -387,7 +387,7 @@ function ProcedureItem({
                             {procedure?.expand?.patient?.name} planned for{" "}
                             {procedure.procedure} on{" "}
                             {dayjs(procedure?.expand?.procedureDay.date).format(
-                                "DD MMM YYYY"
+                                "DD MMM YYYY",
                             )}
                         </p>
                         <p>Remove the selected procedure?</p>
