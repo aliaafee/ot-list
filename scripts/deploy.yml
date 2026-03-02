@@ -1,0 +1,548 @@
+---
+# Ansible Playbook for OT List Deployment
+#
+# Usage:
+#   ansible-playbook deploy.yml -i inventory.ini --tags install
+#   ansible-playbook deploy.yml -i inventory.ini --tags install -e "version=0.0.2"
+#   ansible-playbook deploy.yml -i inventory.ini --tags install -e "from_source=true branch=dev"
+#   ansible-playbook deploy.yml -i inventory.ini --tags install -e "create_admin=true admin_email=admin@example.com admin_password=secret"
+#   ansible-playbook deploy.yml -i inventory.ini --tags update -e "version=0.0.3"
+#   ansible-playbook deploy.yml -i inventory.ini --tags update -e "from_source=true"
+#   ansible-playbook deploy.yml -i inventory.ini --tags uninstall
+
+- name: Deploy OT List
+  hosts: all
+  become: true
+  gather_facts: true
+
+  vars:
+    root_dir: /opt/ot-list
+    pb_dir: "{{ root_dir }}/pb"
+    pb_user: pocketbase
+    service_name: otlist
+    version: "0.0.2"
+    from_source: false
+    branch: main
+    repo_url: https://github.com/aliaafee/ot-list.git
+    release_url: "https://github.com/aliaafee/ot-list/releases/download/v{{ version }}/ot-list-v{{ version }}.zip"
+    create_admin: false
+    admin_email: ""
+    admin_password: ""
+
+  handlers:
+    - name: Reload systemd daemon
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+  tasks:
+
+    # =========================================================
+    # INSTALL
+    # =========================================================
+
+    - name: "[install] Install prerequisites"
+      tags: [install]
+      ansible.builtin.apt:
+        name: [curl, unzip]
+        state: present
+        update_cache: true
+
+    - name: "[install] Create pocketbase system user"
+      tags: [install]
+      ansible.builtin.user:
+        name: "{{ pb_user }}"
+        system: true
+        shell: /usr/sbin/nologin
+        home: "{{ root_dir }}"
+        create_home: false
+        state: present
+
+    - name: "[install] Create application directory"
+      tags: [install]
+      ansible.builtin.file:
+        path: "{{ root_dir }}"
+        state: directory
+        mode: "0755"
+
+    # --- Install from release ---
+
+    - name: "[install] Download release archive"
+      tags: [install]
+      when: not from_source
+      ansible.builtin.get_url:
+        url: "{{ release_url }}"
+        dest: /tmp/ot-list-release.zip
+        mode: "0644"
+
+    - name: "[install] Extract release archive"
+      tags: [install]
+      when: not from_source
+      ansible.builtin.unarchive:
+        src: /tmp/ot-list-release.zip
+        dest: "{{ root_dir }}"
+        remote_src: true
+
+    - name: "[install] Remove release archive"
+      tags: [install]
+      when: not from_source
+      ansible.builtin.file:
+        path: /tmp/ot-list-release.zip
+        state: absent
+
+    # --- Install from source ---
+
+    - name: "[install] Install build dependencies (from source)"
+      tags: [install]
+      when: from_source
+      ansible.builtin.apt:
+        name: [git, curl, nodejs, npm]
+        state: present
+
+    - name: "[install] Clone repository (from source)"
+      tags: [install]
+      when: from_source
+      ansible.builtin.git:
+        repo: "{{ repo_url }}"
+        dest: /tmp/ot-list-build
+        version: "{{ branch }}"
+        depth: 1
+        force: true
+
+    - name: "[install] Install npm dependencies (from source)"
+      tags: [install]
+      when: from_source
+      ansible.builtin.command:
+        cmd: npm install
+        chdir: /tmp/ot-list-build
+
+    - name: "[install] Build frontend (from source)"
+      tags: [install]
+      when: from_source
+      ansible.builtin.command:
+        cmd: npm run build
+        chdir: /tmp/ot-list-build
+
+    - name: "[install] Create dist directory (from source)"
+      tags: [install]
+      when: from_source
+      ansible.builtin.file:
+        path: "{{ root_dir }}/dist"
+        state: directory
+
+    - name: "[install] Copy dist/ (from source)"
+      tags: [install]
+      when: from_source
+      ansible.builtin.copy:
+        src: /tmp/ot-list-build/dist/
+        dest: "{{ root_dir }}/dist/"
+        remote_src: true
+
+    - name: "[install] Create pb/pb_migrations directory (from source)"
+      tags: [install]
+      when: from_source
+      ansible.builtin.file:
+        path: "{{ root_dir }}/pb/pb_migrations"
+        state: directory
+
+    - name: "[install] Copy pb/pb_migrations/ (from source)"
+      tags: [install]
+      when: from_source
+      ansible.builtin.copy:
+        src: /tmp/ot-list-build/pb/pb_migrations/
+        dest: "{{ root_dir }}/pb/pb_migrations/"
+        remote_src: true
+
+    - name: "[install] Copy pb_schema.json (from source)"
+      tags: [install]
+      when: from_source
+      ansible.builtin.copy:
+        src: /tmp/ot-list-build/pb_schema.json
+        dest: "{{ root_dir }}/pb_schema.json"
+        remote_src: true
+
+    - name: "[install] Create scripts directory (from source)"
+      tags: [install]
+      when: from_source
+      ansible.builtin.file:
+        path: "{{ root_dir }}/scripts"
+        state: directory
+
+    - name: "[install] Copy scripts/ (from source)"
+      tags: [install]
+      when: from_source
+      ansible.builtin.copy:
+        src: /tmp/ot-list-build/scripts/
+        dest: "{{ root_dir }}/scripts/"
+        remote_src: true
+
+    - name: "[install] Remove build directory (from source)"
+      tags: [install]
+      when: from_source
+      ansible.builtin.file:
+        path: /tmp/ot-list-build
+        state: absent
+
+    # --- PocketBase binary ---
+
+    - name: "[install] Fetch latest PocketBase release info"
+      tags: [install]
+      ansible.builtin.uri:
+        url: https://api.github.com/repos/pocketbase/pocketbase/releases/latest
+        return_content: true
+      register: pb_release_info
+
+    - name: "[install] Set PocketBase download URL"
+      tags: [install]
+      ansible.builtin.set_fact:
+        pb_download_url: >-
+          {{ pb_release_info.json.assets
+             | selectattr('name', 'match', '.*linux_amd64.*\\.zip')
+             | map(attribute='browser_download_url')
+             | first }}
+
+    - name: "[install] Create PocketBase directory"
+      tags: [install]
+      ansible.builtin.file:
+        path: "{{ pb_dir }}"
+        state: directory
+
+    - name: "[install] Download PocketBase binary"
+      tags: [install]
+      ansible.builtin.get_url:
+        url: "{{ pb_download_url }}"
+        dest: /tmp/pocketbase.zip
+        mode: "0644"
+
+    - name: "[install] Extract PocketBase binary"
+      tags: [install]
+      ansible.builtin.unarchive:
+        src: /tmp/pocketbase.zip
+        dest: "{{ pb_dir }}"
+        remote_src: true
+
+    - name: "[install] Remove PocketBase zip"
+      tags: [install]
+      ansible.builtin.file:
+        path: /tmp/pocketbase.zip
+        state: absent
+
+    # --- Permissions ---
+
+    - name: "[install] Set ownership of application directory"
+      tags: [install]
+      ansible.builtin.file:
+        path: "{{ root_dir }}"
+        owner: "{{ pb_user }}"
+        group: "{{ pb_user }}"
+        recurse: true
+
+    - name: "[install] Set PocketBase binary ownership and permissions"
+      tags: [install]
+      ansible.builtin.file:
+        path: "{{ pb_dir }}/pocketbase"
+        owner: root
+        group: "{{ pb_user }}"
+        mode: "0750"
+
+    # --- Migrations and admin user ---
+
+    - name: "[install] Apply database migrations"
+      tags: [install]
+      ansible.builtin.command:
+        cmd: "{{ pb_dir }}/pocketbase migrate up"
+        chdir: "{{ pb_dir }}"
+      become: true
+      become_user: "{{ pb_user }}"
+
+    - name: "[install] Create initial admin superuser"
+      tags: [install]
+      when: create_admin and admin_email != "" and admin_password != ""
+      ansible.builtin.command:
+        cmd: "{{ pb_dir }}/pocketbase superuser create {{ admin_email }} {{ admin_password }}"
+        chdir: "{{ pb_dir }}"
+      become: true
+      become_user: "{{ pb_user }}"
+      no_log: true
+
+    # --- Systemd service ---
+
+    - name: "[install] Install systemd service file"
+      tags: [install]
+      ansible.builtin.copy:
+        src: "{{ root_dir }}/scripts/pocketbase.service"
+        dest: "/etc/systemd/system/{{ service_name }}.service"
+        remote_src: true
+
+    - name: "[install] Enable and start OT List service"
+      tags: [install]
+      ansible.builtin.systemd:
+        name: "{{ service_name }}"
+        enabled: true
+        state: started
+        daemon_reload: true
+
+    # =========================================================
+    # UPDATE
+    # =========================================================
+
+    - name: "[update] Stop OT List service"
+      tags: [update]
+      ansible.builtin.systemd:
+        name: "{{ service_name }}"
+        state: stopped
+      ignore_errors: true
+
+    - name: "[update] Backup current installation"
+      tags: [update]
+      ansible.builtin.command:
+        cmd: "cp -r {{ root_dir }} {{ root_dir }}.backup.{{ ansible_date_time.epoch }}"
+
+    - name: "[update] Preserve pb_data to temp location"
+      tags: [update]
+      ansible.builtin.copy:
+        src: "{{ pb_dir }}/pb_data/"
+        dest: /tmp/ot-list-pb_data-backup/
+        remote_src: true
+      ignore_errors: true
+
+    - name: "[update] Remove old application files (preserve pb_data)"
+      tags: [update]
+      ansible.builtin.shell: |
+        find {{ root_dir }} -mindepth 1 -maxdepth 1 ! -name 'pb' -exec rm -rf {} +
+        if [ -d {{ pb_dir }} ]; then
+          find {{ pb_dir }} -mindepth 1 -maxdepth 1 ! -name 'pb_data' -exec rm -rf {} +
+        fi
+
+    # --- Update from release ---
+
+    - name: "[update] Download new release archive"
+      tags: [update]
+      when: not from_source
+      ansible.builtin.get_url:
+        url: "{{ release_url }}"
+        dest: /tmp/ot-list-release-update.zip
+        mode: "0644"
+
+    - name: "[update] Extract new release"
+      tags: [update]
+      when: not from_source
+      ansible.builtin.unarchive:
+        src: /tmp/ot-list-release-update.zip
+        dest: "{{ root_dir }}"
+        remote_src: true
+
+    - name: "[update] Remove release archive"
+      tags: [update]
+      when: not from_source
+      ansible.builtin.file:
+        path: /tmp/ot-list-release-update.zip
+        state: absent
+
+    # --- Update from source ---
+
+    - name: "[update] Install build dependencies (from source)"
+      tags: [update]
+      when: from_source
+      ansible.builtin.apt:
+        name: [git, curl, nodejs, npm]
+        state: present
+
+    - name: "[update] Clone repository (from source)"
+      tags: [update]
+      when: from_source
+      ansible.builtin.git:
+        repo: "{{ repo_url }}"
+        dest: /tmp/ot-list-build
+        version: "{{ branch }}"
+        depth: 1
+        force: true
+
+    - name: "[update] Install npm dependencies (from source)"
+      tags: [update]
+      when: from_source
+      ansible.builtin.command:
+        cmd: npm install
+        chdir: /tmp/ot-list-build
+
+    - name: "[update] Build frontend (from source)"
+      tags: [update]
+      when: from_source
+      ansible.builtin.command:
+        cmd: npm run build
+        chdir: /tmp/ot-list-build
+
+    - name: "[update] Copy dist/ (from source)"
+      tags: [update]
+      when: from_source
+      ansible.builtin.copy:
+        src: /tmp/ot-list-build/dist/
+        dest: "{{ root_dir }}/dist/"
+        remote_src: true
+
+    - name: "[update] Copy pb/pb_migrations/ (from source)"
+      tags: [update]
+      when: from_source
+      ansible.builtin.copy:
+        src: /tmp/ot-list-build/pb/pb_migrations/
+        dest: "{{ root_dir }}/pb/pb_migrations/"
+        remote_src: true
+
+    - name: "[update] Copy pb_schema.json (from source)"
+      tags: [update]
+      when: from_source
+      ansible.builtin.copy:
+        src: /tmp/ot-list-build/pb_schema.json
+        dest: "{{ root_dir }}/pb_schema.json"
+        remote_src: true
+
+    - name: "[update] Copy scripts/ (from source)"
+      tags: [update]
+      when: from_source
+      ansible.builtin.copy:
+        src: /tmp/ot-list-build/scripts/
+        dest: "{{ root_dir }}/scripts/"
+        remote_src: true
+
+    - name: "[update] Remove build directory (from source)"
+      tags: [update]
+      when: from_source
+      ansible.builtin.file:
+        path: /tmp/ot-list-build
+        state: absent
+
+    # --- Restore pb_data ---
+
+    - name: "[update] Restore pb_data"
+      tags: [update]
+      ansible.builtin.copy:
+        src: /tmp/ot-list-pb_data-backup/
+        dest: "{{ pb_dir }}/pb_data/"
+        remote_src: true
+      ignore_errors: true
+
+    - name: "[update] Remove temp pb_data backup"
+      tags: [update]
+      ansible.builtin.file:
+        path: /tmp/ot-list-pb_data-backup
+        state: absent
+      ignore_errors: true
+
+    # --- PocketBase binary (update) ---
+
+    - name: "[update] Fetch latest PocketBase release info"
+      tags: [update]
+      ansible.builtin.uri:
+        url: https://api.github.com/repos/pocketbase/pocketbase/releases/latest
+        return_content: true
+      register: pb_release_info_update
+
+    - name: "[update] Set PocketBase download URL"
+      tags: [update]
+      ansible.builtin.set_fact:
+        pb_download_url_update: >-
+          {{ pb_release_info_update.json.assets
+             | selectattr('name', 'match', '.*linux_amd64.*\\.zip')
+             | map(attribute='browser_download_url')
+             | first }}
+
+    - name: "[update] Download PocketBase binary"
+      tags: [update]
+      ansible.builtin.get_url:
+        url: "{{ pb_download_url_update }}"
+        dest: /tmp/pocketbase-update.zip
+        mode: "0644"
+
+    - name: "[update] Extract PocketBase binary"
+      tags: [update]
+      ansible.builtin.unarchive:
+        src: /tmp/pocketbase-update.zip
+        dest: "{{ pb_dir }}"
+        remote_src: true
+
+    - name: "[update] Remove PocketBase zip"
+      tags: [update]
+      ansible.builtin.file:
+        path: /tmp/pocketbase-update.zip
+        state: absent
+
+    # --- Permissions (update) ---
+
+    - name: "[update] Set ownership of application directory"
+      tags: [update]
+      ansible.builtin.file:
+        path: "{{ root_dir }}"
+        owner: "{{ pb_user }}"
+        group: "{{ pb_user }}"
+        recurse: true
+
+    - name: "[update] Set PocketBase binary ownership and permissions"
+      tags: [update]
+      ansible.builtin.file:
+        path: "{{ pb_dir }}/pocketbase"
+        owner: root
+        group: "{{ pb_user }}"
+        mode: "0750"
+
+    # --- Migrations (update) ---
+
+    - name: "[update] Apply database migrations"
+      tags: [update]
+      ansible.builtin.command:
+        cmd: "{{ pb_dir }}/pocketbase migrate up"
+        chdir: "{{ pb_dir }}"
+      become: true
+      become_user: "{{ pb_user }}"
+
+    # --- Systemd service (update) ---
+
+    - name: "[update] Update systemd service file"
+      tags: [update]
+      ansible.builtin.copy:
+        src: "{{ root_dir }}/scripts/pocketbase.service"
+        dest: "/etc/systemd/system/{{ service_name }}.service"
+        remote_src: true
+      ignore_errors: true
+
+    - name: "[update] Start OT List service"
+      tags: [update]
+      ansible.builtin.systemd:
+        name: "{{ service_name }}"
+        state: started
+        daemon_reload: true
+
+    # =========================================================
+    # UNINSTALL
+    # =========================================================
+
+    - name: "[uninstall] Stop OT List service"
+      tags: [uninstall]
+      ansible.builtin.systemd:
+        name: "{{ service_name }}"
+        state: stopped
+      ignore_errors: true
+
+    - name: "[uninstall] Disable OT List service"
+      tags: [uninstall]
+      ansible.builtin.systemd:
+        name: "{{ service_name }}"
+        enabled: false
+      ignore_errors: true
+
+    - name: "[uninstall] Remove systemd service file"
+      tags: [uninstall]
+      ansible.builtin.file:
+        path: "/etc/systemd/system/{{ service_name }}.service"
+        state: absent
+      notify: Reload systemd daemon
+
+    - name: "[uninstall] Move application directory to backup"
+      tags: [uninstall]
+      ansible.builtin.command:
+        cmd: "mv {{ root_dir }} {{ root_dir }}.old.{{ ansible_date_time.epoch }}"
+      ignore_errors: true
+
+    - name: "[uninstall] Remove pocketbase system user"
+      tags: [uninstall]
+      ansible.builtin.user:
+        name: "{{ pb_user }}"
+        state: absent
