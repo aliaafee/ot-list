@@ -354,7 +354,7 @@ install() {
 # Function to update
 update() {
     # Parse arguments
-    VERSION="0.0.1"
+    VERSION="0.0.2"
     FROM_SOURCE=false
     BRANCH="main"
     
