@@ -42,7 +42,7 @@ export function PacStatusSmall({ status, className }) {
             className={twMerge(
                 "rounded-sm px-2 py-0.5 text-xs overflow-hidden",
                 getStatusColor(status),
-                className
+                className,
             )}
             title={`PAC: ${status || "Unknown"}`}
         >
@@ -135,8 +135,6 @@ export function PacStatus({ procedureId, className, showLabel = true }) {
         );
     }
 
-    console.log("Rendering PAC statuses:", statuses);
-
     return (
         <div className={twMerge("flex flex-col flex-wrap", className)}>
             {showLabel && (
@@ -152,7 +150,7 @@ export function PacStatus({ procedureId, className, showLabel = true }) {
                             <span
                                 className={twMerge(
                                     "inline-flex items-center px-3 py-1 rounded-lg text-sm border",
-                                    getStatusColor(item.pacStatus)
+                                    getStatusColor(item.pacStatus),
                                 )}
                             >
                                 {getStatusText(item.pacStatus)}
