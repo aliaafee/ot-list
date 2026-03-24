@@ -369,6 +369,34 @@ function ProcedureItem({
                         value={procedure.requirements}
                     />
                 </div>
+                <div className="text-xs text-gray-500 px-2 text-right sm:flex  sm:justify-end gap-2">
+                    <div>
+                        Created:{" "}
+                        <span>
+                            {dayjs(procedure?.created).format(
+                                "DD MMM YYYY HH:mm",
+                            )}
+                        </span>{" "}
+                        by{" "}
+                        <span className="font-semibold">
+                            {procedure?.expand?.creator?.name}
+                        </span>
+                    </div>
+                    {procedure?.created !== procedure?.updated && (
+                        <div>
+                            Updated:{" "}
+                            <span>
+                                {dayjs(procedure?.updated).format(
+                                    "DD MMM YYYY HH:mm",
+                                )}
+                            </span>{" "}
+                            by{" "}
+                            <span className="font-semibold">
+                                {procedure?.expand?.updater?.name}
+                            </span>
+                        </div>
+                    )}
+                </div>
                 <ProcedureComments procedureId={procedure.id} />
                 {!!confirmRemove && (
                     <ModalWindow

@@ -17,7 +17,7 @@ const ProcedureListContext = createContext(null);
 
 const proceduresCollectionOptions = {
     sort: "+order",
-    expand: "patient,addedBy,procedureDay.otList,procedureDay",
+    expand: "patient,addedBy,procedureDay.otList,procedureDay, updater, creator",
 };
 
 const otDayCollectionOptions = {
@@ -27,7 +27,7 @@ const otDayCollectionOptions = {
 export function ProcedureListProvider({ children }) {
     const [proceduresList, dispatchData] = useReducer(
         ProcedureListReducer,
-        null
+        null,
     );
     const [otDay, setOtDay] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -62,7 +62,7 @@ export function ProcedureListProvider({ children }) {
                 {
                     procedureDayId: procedureDayId,
                     operatingRoomId: operatingRoomId,
-                }
+                },
             ),
             sort: "order",
         });
@@ -175,7 +175,7 @@ export function ProcedureListProvider({ children }) {
             },
             {
                 ...proceduresCollectionOptions,
-            }
+            },
         );
 
         pb.collection("otDays").subscribe(
@@ -187,7 +187,7 @@ export function ProcedureListProvider({ children }) {
             },
             {
                 ...otDayCollectionOptions,
-            }
+            },
         );
 
         pb.collection("patients").subscribe(
@@ -202,7 +202,7 @@ export function ProcedureListProvider({ children }) {
                     });
                 }
             },
-            { expand: "procedures_via_patient" }
+            { expand: "procedures_via_patient" },
         );
 
         return createUnsubscribeProcedures(procedureDayId);
@@ -226,7 +226,7 @@ export function ProcedureListProvider({ children }) {
         dispatchData({
             type: "UPDATE_PROCEDURE",
             payload: proceduresList.update_failed.find(
-                (p) => p.id === procedureId
+                (p) => p.id === procedureId,
             ).original,
         });
 
@@ -269,7 +269,7 @@ export function ProcedureListProvider({ children }) {
                     creator: user.id,
                     updater: user.id,
                 },
-                { ...proceduresCollectionOptions }
+                { ...proceduresCollectionOptions },
             );
 
             dispatchData({
@@ -283,7 +283,7 @@ export function ProcedureListProvider({ children }) {
         } catch (e) {
             console.log(
                 "Failed to add procedure",
-                JSON.parse(JSON.stringify(e))
+                JSON.parse(JSON.stringify(e)),
             );
 
             // Show error toast
@@ -301,7 +301,7 @@ export function ProcedureListProvider({ children }) {
     const updateProcedures = async (
         newProcedures,
         updatedOtDay = otDay,
-        revertOnFail = true
+        revertOnFail = true,
     ) => {
         newProcedures.forEach((p) => discardProcedureUpdate(p.id));
 
@@ -312,18 +312,18 @@ export function ProcedureListProvider({ children }) {
         newProcedures
             .filter(
                 (
-                    newProcedure // Skip making placeholders for procedures not in this otDay
+                    newProcedure, // Skip making placeholders for procedures not in this otDay
                 ) =>
                     newProcedure?.procedureDay !== undefined
                         ? newProcedure?.procedureDate === otDay.id
-                        : true
+                        : true,
             )
             .map((newProcedure) => {
                 // Make the placeholders
                 const original =
                     getProcedureError({ id: newProcedure.id })?.original ||
                     proceduresList.procedures.find(
-                        (p) => p.id === newProcedure.id
+                        (p) => p.id === newProcedure.id,
                     );
 
                 discardProcedureUpdate(newProcedure.id);
@@ -344,30 +344,30 @@ export function ProcedureListProvider({ children }) {
             })
             .forEach(
                 (
-                    newProcedure // Push to the reducer
+                    newProcedure, // Push to the reducer
                 ) =>
                     dispatchData({
                         type: "UPDATE_PROCEDURE",
                         payload: newProcedure,
-                    })
+                    }),
             );
 
         const proceduresToRemove = newProcedures.filter(
             (
-                newProcedure // Find the procedures in this list whose day has been changed
+                newProcedure, // Find the procedures in this list whose day has been changed
             ) =>
                 proceduresList.procedures.some(
-                    (p) => newProcedure.id === p.id
+                    (p) => newProcedure.id === p.id,
                 ) &&
                 (newProcedure?.procedureDay !== undefined
                     ? newProcedure?.procedureDate !== otDay.id
-                    : false)
+                    : false),
         );
 
         proceduresToRemove.forEach((newProcedure) => {
             // Store removed procedures for rollback
             const original = proceduresList.procedures.find(
-                (p) => p.id === newProcedure.id
+                (p) => p.id === newProcedure.id,
             );
             if (original) {
                 removedProcedures.push(original);
@@ -395,7 +395,7 @@ export function ProcedureListProvider({ children }) {
                         { ...changes, updater: user.id },
                         {
                             ...proceduresCollectionOptions,
-                        }
+                        },
                     );
 
                 // if (!subscribed) {
@@ -415,14 +415,14 @@ export function ProcedureListProvider({ children }) {
             } else {
                 showToast(
                     `${newProcedures.length} procedures updated successfully`,
-                    "success"
+                    "success",
                 );
             }
         } catch (e) {
             if (revertOnFail) {
                 console.log(
                     "Failed to update procedures, reverting changes",
-                    JSON.parse(JSON.stringify(e))
+                    JSON.parse(JSON.stringify(e)),
                 );
 
                 // Revert all changes
@@ -449,14 +449,14 @@ export function ProcedureListProvider({ children }) {
                 // Show error toast
                 showToast(
                     "Failed to update procedures. Changes reverted.",
-                    "error"
+                    "error",
                 );
 
                 throw e;
             } else {
                 console.log(
                     "Failed to update procedures",
-                    JSON.parse(JSON.stringify(e))
+                    JSON.parse(JSON.stringify(e)),
                 );
                 dispatchData({
                     type: "ADD_FAILED",
@@ -465,7 +465,7 @@ export function ProcedureListProvider({ children }) {
                         type: "update",
                         message: `Failed to update procedure. ${e?.message} ${e?.originalError?.message}`,
                         original: originalProcedures.find(
-                            (op) => op.id === p.id
+                            (op) => op.id === p.id,
                         ),
                         data: {
                             patientId: p.patient,
@@ -499,7 +499,7 @@ export function ProcedureListProvider({ children }) {
                 .update(
                     otDayId,
                     { ...changes, updater: user.id },
-                    { ...otDayCollectionOptions }
+                    { ...otDayCollectionOptions },
                 );
             if (!subscribed) {
                 setOtDay(updateOtDay);
