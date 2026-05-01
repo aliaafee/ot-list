@@ -57,8 +57,11 @@ function SubOtListPrint({ procedures, operatingRoom }) {
                             {item.expand.patient.name}
                         </td>
                         <td className="border border-black p-1 text-center align-text-top">
-                            {age(item.expand.patient.dateOfBirth)} /{" "}
-                            {item.expand.patient.sex[0].toUpperCase()}
+                            {`${
+                                !!item?.expand?.patient?.dateOfBirth
+                                    ? age(item?.expand?.patient?.dateOfBirth)
+                                    : "-"
+                            } / ${item?.expand?.patient?.sex[0]?.toUpperCase() || "-"}`}
                         </td>
                         <td className="border border-black p-1 align-text-top">
                             {item.diagnosis}
