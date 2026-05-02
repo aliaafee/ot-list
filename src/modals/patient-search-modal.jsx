@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SearchIcon } from "lucide-react";
 import { pb } from "@/lib/pb";
 import Button from "@/components/button";
@@ -10,13 +10,27 @@ import { age } from "@/utils/dates";
  * PatientSearchModal - Modal for searching and selecting existing patients
  * @param {Function} onSelect - Callback with selected patient when confirmed
  * @param {Function} onCancel - Callback when modal is cancelled
+ * @param {Array} initialPatients - Optional pre-populated patient list (e.g. duplicates)
+ * @param {string} notice - Optional notice message shown above the search bar
  */
-function PatientSearchModal({ onSelect, onCancel }) {
+function PatientSearchModal({
+    onSelect,
+    onCancel,
+    initialPatients = [],
+    notice = null,
+}) {
     const [searchQuery, setSearchQuery] = useState("");
-    const [patients, setPatients] = useState([]);
+    const [patients, setPatients] = useState(initialPatients);
     const [selectedPatient, setSelectedPatient] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    useEffect(() => {
+        // If initial patients are provided, select the first one by default
+        if (initialPatients.length > 0) {
+            setSelectedPatient(initialPatients[0]);
+        }
+    }, [initialPatients]);
 
     const handleSearch = async () => {
         if (!searchQuery.trim()) {
@@ -30,7 +44,7 @@ function PatientSearchModal({ onSelect, onCancel }) {
         try {
             const filter = pb.filter(
                 "nid ~ {:query} || hospitalId ~ {:query} || name ~ {:query} || phone ~ {:query}",
-                { query: searchQuery }
+                { query: searchQuery },
             );
 
             const records = await pb.collection("patients").getList(1, 50, {
@@ -66,6 +80,11 @@ function PatientSearchModal({ onSelect, onCancel }) {
             large={true}
         >
             <div className="space-y-4">
+                {notice && (
+                    <div className="bg-amber-50 border border-amber-400 rounded-md p-2 text-sm text-amber-800">
+                        {notice}
+                    </div>
+                )}
                 <div className="flex gap-2">
                     <input
                         type="text"
@@ -102,7 +121,7 @@ function PatientSearchModal({ onSelect, onCancel }) {
                     </div>
                 )}
 
-                {!loading && patients.length === 0 && (
+                {!loading && patients.length === 0 && searchQuery.trim() && (
                     <div className="text-center py-4 text-gray-500">
                         No patients found.
                     </div>

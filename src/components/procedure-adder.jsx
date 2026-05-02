@@ -66,11 +66,12 @@ function ProcedureAdder({
     const [showIdCardScan, setShowIdCardScan] = useState(false);
     const [checking, setChecking] = useState(false);
     const [adding, setAdding] = useState(false);
+    const [duplicatePatients, setDuplicatePatients] = useState([]);
 
     const handleSampleData = () => {
         const sampleData = GenerateProdecureFormData(
             otDay.expand.otList.expand.department.expand
-                .activeSurgeons_via_department
+                .activeSurgeons_via_department,
         );
         if (!selectedPatient) {
             setNewPatient(sampleData);
@@ -94,6 +95,7 @@ function ProcedureAdder({
             // Clear any previous error
             setAddError(null);
             setSelectedPatient(null);
+            setDuplicatePatients([]);
         } catch (err) {
             console.error("Failed to paste patient information:", err);
             // Show error to user
@@ -117,6 +119,7 @@ function ProcedureAdder({
         setShowIdCardScan(false);
         setSelectedPatient(null);
         setAddError(null);
+        setDuplicatePatients([]);
     };
 
     const handleFindPatient = async () => {
@@ -127,6 +130,7 @@ function ProcedureAdder({
         setSelectedPatient(null);
         setNewPatient(initialPatientValue);
         setAddError(null);
+        setDuplicatePatients([]);
     };
 
     const handlePatientSelected = (patient) => {
@@ -142,11 +146,13 @@ function ProcedureAdder({
         setSelectedPatient(patient);
         setShowPatientSearch(false);
         setAddError(null);
+        setDuplicatePatients([]);
     };
 
     const handleAddProcedure = async () => {
         // Clear previous errors
         setAddError(null);
+        setDuplicatePatients([]);
 
         // Validate procedure input
         const procedureInputErrors = validateProcedure(newProcedure);
@@ -208,19 +214,19 @@ function ProcedureAdder({
 
                     if (newPatient.nid && newPatient.hospitalId) {
                         filter = pb.filter(
-                            "(nid ~ {:nid} || hospitalId ~ {:hospitalId})",
+                            "(nid = {:nid} || hospitalId = {:hospitalId})",
                             {
-                                nid: newPatient.nid,
-                                hospitalId: newPatient.hospitalId,
-                            }
+                                nid: newPatient.nid.toUpperCase(),
+                                hospitalId: newPatient.hospitalId.toUpperCase(),
+                            },
                         );
                     } else if (newPatient.nid) {
-                        filter = pb.filter("nid ~ {:nid}", {
-                            nid: newPatient.nid,
+                        filter = pb.filter("nid = {:nid}", {
+                            nid: newPatient.nid.toUpperCase(),
                         });
                     } else if (newPatient.hospitalId) {
-                        filter = pb.filter("hospitalId ~ {:hospitalId}", {
-                            hospitalId: newPatient.hospitalId,
+                        filter = pb.filter("hospitalId = {:hospitalId}", {
+                            hospitalId: newPatient.hospitalId.toUpperCase(),
                         });
                     }
 
@@ -232,16 +238,14 @@ function ProcedureAdder({
                         });
 
                     if (records.totalItems > 0) {
-                        setAddError({
-                            message:
-                                "A patient with the same NID or Hospital ID already exists. Please use 'Find Patient' to select the existing patient.",
-                        });
+                        setDuplicatePatients(records.items);
+                        setShowPatientSearch(true);
                         return;
                     }
                 } catch (checkError) {
                     console.error(
                         "Error checking for duplicate patient:",
-                        checkError
+                        checkError,
                     );
                     setAddError({
                         message:
@@ -255,9 +259,9 @@ function ProcedureAdder({
                 // Build new patient object
                 patientData = {
                     dateOfBirth: newPatient.dateOfBirth,
-                    hospitalId: newPatient.hospitalId,
+                    hospitalId: newPatient.hospitalId?.toUpperCase() ?? "",
                     name: newPatient.name,
-                    nid: newPatient.nid,
+                    nid: newPatient.nid?.toUpperCase() ?? "",
                     phone: newPatient.phone,
                     sex: newPatient.sex,
                     address: newPatient.address,
@@ -273,7 +277,7 @@ function ProcedureAdder({
             const resultError = await addProcedure(
                 patientData,
                 procedure,
-                otDay
+                otDay,
             );
             setAdding(false);
 
@@ -303,7 +307,7 @@ function ProcedureAdder({
         <div className={twMerge("flex-auto bg-gray-100 rounded-lg mt-2")}>
             <ToolBar
                 className={twMerge(
-                    "col-span-4 bg-gray-200 rounded-t-lg transition-colors"
+                    "col-span-4 bg-gray-200 rounded-t-lg transition-colors",
                 )}
             >
                 <ToolBarTitle>Add Procedure</ToolBarTitle>
@@ -376,7 +380,10 @@ function ProcedureAdder({
                 ) : (
                     <PatientForm
                         value={newPatient}
-                        onChange={(value) => setNewPatient(value)}
+                        onChange={(value) => {
+                            setNewPatient(value);
+                            setDuplicatePatients([]);
+                        }}
                         errorFields={{
                             ...newPatientErrors,
                             ...addError?.response?.data,
@@ -406,8 +413,8 @@ function ProcedureAdder({
                         {checking
                             ? "Checking..."
                             : adding
-                            ? "Adding..."
-                            : "Save"}
+                              ? "Adding..."
+                              : "Save"}
                     </Button>
                     <Button
                         variant="secondary"
@@ -430,7 +437,16 @@ function ProcedureAdder({
             {showPatientSearch && (
                 <PatientSearchModal
                     onSelect={handlePatientSelected}
-                    onCancel={() => setShowPatientSearch(false)}
+                    onCancel={() => {
+                        setShowPatientSearch(false);
+                        setDuplicatePatients([]);
+                    }}
+                    initialPatients={duplicatePatients}
+                    notice={
+                        duplicatePatients.length > 0
+                            ? "A patient with the same NID or Hospital ID already exists. Select one below or search for another patient."
+                            : null
+                    }
                 />
             )}
             {showIdCardScan && (
