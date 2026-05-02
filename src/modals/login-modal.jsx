@@ -60,6 +60,9 @@ function LoginModal({}) {
                         </div>
                     )}
                 </div>
+                <div className="px-4 pb-2 text-xs text-gray-400 text-center">
+                    v{import.meta.env.PACKAGE_VERSION}
+                </div>
                 {!!backendUrl && (
                     <div className="px-4 pb-2 text-xs text-gray-600 text-center">
                         Backend: {backendUrl}
