@@ -164,7 +164,7 @@ build_from_source() {
 # Function to install
 install() {
     # Parse arguments
-    VERSION="0.0.2"
+    VERSION="0.0.3"
     FROM_SOURCE=false
     BRANCH="main"
     
@@ -354,7 +354,7 @@ install() {
 # Function to update
 update() {
     # Parse arguments
-    VERSION="0.0.2"
+    VERSION="0.0.3"
     FROM_SOURCE=false
     BRANCH="main"
     
