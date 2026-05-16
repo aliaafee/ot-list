@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import path from "path";
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { version } from "./package.json";
 
@@ -9,6 +9,12 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src/"),
+    },
+  },
+  server: {
+    proxy: {
+      "/api": "http://127.0.0.1:8090",
+      "/_": "http://127.0.0.1:8090",
     },
   },
   plugins: [react(), tailwindcss()],
