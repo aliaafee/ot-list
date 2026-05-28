@@ -6,6 +6,7 @@ import {
     useState,
 } from "react";
 import { pb } from "@/lib/pb";
+import { api } from "@/lib/api";
 import ProcedureListReducer from "@/reducers/procedure-list-reducer";
 import FatalErrorModal from "@/modals/fatal-error-modal";
 import ErrorModal from "@/modals/error-modal";
@@ -254,16 +255,9 @@ export function ProcedureListProvider({ children }) {
 
     const addProcedure = async (patient, procedure, otDay) => {
         try {
-            const newPatient = patient?.id
-                ? patient
-                : await pb.collection("patients").create(patient);
-
-            const newProcedure = await pb.collection("procedures").create(
-                {
-                    ...procedure,
-                    patient: newPatient.id,
-                },
-                { ...proceduresCollectionOptions },
+            const newProcedure = await api.addProcedureWithPatient(
+                patient,
+                procedure,
             );
 
             dispatchData({
