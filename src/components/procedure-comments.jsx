@@ -58,18 +58,18 @@ function ProcedureComments({ procedureId }) {
                 } else if (e.action === "update") {
                     // Update comment (including removed status)
                     setComments((prev) =>
-                        prev.map((c) => (c.id === e.record.id ? e.record : c))
+                        prev.map((c) => (c.id === e.record.id ? e.record : c)),
                     );
                 } else if (e.action === "delete") {
                     // Remove deleted comment
                     setComments((prev) =>
-                        prev.filter((c) => c.id !== e.record.id)
+                        prev.filter((c) => c.id !== e.record.id),
                     );
                 }
             },
             {
                 expand: "creator",
-            }
+            },
         );
 
         // Cleanup subscription
@@ -86,7 +86,6 @@ function ProcedureComments({ procedureId }) {
         try {
             await pb.collection("procedureComments").create({
                 procedure: procedureId,
-                creator: user.id,
                 content: commentText.trim(),
                 removed: false,
             });
@@ -136,7 +135,7 @@ function ProcedureComments({ procedureId }) {
                             <li
                                 key={comment.id}
                                 className={twMerge(
-                                    "text-sm mb-2 py-1 px-2 rounded-md select-text flex justify-between items-start gap-2 border border-gray-200 bg-gray-50"
+                                    "text-sm mb-2 py-1 px-2 rounded-md select-text flex justify-between items-start gap-2 border border-gray-200 bg-gray-50",
                                 )}
                             >
                                 <div className="flex-1">
@@ -156,7 +155,7 @@ function ProcedureComments({ procedureId }) {
                                                     className="text-red-600 rounded hover:bg-red-100 px-1 flex-shrink-0 cursor-pointer"
                                                     onClick={() =>
                                                         handleRemoveComment(
-                                                            comment.id
+                                                            comment.id,
                                                         )
                                                     }
                                                     title="Remove comment"
@@ -171,7 +170,7 @@ function ProcedureComments({ procedureId }) {
                                                     className="text-blue-600 rounded hover:bg-blue-200 px-1 flex-shrink-0 cursor-pointer"
                                                     onClick={() =>
                                                         handleRestoreComment(
-                                                            comment.id
+                                                            comment.id,
                                                         )
                                                     }
                                                     title="Restore comment"

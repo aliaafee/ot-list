@@ -98,3 +98,17 @@ onRecordUpdateRequest((e) => {
 
     e.next();
 }, "otDays");
+
+onRecordCreateRequest((e) => {
+    const authRecord = e.auth;
+
+    if (!authRecord) {
+        throw new BadRequestError("Authentication required");
+    }
+
+    e.record.set("creator", authRecord.id);
+
+    console.log(`[procedureComments] Auto-set creator to: ${authRecord.id}`);
+
+    e.next();
+}, "procedureComments");
