@@ -69,3 +69,32 @@ onRecordUpdateRequest((e) => {
 
     e.next();
 }, "patients");
+
+onRecordCreateRequest((e) => {
+    const authRecord = e.auth;
+
+    if (!authRecord) {
+        throw new BadRequestError("Authentication required");
+    }
+
+    e.record.set("creator", authRecord.id);
+    e.record.set("updater", authRecord.id);
+
+    console.log(`[otDays] Auto-set creator and updater to: ${authRecord.id}`);
+
+    e.next();
+}, "otDays");
+
+onRecordUpdateRequest((e) => {
+    const authRecord = e.auth;
+
+    if (!authRecord) {
+        throw new BadRequestError("Authentication required");
+    }
+
+    e.record.set("updater", authRecord.id);
+
+    console.log(`[otDays] Auto-set updater to: ${authRecord.id}`);
+
+    e.next();
+}, "otDays");

@@ -62,7 +62,7 @@ export default function AddDatesModal({
 
     const listDays = useMemo(
         () => getDaysInRange(fromDate, toDate, selectedDays),
-        [fromDate, toDate, selectedDays]
+        [fromDate, toDate, selectedDays],
     );
 
     const handleAddDate = async () => {
@@ -95,9 +95,7 @@ export default function AddDatesModal({
         setAdding(true);
         try {
             for (const item of dateItems) {
-                const record = await pb
-                    .collection("otDays")
-                    .create({ ...item, creator: user.id, updater: user.id });
+                const record = await pb.collection("otDays").create(item);
             }
 
             setAdding(false);
@@ -186,7 +184,7 @@ export default function AddDatesModal({
                     {duplicateDates.length > 0 && (
                         <div className="bg-red-400/20 rounded-md mt-2 py-1 px-2">
                             {dayjs(duplicateDates[0].date).format(
-                                "dddd, DD MMM YYYY "
+                                "dddd, DD MMM YYYY ",
                             )}{" "}
                             has already been added.
                         </div>
@@ -222,8 +220,8 @@ export default function AddDatesModal({
                             <li
                                 className={twMerge(
                                     duplicateDates.some(
-                                        (i) => i.date === date
-                                    ) && "text-red-500"
+                                        (i) => i.date === date,
+                                    ) && "text-red-500",
                                 )}
                                 key={date}
                             >

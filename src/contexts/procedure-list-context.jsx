@@ -486,11 +486,7 @@ export function ProcedureListProvider({ children }) {
             const { id: otDayId, ...changes } = newOtDay;
             const updateOtDay = await pb
                 .collection("otDays")
-                .update(
-                    otDayId,
-                    { ...changes, updater: user.id },
-                    { ...otDayCollectionOptions },
-                );
+                .update(otDayId, changes, { ...otDayCollectionOptions });
             if (!subscribed) {
                 setOtDay(updateOtDay);
             }
