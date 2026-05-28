@@ -22,24 +22,6 @@ export const api = {
         return response.procedure;
     },
 
-    async addPacStatus(procedureId, pacStatus) {
-        const response = await pb.send(`/api/add-pac-status`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ procedureId, pacStatus }),
-        });
-
-        if (!response.success) {
-            throw new Error(
-                response.message || "Failed to add PAC status, unknown error.",
-            );
-        }
-
-        return response;
-    },
-
     async bulkUpdateProcedures(procedures) {
         const response = await pb.send(`/api/bulk-update-procedures`, {
             method: "POST",
@@ -53,6 +35,24 @@ export const api = {
             throw new Error(
                 response.message ||
                     "Failed to bulk update procedures, unknown error.",
+            );
+        }
+
+        return response.updated;
+    },
+
+    async addPacStatus(procedureId, pacStatus) {
+        const response = await pb.send(`/api/add-pac-status`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ procedureId, pacStatus }),
+        });
+
+        if (!response.success) {
+            throw new Error(
+                response.message || "Failed to add PAC status, unknown error.",
             );
         }
 

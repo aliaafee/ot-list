@@ -374,24 +374,17 @@ export function ProcedureListProvider({ children }) {
                 payload: newProcedures.map((p) => p.id),
             });
 
-            for (const newProcedure of newProcedures) {
-                const { id: procedureId, ...changes } = newProcedure;
-                const updatedProcedure = await pb
-                    .collection("procedures")
-                    .update(procedureId, changes, {
-                        ...proceduresCollectionOptions,
-                    });
+            const updatedProcedures =
+                await api.bulkUpdateProcedures(newProcedures);
 
-                // if (!subscribed) {
-                if (updatedProcedure.procedureDay === otDay.id) {
-                    // Only update the procedures in this otDay
+            updatedProcedures.forEach((procedure) => {
+                if (procedure.procedureDay === otDay.id) {
                     dispatchData({
                         type: "UPDATE_PROCEDURE",
-                        payload: updatedProcedure,
+                        payload: procedure,
                     });
                 }
-                // }
-            }
+            });
 
             // Show success toast for procedure updates
             if (newProcedures.length === 1) {
@@ -405,7 +398,7 @@ export function ProcedureListProvider({ children }) {
         } catch (e) {
             if (revertOnFail) {
                 console.log(
-                    "Failed to update procedures, reverting changes",
+                    "Failed to update procedures",
                     JSON.parse(JSON.stringify(e)),
                 );
 
@@ -426,15 +419,12 @@ export function ProcedureListProvider({ children }) {
                 });
 
                 setUpdateError({
-                    message: `Failed to update procedures. All changes have been reverted.`,
+                    message: `Failed to update procedures.`,
                     data: e,
                 });
 
                 // Show error toast
-                showToast(
-                    "Failed to update procedures. Changes reverted.",
-                    "error",
-                );
+                showToast("Failed to update procedures.", "error");
 
                 throw e;
             } else {

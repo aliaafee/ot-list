@@ -11,6 +11,12 @@ routerAdd(
             throw new UnauthorizedError("Authentication required");
         }
 
+        const role = authRecord.getString("role");
+
+        if (!(role === "doctor" || role === "admin")) {
+            throw new UnauthorizedError("Not authorized to create procedure");
+        }
+
         const data = e.requestInfo().body;
 
         if (!data.procedure) {
@@ -104,6 +110,77 @@ routerAdd(
             );
             throw new BadRequestError(
                 `Failed to add procedure with patient: ${error.message}`,
+            );
+        }
+    },
+    $apis.requireAuth(),
+);
+
+// POST /api/bulk-update-procedures
+// Updates multiple procedures in a single transaction
+routerAdd(
+    "POST",
+    "/api/bulk-update-procedures",
+    (e) => {
+        const authRecord = e.auth;
+        if (!authRecord) {
+            throw new UnauthorizedError("Authentication required");
+        }
+
+        const role = authRecord.getString("role");
+
+        if (!(role === "doctor" || role === "admin")) {
+            throw new UnauthorizedError("Not authorized to update procedure");
+        }
+
+        const data = e.requestInfo().body;
+
+        if (!data.procedures || !Array.isArray(data.procedures)) {
+            throw new BadRequestError(
+                "Missing required field: procedures (array)",
+            );
+        }
+
+        if (data.procedures.length === 0) {
+            throw new BadRequestError("procedures array cannot be empty");
+        }
+
+        const updated = [];
+
+        try {
+            $app.runInTransaction((txApp) => {
+                data.procedures.forEach((procedureUpdate) => {
+                    if (!procedureUpdate.id) {
+                        throw new BadRequestError(
+                            "Each procedure must have an id",
+                        );
+                    }
+
+                    const { id, ...changes } = procedureUpdate;
+                    const record = txApp.findRecordById("procedures", id);
+
+                    for (const key in changes) {
+                        record.set(key, changes[key]);
+                    }
+                    record.set("updater", authRecord.id);
+
+                    txApp.save(record);
+                    updated.push({ id: record.id });
+                    console.log(
+                        `[bulk-update-procedures] Updated procedure: ${record.id}`,
+                    );
+                });
+            });
+
+            return e.json(200, {
+                success: true,
+                updatedCount: updated.length,
+                updated: updated,
+            });
+        } catch (error) {
+            console.error("[bulk-update-procedures] Transaction error:", error);
+            throw new BadRequestError(
+                `Failed to bulk update procedures: ${error.message}`,
             );
         }
     },
