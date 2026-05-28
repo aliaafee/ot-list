@@ -39,9 +39,7 @@ export default function EditPatientModal({ patient, onCancel, onSuccess }) {
 
         setLoading(true);
         try {
-            await pb
-                .collection("patients")
-                .update(patient.id, { ...editedPatient, updater: user.id });
+            await pb.collection("patients").update(patient.id, editedPatient);
             onSuccess?.();
         } catch (error) {
             console.error("Failed to update patient:", error);

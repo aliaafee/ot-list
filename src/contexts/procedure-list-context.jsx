@@ -256,18 +256,12 @@ export function ProcedureListProvider({ children }) {
         try {
             const newPatient = patient?.id
                 ? patient
-                : await pb.collection("patients").create({
-                      ...patient,
-                      creator: user.id,
-                      updater: user.id,
-                  });
+                : await pb.collection("patients").create(patient);
 
             const newProcedure = await pb.collection("procedures").create(
                 {
                     ...procedure,
                     patient: newPatient.id,
-                    creator: user.id,
-                    updater: user.id,
                 },
                 { ...proceduresCollectionOptions },
             );
@@ -390,13 +384,9 @@ export function ProcedureListProvider({ children }) {
                 const { id: procedureId, ...changes } = newProcedure;
                 const updatedProcedure = await pb
                     .collection("procedures")
-                    .update(
-                        procedureId,
-                        { ...changes, updater: user.id },
-                        {
-                            ...proceduresCollectionOptions,
-                        },
-                    );
+                    .update(procedureId, changes, {
+                        ...proceduresCollectionOptions,
+                    });
 
                 // if (!subscribed) {
                 if (updatedProcedure.procedureDay === otDay.id) {
