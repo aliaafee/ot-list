@@ -312,7 +312,7 @@ function ProcedureAdder({
             >
                 <ToolBarTitle>Add Procedure</ToolBarTitle>
 
-                <div className="flex-grow"></div>
+                <div className="grow"></div>
                 <ToolBarButton
                     title="close"
                     disabled={isBusy() || checking}

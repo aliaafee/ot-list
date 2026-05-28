@@ -152,7 +152,7 @@ function ProcedureComments({ procedureId }) {
                                         {comment.creator === user.id &&
                                             !comment.removed && (
                                                 <button
-                                                    className="text-red-600 rounded hover:bg-red-100 px-1 flex-shrink-0 cursor-pointer"
+                                                    className="text-red-600 rounded hover:bg-red-100 px-1 shrink-0 cursor-pointer"
                                                     onClick={() =>
                                                         handleRemoveComment(
                                                             comment.id,
@@ -167,7 +167,7 @@ function ProcedureComments({ procedureId }) {
                                         {comment.creator === user.id &&
                                             comment.removed && (
                                                 <button
-                                                    className="text-blue-600 rounded hover:bg-blue-200 px-1 flex-shrink-0 cursor-pointer"
+                                                    className="text-blue-600 rounded hover:bg-blue-200 px-1 shrink-0 cursor-pointer"
                                                     onClick={() =>
                                                         handleRestoreComment(
                                                             comment.id,
