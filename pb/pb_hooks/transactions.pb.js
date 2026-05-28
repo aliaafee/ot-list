@@ -186,3 +186,79 @@ routerAdd(
     },
     $apis.requireAuth(),
 );
+
+// POST /api/add-pac-status
+// Atomically creates a PAC status record and updates the procedure's pacStatus field
+routerAdd(
+    "POST",
+    "/api/add-pac-status",
+    (e) => {
+        const authRecord = e.auth;
+        if (!authRecord) {
+            throw new UnauthorizedError("Authentication required");
+        }
+
+        const data = e.requestInfo().body;
+
+        if (!data.procedureId) {
+            throw new BadRequestError("Missing required field: procedureId");
+        }
+
+        if (!data.pacStatus) {
+            throw new BadRequestError("Missing required field: pacStatus");
+        }
+
+        const validStatuses = ["referred", "inReview", "cleared", "unfit"];
+        if (!validStatuses.includes(data.pacStatus)) {
+            throw new BadRequestError(
+                `Invalid pacStatus. Must be one of: ${validStatuses.join(", ")}`,
+            );
+        }
+
+        let createdStatus = null;
+        let updatedProcedure = null;
+
+        try {
+            $app.runInTransaction((txApp) => {
+                const statusCollection = txApp.findCollectionByNameOrId(
+                    "procedurePacStatuses",
+                );
+                const statusRecord = new Record(statusCollection);
+
+                statusRecord.set("procedure", data.procedureId);
+                statusRecord.set("pacStatus", data.pacStatus);
+                statusRecord.set("creator", authRecord.id);
+
+                txApp.save(statusRecord);
+                createdStatus = statusRecord;
+                console.log(
+                    `[add-pac-status] Created PAC status: ${statusRecord.id}`,
+                );
+
+                const procedure = txApp.findRecordById(
+                    "procedures",
+                    data.procedureId,
+                );
+                procedure.set("pacStatus", data.pacStatus);
+                procedure.set("updater", authRecord.id);
+                txApp.save(procedure);
+                updatedProcedure = procedure;
+                console.log(
+                    `[add-pac-status] Updated procedure pacStatus: ${data.procedureId}`,
+                );
+            });
+
+            return e.json(200, {
+                success: true,
+                pacStatus: createdStatus,
+                procedure: updatedProcedure,
+            });
+        } catch (error) {
+            console.error("[add-pac-status] Transaction error:", error);
+            throw new BadRequestError(
+                `Failed to add PAC status: ${error.message}`,
+            );
+        }
+    },
+    $apis.requireAuth(),
+);

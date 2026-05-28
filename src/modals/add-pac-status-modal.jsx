@@ -3,7 +3,7 @@ import { PlusIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
 import ModalWindow from "./modal-window";
-import { pb } from "@/lib/pb";
+import { api } from "@/lib/api";
 import { useAuth } from "@/contexts/auth-context";
 import { getStatusColor } from "@/utils/colours";
 
@@ -63,21 +63,13 @@ function AddPacStatusModal({
                 procedureId,
             );
 
-            const newStatus = await pb
-                .collection("procedurePacStatuses")
-                .create({
-                    procedure: procedureId,
-                    pacStatus: selectedStatus,
-                });
-
-            const updatedProcedure = await pb
-                .collection("procedures")
-                .update(procedureId, {
-                    pacStatus: selectedStatus,
-                });
+            const newStatus = await api.addPacStatus(
+                procedureId,
+                selectedStatus,
+            );
 
             setAdding(false);
-            onSuccess(newStatus, updatedProcedure);
+            onSuccess(newStatus);
         } catch (e) {
             console.error("Failed to add PAC status:", e);
             setError(e.message || "Failed to add PAC status");

@@ -56,7 +56,7 @@ export const api = {
             );
         }
 
-        return response;
+        return response.createdStatus;
     },
 
     async searchPatients(query, limit = 50, page = 1) {
