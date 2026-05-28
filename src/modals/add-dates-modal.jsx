@@ -5,7 +5,7 @@ dayjs.extend(isSameOrBefore);
 import { twMerge } from "tailwind-merge";
 import { CalendarPlusIcon } from "lucide-react";
 
-import { pb } from "@/lib/pb";
+import { api } from "@/lib/api";
 import ModalWindow from "./modal-window";
 import FormField from "@/components/form-field";
 import {
@@ -71,41 +71,25 @@ export default function AddDatesModal({
             return;
         }
 
-        const dateItems = !!!addMultiple
-            ? [
-                  {
-                      date: addDate,
-                      otList: selectedOtList,
-                      remarks: "",
-                      disabled: false,
-                  },
-              ]
-            : listDays.map((day) => ({
-                  date: day,
-                  otList: selectedOtList,
-                  remarks: "",
-                  disabled: false,
-              }));
+        const datesToCreate = !!!addMultiple ? [addDate] : listDays;
 
-        if (dateItems.length === 0) {
+        if (datesToCreate.length === 0) {
             setError("Select at least one date.");
             return;
         }
 
         setAdding(true);
         try {
-            for (const item of dateItems) {
-                const record = await pb.collection("otDays").create(item);
-            }
+            const response = await api.bulkCreateOtDays(
+                selectedOtList,
+                datesToCreate,
+            );
 
             setAdding(false);
             onSuccess();
         } catch (e) {
-            if (e?.data?.data?.date?.code === "validation_not_unique") {
-                setError("Seleted date already present.");
-            } else {
-                setError(e.message);
-            }
+            setError(e.message);
+
             setAdding(false);
         }
     };

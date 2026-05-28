@@ -59,85 +59,6 @@ export const api = {
         return response.createdStatus;
     },
 
-    async searchPatients(query, limit = 50, page = 1) {
-        const params = new URLSearchParams({
-            q: query,
-            limit: limit.toString(),
-            page: page.toString(),
-        });
-
-        const response = await pb.send(`/api/patients/search?${params}`, {
-            method: "GET",
-        });
-
-        if (!response.success) {
-            throw new Error(
-                response.message || "Failed to search patients, unknown error.",
-            );
-        }
-
-        return response;
-    },
-
-    async checkDuplicatePatients(patientData) {
-        const response = await pb.send(`/api/patients/check-duplicates`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(patientData),
-        });
-
-        if (!response.success) {
-            throw new Error(
-                response.message ||
-                    "Failed to check duplicates, unknown error.",
-            );
-        }
-
-        return response;
-    },
-
-    async createUserWithRole(userData) {
-        const response = await pb.send(
-            `/api/users/create-with-role-validation`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(userData),
-            },
-        );
-
-        if (!response.success) {
-            throw new Error(
-                response.message || "Failed to create user, unknown error.",
-            );
-        }
-
-        return response;
-    },
-
-    async updateUserRole(userId, role) {
-        const response = await pb.send(`/api/users/${userId}/update-role`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ role }),
-        });
-
-        if (!response.success) {
-            throw new Error(
-                response.message ||
-                    "Failed to update user role, unknown error.",
-            );
-        }
-
-        return response;
-    },
-
     async bulkCreateOtDays(otListId, dates, disabled = false) {
         const response = await pb.send(`/api/ot-days/bulk-create`, {
             method: "POST",
@@ -158,26 +79,105 @@ export const api = {
         return response;
     },
 
-    async toggleOtDayStatus(otDayId, disabled, remarks = "") {
-        const response = await pb.send(
-            `/api/ot-days/${otDayId}/toggle-status`,
-            {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: pb.authStore.token,
-                },
-                body: JSON.stringify({ disabled, remarks }),
-            },
-        );
+    // async searchPatients(query, limit = 50, page = 1) {
+    //     const params = new URLSearchParams({
+    //         q: query,
+    //         limit: limit.toString(),
+    //         page: page.toString(),
+    //     });
 
-        if (!response.success) {
-            throw new Error(
-                response.message ||
-                    "Failed to toggle OT day status, unknown error.",
-            );
-        }
+    //     const response = await pb.send(`/api/patients/search?${params}`, {
+    //         method: "GET",
+    //     });
 
-        return response;
-    },
+    //     if (!response.success) {
+    //         throw new Error(
+    //             response.message || "Failed to search patients, unknown error.",
+    //         );
+    //     }
+
+    //     return response;
+    // },
+
+    // async checkDuplicatePatients(patientData) {
+    //     const response = await pb.send(`/api/patients/check-duplicates`, {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //         },
+    //         body: JSON.stringify(patientData),
+    //     });
+
+    //     if (!response.success) {
+    //         throw new Error(
+    //             response.message ||
+    //                 "Failed to check duplicates, unknown error.",
+    //         );
+    //     }
+
+    //     return response;
+    // },
+
+    // async createUserWithRole(userData) {
+    //     const response = await pb.send(
+    //         `/api/users/create-with-role-validation`,
+    //         {
+    //             method: "POST",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //             body: JSON.stringify(userData),
+    //         },
+    //     );
+
+    //     if (!response.success) {
+    //         throw new Error(
+    //             response.message || "Failed to create user, unknown error.",
+    //         );
+    //     }
+
+    //     return response;
+    // },
+
+    // async updateUserRole(userId, role) {
+    //     const response = await pb.send(`/api/users/${userId}/update-role`, {
+    //         method: "PATCH",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //         },
+    //         body: JSON.stringify({ role }),
+    //     });
+
+    //     if (!response.success) {
+    //         throw new Error(
+    //             response.message ||
+    //                 "Failed to update user role, unknown error.",
+    //         );
+    //     }
+
+    //     return response;
+    // },
+
+    // async toggleOtDayStatus(otDayId, disabled, remarks = "") {
+    //     const response = await pb.send(
+    //         `/api/ot-days/${otDayId}/toggle-status`,
+    //         {
+    //             method: "PATCH",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //                 Authorization: pb.authStore.token,
+    //             },
+    //             body: JSON.stringify({ disabled, remarks }),
+    //         },
+    //     );
+
+    //     if (!response.success) {
+    //         throw new Error(
+    //             response.message ||
+    //                 "Failed to toggle OT day status, unknown error.",
+    //         );
+    //     }
+
+    //     return response;
+    // },
 };
