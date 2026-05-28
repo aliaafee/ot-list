@@ -60,14 +60,13 @@ function AddPacStatusModal({
                 "Adding PAC status:",
                 selectedStatus,
                 "for procedure:",
-                procedureId
+                procedureId,
             );
 
             const newStatus = await pb
                 .collection("procedurePacStatuses")
                 .create({
                     procedure: procedureId,
-                    creator: user.id,
                     pacStatus: selectedStatus,
                 });
 
@@ -110,7 +109,7 @@ function AddPacStatusModal({
                                 "flex items-center p-3 border-2 rounded-lg cursor-pointer transition-all",
                                 selectedStatus === option.value
                                     ? "border-green-500 bg-green-50"
-                                    : "border-gray-200 hover:border-gray-300"
+                                    : "border-gray-200 hover:border-gray-300",
                             )}
                         >
                             <input
@@ -126,7 +125,7 @@ function AddPacStatusModal({
                             <span
                                 className={twMerge(
                                     "inline-flex items-center px-3 py-1 rounded-lg text-sm border whitespace-nowrap",
-                                    getStatusColor(option.value)
+                                    getStatusColor(option.value),
                                 )}
                             >
                                 {option.label}

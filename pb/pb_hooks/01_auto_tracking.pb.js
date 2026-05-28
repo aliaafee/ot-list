@@ -1,13 +1,5 @@
 /// <reference path="../pb_data/types.d.ts" />
 
-// const TRACKED_COLLECTIONS = [
-//     "procedures",
-//     "patients",
-//     "otDays",
-//     "procedureComments",
-//     "procedurePacStatuses",
-// ];
-
 onRecordCreateRequest((e) => {
     const authRecord = e.auth;
 
@@ -112,3 +104,17 @@ onRecordCreateRequest((e) => {
 
     e.next();
 }, "procedureComments");
+
+onRecordCreateRequest((e) => {
+    const authRecord = e.auth;
+
+    if (!authRecord) {
+        throw new BadRequestError("Authentication required");
+    }
+
+    e.record.set("creator", authRecord.id);
+
+    console.log(`[procedurePacStatuses] Auto-set creator to: ${authRecord.id}`);
+
+    e.next();
+}, "procedurePacStatuses");
