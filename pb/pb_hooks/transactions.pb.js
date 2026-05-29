@@ -14,7 +14,7 @@ routerAdd(
         const role = authRecord.getString("role");
 
         if (!(role === "doctor" || role === "admin")) {
-            throw new UnauthorizedError("Not authorized to create procedure");
+            throw new ForbiddenError("Not authorized to create procedure");
         }
 
         const data = e.requestInfo().body;
@@ -130,7 +130,7 @@ routerAdd(
         const role = authRecord.getString("role");
 
         if (!(role === "doctor" || role === "admin")) {
-            throw new UnauthorizedError("Not authorized to update procedure");
+            throw new ForbiddenError("Not authorized to update procedure");
         }
 
         const data = e.requestInfo().body;
