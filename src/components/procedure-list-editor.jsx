@@ -6,6 +6,7 @@ import {
     CalendarCheckIcon,
     CalendarOffIcon,
     ChevronLeftIcon,
+    DownloadIcon,
     EyeClosedIcon,
     EyeIcon,
     PrinterIcon,
@@ -21,6 +22,8 @@ import ProcedureSublist from "./procedure-sublist";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import DisableOtDayModal from "@/modals/disable-ot-day-modal";
 import BodyLayout from "./body-layout";
+import { api } from "@/lib/api";
+import { formatDate } from "@/utils/dates";
 
 /**
  * ProcedureListEditor - Main editor for viewing and managing procedures for an OT day
@@ -45,8 +48,17 @@ function ProcedureListEditor({
 
     const [showDisable, setShowDisable] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
+    const [downloading, setDownloading] = useState(false);
 
     const showRemoved = searchParams.get("showRemoved") === "true";
+
+    useEffect(() => {
+        loadProcedures(procedureDayId);
+
+        const unsubscribe = subscribeProcedures(procedureDayId);
+
+        return unsubscribe;
+    }, [procedureDayId]);
 
     const handleToggleShowRemoved = () => {
         const params = new URLSearchParams(searchParams);
@@ -58,13 +70,28 @@ function ProcedureListEditor({
         setSearchParams(params);
     };
 
-    useEffect(() => {
-        loadProcedures(procedureDayId);
+    const handleDownloadList = async () => {
+        setDownloading(true);
 
-        const unsubscribe = subscribeProcedures(procedureDayId);
+        try {
+            const html = await api.generateOtListPrintHtml(otDay.id);
 
-        return unsubscribe;
-    }, [procedureDayId]);
+            // Download the HTML as a file
+            const blob = new Blob([html], { type: "text/html" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `Ot List ${formatDate(dayjs(otDay.date))}.html`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        } catch (e) {
+            console.log("Failed to download list");
+        } finally {
+            setDownloading(false);
+        }
+    };
 
     const ProcedureToolBar = () => (
         <ToolBar>
@@ -86,7 +113,18 @@ function ProcedureListEditor({
                 <PrinterIcon width={16} height={16} />
                 <ToolBarButtonLabel>Print</ToolBarButtonLabel>
             </ToolBarLink>
-            <div className="flex-grow"></div>
+            <ToolBarButton
+                title="Download"
+                disabled={downloading}
+                onClick={handleDownloadList}
+                className={twMerge(downloading ? "animate-pulse" : "")}
+            >
+                <DownloadIcon width={16} height={16} />
+                <ToolBarButtonLabel className="hidden sm:inline">
+                    Download
+                </ToolBarButtonLabel>
+            </ToolBarButton>
+            <div className="grow"></div>
             {otDay &&
                 (!otDay?.disabled ? (
                     <ToolBarButton
@@ -213,7 +251,7 @@ function ProcedureListEditor({
                 <span
                     className={twMerge(
                         "text-xl",
-                        !!otDay.disabled && "text-red-400"
+                        !!otDay.disabled && "text-red-400",
                     )}
                 >
                     {dayjs(otDay.date).format("dddd, DD MMM YYYY ")} -{" "}
@@ -236,7 +274,7 @@ function ProcedureListEditor({
                                 showRemoved={showRemoved}
                             />
                         </li>
-                    )
+                    ),
                 )}
             </ul>
             {showDisable && (

@@ -1,5 +1,7 @@
 /// <reference path="../pb_data/types.d.ts" />
 
+console.log("Loading hooks/transactions.js");
+
 // POST /api/add-procedure-with-patient
 // Atomically creates a patient (if new) and a procedure
 routerAdd(

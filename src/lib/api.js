@@ -64,7 +64,6 @@ export const api = {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: pb.authStore.token,
             },
             body: JSON.stringify({ otListId, dates, disabled }),
         });
@@ -77,5 +76,20 @@ export const api = {
         }
 
         return response;
+    },
+
+    async generateOtListPrintHtml(otDayId) {
+        const response = await pb.send(`/api/lists/${otDayId}/html`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.success) {
+            throw new Error(response.message || "Failed to generate report.");
+        }
+
+        return response.report;
     },
 };

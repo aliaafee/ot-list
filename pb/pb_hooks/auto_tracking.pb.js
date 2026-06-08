@@ -1,5 +1,7 @@
 /// <reference path="../pb_data/types.d.ts" />
 
+console.log("Loading hooks/auto_tracking.js");
+
 onRecordCreateRequest((e) => {
     const authRecord = e.auth;
 
