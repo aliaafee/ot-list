@@ -24,10 +24,14 @@
             </tr>
         </thead>
         <tbody>
-            {{range .tableRows}}
+            {{range $row := .tableRows}}
             <tr>
-                {{range .}}
-                <td>{{.}}</td>
+                {{if eq (len $row) 1}}
+                    <td colspan="13">{{index $row 0}}</td>
+                {{else}}
+                    {{range $row}}
+                        <td>{{.}}</td>
+                    {{end}}
                 {{end}}
             </tr>
             {{end}}
