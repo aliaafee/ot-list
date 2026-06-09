@@ -76,16 +76,21 @@ function ProcedureListEditor({
         try {
             const html = await api.generateOtListPrintHtml(otDay.id);
 
-            // Download the HTML as a file
-            const blob = new Blob([html], { type: "text/html" });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = `Ot List ${formatDate(dayjs(otDay.date))}.html`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            // Open HTML in new window
+            const printWindow = window.open("", "_blank");
+            printWindow.document.write(html);
+            printWindow.document.close();
+
+            // Download HTML as file
+            // const blob = new Blob([html], { type: "text/html" });
+            // const url = URL.createObjectURL(blob);
+            // const link = document.createElement("a");
+            // link.href = url;
+            // link.download = `Ot List ${formatDate(dayjs(otDay.date))}.html`;
+            // document.body.appendChild(link);
+            // link.click();
+            // document.body.removeChild(link);
+            // URL.revokeObjectURL(url);
         } catch (e) {
             console.log("Failed to download list");
         } finally {

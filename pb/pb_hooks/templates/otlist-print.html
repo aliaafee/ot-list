@@ -1,0 +1,36 @@
+{{define "title"}} 
+    {{.departmentName}} - OT List - {{.date}} = {{.otListName}}
+{{end}} 
+
+{{define "body"}}
+    <h1>{{.departmentName}} - OT List</h1>
+    <h2>{{.date}} - {{.otListName}}</h2>
+    <table border="1" cellspacing="0" cellpadding="5">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Bed</th>
+                <th>NID</th>
+                <th>Name</th>
+                <th>Age / Sex</th>
+                <th>Diagnosis</th>
+                <th>Procedure</th>
+                <th>Surgeon</th>
+                <th>Comorbids</th>
+                <th>Special Requirements</th>
+                <th>Anes</th>
+                <th>Phone</th>
+                <th>OT Use Only</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .tableRows}}
+            <tr>
+                {{range .}}
+                <td>{{.}}</td>
+                {{end}}
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+{{end}}
