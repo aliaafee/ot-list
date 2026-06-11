@@ -2,10 +2,50 @@
     {{.departmentName}} - OT List - {{.date}} = {{.otListName}}
 {{end}} 
 
+{{define "style"}}
+    body {
+        margin: 0;
+    }
+    h1 {
+        font-size: 16px;
+        text-align: center;
+        margin: 0;
+    }
+    h2 {
+        font-size: 16px;
+        text-align: center;
+        font-weight: normal;
+        margin: 0;
+    }
+    table {
+        border-collapse: collapse;
+    }
+    td.room {
+        background-color: red;
+    }
+    thead > tr {
+        background-color: grey;
+    }
+    td {
+        border: solid 1px black;
+        padding: 5px;
+        vertical-align: text-top;
+    }
+    td:first-child {
+        padding-bottom: 40px;
+    }
+    td:only-child {
+        padding-bottom: 5px;
+        background-color: red;
+        font-weight: bold;
+        text-align: center;
+    }
+{{end}}
+
 {{define "body"}}
     <h1>{{.departmentName}} - OT List</h1>
     <h2>{{.date}} - {{.otListName}}</h2>
-    <table border="1" cellspacing="0" cellpadding="5">
+    <table  cellspacing="0" cellpadding="5">
         <thead>
             <tr>
                 <th>#</th>
@@ -27,7 +67,7 @@
             {{range $row := .tableRows}}
             <tr>
                 {{if eq (len $row) 1}}
-                    <td colspan="13">{{index $row 0}}</td>
+                    <td colspan="13" class="room">{{index $row 0}}</td>
                 {{else}}
                     {{range $row}}
                         <td>{{.}}</td>
