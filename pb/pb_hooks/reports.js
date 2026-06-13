@@ -107,15 +107,24 @@ const getOtListHTMLReport = (otDayId) => {
             `${__hooks}/templates/otlist-print.html`,
         )
         .render({
-            departmentName: department.description,
+            departmentName: department.name,
             date: formatDate(otDay.date),
             otListName: otList.name,
             tableRows: tableRows,
         });
 
-    return html;
+    return {
+        content: html,
+        type: "text/html"
+    }
 };
+
+const getOtListPdfReport = (otDayId) => {
+    //Generate a pdf and return, this is place holder for now
+    return getOtListHTMLReport(otDayId)
+}
 
 module.exports = {
     getOtListHTMLReport,
+    getOtListPdfReport
 };

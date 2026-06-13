@@ -92,4 +92,19 @@ export const api = {
 
         return response.report;
     },
+
+    async generateOtListPdf(otDayId) {
+        const response = await pb.send(`/api/lists/${otDayId}/pdf`, {
+            method: "GET",
+            headers: { 
+                "Content-Type": "application/json"
+            }
+        })
+
+        if (!response.success) {
+            throw new Error(response.message || "Failed to generate report.")
+        }
+
+        return response.report;
+    }
 };

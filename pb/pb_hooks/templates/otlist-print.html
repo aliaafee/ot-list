@@ -1,5 +1,5 @@
 {{define "title"}} 
-    {{.departmentName}} - OT List - {{.date}} = {{.otListName}}
+    {{.departmentName}} - {{.otListName}} List - {{.date}}
 {{end}} 
 
 {{define "style"}}
@@ -19,6 +19,7 @@
     }
     table {
         border-collapse: collapse;
+        width: 100%;
     }
     td.room {
         background-color: red;
