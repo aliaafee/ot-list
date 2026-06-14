@@ -112,7 +112,7 @@ function ProcedureListEditor({
             </ToolBarButton>
             <ToolBarLink
                 title="Print OT List"
-                disabled={otDay ? otDay?.disabled : true}
+                disabled={!!otDay ? otDay?.disabled : true}
                 to="print"
                 target={"_blank"}
             >
@@ -121,7 +121,9 @@ function ProcedureListEditor({
             </ToolBarLink>
             <ToolBarButton
                 title="Download"
-                disabled={downloading}
+                disabled={
+                    !downloading ? (!!otDay ? otDay?.disabled : true) : true
+                }
                 onClick={handleDownloadList}
                 className={twMerge(downloading ? "animate-pulse" : "")}
             >
