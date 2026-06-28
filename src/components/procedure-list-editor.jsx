@@ -74,7 +74,7 @@ function ProcedureListEditor({
         setDownloading(true);
 
         try {
-            const report = await api.generateOtListPdf(otDay.id);
+            const report = await api.generateOtListHtml(otDay.id);
 
             // Open HTML in new window
             // const printWindow = window.open("", "_blank");

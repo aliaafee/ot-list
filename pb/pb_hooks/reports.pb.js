@@ -37,72 +37,72 @@ routerAdd(
     $apis.requireAuth(),
 );
 
-routerAdd(
-    "GET",
-    "/api/lists/{otDayId}/pdf",
-    (e) => {
-        const authRecord = e.auth;
-        if (!authRecord) {
-            throw new UnauthorizedError("Authentication required");
-        }
+// routerAdd(
+//     "GET",
+//     "/api/lists/{otDayId}/pdf",
+//     (e) => {
+//         const authRecord = e.auth;
+//         if (!authRecord) {
+//             throw new UnauthorizedError("Authentication required");
+//         }
 
-        const otDayId = e.request.pathValue("otDayId");
+//         const otDayId = e.request.pathValue("otDayId");
 
-        console.log("[pdf list] Generating PDF report for otDayId:", otDayId);
+//         console.log("[pdf list] Generating PDF report for otDayId:", otDayId);
 
-        try {
-            const reports = require(`${__hooks}/reports.js`);
+//         try {
+//             const reports = require(`${__hooks}/reports.js`);
 
-            const report = reports.getOtListPdfReport(otDayId);
+//             const report = reports.getOtListPdfReport(otDayId);
 
-            return e.json(200, {
-                success: true,
-                report: report,
-            });
-        } catch (error) {
-            console.error(
-                "[pdf list] Error generating OT list PDF report:",
-                error,
-            );
-            throw new InternalServerError(
-                "Failed to generate pdf report for some reason.",
-            );
-        }
-    },
-    $apis.requireAuth(),
-);
+//             return e.json(200, {
+//                 success: true,
+//                 report: report,
+//             });
+//         } catch (error) {
+//             console.error(
+//                 "[pdf list] Error generating OT list PDF report:",
+//                 error,
+//             );
+//             throw new InternalServerError(
+//                 "Failed to generate pdf report for some reason.",
+//             );
+//         }
+//     },
+//     $apis.requireAuth(),
+// );
 
-routerAdd(
-    "GET",
-    "/api/lists/{otDayId}/docx",
-    (e) => {
-        const authRecord = e.auth;
-        if (!authRecord) {
-            throw new UnauthorizedError("Authentication required");
-        }
+// routerAdd(
+//     "GET",
+//     "/api/lists/{otDayId}/docx",
+//     (e) => {
+//         const authRecord = e.auth;
+//         if (!authRecord) {
+//             throw new UnauthorizedError("Authentication required");
+//         }
 
-        const otDayId = e.request.pathValue("otDayId");
+//         const otDayId = e.request.pathValue("otDayId");
 
-        console.log("[docx list] Generating DOCX report for otDayId:", otDayId);
+//         console.log("[docx list] Generating DOCX report for otDayId:", otDayId);
 
-        try {
-            const reports = require(`${__hooks}/reports.js`);
+//         try {
+//             const reports = require(`${__hooks}/reports.js`);
 
-            const report = reports.getOtListDocxReport(otDayId);
+//             const report = reports.getOtListDocxReport(otDayId);
 
-            return e.json(200, {
-                success: true,
-                report: report,
-            });
-        } catch (error) {
-            console.error(
-                "[docx list] Error generating OT list DOCX report:",
-                error,
-            );
-            throw new InternalServerError(
-                "Failed to generate docx report for some reason.",
-            );
-        }
-    },
-    $apis.requireAuth(),
-);
+//             return e.json(200, {
+//                 success: true,
+//                 report: report,
+//             });
+//         } catch (error) {
+//             console.error(
+//                 "[docx list] Error generating OT list DOCX report:",
+//                 error,
+//             );
+//             throw new InternalServerError(
+//                 "Failed to generate docx report for some reason.",
+//             );
+//         }
+//     },
+//     $apis.requireAuth(),
+// );
