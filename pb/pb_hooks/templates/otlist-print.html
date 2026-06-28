@@ -68,7 +68,7 @@
             {{range $row := .tableRows}}
             <tr>
                 {{if eq (len $row) 1}}
-                    <td colspan="13" class="room">{{index $row 0}}</td>
+                    <td colspan="13" class="room" bgcolor="lightred">{{index $row 0}}</td>
                 {{else}}
                     {{range $row}}
                         <td>{{.}}</td>

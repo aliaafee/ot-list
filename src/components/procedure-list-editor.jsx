@@ -7,9 +7,9 @@ import {
     CalendarCheckIcon,
     CalendarOffIcon,
     ChevronLeftIcon,
-    DownloadIcon,
     EyeClosedIcon,
     EyeIcon,
+    FileDownIcon,
     PrinterIcon,
 } from "lucide-react";
 
@@ -159,14 +159,14 @@ function ProcedureListEditor({
                 <ToolBarButtonLabel>Print</ToolBarButtonLabel>
             </ToolBarLink>
             <ToolBarButton
-                title="Download"
+                title="Download (.docx)"
                 disabled={
                     !downloading ? (!!otDay ? otDay?.disabled : true) : true
                 }
                 onClick={handleDownloadList}
                 className={twMerge(downloading ? "animate-pulse" : "")}
             >
-                <DownloadIcon width={16} height={16} />
+                <FileDownIcon width={16} height={16} />
                 <ToolBarButtonLabel className="hidden sm:inline">
                     Download
                 </ToolBarButtonLabel>
