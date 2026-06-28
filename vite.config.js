@@ -20,5 +20,6 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   define: {
     "import.meta.env.PACKAGE_VERSION": JSON.stringify(version),
+    global: "globalThis",
   },
 });

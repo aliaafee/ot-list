@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import dayjs from "dayjs";
+import HtmlToDocx from "@turbodocx/html-to-docx";
 import { twMerge } from "tailwind-merge";
 import {
     CalendarCheckIcon,
@@ -76,23 +77,61 @@ function ProcedureListEditor({
         try {
             const report = await api.generateOtListHtml(otDay.id);
 
-            // Open HTML in new window
-            // const printWindow = window.open("", "_blank");
-            // printWindow.document.write(html);
-            // printWindow.document.close();
+            // Convert HTML to DOCX
+            const docxBlob = await HtmlToDocx(report.content, null, {
+                orientation: "landscape",
+                pageSize: {
+                    width: 12240,
+                    height: 15840,
+                },
+                margins: {
+                    top: 360,
+                    right: 360,
+                    bottom: 360,
+                    left: 360,
+                },
+                table: {
+                    row: {
+                        cantSplit: true,
+                    },
+                    borderOptions: {
+                        size: 1,
+                        color: "000000",
+                        stroke: "single",
+                    },
+                },
+                fontSize: 16,
+                heading: {
+                    heading1: {
+                        fontSize: 24,
+                        bold: true,
+                        spacing: {
+                            before: 0,
+                            after: 0,
+                        },
+                    },
+                    heading2: {
+                        fontSize: 24,
+                        bold: true,
+                        spacing: {
+                            before: 0,
+                            after: 0,
+                        },
+                    },
+                },
+            });
 
-            // Download HTML as file
-            const blob = new Blob([report.content], { type: report.type });
-            const url = URL.createObjectURL(blob);
+            // Download DOCX file
+            const url = URL.createObjectURL(docxBlob);
             const link = document.createElement("a");
             link.href = url;
-            link.download = `Ot List ${formatDate(dayjs(otDay.date))}.html`;
+            link.download = `OT List ${formatDate(dayjs(otDay.date))}.docx`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
         } catch (e) {
-            console.log("Failed to download list");
+            console.log("Failed to download list", e);
             alert("Failed to download report");
         } finally {
             setDownloading(false);
