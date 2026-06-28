@@ -187,25 +187,23 @@ function ProcedureListEditor({
                 <span className="invisible">⠿</span>
             </div>
             <div className="grow flex-auto pl-2 pr-2 grid grid-cols-10 lg:grid-cols-14 gap-1 uppercase font-medium text-gray-500 text-xs">
-                <div className="col-span-1 overflow-clip overflow-ellipsis">
-                    #
-                </div>
-                <div className="col-span-2 lg:col-span-2 overflow-clip overflow-ellipsis">
+                <div className="col-span-1 overflow-clip text-ellipsis">#</div>
+                <div className="col-span-2 lg:col-span-2 overflow-clip text-ellipsis">
                     NID
                 </div>
-                <div className="col-span-2 lg:col-span-2 overflow-clip overflow-ellipsis">
+                <div className="col-span-2 lg:col-span-2 overflow-clip text-ellipsis">
                     Name
                 </div>
-                <div className="col-span-1 hidden lg:inline overflow-clip overflow-ellipsis">
+                <div className="col-span-1 hidden lg:inline overflow-clip text-ellipsis">
                     Age / Sex
                 </div>
-                <div className="col-span-3 hidden lg:inline overflow-clip overflow-ellipsis">
+                <div className="col-span-3 hidden lg:inline overflow-clip text-ellipsis">
                     Diagnosis
                 </div>
-                <div className="col-span-3 overflow-clip overflow-ellipsis">
+                <div className="col-span-3 overflow-clip text-ellipsis">
                     Procedure
                 </div>
-                <div className="col-span-2 overflow-clip overflow-ellipsis">
+                <div className="col-span-2 overflow-clip text-ellipsis">
                     PAC
                 </div>
             </div>
