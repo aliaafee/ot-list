@@ -155,7 +155,7 @@ const getOtListHTMLReport = (otDayId) => {
             `${__hooks}/templates/otlist-print.html`,
         )
         .render({
-            departmentName: department.name,
+            departmentName: department.description,
             date: formatDate(otDay.date),
             otListName: otList.name,
             tableRows: tableRows,
