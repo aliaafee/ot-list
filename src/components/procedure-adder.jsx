@@ -36,7 +36,7 @@ import PatientSearchModal from "@/modals/patient-search-modal";
 import PatientInfo from "./patient-info";
 import { pb } from "@/lib/pb";
 import dayjs from "dayjs";
-import IdCardScanModal from "@/modals/id-card-scan-modal";
+// import IdCardScanModal from "@/modals/id-card-scan-modal";
 
 /**
  * ProcedureAdder - Form component for adding new OT procedures with patient information
@@ -361,14 +361,14 @@ function ProcedureAdder({
                         <ToolBarButtonLabel>Find</ToolBarButtonLabel>
                     </ToolBarButton>
 
-                    <ToolBarButton
+                    {/* <ToolBarButton
                         title="Scan ID Card"
                         disabled={isBusy() || checking}
                         onClick={handleScanPatient}
                     >
                         <CameraIcon className="" width={16} height={16} />
                         <ToolBarButtonLabel>Scan</ToolBarButtonLabel>
-                    </ToolBarButton>
+                    </ToolBarButton> */}
                 </ToolBar>
 
                 {!!selectedPatient ? (
@@ -449,12 +449,13 @@ function ProcedureAdder({
                     }
                 />
             )}
-            {showIdCardScan && (
+
+            {/* {showIdCardScan && (
                 <IdCardScanModal
                     onComplete={handleIdCardScanned}
                     onCancel={() => setShowIdCardScan(false)}
                 />
-            )}
+            )} */}
         </div>
     );
 }

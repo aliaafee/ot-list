@@ -6,20 +6,19 @@ import { version } from "./package.json";
 
 // https://vite.dev/config/
 export default defineConfig({
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "src/"),
+    resolve: {
+        alias: {
+            "@": path.resolve(__dirname, "src/"),
+        },
     },
-  },
-  server: {
-    proxy: {
-      "/api": "http://127.0.0.1:8090",
-      "/_": "http://127.0.0.1:8090",
+    server: {
+        proxy: {
+            "/api": "http://127.0.0.1:8090",
+            "/_": "http://127.0.0.1:8090",
+        },
     },
-  },
-  plugins: [react(), tailwindcss()],
-  define: {
-    "import.meta.env.PACKAGE_VERSION": JSON.stringify(version),
-    global: "globalThis",
-  },
+    plugins: [react(), tailwindcss()],
+    define: {
+        "import.meta.env.PACKAGE_VERSION": JSON.stringify(version),
+    },
 });

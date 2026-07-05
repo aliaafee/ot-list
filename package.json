@@ -13,11 +13,9 @@
     },
     "dependencies": {
         "@tailwindcss/vite": "^4.2.4",
-        "@techstark/opencv-js": "^4.12.0-release.1",
-        "@turbodocx/html-to-docx": "^1.22.0",
         "dayjs": "^1.11.20",
         "lucide-react": "^1.14.0",
-        "pocketbase": "^0.26.8",
+        "pocketbase": "^0.27.0",
         "react": "^19.2.5",
         "react-dom": "^19.2.5",
         "react-json-tree": "^0.20.0",
@@ -36,6 +34,6 @@
         "eslint-plugin-react-hooks": "^7.1.1",
         "eslint-plugin-react-refresh": "^0.5.2",
         "globals": "^17.6.0",
-        "vite": "^8.0.10"
+        "vite": "^8.1.3"
     }
 }
