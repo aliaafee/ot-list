@@ -35,7 +35,7 @@ const ToolBarButton = ({
                         ? "hover:bg-transparent"
                         : "hover:bg-gray-400 cursor-pointer",
                     className,
-                    active && " bg-gray-400"
+                    active && " bg-gray-400",
                 )}
             >
                 {children}
@@ -71,7 +71,7 @@ const ToolBarLink = ({
                 disabled
                     ? "hover:bg-transparent"
                     : "hover:bg-gray-400 cursor-pointer",
-                className
+                className,
             )}
         >
             {children}
@@ -104,8 +104,8 @@ const ToolBarLink = ({
 const ToolBarButtonLabel = ({ className, children }) => (
     <div
         className={twMerge(
-            "min-w-[50px] pr-2 text-left text-sm whitespace-nowrap overflow-clip",
-            className
+            "min-w-12.5 pr-2 text-left text-sm whitespace-nowrap overflow-clip",
+            className,
         )}
     >
         {children}
@@ -116,7 +116,7 @@ const ToolBarTitle = ({ className, children }) => (
     <div
         className={twMerge(
             "text-xs font-medium text-gray-500 uppercase px-1.5 py-1.5 mx-1",
-            className
+            className,
         )}
     >
         {children}
@@ -145,7 +145,7 @@ const ToolBarPill = ({
         <div
             className={twMerge(
                 "rounded-lg bg-gray-500 flex gap-1 p-1 m-1",
-                className
+                className,
             )}
         >
             {items.map((item, index) => (
@@ -164,8 +164,8 @@ const ToolBarPill = ({
                             value === item.value
                                 ? twMerge(item.color, "text-black")
                                 : disabled
-                                ? "hover:bg-transparent"
-                                : `hover:bg-gray-400 hover:text-black cursor-pointer`
+                                  ? "hover:bg-transparent"
+                                  : `hover:bg-gray-400 hover:text-black cursor-pointer`,
                         )}
                     >
                         {item.label}
