@@ -56,7 +56,7 @@ export const api = {
             );
         }
 
-        return response.createdStatus;
+        return response.pacStatus;
     },
 
     async bulkCreateOtDays(otListId, dates, disabled = false) {
