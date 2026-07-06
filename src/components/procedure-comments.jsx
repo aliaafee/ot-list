@@ -53,8 +53,7 @@ function ProcedureComments({ procedureId }) {
                 if (e.record.procedure !== procedureId) return;
 
                 if (e.action === "create") {
-                    // Add new comment
-                    setComments((prev) => [...prev, e.record]);
+                    appendComment(e.record);
                 } else if (e.action === "update") {
                     // Update comment (including removed status)
                     setComments((prev) =>
@@ -78,17 +77,30 @@ function ProcedureComments({ procedureId }) {
         };
     }, [procedureId]);
 
+    const appendComment = (comment) => {
+        setComments((prev) => {
+            if (prev.some((c) => c.id === comment.id)) {
+                return prev; // Comment already exists, do not add
+            }
+            return [...prev, comment];
+        });
+    };
+
     const handleSendComment = async (e) => {
         e.preventDefault();
         if (!commentText.trim() || !procedureId) return;
 
         setSending(true);
         try {
-            await pb.collection("procedureComments").create({
-                procedure: procedureId,
-                content: commentText.trim(),
-                removed: false,
-            });
+            const newComment = await pb.collection("procedureComments").create(
+                {
+                    procedure: procedureId,
+                    content: commentText.trim(),
+                    removed: false,
+                },
+                { expand: "creator" },
+            );
+            appendComment(newComment);
             setCommentText("");
         } catch (error) {
             console.error("Error sending comment:", error);
