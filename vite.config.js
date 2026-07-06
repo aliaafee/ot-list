@@ -17,6 +17,21 @@ export default defineConfig({
             "/_": "http://127.0.0.1:8090",
         },
     },
+    build: {
+        rolldownOptions: {
+            output: {
+                codeSplitting: {
+                    groups: [
+                        {
+                            name: "vendor",
+                            test: /node_modules/,
+                            priority: 10,
+                        },
+                    ],
+                },
+            },
+        },
+    },
     plugins: [react(), tailwindcss()],
     define: {
         "import.meta.env.PACKAGE_VERSION": JSON.stringify(version),
