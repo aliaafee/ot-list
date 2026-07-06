@@ -1,6 +1,6 @@
 import { formatDate } from "@/utils/dates";
 import { ArrowRight, PlusIcon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { twMerge } from "tailwind-merge";
 import AddPacStatusModal from "@/modals/add-pac-status-modal";
 import { pb } from "@/lib/pb";
@@ -82,8 +82,6 @@ export function PacStatus({ procedureId, className, showLabel = true }) {
                         sort: "+created",
                     });
                 setStatuses(records.items);
-
-                console.log("Fetched PAC statuses:", records.items);
             } catch (error) {
                 console.error("Failed to fetch PAC statuses:", error);
                 setStatuses([]);
@@ -142,11 +140,8 @@ export function PacStatus({ procedureId, className, showLabel = true }) {
             )}
             <div className="flex gap-1 flex-wrap p-1 items-start bg-white rounded-sm">
                 {statuses.map((item) => (
-                    <>
-                        <div
-                            key={item.id}
-                            className="flex flex-col items-center"
-                        >
+                    <Fragment key={item.id}>
+                        <div className="flex flex-col items-center">
                             <span
                                 className={twMerge(
                                     "inline-flex items-center px-3 py-1 rounded-lg text-sm border",
@@ -160,19 +155,17 @@ export function PacStatus({ procedureId, className, showLabel = true }) {
                                 {formatDate(item.created)}
                             </span>
                         </div>
-                        <div
-                            key={`arrow-${item.id}`}
-                            className="flex items-center"
-                        >
+                        <div className="flex items-center">
                             <ArrowRight
                                 width={16}
                                 height={16}
                                 className="mt-2"
                             />
                         </div>
-                    </>
+                    </Fragment>
                 ))}
-                <div className="flex flex-col items-center">
+
+                <div className="flex flex-col items-center" key="add-button">
                     <div
                         className="inline-flex items-center pl-2 pr-3 py-1 rounded-lg text-sm border bg-gray-200 border-gray-200 hover:bg-gray-400 hover:border-gray-400 cursor-pointer"
                         onClick={() => setShowAddModal(true)}

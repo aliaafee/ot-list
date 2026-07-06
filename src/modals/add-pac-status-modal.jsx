@@ -56,13 +56,6 @@ function AddPacStatusModal({
         setError("");
 
         try {
-            console.log(
-                "Adding PAC status:",
-                selectedStatus,
-                "for procedure:",
-                procedureId,
-            );
-
             const newStatus = await api.addPacStatus(
                 procedureId,
                 selectedStatus,
