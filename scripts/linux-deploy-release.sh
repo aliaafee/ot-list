@@ -132,6 +132,19 @@ build_from_source() {
     else
         echo "  ✗ Warning: pb/pb_migrations/ directory not found"
     fi
+
+    # Copy pb_hooks directory
+    if [ -d "pb/pb_hooks" ]; then
+        mkdir -p "$ROOT_DIR/pb/pb_hooks"
+        if [ "$(ls -A pb/pb_hooks)" ]; then
+            cp -r pb/pb_hooks/. "$ROOT_DIR/pb/pb_hooks/"
+            echo "  ✓ Copied pb/pb_hooks/"
+        else
+            echo "  ✗ Warning: pb/pb_hooks/ directory is empty"
+        fi
+    else
+        echo "  ✗ Warning: pb/pb_hooks/ directory not found"
+    fi
     
     # Copy pb_schema.json
     if [ -f "pb_schema.json" ]; then
