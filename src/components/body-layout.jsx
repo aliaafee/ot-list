@@ -25,11 +25,11 @@ function BodyLayout({
             className={twMerge(
                 "flex flex-col overflow-y-auto lg:mt-0",
                 topMargin,
-                className
+                className,
             )}
         >
             {!!header && (
-                <div className="bg-gray-200 fixed top-16 lg:sticky lg:top-0 w-full shadow-md">
+                <div className="bg-gray-200 fixed top-16 lg:sticky lg:top-0 w-full shadow-md z-10">
                     <div className="mx-auto max-w-4xl">{header}</div>
                 </div>
             )}
@@ -38,7 +38,7 @@ function BodyLayout({
                 <div
                     className={twMerge(
                         "w-full bg-gray-200 shadow-md px-2 z-10",
-                        titleClassName
+                        titleClassName,
                     )}
                 >
                     <div className="mx-auto max-w-4xl">{title}</div>

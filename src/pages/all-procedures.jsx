@@ -36,7 +36,7 @@ function AllProcedures() {
         pageNumber,
         query = "",
         upcoming = false,
-        includeRemoved = false
+        includeRemoved = false,
     ) => {
         setLoading(true);
         setError(null);
@@ -51,7 +51,7 @@ function AllProcedures() {
 
             if (query.trim()) {
                 filters.push(
-                    `(patient.nid ~ "${query}" || patient.hospitalId ~ "${query}" || patient.name ~ "${query}" || diagnosis ~ "${query}" || procedure ~ "${query}")`
+                    `(patient.nid ~ "${query}" || patient.hospitalId ~ "${query}" || patient.name ~ "${query}" || diagnosis ~ "${query}" || procedure ~ "${query}")`,
                 );
             }
 
@@ -138,7 +138,7 @@ function AllProcedures() {
                         <button
                             type="button"
                             onClick={handleClearSearch}
-                            className="absolute right-2 top-[16px] -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
+                            className="absolute right-2 top-4 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
                             title="Clear search"
                         >
                             <XIcon width={14} height={14} />
@@ -250,7 +250,7 @@ function AllProcedures() {
                                         key={proc.id}
                                         className={twMerge(
                                             "hover:bg-blue-200 group",
-                                            proc?.removed && "line-through"
+                                            proc?.removed && "line-through",
                                         )}
                                     >
                                         <td className="px-1.5 py-0.5 text-sm  ">
@@ -271,7 +271,7 @@ function AllProcedures() {
                                         </td>
                                         <td className="px-3 py-2 text-sm whitespace-nowrap">
                                             {dayjs(
-                                                proc.expand?.procedureDay?.date
+                                                proc.expand?.procedureDay?.date,
                                             ).format("DD MMM YYYY")}
                                         </td>
                                         <td className="px-3 py-2 text-sm">
@@ -316,7 +316,7 @@ function AllProcedures() {
                                     type="button"
                                     onClick={() => {
                                         const params = new URLSearchParams(
-                                            searchParams
+                                            searchParams,
                                         );
                                         params.set("page", String(page - 1));
                                         setSearchParams(params);
@@ -335,7 +335,7 @@ function AllProcedures() {
                                     type="button"
                                     onClick={() => {
                                         const params = new URLSearchParams(
-                                            searchParams
+                                            searchParams,
                                         );
                                         params.set("page", String(page + 1));
                                         setSearchParams(params);

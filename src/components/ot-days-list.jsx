@@ -11,7 +11,7 @@ function OtListMarker({ otList }) {
             className={twMerge(
                 "text-xs py-0.5 px-1 ml-2 rounded-sm text-white",
                 "bg-gray-500",
-                OtListColours[otList.colour]
+                OtListColours[otList.colour],
             )}
         >
             {otList.name}
@@ -47,7 +47,7 @@ function OtDaysList({
         }
 
         const daysByList = otDays.filter(
-            (row) => row.otList === selectedOtList
+            (row) => row.otList === selectedOtList,
         );
 
         return groupDaysByMonth(daysByList);
@@ -78,7 +78,7 @@ function OtDaysList({
                                         otDay?.disabled && "text-red-600",
                                         otDay?.disabled &&
                                             selectedDayId === otDay.id &&
-                                            "text-red-700"
+                                            "text-red-700",
                                     )}
                                     onClick={() => onSelectDay(otDay.id)}
                                 >
@@ -86,13 +86,13 @@ function OtDaysList({
                                         <span className="flex overflow-clip">
                                             <span className="overflow-clip whitespace-nowrap min-w-12">
                                                 {dayjs(otDay.date).format(
-                                                    "ddd"
+                                                    "ddd",
                                                 )}
                                                 ,{" "}
                                             </span>
-                                            <span className="col-span-2 overflow-ellipsis whitespace-nowrap grow">
+                                            <span className="col-span-2 text-ellipsis whitespace-nowrap grow">
                                                 {dayjs(otDay.date).format(
-                                                    "DD MMMM"
+                                                    "DD MMMM",
                                                 )}
                                             </span>
 
