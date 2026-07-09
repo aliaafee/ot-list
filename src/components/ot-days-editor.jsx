@@ -1,4 +1,5 @@
 import { useEffect, useReducer, useState } from "react";
+import { useNavigate } from "react-router";
 import { PlusIcon } from "lucide-react";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
@@ -44,6 +45,7 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
     const [totalPages, setTotalPages] = useState(1);
     const [loadingList, setLoadingList] = useState(false);
     const [loadingMore, setLoadingMore] = useState(false);
+    const navigate = useNavigate();
     const pageSize = 50;
 
     useEffect(() => {
@@ -127,7 +129,7 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                             "otList.department = {:departmentId}",
                             {
                                 departmentId: selectedDepartmentId,
-                            }
+                            },
                         ),
                     });
                 dispatchOtDaysList({ type: "SET_LIST", payload: result.items });
@@ -177,7 +179,7 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
             },
             {
                 ...otDaysCollectionOptions,
-            }
+            },
         );
 
         return () => {
@@ -198,7 +200,7 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
         <div
             className={twMerge(
                 "bg-gray-200 overflow-hidden flex flex-col",
-                className
+                className,
             )}
         >
             <div className="flex p-1 space-x-2 items-center ">
@@ -287,9 +289,20 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
             {!!showAddDates && (
                 <AddDatesModal
                     otLists={otLists}
-                    onCancel={() => setShowAddDates(false)}
-                    onSuccess={() => {
+                    onClose={() => setShowAddDates(false)}
+                    onSuccess={(addedDates) => {
+                        addedDates.forEach((date) => {
+                            dispatchOtDaysList({
+                                type: "ADD_DAY",
+                                payload: date,
+                            });
+                        });
+
                         setShowAddDates(false);
+                        if (addedDates && addedDates.length === 1) {
+                            onSelectDay();
+                            navigate(`/lists/${addedDates[0].id}`);
+                        }
                     }}
                     initialOtList={selectedOtList}
                 />

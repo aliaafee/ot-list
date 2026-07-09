@@ -305,10 +305,14 @@ routerAdd(
                     try {
                         const existing = txApp.findRecordsByFilter(
                             "otDays",
-                            `date = '${dateStr}' && otList = '${data.otListId}'`,
+                            `strftime('%Y-%m-%d', date) = {:dateStr} && otList = {:otListId}`,
                             "",
                             1,
                             0,
+                            {
+                                dateStr: dateStr,
+                                otListId: data.otListId,
+                            },
                         );
 
                         if (existing.length > 0) {

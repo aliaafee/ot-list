@@ -8,7 +8,10 @@ function OtDaysReducer(state, action) {
             };
 
         case "ADD_DAY":
-            // Add a new OT day to the list
+            // Add a new OT day to the list, ignoring duplicates
+            if (state.otDays.some((day) => day.id === action.payload.id)) {
+                return state;
+            }
             return {
                 ...state,
                 otDays: [...state.otDays, action.payload], // payload: new OT day object
@@ -21,7 +24,7 @@ function OtDaysReducer(state, action) {
                 otDays: state.otDays.map((day) =>
                     day.id === action.payload.id
                         ? { ...day, ...action.payload }
-                        : day
+                        : day,
                 ),
             };
 

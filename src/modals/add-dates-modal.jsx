@@ -24,7 +24,7 @@ import { useAuth } from "@/contexts/auth-context";
  * @param {Array} otLists - Array of available OT lists
  */
 export default function AddDatesModal({
-    onCancel = () => {},
+    onClose = () => {},
     onSuccess = () => {},
     initialOtList = "",
     otLists = [],
@@ -35,7 +35,9 @@ export default function AddDatesModal({
     const [fromDate, setFromDate] = useState("");
     const [toDate, setToDate] = useState("");
     const [adding, setAdding] = useState(false);
-    const [duplicateDates, setDuplicateDates] = useState([]);
+    const [skippedDates, setSkippedDates] = useState([]);
+    const [errorDates, setErrorDates] = useState([]);
+    const [createdDates, setCreatedDates] = useState([]);
     const [error, setError] = useState("");
     const [selectedOtList, setSelectedOtList] = useState("");
     const { user } = useAuth();
@@ -86,20 +88,63 @@ export default function AddDatesModal({
             );
 
             setAdding(false);
-            onSuccess();
+
+            const createdRecords = response.created.map((date) => ({
+                ...date,
+                expand: {
+                    otList:
+                        otLists.find(
+                            (otList) => otList.id === selectedOtList,
+                        ) || null,
+                },
+            }));
+
+            setCreatedDates(createdRecords);
+
+            if (response.errorCount > 0) {
+                console.log(
+                    "Some dates could not be added. Errors:",
+                    response.errors,
+                );
+                setError(
+                    `Some dates could not be added. ${response.errorCount === 1 ? "An error" : response.errorCount + " errors"} occurred.`,
+                );
+                setErrorDates(response.errors);
+                if (response.skippedCount > 0) {
+                    setSkippedDates([...response.skipped]);
+                }
+            } else {
+                if (response.skippedCount > 0) {
+                    setSkippedDates(response.skipped);
+                    setError(
+                        `Some dates were skipped because they already exist in the list.`,
+                    );
+                } else {
+                    setSkippedDates([]);
+                    onSuccess(createdRecords);
+                }
+            }
         } catch (e) {
             setError(e.message);
-
+        } finally {
             setAdding(false);
         }
+    };
+
+    const handleClose = () => {
+        if (createdDates.length > 0) {
+            onSuccess(createdDates);
+        }
+        onClose();
     };
 
     return (
         <ModalWindow
             title="Add OT Dates"
             okLabel="Add"
+            cancelLabel="Close"
             onOk={handleAddDate}
-            onCancel={onCancel}
+            onCancel={handleClose}
             icon={<CalendarPlusIcon width={24} height={24} />}
             iconColor="bg-blue-100 text-blue-600"
             okColor="bg-blue-600 hover:bg-blue-500"
@@ -127,7 +172,8 @@ export default function AddDatesModal({
                     disabled={false}
                     onClick={() => {
                         setAddMultiple(false);
-                        setDuplicateDates([]);
+                        setSkippedDates([]);
+                        setError("");
                     }}
                     buttonClassName="flex-grow"
                     className="mr-0 rounded-r-none bg-gray-300"
@@ -142,7 +188,8 @@ export default function AddDatesModal({
                     disabled={false}
                     onClick={() => {
                         setAddMultiple(true);
-                        setDuplicateDates([]);
+                        setSkippedDates([]);
+                        setError("");
                     }}
                     buttonClassName="flex-grow"
                     className="ml-0 rounded-l-none bg-gray-300"
@@ -165,9 +212,9 @@ export default function AddDatesModal({
                         value={addDate}
                         onChange={(e) => setAddDate(e.target.value)}
                     />
-                    {duplicateDates.length > 0 && (
+                    {skippedDates.length > 0 && (
                         <div className="bg-red-400/20 rounded-md mt-2 py-1 px-2">
-                            {dayjs(duplicateDates[0].date).format(
+                            {dayjs(skippedDates[0].date).format(
                                 "dddd, DD MMM YYYY ",
                             )}{" "}
                             has already been added.
@@ -203,9 +250,8 @@ export default function AddDatesModal({
                         {listDays.map((date) => (
                             <li
                                 className={twMerge(
-                                    duplicateDates.some(
-                                        (i) => i.date === date,
-                                    ) && "text-red-500",
+                                    skippedDates.some((i) => i.date === date) &&
+                                        "text-red-500",
                                 )}
                                 key={date}
                             >
@@ -213,17 +259,11 @@ export default function AddDatesModal({
                             </li>
                         ))}
                     </ul>
-
-                    {!!duplicateDates.length > 0 && (
-                        <div className="bg-red-400/20 rounded-md mt-2 py-1 px-2">
-                            Some dates have already been added.
-                        </div>
-                    )}
                 </div>
             )}
             {!!error && (
                 <div className="bg-red-400/20 rounded-md mt-2 py-1 px-2">
-                    An error occured. {error}
+                    {error}
                 </div>
             )}
         </ModalWindow>
