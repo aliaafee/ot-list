@@ -2,6 +2,7 @@
 set -euo pipefail
 
 # Configuration
+DEFAULT_VERSION="0.0.4"
 ROOT_DIR="/opt/ot-list"
 PB_DIR="$ROOT_DIR/pb"
 PB_USER="pocketbase"
@@ -17,7 +18,7 @@ usage() {
     echo "  uninstall           Uninstall OT List completely"
     echo ""
     echo "Options:"
-    echo "  --version VERSION   Specify release version to install (default: 0.0.1)"
+    echo "  --version VERSION   Specify release version to install (default: $DEFAULT_VERSION)"
     echo "  --from-source       Build and install from Git repository instead of downloading release"
     echo "  --branch BRANCH     Specify branch to build from when using --from-source (default: main)"
     echo ""
@@ -177,7 +178,7 @@ build_from_source() {
 # Function to install
 install() {
     # Parse arguments
-    VERSION="0.0.3"
+    VERSION="$DEFAULT_VERSION"
     FROM_SOURCE=false
     BRANCH="main"
     
@@ -367,7 +368,7 @@ install() {
 # Function to update
 update() {
     # Parse arguments
-    VERSION="0.0.3"
+    VERSION="$DEFAULT_VERSION"
     FROM_SOURCE=false
     BRANCH="main"
     
