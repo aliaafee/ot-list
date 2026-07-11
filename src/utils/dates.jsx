@@ -20,6 +20,10 @@ export function formatDate(dateTime) {
     return dayjs(dateTime).format("D MMM YYYY");
 }
 
+export function formateDateLong(dateTime) {
+    return dayjs(dateTime).format("dddd, DD MMM YYYY ");
+}
+
 export function formatTime(dateTime) {
     return dayjs(dateTime).format("HH:mm");
 }

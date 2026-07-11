@@ -23,7 +23,7 @@ import { useProcedureList } from "@/contexts/procedure-list-context";
 import DisableOtDayModal from "@/modals/disable-ot-day-modal";
 import BodyLayout from "./body-layout";
 import { api } from "@/lib/api";
-import { formatDate } from "@/utils/dates";
+import { formatDate, formateDateLong } from "@/utils/dates";
 
 /**
  * ProcedureListEditor - Main editor for viewing and managing procedures for an OT day
@@ -260,8 +260,7 @@ function ProcedureListEditor({
                         !!otDay.disabled && "text-red-400",
                     )}
                 >
-                    {dayjs(otDay.date).format("dddd, DD MMM YYYY ")} -{" "}
-                    {otDay.expand.otList.name}
+                    {formateDateLong(otDay.date)} - {otDay.expand.otList.name}
                 </span>
                 {!!otDay.disabled && (
                     <span className="italic ml-2">

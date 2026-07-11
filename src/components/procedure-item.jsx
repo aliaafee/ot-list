@@ -14,9 +14,11 @@ import {
     UndoDotIcon,
     UserPenIcon,
     ChevronRight,
+    CopyIcon,
+    CopyCheckIcon,
 } from "lucide-react";
 
-import { age } from "@/utils/dates";
+import { age, formatDate, formateDateLong } from "@/utils/dates";
 import LabelValue from "./label-value";
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { useProcedureList } from "@/contexts/procedure-list-context";
@@ -61,8 +63,23 @@ function ProcedureItem({
     const [editingPatient, setEditingPatient] = useState(false);
     const [showPatientDetails, setShowPatientDetails] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
+    const [copied, setCopied] = useState(false);
 
     const selectedProcedureId = searchParams.get("procedureId");
+
+    const handleCopyAdvice = () => {
+        const adviceText = `${procedure?.procedure} for ${procedure?.diagnosis} on ${formateDateLong(procedure?.expand?.procedureDay?.date)} in ${procedure?.expand?.procedureDay?.expand?.otList?.name}`;
+        // Copy to clipboard
+        navigator.clipboard
+            .writeText(adviceText)
+            .then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            })
+            .catch((err) => {
+                console.error("Failed to copy advice: ", err);
+            });
+    };
 
     const SimplifiedView = () => {
         return (
@@ -293,6 +310,24 @@ function ProcedureItem({
                         <CalendarArrowDownIcon width={16} height={16} />
                         <ToolBarButtonLabel className="hidden sm:inline">
                             Move
+                        </ToolBarButtonLabel>
+                    </ToolBarButton>
+                    <ToolBarButton
+                        title="Copy Advice"
+                        disabled={isBusy()}
+                        onClick={handleCopyAdvice}
+                    >
+                        {copied ? (
+                            <CopyCheckIcon
+                                width={16}
+                                height={16}
+                                className="text-green-500"
+                            />
+                        ) : (
+                            <CopyIcon width={16} height={16} />
+                        )}
+                        <ToolBarButtonLabel className="hidden sm:inline">
+                            Copy
                         </ToolBarButtonLabel>
                     </ToolBarButton>
                     {!procedure.removed ? (
