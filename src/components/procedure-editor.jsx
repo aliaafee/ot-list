@@ -4,7 +4,7 @@ import Button from "@/components/button";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 dayjs.extend(isSameOrAfter);
-import { XIcon, PencilOffIcon } from "lucide-react";
+import { XIcon, PencilOffIcon, SaveIcon } from "lucide-react";
 
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { useProcedureList } from "@/contexts/procedure-list-context";
@@ -80,19 +80,23 @@ function ProcedureEditor({
         <div
             className={twMerge(
                 "flex-auto bg-gray-100 rounded-lg selected",
-                className
+                className,
             )}
         >
-            <ToolBar
-                className={twMerge(
-                    "col-span-4 bg-gray-200 rounded-tr-lg rounded-tl-lg"
-                )}
-            >
+            <ToolBar className={twMerge("col-span-4 bg-gray-200")}>
+                <ToolBarButton title="Save" onClick={handleUpdateProcedure}>
+                    <SaveIcon width={16} height={16} />
+                    <ToolBarButtonLabel>Save</ToolBarButtonLabel>
+                </ToolBarButton>
                 <ToolBarButton title="Discard" onClick={onDiscard}>
-                    <PencilOffIcon width={16} height={16} />
+                    <PencilOffIcon
+                        className="text-red-400"
+                        width={16}
+                        height={16}
+                    />
                     <ToolBarButtonLabel>Discard</ToolBarButtonLabel>
                 </ToolBarButton>
-                <div className="flex-grow"></div>
+                <div className="grow"></div>
                 {onClose && (
                     <ToolBarButton
                         title="close"
