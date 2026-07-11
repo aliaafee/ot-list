@@ -330,7 +330,7 @@ function ProcedureItem({
                             Edit Patient
                         </ToolBarButtonLabel>
                     </ToolBarButton>
-                    <div className="flex-grow"></div>
+                    <div className="grow"></div>
                     <ToolBarButton
                         title="close"
                         disabled={false}
