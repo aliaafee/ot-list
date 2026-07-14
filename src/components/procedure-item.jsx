@@ -1,32 +1,18 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
 import { twMerge } from "tailwind-merge";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 dayjs.extend(isSameOrAfter);
-import {
-    EditIcon,
-    MoveUpIcon,
-    MoveDownIcon,
-    XIcon,
-    TrashIcon,
-    CalendarArrowDownIcon,
-    UndoDotIcon,
-    UserPenIcon,
-    ChevronRight,
-    CopyIcon,
-    CopyCheckIcon,
-} from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
-import { age, formatDate, formateDateLong } from "@/utils/dates";
+import { age } from "@/utils/dates";
 import LabelValue from "./label-value";
-import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import ProcedureEditor from "./procedure-editor";
-import ModalWindow from "@/modals/modal-window";
 import ProcedureComments from "./procedure-comments";
-import EditPatientModal from "@/modals/edit-patient-modal";
-import { PacStatus, PacStatusSmall } from "./pac-status";
+import { PacStatusSmall } from "./pac-status";
+import ProcedureView from "./procedure-view";
 
 /**
  * ProcedureItem - Display and manage a single OT procedure item
@@ -49,37 +35,16 @@ function ProcedureItem({
     onMoveDate = (item) => {},
     onSelected = (id, scrollTo = false) => {},
 }) {
-    const {
-        isUpdating,
-        isBusy,
-        getProcedureError,
-        discardProcedureUpdate,
-        reloadProcedure,
-    } = useProcedureList();
+    const { isUpdating, getProcedureError, discardProcedureUpdate } =
+        useProcedureList();
 
     const recordError = getProcedureError(procedure);
     const [editing, setEditing] = useState(false);
-    const [confirmRemove, setConfirmRemove] = useState(false);
-    const [editingPatient, setEditingPatient] = useState(false);
+
     const [showPatientDetails, setShowPatientDetails] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
-    const [copied, setCopied] = useState(false);
 
     const selectedProcedureId = searchParams.get("procedureId");
-
-    const handleCopyAdvice = () => {
-        const adviceText = `${procedure?.procedure} for ${procedure?.diagnosis} on ${formateDateLong(procedure?.expand?.procedureDay?.date)} in ${procedure?.expand?.procedureDay?.expand?.otList?.name}`;
-        // Copy to clipboard
-        navigator.clipboard
-            .writeText(adviceText)
-            .then(() => {
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2000);
-            })
-            .catch((err) => {
-                console.error("Failed to copy advice: ", err);
-            });
-    };
 
     const SimplifiedView = () => {
         return (
@@ -258,218 +223,6 @@ function ProcedureItem({
         );
     };
 
-    const ProcedureView = () => {
-        return (
-            <div className="bg-gray-100">
-                <ToolBar
-                    className={twMerge(
-                        "col-span-4 bg-gray-200 transition-colors",
-                    )}
-                >
-                    {!procedure.removed && (
-                        <>
-                            <ToolBarButton
-                                title="Move Up"
-                                disabled={isBusy()}
-                                onClick={() => onMoveUp(procedure)}
-                            >
-                                <MoveUpIcon
-                                    className=""
-                                    width={16}
-                                    height={16}
-                                />
-                            </ToolBarButton>
-                            <ToolBarButton
-                                title="Move Down"
-                                disabled={isBusy()}
-                                onClick={() => onMoveDown(procedure)}
-                            >
-                                <MoveDownIcon
-                                    className=""
-                                    width={16}
-                                    height={16}
-                                />
-                            </ToolBarButton>
-                        </>
-                    )}
-                    <ToolBarButton
-                        title="Edit OT Procedure"
-                        disabled={isBusy()}
-                        onClick={() => setEditing(true)}
-                    >
-                        <EditIcon className="" width={16} height={16} />
-                        <ToolBarButtonLabel className="hidden sm:inline">
-                            Edit
-                        </ToolBarButtonLabel>
-                    </ToolBarButton>
-                    <ToolBarButton
-                        title="Move OT Procedure"
-                        disabled={isBusy()}
-                        onClick={() => onMoveDate(procedure)}
-                    >
-                        <CalendarArrowDownIcon width={16} height={16} />
-                        <ToolBarButtonLabel className="hidden sm:inline">
-                            Move
-                        </ToolBarButtonLabel>
-                    </ToolBarButton>
-                    <ToolBarButton
-                        title="Copy Advice"
-                        disabled={isBusy()}
-                        onClick={handleCopyAdvice}
-                    >
-                        {copied ? (
-                            <CopyCheckIcon
-                                width={16}
-                                height={16}
-                                className="text-green-500"
-                            />
-                        ) : (
-                            <CopyIcon width={16} height={16} />
-                        )}
-                        <ToolBarButtonLabel className="hidden sm:inline">
-                            Copy
-                        </ToolBarButtonLabel>
-                    </ToolBarButton>
-                    {!procedure.removed ? (
-                        <ToolBarButton
-                            title="Remove OT Procedure"
-                            disabled={isBusy()}
-                            onClick={() => setConfirmRemove(true)}
-                        >
-                            <TrashIcon
-                                className="text-red-400"
-                                width={16}
-                                height={16}
-                            />
-                            <ToolBarButtonLabel className="hidden sm:inline">
-                                Remove
-                            </ToolBarButtonLabel>
-                        </ToolBarButton>
-                    ) : (
-                        <ToolBarButton
-                            title="Restore OT Procedure"
-                            disabled={isBusy()}
-                            onClick={() => onRestore(procedure)}
-                        >
-                            <UndoDotIcon width={16} height={16} />
-                            <ToolBarButtonLabel>Restore</ToolBarButtonLabel>
-                        </ToolBarButton>
-                    )}
-                    <ToolBarButton
-                        title="Edit Patient Info"
-                        disabled={isBusy()}
-                        onClick={() => setEditingPatient(true)}
-                    >
-                        <UserPenIcon className="" width={16} height={16} />
-                        <ToolBarButtonLabel className="hidden sm:inline">
-                            Edit Patient
-                        </ToolBarButtonLabel>
-                    </ToolBarButton>
-                    <div className="grow"></div>
-                    <ToolBarButton
-                        title="close"
-                        disabled={false}
-                        onClick={() => onSelected(null)}
-                    >
-                        <XIcon className="" width={16} height={16} />
-                    </ToolBarButton>
-                </ToolBar>
-                {!!recordError && (
-                    <div className="bg-red-400/20 rounded-md m-2 p-2 text-sm">
-                        {recordError?.message}
-                    </div>
-                )}
-                {procedure.removed && (
-                    <div className="bg-red-400/20 rounded-md m-2 p-2 text-sm">
-                        Removed
-                    </div>
-                )}
-                <PacStatus procedureId={procedure?.id} className="p-2" />
-                <div className=" p-2 grid grid-cols-1 md:grid-cols-4 gap-2">
-                    <LabelValue
-                        className="md:col-span-2"
-                        label="Diagnosis"
-                        value={procedure.diagnosis}
-                    />
-                    <LabelValue
-                        className="md:col-span-2"
-                        label="Procedure"
-                        value={procedure.procedure}
-                    />
-                    <LabelValue
-                        className="md:col-span-4"
-                        label="Comorbidities"
-                        value={procedure.comorbids}
-                    />
-                    <LabelValue
-                        label="Anesthesia"
-                        value={procedure.anesthesia}
-                        className="md:col-span-1"
-                    />
-                    <LabelValue
-                        label="Expected Duration (minutes)"
-                        value={procedure.duration}
-                        className="md:col-span-1"
-                    />
-                    <LabelValue
-                        className="md:col-span-1"
-                        label="Added By"
-                        value={procedure?.expand?.addedBy?.name}
-                    />
-                    <LabelValue
-                        className="md:col-span-1"
-                        label="Added Date"
-                        value={dayjs(procedure.addedDate).format("DD MMM YYYY")}
-                    />
-                    <LabelValue label="Admitted Bed" value={procedure.bed} />
-                    <LabelValue
-                        className="md:col-span-full"
-                        label="Remarks"
-                        value={procedure.remarks}
-                    />
-                    <LabelValue
-                        className="md:col-span-full"
-                        label="Special Requirements"
-                        value={procedure.requirements}
-                    />
-                </div>
-                {!!confirmRemove && (
-                    <ModalWindow
-                        title="Remove Procedure"
-                        okLabel="Remove"
-                        onOk={() => {
-                            onRemove(procedure);
-                            setConfirmRemove(false);
-                        }}
-                        onCancel={() => {
-                            setConfirmRemove(false);
-                        }}
-                    >
-                        <p className="mb-2">
-                            {procedure?.expand?.patient?.nid}{" "}
-                            {procedure?.expand?.patient?.name} planned for{" "}
-                            {procedure.procedure} on{" "}
-                            {dayjs(procedure?.expand?.procedureDay.date).format(
-                                "DD MMM YYYY",
-                            )}
-                        </p>
-                        <p>Remove the selected procedure?</p>
-                    </ModalWindow>
-                )}
-                {editingPatient && (
-                    <EditPatientModal
-                        patient={procedure?.expand?.patient}
-                        onCancel={() => setEditingPatient(false)}
-                        onSuccess={() => {
-                            setEditingPatient(false);
-                            reloadProcedure(procedure.id);
-                        }}
-                    />
-                )}
-            </div>
-        );
-    };
-
     if (recordError?.type === "update") {
         return (
             <ExpandedView>
@@ -516,7 +269,17 @@ function ProcedureItem({
     if (procedure.id === selectedProcedureId) {
         return (
             <ExpandedView>
-                <ProcedureView />
+                <ProcedureView
+                    procedure={procedure}
+                    onMoveUp={onMoveUp}
+                    onMoveDown={onMoveDown}
+                    onRestore={onRestore}
+                    onMoveDate={onMoveDate}
+                    onSelected={onSelected}
+                    setEditing={setEditing}
+                    onRemove={onRemove}
+                    recordError={recordError}
+                />
             </ExpandedView>
         );
     }
