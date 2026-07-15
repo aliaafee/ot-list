@@ -37,7 +37,7 @@ function TitleBar() {
 
     useEffect(() => {
         const currentSection = Sections.find((sec) =>
-            location.pathname.startsWith(`/${sec.name}`)
+            location.pathname.startsWith(`/${sec.name}`),
         );
         if (currentSection) {
             setSection(currentSection.name);
@@ -51,7 +51,9 @@ function TitleBar() {
             <div className="fixed lg:static w-full top-0 h-16 min-h-16 bg-gray-300 flex items-center justify-center gap-1 flex-col z-20">
                 <div className="flex h-full w-full">
                     <div className="grow flex items-center overflow-hidden whitespace-nowrap px-4">
-                        <Logo />
+                        <Link to="/">
+                            <Logo />
+                        </Link>
                     </div>
                     <div className="items-end gap-1 hidden sm:flex">
                         {Sections.map(({ name, label, link, icon }) => (
@@ -61,7 +63,7 @@ function TitleBar() {
                                     "px-3 pt-0.5",
                                     section === name
                                         ? "bg-gray-200 rounded-t-md mb-0 pb-2"
-                                        : "rounded-md hover:bg-gray-200 cursor-pointer mb-1 pb-1"
+                                        : "rounded-md hover:bg-gray-200 cursor-pointer mb-1 pb-1",
                                 )}
                                 to={link}
                                 title={label}
@@ -77,7 +79,7 @@ function TitleBar() {
                                     "w-10 h-10 rounded-full bg-amber-400 flex justify-center items-center cursor-pointer hover:outline-3 outline-gray-400",
                                     UserColours[
                                         user?.name.length % UserColours.length
-                                    ]
+                                    ],
                                 )}
                                 title={user?.name || user?.email}
                                 onClick={() => setShowDetails(true)}
@@ -107,7 +109,7 @@ function TitleBar() {
                                 "w-10 h-10 rounded-full bg-amber-400 flex justify-center items-center cursor-pointer",
                                 UserColours[
                                     user?.name.length % UserColours.length
-                                ]
+                                ],
                             )}
                         >
                             <div className="text-2xl text-black/60">
