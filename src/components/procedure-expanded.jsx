@@ -9,7 +9,7 @@ import { PacStatusSmall } from "./pac-status";
 import ProcedureComments from "./procedure-comments";
 
 /**
- * ExpandedView - Display expanded procedure item with full patient details
+ * ProcedureExpandedView - Display expanded procedure item with full patient details
  *
  * @param {Object} procedure - Procedure object with patient and details
  * @param {boolean} isUpdating - Whether the procedure is currently being updated
@@ -17,7 +17,7 @@ import ProcedureComments from "./procedure-comments";
  * @param {function} onSelected - Callback when clicking to collapse the view
  * @param {ReactNode} children - Additional content (e.g., editor, view controls)
  */
-function ExpandedView({
+function ProcedureExpandedView({
     procedure,
     isUpdating,
     className,
@@ -147,4 +147,4 @@ function ExpandedView({
     );
 }
 
-export default ExpandedView;
+export default ProcedureExpandedView;
