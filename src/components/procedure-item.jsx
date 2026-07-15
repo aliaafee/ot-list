@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router";
 
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import ProcedureEditor from "./procedure-editor";
-import ProcedureView from "./procedure-view";
+import ProcedureDetails from "./procedure-details";
 import ProcedureExpandedView from "./procedure-expanded";
 import ProcedureSimplifiedView from "./procedure-simplified";
 
@@ -99,7 +99,7 @@ function ProcedureItem({
                 className={className}
                 onSelected={onSelected}
             >
-                <ProcedureView
+                <ProcedureDetails
                     procedure={procedure}
                     onMoveUp={onMoveUp}
                     onMoveDown={onMoveDown}
