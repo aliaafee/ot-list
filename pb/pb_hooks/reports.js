@@ -97,6 +97,22 @@ const base64Encode = (str) => {
     return result;
 };
 
+const findProceduresByOtDayAndRoom = (otDayId, roomId) => {
+    let records = arrayOf(new Record());
+
+    $app.recordQuery("procedures")
+        .andWhere(
+            $dbx.hashExp({
+                procedureDay: otDayId,
+                operatingRoom: roomId,
+            }),
+        )
+        .orderBy("order ASC")
+        .all(records);
+
+    return records;
+};
+
 const getOtListHTMLReport = (otDayId) => {
     const otDayRecord = $app.findRecordById("otDays", otDayId);
 
@@ -119,10 +135,7 @@ const getOtListHTMLReport = (otDayId) => {
     operatingRoomsRecords.forEach((roomRecord) => {
         const room = roomRecord.publicExport();
         tableRows = [...tableRows, [room.name]];
-        const procedureRecords = $app.findRecordsByFilter(
-            "procedures",
-            `procedureDay="${otDay.id}" && operatingRoom="${room.id}"`,
-        );
+        const procedureRecords = findProceduresByOtDayAndRoom(otDayId, room.id);
         procedureRecords.forEach((procedureRecord) => {
             $app.expandRecord(procedureRecord, ["patient"]);
             const patientRecord = procedureRecord.expandedOne("patient");
