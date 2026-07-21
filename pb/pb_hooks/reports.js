@@ -107,6 +107,7 @@ const findProceduresByOtDayAndRoom = (otDayId, roomId) => {
                 operatingRoom: roomId,
             }),
         )
+        .andWhere($dbx.hashExp({ removed: false }))
         .orderBy("order ASC")
         .all(records);
 
