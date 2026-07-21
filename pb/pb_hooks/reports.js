@@ -136,7 +136,13 @@ const getOtListHTMLReport = (otDayId) => {
     operatingRoomsRecords.forEach((roomRecord) => {
         const room = roomRecord.publicExport();
         tableRows = [...tableRows, [room.name]];
+
         const procedureRecords = findProceduresByOtDayAndRoom(otDayId, room.id);
+
+        if (procedureRecords.length === 0) {
+            tableRows = [...tableRows, ["No procedures", ""]];
+        }
+
         procedureRecords.forEach((procedureRecord) => {
             $app.expandRecord(procedureRecord, ["patient"]);
             const patientRecord = procedureRecord.expandedOne("patient");

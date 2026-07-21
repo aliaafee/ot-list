@@ -23,6 +23,9 @@
     }
     td.room {
         background-color: red;
+        background-color: red;
+        font-weight: bold;
+        text-align: center;
     }
     thead > tr {
         background-color: grey;
@@ -37,9 +40,6 @@
     }
     td:only-child {
         padding-bottom: 5px;
-        background-color: red;
-        font-weight: bold;
-        text-align: center;
     }
 {{end}}
 
@@ -70,8 +70,12 @@
                 {{if eq (len $row) 1}}
                     <td colspan="13" class="room" bgcolor="lightred">{{index $row 0}}</td>
                 {{else}}
-                    {{range $row}}
-                        <td>{{.}}</td>
+                    {{if eq (len $row) 2}}
+                        <td colspan="13">{{index $row 0}} {{index $row 1}}</td>
+                    {{else}}
+                        {{range $row}}
+                            <td>{{.}}</td>
+                        {{end}}
                     {{end}}
                 {{end}}
             </tr>
