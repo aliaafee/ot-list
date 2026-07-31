@@ -6,13 +6,136 @@ import { twMerge } from "tailwind-merge";
 import { pb } from "@/lib/pb";
 import OtListMarker from "./ot-list-marker";
 
+function DayItem({ day, isSelected, onSelect }) {
+    return (
+        <li
+            className={twMerge(
+                "flex items-center p-1 gap-2 pl-12 cursor-pointer hover:bg-blue-200",
+                isSelected && "bg-blue-300 hover:bg-blue-300",
+            )}
+            onClick={() => onSelect(day)}
+        >
+            <span className="flex overflow-clip grow">
+                <span className="overflow-clip whitespace-nowrap min-w-12">
+                    {dayjs(day.date).format("ddd")},{" "}
+                </span>
+                <span className="col-span-2 text-ellipsis whitespace-nowrap grow">
+                    {dayjs(day.date).format("DD MMMM")}
+                </span>
+                <span className="overflow-clip whitespace-nowrap">
+                    <OtListMarker otList={day.expand?.otList} />
+                </span>
+            </span>
+        </li>
+    );
+}
+
+function MonthItem({
+    monthData,
+    isSelected,
+    onSelect,
+    days,
+    loadingDays,
+    selectedDayId,
+    onSelectDay,
+    filteredDays,
+}) {
+    return (
+        <li className="flex flex-col">
+            <div
+                className={twMerge(
+                    "flex items-center p-1 gap-2 pl-8 cursor-pointer hover:bg-gray-300",
+                    isSelected && "bg-gray-300 font-semibold",
+                )}
+                onClick={() => onSelect(monthData.month)}
+            >
+                {dayjs()
+                    .month(monthData.month - 1)
+                    .format("MMMM")}
+            </div>
+            {isSelected && (
+                <ul>
+                    {loadingDays ? (
+                        <li className="p-1 pl-12">Loading days...</li>
+                    ) : filteredDays.length === 0 ? (
+                        <li className="p-1 pl-12">
+                            {days.length === 0
+                                ? "No days found."
+                                : "No days for this OT list."}
+                        </li>
+                    ) : (
+                        filteredDays.map((d) => (
+                            <DayItem
+                                key={d.id}
+                                day={d}
+                                isSelected={selectedDayId === d.id}
+                                onSelect={onSelectDay}
+                            />
+                        ))
+                    )}
+                </ul>
+            )}
+        </li>
+    );
+}
+
+function YearItem({
+    yearData,
+    isSelected,
+    onSelect,
+    months,
+    loadingMonths,
+    month,
+    onChangeMonth,
+    days,
+    loadingDays,
+    selectedDayId,
+    onSelectDay,
+    filteredDays,
+}) {
+    return (
+        <li className="flex flex-col">
+            <div
+                className={twMerge(
+                    "flex items-center p-1 gap-2 pl-4 cursor-pointer hover:bg-gray-300",
+                    isSelected && "bg-gray-300",
+                )}
+                onClick={() => onSelect(yearData.year)}
+            >
+                <span className="font-semibold">{yearData.year}</span>
+            </div>
+            {isSelected && (
+                <ul>
+                    {loadingMonths ? (
+                        <li className="p-1 pl-8">Loading months...</li>
+                    ) : (
+                        months.map((m) => (
+                            <MonthItem
+                                key={m.id}
+                                monthData={m}
+                                isSelected={month === m.month}
+                                onSelect={onChangeMonth}
+                                days={days}
+                                loadingDays={loadingDays}
+                                selectedDayId={selectedDayId}
+                                onSelectDay={onSelectDay}
+                                filteredDays={filteredDays}
+                            />
+                        ))
+                    )}
+                </ul>
+            )}
+        </li>
+    );
+}
+
 function OtDaysBrowser({
     selectedDayId = null,
-    onSelectDay = (day) => {},
+    onSelectDay = () => {},
     year,
-    onChangeYear = (year) => {},
+    onChangeYear = () => {},
     month,
-    onChangeMonth = (month) => {},
+    onChangeMonth = () => {},
     selectedOtList,
 }) {
     const [loadingYears, setLoadingYears] = useState(false);
@@ -47,7 +170,6 @@ function OtDaysBrowser({
                 const result = await pb.collection("otDayYears").getFullList({
                     sort: "year",
                 });
-                console.log("otDayYears", result);
                 setYears(result);
             } catch (error) {
                 console.error("Error fetching OT day years:", error);
@@ -59,20 +181,19 @@ function OtDaysBrowser({
     }, []);
 
     useEffect(() => {
+        setMonths([]);
+        setDays([]);
         const fetchMonths = async () => {
             if (year) {
                 setLoadingMonths(true);
                 try {
-                    const months = await pb
+                    const result = await pb
                         .collection("otDayMonths")
                         .getFullList({
-                            filter: pb.filter("year = {:year}", {
-                                year: year,
-                            }),
+                            filter: pb.filter("year = {:year}", { year }),
                             sort: "month",
                         });
-                    console.log("otDayMonths", months);
-                    setMonths(months);
+                    setMonths(result);
                 } catch (error) {
                     console.error("Error fetching OT day months:", error);
                 } finally {
@@ -84,28 +205,27 @@ function OtDaysBrowser({
     }, [year]);
 
     useEffect(() => {
+        setDays([]);
         const fetchDays = async () => {
             if (year && month) {
                 setLoadingDays(true);
                 try {
-                    const start = `${year}-${String(month).padStart(2, "0")}-01 00:00:00`;
-                    const nextMonth =
-                        month === 12
-                            ? `${year + 1}-01-01 00:00:00`
-                            : `${year}-${String(month + 1).padStart(2, "0")}-01 00:00:00`;
+                    const start = dayjs(`${year}-${month}-01`)
+                        .startOf("month")
+                        .format("YYYY-MM-DD HH:mm:ss");
+                    const end = dayjs(`${year}-${month}-01`)
+                        .add(1, "month")
+                        .format("YYYY-MM-DD HH:mm:ss");
 
-                    console.log("Fetching days from", start, "to", nextMonth);
-
-                    const days = await pb.collection("otDays").getFullList({
+                    const result = await pb.collection("otDays").getFullList({
                         filter: pb.filter("date >= {:start} && date < {:end}", {
                             start,
-                            end: nextMonth,
+                            end,
                         }),
                         sort: "date",
                         expand: "otList",
                     });
-                    console.log("otDays", days);
-                    setDays(days);
+                    setDays(result);
                 } catch (error) {
                     console.error("Error fetching OT days:", error);
                 } finally {
@@ -119,118 +239,31 @@ function OtDaysBrowser({
     return (
         <ul className="flex flex-col overflow-y-auto overscroll-contain grow">
             {loadingYears ? (
-                <li>Loading years...</li>
+                <li className="p-1 pl-4">Loading years...</li>
             ) : (
                 years.map((y) => (
-                    <li key={y.id} className={twMerge("flex flex-col")}>
-                        <div
-                            className={twMerge(
-                                "flex items-center p-1 gap-2 pl-4 cursor-pointer hover:bg-gray-300",
-                                year === y.year && "bg-gray-300",
-                            )}
-                            onClick={() => {
-                                setMonths([]);
-                                setDays([]);
-                                onChangeYear(y.year);
-                            }}
-                        >
-                            <span className="font-semibold">{y.year}</span>
-                        </div>
-                        {year === y.year && (
-                            <ul>
-                                {loadingMonths ? (
-                                    <li className="p-1 pl-8">
-                                        Loading months...
-                                    </li>
-                                ) : (
-                                    months.map((m) => (
-                                        <li
-                                            key={m.id}
-                                            className={twMerge("flex flex-col")}
-                                        >
-                                            <div
-                                                className={twMerge(
-                                                    "flex items-center p-1 gap-2 pl-8 cursor-pointer hover:bg-gray-300",
-                                                    month === m.month &&
-                                                        "bg-gray-300 font-semibold",
-                                                )}
-                                                onClick={() => {
-                                                    setDays([]);
-                                                    onChangeMonth(m.month);
-                                                }}
-                                            >
-                                                {dayjs()
-                                                    .month(m.month - 1)
-                                                    .format("MMMM")}
-                                            </div>
-                                            {month === m.month && (
-                                                <ul>
-                                                    {loadingDays ? (
-                                                        <li className="p-1 pl-12">
-                                                            Loading days...
-                                                        </li>
-                                                    ) : filteredDays.length ===
-                                                      0 ? (
-                                                        <li className="p-1 pl-12">
-                                                            No days found.
-                                                        </li>
-                                                    ) : (
-                                                        filteredDays.map(
-                                                            (d) => (
-                                                                <li
-                                                                    key={d.id}
-                                                                    className={twMerge(
-                                                                        "flex items-center p-1 gap-2 pl-12 cursor-pointer hover:bg-blue-200",
-                                                                        selectedDayId ===
-                                                                            d.id &&
-                                                                            "bg-blue-300 hover:bg-blue-300",
-                                                                    )}
-                                                                    onClick={() =>
-                                                                        handleSelectDay(
-                                                                            d,
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    <span className="flex overflow-clip grow">
-                                                                        <span className="overflow-clip whitespace-nowrap min-w-12">
-                                                                            {dayjs(
-                                                                                d.date,
-                                                                            ).format(
-                                                                                "ddd",
-                                                                            )}
-
-                                                                            ,{" "}
-                                                                        </span>
-                                                                        <span className="col-span-2 text-ellipsis whitespace-nowrap grow">
-                                                                            {dayjs(
-                                                                                d.date,
-                                                                            ).format(
-                                                                                "DD MMMM",
-                                                                            )}
-                                                                        </span>
-
-                                                                        <span className="overflow-clip whitespace-nowrap">
-                                                                            <OtListMarker
-                                                                                otList={
-                                                                                    d
-                                                                                        .expand
-                                                                                        .otList
-                                                                                }
-                                                                            />
-                                                                        </span>
-                                                                    </span>
-                                                                </li>
-                                                            ),
-                                                        )
-                                                    )}
-                                                </ul>
-                                            )}
-                                        </li>
-                                    ))
-                                )}
-                            </ul>
-                        )}
-                    </li>
+                    <YearItem
+                        key={y.id}
+                        yearData={y}
+                        isSelected={year === y.year}
+                        onSelect={(newYear) => {
+                            setMonths([]);
+                            setDays([]);
+                            onChangeYear(newYear);
+                        }}
+                        months={months}
+                        loadingMonths={loadingMonths}
+                        month={month}
+                        onChangeMonth={(newMonth) => {
+                            setDays([]);
+                            onChangeMonth(newMonth);
+                        }}
+                        days={days}
+                        loadingDays={loadingDays}
+                        selectedDayId={selectedDayId}
+                        onSelectDay={handleSelectDay}
+                        filteredDays={filteredDays}
+                    />
                 ))
             )}
         </ul>
