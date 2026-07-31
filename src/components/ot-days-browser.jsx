@@ -12,6 +12,8 @@ function DayItem({ day, isSelected, onSelect }) {
             className={twMerge(
                 "flex items-center p-1 gap-2 pl-12 cursor-pointer hover:bg-blue-200",
                 isSelected && "bg-blue-300 hover:bg-blue-300",
+                day?.disabled && "text-red-600",
+                day?.disabled && isSelected && "text-red-700",
             )}
             onClick={() => onSelect(day)}
         >
