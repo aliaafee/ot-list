@@ -18,6 +18,7 @@ import { twMerge } from "tailwind-merge";
 import OtDaysReducer from "@/reducers/ot-days-reducer";
 import { OtListColours } from "@/utils/colours";
 import { LoadingSpinner } from "./loading-spinner";
+import OtDaysBrowser from "./ot-days-browser";
 
 const otDaysCollectionOptions = {
     sort: "+date",
@@ -45,6 +46,10 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
     const [totalPages, setTotalPages] = useState(1);
     const [loadingList, setLoadingList] = useState(false);
     const [loadingMore, setLoadingMore] = useState(false);
+
+    const [browserSelectedYear, setBrowserSelectedYear] = useState(null);
+    const [browserSelectedMonth, setBrowserSelectedMonth] = useState(null);
+
     const navigate = useNavigate();
     const pageSize = 50;
 
@@ -72,11 +77,10 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
 
         setLoadingMore(true);
         try {
-            const collectionName = showAll ? "otDays" : "upcomingOtDays";
             const nextPage = currentPage + 1;
 
             const result = await pb
-                .collection(collectionName)
+                .collection("upcomingOtDays")
                 .getList(nextPage, pageSize, {
                     ...otDaysCollectionOptions,
                     filter: pb.filter("otList.department = {:departmentId}", {
@@ -119,10 +123,8 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                 setSelectedOtList(null);
                 console.log("otLists", lists);
 
-                const collectionName = showAll ? "otDays" : "upcomingOtDays";
-
                 const result = await pb
-                    .collection(collectionName)
+                    .collection("upcomingOtDays")
                     .getList(1, pageSize, {
                         ...otDaysCollectionOptions,
                         filter: pb.filter(
@@ -157,23 +159,12 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                     return;
                 }
                 if (e.action === "create") {
-                    if (
-                        !showAll &&
-                        dayjs(e.record.date).isSameOrAfter(dayjs(), "day")
-                    ) {
+                    if (dayjs(e.record.date).isSameOrAfter(dayjs(), "day")) {
                         dispatchOtDaysList({
                             type: "ADD_DAY",
                             payload: e.record,
                         });
                         return;
-                    } else {
-                        if (showAll) {
-                            dispatchOtDaysList({
-                                type: "ADD_DAY",
-                                payload: e.record,
-                            });
-                            return;
-                        }
                     }
                 }
             },
@@ -186,7 +177,7 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
             console.log("unsubscribe", "otDays");
             pb.collection("otDays").unsubscribe("*");
         };
-    }, [showAll, selectedDepartmentId]);
+    }, [selectedDepartmentId]);
 
     if (loading) {
         return <LoadingSpinner className={twMerge("bg-gray-200", className)} />;
@@ -270,7 +261,31 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                 </ToolBarButton>
             </ToolBar>
 
-            {loadingList ? (
+            {showAll ? (
+                <OtDaysBrowser
+                    selectedDayId={selectedDayId}
+                    onSelectDay={onSelectDay}
+                    selectedOtList={selectedOtList}
+                    year={browserSelectedYear}
+                    onChangeYear={(year) => {
+                        if (browserSelectedYear === year) {
+                            setBrowserSelectedYear(null);
+                            setBrowserSelectedMonth(null);
+                            return;
+                        }
+                        setBrowserSelectedYear(year);
+                        setBrowserSelectedMonth(null);
+                    }}
+                    month={browserSelectedMonth}
+                    onChangeMonth={(month) => {
+                        if (browserSelectedMonth === month) {
+                            setBrowserSelectedMonth(null);
+                            return;
+                        }
+                        setBrowserSelectedMonth(month);
+                    }}
+                />
+            ) : loadingList ? (
                 <LoadingSpinner className={twMerge("bg-gray-200", className)} />
             ) : (
                 <>
