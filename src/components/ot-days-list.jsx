@@ -40,7 +40,7 @@ function OtDaysList({
     }, [otDays, selectedOtList]);
 
     if (otDays.length === 0) {
-        return <div className="p-1 pl-4">...</div>;
+        return <div className="p-1 pl-4">No days found.</div>;
     }
 
     return (
@@ -82,15 +82,11 @@ function OtDaysList({
                                                 )}
                                             </span>
 
-                                            {!!!selectedOtList && (
-                                                <span className="overflow-clip whitespace-nowrap">
-                                                    <OtListMarker
-                                                        otList={
-                                                            otDay.expand.otList
-                                                        }
-                                                    />
-                                                </span>
-                                            )}
+                                            <span className="overflow-clip whitespace-nowrap">
+                                                <OtListMarker
+                                                    otList={otDay.expand.otList}
+                                                />
+                                            </span>
                                         </span>
                                     </Link>
                                 </li>

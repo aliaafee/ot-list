@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { twMerge } from "tailwind-merge";
 
@@ -23,6 +23,17 @@ function OtDaysBrowser({
     const [days, setDays] = useState([]);
 
     const navigate = useNavigate();
+
+    const filteredDays = useMemo(
+        () =>
+            days.filter((day) => {
+                if (selectedOtList) {
+                    return day.otList === selectedOtList;
+                }
+                return true;
+            }),
+        [days, selectedOtList],
+    );
 
     const handleSelectDay = (day) => {
         onSelectDay(day);
@@ -158,51 +169,59 @@ function OtDaysBrowser({
                                                         <li className="p-1 pl-12">
                                                             Loading days...
                                                         </li>
+                                                    ) : filteredDays.length ===
+                                                      0 ? (
+                                                        <li className="p-1 pl-12">
+                                                            No days found.
+                                                        </li>
                                                     ) : (
-                                                        days.map((d) => (
-                                                            <li
-                                                                key={d.id}
-                                                                className={twMerge(
-                                                                    "flex items-center p-1 gap-2 pl-12 cursor-pointer hover:bg-blue-200",
-                                                                    selectedDayId ===
-                                                                        d.id &&
-                                                                        "bg-blue-300 hover:bg-blue-300",
-                                                                )}
-                                                                onClick={() =>
-                                                                    handleSelectDay(
-                                                                        d,
-                                                                    )
-                                                                }
-                                                            >
-                                                                <span className="flex overflow-clip grow">
-                                                                    <span className="overflow-clip whitespace-nowrap min-w-12">
-                                                                        {dayjs(
-                                                                            d.date,
-                                                                        ).format(
-                                                                            "ddd",
-                                                                        )}
-                                                                        ,{" "}
-                                                                    </span>
-                                                                    <span className="col-span-2 text-ellipsis whitespace-nowrap grow">
-                                                                        {dayjs(
-                                                                            d.date,
-                                                                        ).format(
-                                                                            "DD MMMM",
-                                                                        )}
-                                                                    </span>
+                                                        filteredDays.map(
+                                                            (d) => (
+                                                                <li
+                                                                    key={d.id}
+                                                                    className={twMerge(
+                                                                        "flex items-center p-1 gap-2 pl-12 cursor-pointer hover:bg-blue-200",
+                                                                        selectedDayId ===
+                                                                            d.id &&
+                                                                            "bg-blue-300 hover:bg-blue-300",
+                                                                    )}
+                                                                    onClick={() =>
+                                                                        handleSelectDay(
+                                                                            d,
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    <span className="flex overflow-clip grow">
+                                                                        <span className="overflow-clip whitespace-nowrap min-w-12">
+                                                                            {dayjs(
+                                                                                d.date,
+                                                                            ).format(
+                                                                                "ddd",
+                                                                            )}
 
-                                                                    <span className="overflow-clip whitespace-nowrap">
-                                                                        <OtListMarker
-                                                                            otList={
-                                                                                d
-                                                                                    .expand
-                                                                                    .otList
-                                                                            }
-                                                                        />
+                                                                            ,{" "}
+                                                                        </span>
+                                                                        <span className="col-span-2 text-ellipsis whitespace-nowrap grow">
+                                                                            {dayjs(
+                                                                                d.date,
+                                                                            ).format(
+                                                                                "DD MMMM",
+                                                                            )}
+                                                                        </span>
+
+                                                                        <span className="overflow-clip whitespace-nowrap">
+                                                                            <OtListMarker
+                                                                                otList={
+                                                                                    d
+                                                                                        .expand
+                                                                                        .otList
+                                                                                }
+                                                                            />
+                                                                        </span>
                                                                     </span>
-                                                                </span>
-                                                            </li>
-                                                        ))
+                                                                </li>
+                                                            ),
+                                                        )
                                                     )}
                                                 </ul>
                                             )}
