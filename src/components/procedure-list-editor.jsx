@@ -25,6 +25,33 @@ import BodyLayout from "./body-layout";
 import { api } from "@/lib/api";
 import { formatDate, formateDateLong } from "@/utils/dates";
 
+const TableHeader = ({ className }) => (
+    <div className={twMerge("flex text-sm", className)}>
+        <div className="px-2 hidden md:inline">
+            <span className="invisible">⠿</span>
+        </div>
+        <div className="grow flex-auto pl-2 pr-2 grid grid-cols-10 lg:grid-cols-14 gap-1 uppercase font-medium text-gray-500 text-xs">
+            <div className="col-span-1 overflow-clip text-ellipsis">#</div>
+            <div className="col-span-2 lg:col-span-2 overflow-clip text-ellipsis">
+                NID
+            </div>
+            <div className="col-span-2 lg:col-span-2 overflow-clip text-ellipsis">
+                Name
+            </div>
+            <div className="col-span-1 hidden lg:inline overflow-clip text-ellipsis">
+                Age / Sex
+            </div>
+            <div className="col-span-3 hidden lg:inline overflow-clip text-ellipsis">
+                Diagnosis
+            </div>
+            <div className="col-span-3 overflow-clip text-ellipsis">
+                Procedure
+            </div>
+            <div className="col-span-2 overflow-clip text-ellipsis">PAC</div>
+        </div>
+    </div>
+);
+
 /**
  * ProcedureListEditor - Main editor for viewing and managing procedures for an OT day
  *
@@ -99,7 +126,11 @@ function ProcedureListEditor({
         }
     };
 
-    const ProcedureToolBar = () => (
+    // A plain element rather than a component defined here: a component
+    // declared during render is a new type on every render, which makes React
+    // throw the toolbar away and rebuild it instead of updating it, losing
+    // the focused button every time anything in this editor changes.
+    const procedureToolBar = (
         <ToolBar>
             <ToolBarButton
                 title="OT Dates"
@@ -181,38 +212,9 @@ function ProcedureListEditor({
         </ToolBar>
     );
 
-    const TableHeader = ({ className }) => (
-        <div className={twMerge("flex text-sm", className)}>
-            <div className="px-2 hidden md:inline">
-                <span className="invisible">⠿</span>
-            </div>
-            <div className="grow flex-auto pl-2 pr-2 grid grid-cols-10 lg:grid-cols-14 gap-1 uppercase font-medium text-gray-500 text-xs">
-                <div className="col-span-1 overflow-clip text-ellipsis">#</div>
-                <div className="col-span-2 lg:col-span-2 overflow-clip text-ellipsis">
-                    NID
-                </div>
-                <div className="col-span-2 lg:col-span-2 overflow-clip text-ellipsis">
-                    Name
-                </div>
-                <div className="col-span-1 hidden lg:inline overflow-clip text-ellipsis">
-                    Age / Sex
-                </div>
-                <div className="col-span-3 hidden lg:inline overflow-clip text-ellipsis">
-                    Diagnosis
-                </div>
-                <div className="col-span-3 overflow-clip text-ellipsis">
-                    Procedure
-                </div>
-                <div className="col-span-2 overflow-clip text-ellipsis">
-                    PAC
-                </div>
-            </div>
-        </div>
-    );
-
     if (loading) {
         return (
-            <BodyLayout className={className} header={<ProcedureToolBar />}>
+            <BodyLayout className={className} header={procedureToolBar}>
                 <div className="animate-pulse">
                     <div className="mb-2">
                         <div className="h-7 bg-gray-100 rounded-lg w-80 mb-4"></div>
@@ -237,7 +239,7 @@ function ProcedureListEditor({
 
     if (error) {
         return (
-            <BodyLayout className={className} header={<ProcedureToolBar />}>
+            <BodyLayout className={className} header={procedureToolBar}>
                 {error}
             </BodyLayout>
         );
@@ -245,14 +247,14 @@ function ProcedureListEditor({
 
     if (!!!otDay) {
         return (
-            <BodyLayout className={className} header={<ProcedureToolBar />}>
+            <BodyLayout className={className} header={procedureToolBar}>
                 <></>
             </BodyLayout>
         );
     }
 
     return (
-        <BodyLayout className={className} header={<ProcedureToolBar />}>
+        <BodyLayout className={className} header={procedureToolBar}>
             <div className="mb-2">
                 <span
                     className={twMerge(
