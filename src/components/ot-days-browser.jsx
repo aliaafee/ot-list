@@ -57,18 +57,23 @@ function MonthItem({
 }) {
     const ref = useRef(null);
 
-    const hasSelectedDay = filteredDays.some((d) => d.id === selectedDayId);
+    // The selected day scrolls itself into view, so don't fight it. While the
+    // days are still loading we can't tell yet whether it belongs to this
+    // month, so hold off, the effect below runs again once loading settles.
+    const skipScroll = useRef(false);
+    skipScroll.current =
+        !!selectedDayId &&
+        (loadingDays || filteredDays.some((d) => d.id === selectedDayId));
 
     useEffect(() => {
-        // the selected day scrolls itself into view, don't fight it
-        if (isSelected && !hasSelectedDay && ref.current) {
+        if (isSelected && !skipScroll.current && ref.current) {
             ref.current.scrollIntoView({
                 behavior: "smooth",
                 block: "start",
                 inline: "nearest",
             });
         }
-    }, [isSelected, loadingDays, hasSelectedDay]);
+    }, [isSelected, loadingDays]);
 
     return (
         <li ref={ref} className="flex flex-col">
@@ -126,14 +131,20 @@ function YearItem({
 }) {
     const ref = useRef(null);
 
+    // An open month scrolls itself into view, so only the bare year needs
+    // scrolling. Kept out of the deps so that collapsing a month, which sets
+    // the month back to null, doesn't drag the year up with it.
+    const skipScroll = useRef(false);
+    skipScroll.current = month !== null;
+
     useEffect(() => {
-        if (isSelected && ref.current && month === null) {
+        if (isSelected && !skipScroll.current && ref.current) {
             ref.current.scrollIntoView({
                 behavior: "smooth",
                 block: "start",
             });
         }
-    }, [isSelected, loadingMonths, month]);
+    }, [isSelected, loadingMonths]);
 
     return (
         <li ref={ref} className="flex flex-col">
