@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 import { Link } from "react-router";
 import Button from "@/components/button";
+import { useTreeKeyboardNav } from "@/hooks/use-tree-keyboard-nav";
 import OtListMarker from "./ot-list-marker";
 
 function OtDaysList({
@@ -39,12 +40,18 @@ function OtDaysList({
         return groupDaysByMonth(daysByList);
     }, [otDays, selectedOtList]);
 
+    const treeNav = useTreeKeyboardNav();
+
     if (otDays.length === 0) {
         return <div className="p-1 pl-4">No days found.</div>;
     }
 
     return (
-        <ul className="flex flex-col overflow-y-auto overscroll-contain grow">
+        <ul
+            ref={treeNav.ref}
+            onKeyDown={treeNav.onKeyDown}
+            className="flex flex-col overflow-y-auto overscroll-contain grow"
+        >
             {Object.keys(daysByMonth).map((month, index) => (
                 <li key={index} className=" text-gray-700">
                     <div className="font-semibold p-1 mt-3 overflow-clip whitespace-nowrap">
@@ -54,22 +61,28 @@ function OtDaysList({
                         {daysByMonth[month]
                             .sort((a, b) => new Date(a.date) - new Date(b.date))
                             .map((otDay, subIndex) => (
-                                <li
-                                    key={subIndex}
-                                    className={twMerge(
-                                        "hover:bg-blue-200 cursor-pointer p-1 pl-4",
-                                        selectedDayId === otDay.id
-                                            ? "bg-blue-300 hover:bg-blue-300"
-                                            : "bg-transparent",
-                                        otDay?.disabled && "text-red-600",
-                                        otDay?.disabled &&
-                                            selectedDayId === otDay.id &&
-                                            "text-red-700",
-                                    )}
-                                    onClick={() => onSelectDay(otDay.id)}
-                                >
-                                    <Link to={`/lists/${otDay.id}`}>
-                                        <span className="flex overflow-clip">
+                                <li key={subIndex}>
+                                    <Link
+                                        to={`/lists/${otDay.id}`}
+                                        data-tree-item
+                                        aria-current={
+                                            selectedDayId === otDay.id
+                                                ? "true"
+                                                : undefined
+                                        }
+                                        className={twMerge(
+                                            "flex w-full hover:bg-blue-200 cursor-pointer p-1 pl-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-600",
+                                            selectedDayId === otDay.id
+                                                ? "bg-blue-300 hover:bg-blue-300"
+                                                : "bg-transparent",
+                                            otDay?.disabled && "text-red-600",
+                                            otDay?.disabled &&
+                                                selectedDayId === otDay.id &&
+                                                "text-red-700",
+                                        )}
+                                        onClick={() => onSelectDay(otDay.id)}
+                                    >
+                                        <span className="flex overflow-clip grow">
                                             <span className="overflow-clip whitespace-nowrap min-w-12">
                                                 {dayjs(otDay.date).format(
                                                     "ddd",
@@ -101,6 +114,11 @@ function OtDaysList({
                                     onClick={loadMorePages}
                                     disabled={loadMorePagesDisabled}
                                     loading={loadingMore}
+                                    // A disabled button cannot take focus, so
+                                    // keep it out of the arrow key order
+                                    data-tree-item={
+                                        loadMorePagesDisabled ? undefined : true
+                                    }
                                 >
                                     {loadMorePagesDisabled
                                         ? "No more dates"

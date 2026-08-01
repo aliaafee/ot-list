@@ -4,9 +4,16 @@ import { useNavigate } from "react-router";
 import { twMerge } from "tailwind-merge";
 
 import { pb } from "@/lib/pb";
+import { useTreeKeyboardNav } from "@/hooks/use-tree-keyboard-nav";
 import { insertDayInOrder, isInMonth } from "@/utils/ot-days";
 import OtListMarker from "./ot-list-marker";
 import { ChevronRightIcon } from "lucide-react";
+
+// Every row is a real button, so Tab reaches it and Enter/Space activate it.
+// data-tree-item marks it for the arrow key handling on the root list, and
+// data-level says how deep it sits so that ArrowLeft can find its parent.
+const treeItemClasses =
+    "flex items-center w-full text-left p-1 gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-600";
 
 function DayItem({ day, isSelected, onSelect }) {
     const ref = useRef(null);
@@ -22,27 +29,33 @@ function DayItem({ day, isSelected, onSelect }) {
     }, [isSelected]);
 
     return (
-        <li
-            ref={ref}
-            className={twMerge(
-                "flex items-center p-1 gap-2 pl-12 cursor-pointer hover:bg-blue-200",
-                isSelected && "bg-blue-300 hover:bg-blue-300",
-                day?.disabled && "text-red-600",
-                day?.disabled && isSelected && "text-red-700",
-            )}
-            onClick={() => onSelect(day)}
-        >
-            <span className="flex overflow-clip grow">
-                <span className="overflow-clip whitespace-nowrap min-w-12">
-                    {dayjs(day.date).format("ddd")},{" "}
+        <li ref={ref} className="flex flex-col">
+            <button
+                type="button"
+                data-tree-item
+                data-level="3"
+                aria-current={isSelected ? "true" : undefined}
+                className={twMerge(
+                    treeItemClasses,
+                    "pl-12 hover:bg-blue-200",
+                    isSelected && "bg-blue-300 hover:bg-blue-300",
+                    day?.disabled && "text-red-600",
+                    day?.disabled && isSelected && "text-red-700",
+                )}
+                onClick={() => onSelect(day)}
+            >
+                <span className="flex overflow-clip grow">
+                    <span className="overflow-clip whitespace-nowrap min-w-12">
+                        {dayjs(day.date).format("ddd")},{" "}
+                    </span>
+                    <span className="col-span-2 text-ellipsis whitespace-nowrap grow">
+                        {dayjs(day.date).format("DD MMMM")}
+                    </span>
+                    <span className="overflow-clip whitespace-nowrap">
+                        <OtListMarker otList={day.expand?.otList} />
+                    </span>
                 </span>
-                <span className="col-span-2 text-ellipsis whitespace-nowrap grow">
-                    {dayjs(day.date).format("DD MMMM")}
-                </span>
-                <span className="overflow-clip whitespace-nowrap">
-                    <OtListMarker otList={day.expand?.otList} />
-                </span>
-            </span>
+            </button>
         </li>
     );
 }
@@ -79,9 +92,15 @@ function MonthItem({
 
     return (
         <li ref={ref} className="flex flex-col">
-            <div
+            <button
+                type="button"
+                data-tree-item
+                data-level="2"
+                data-expanded={isSelected ? "true" : "false"}
+                aria-expanded={isSelected}
                 className={twMerge(
-                    "flex items-center p-1 gap-2 pl-8 cursor-pointer hover:bg-gray-300",
+                    treeItemClasses,
+                    "pl-8 hover:bg-gray-300",
                     isSelected && "bg-gray-300 font-semibold",
                 )}
                 onClick={() => onSelect(monthData.month)}
@@ -90,7 +109,7 @@ function MonthItem({
                     width={16}
                     height={16}
                     className={twMerge(
-                        "transition-transform",
+                        "shrink-0 transition-transform",
                         isSelected && "rotate-90",
                     )}
                 />
@@ -98,7 +117,7 @@ function MonthItem({
                     .month(monthData.month - 1)
                     .format("MMMM")}{" "}
                 {isSelected && monthData.year}
-            </div>
+            </button>
             {isSelected && (
                 <ul>
                     {loadingDays ? (
@@ -158,9 +177,15 @@ function YearItem({
 
     return (
         <li ref={ref} className="flex flex-col">
-            <div
+            <button
+                type="button"
+                data-tree-item
+                data-level="1"
+                data-expanded={isSelected ? "true" : "false"}
+                aria-expanded={isSelected}
                 className={twMerge(
-                    "flex items-center p-1 gap-2 pl-4 cursor-pointer hover:bg-gray-300",
+                    treeItemClasses,
+                    "pl-4 hover:bg-gray-300",
                     isSelected && "bg-gray-300",
                 )}
                 onClick={() => onSelect(yearData.year)}
@@ -169,12 +194,12 @@ function YearItem({
                     width={16}
                     height={16}
                     className={twMerge(
-                        "transition-transform",
+                        "shrink-0 transition-transform",
                         isSelected && "rotate-90",
                     )}
                 />
                 <span className="font-semibold">{yearData.year}</span>
-            </div>
+            </button>
             {isSelected && (
                 <ul>
                     {loadingMonths ? (
@@ -388,8 +413,16 @@ function OtDaysBrowser({
         };
     }, [fetchYears, fetchMonths]);
 
+    // Arrow keys are handled on the container rather than on each row,
+    // because moving between rows means crossing component boundaries.
+    const treeNav = useTreeKeyboardNav();
+
     return (
-        <ul className="flex flex-col overflow-y-auto overscroll-contain grow">
+        <ul
+            ref={treeNav.ref}
+            onKeyDown={treeNav.onKeyDown}
+            className="flex flex-col overflow-y-auto overscroll-contain grow"
+        >
             {loadingYears ? (
                 <li className="p-1 pl-4">Loading years...</li>
             ) : (
