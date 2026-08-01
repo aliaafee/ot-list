@@ -6,6 +6,7 @@ import { twMerge } from "tailwind-merge";
 import { pb } from "@/lib/pb";
 import { insertDayInOrder, isInMonth } from "@/utils/ot-days";
 import OtListMarker from "./ot-list-marker";
+import { ChevronRightIcon } from "lucide-react";
 
 function DayItem({ day, isSelected, onSelect }) {
     const ref = useRef(null);
@@ -85,6 +86,14 @@ function MonthItem({
                 )}
                 onClick={() => onSelect(monthData.month)}
             >
+                <ChevronRightIcon
+                    width={16}
+                    height={16}
+                    className={twMerge(
+                        "transition-transform",
+                        isSelected && "rotate-90",
+                    )}
+                />
                 {dayjs()
                     .month(monthData.month - 1)
                     .format("MMMM")}{" "}
@@ -156,6 +165,14 @@ function YearItem({
                 )}
                 onClick={() => onSelect(yearData.year)}
             >
+                <ChevronRightIcon
+                    width={16}
+                    height={16}
+                    className={twMerge(
+                        "transition-transform",
+                        isSelected && "rotate-90",
+                    )}
+                />
                 <span className="font-semibold">{yearData.year}</span>
             </div>
             {isSelected && (
