@@ -212,7 +212,7 @@ function OtDaysBrowser({
     );
 
     const handleSelectDay = (day) => {
-        onSelectDay(day);
+        onSelectDay(day.id);
         navigate(`/lists/${day.id}`);
     };
 

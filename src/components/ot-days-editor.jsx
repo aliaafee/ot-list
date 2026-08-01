@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { PlusIcon } from "lucide-react";
 import dayjs from "dayjs";
@@ -26,11 +26,14 @@ const otDaysCollectionOptions = {
     expand: "otList",
 };
 
+const departmentFilter = (departmentId) =>
+    pb.filter("otList.department = {:departmentId}", { departmentId });
+
 /**
  * OtDaysEditor - Sidebar component for viewing and managing OT days by department
  *
  * @param {string} selectedDayId - ID of currently selected OT day
- * @param {function} onSelectDay - Callback when an OT day is selected
+ * @param {function} onSelectDay - Callback when an OT day is selected, receives the OT day ID
  * @param {string} className - Additional CSS classes for the container
  */
 function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
@@ -38,12 +41,15 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [listError, setListError] = useState("");
     const [otLists, setOtLists] = useState([]);
     const [selectedDepartmentId, setSelectedDepartmentId] = useState(null);
     const [departments, setDepartments] = useState([]);
     const [selectedOtList, setSelectedOtList] = useState(null);
     const [showAll, setShowAll] = useState(false);
-    const [otDaysList, dispatchOtDaysList] = useReducer(OtDaysReducer, null);
+    const [otDaysList, dispatchOtDaysList] = useReducer(OtDaysReducer, {
+        otDays: [],
+    });
     const [showAddDates, setShowAddDates] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -52,6 +58,11 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
 
     const [browserSelectedYear, setBrowserSelectedYear] = useState(null);
     const [browserSelectedMonth, setBrowserSelectedMonth] = useState(null);
+
+    // Read inside async callbacks to tell whether the department they were
+    // started for is still the current one.
+    const departmentIdRef = useRef(null);
+    departmentIdRef.current = selectedDepartmentId;
 
     const navigate = useNavigate();
     const pageSize = 50;
@@ -62,14 +73,14 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                 setLoading(true);
                 const depts = await pb.collection("departments").getFullList();
                 setDepartments(depts);
-                setLoading(false);
                 if (depts.length > 0) {
                     setSelectedDepartmentId(depts[0].id);
                 }
             } catch (e) {
-                console.log(e);
-                setLoading(false);
+                console.error(e);
                 setError(e.message);
+            } finally {
+                setLoading(false);
             }
         })();
     }, []);
@@ -78,7 +89,9 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
         if (currentPage >= totalPages || loadingMore || !selectedDepartmentId)
             return;
 
+        const departmentId = selectedDepartmentId;
         setLoadingMore(true);
+        setListError("");
         try {
             const nextPage = currentPage + 1;
 
@@ -86,10 +99,11 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                 .collection("upcomingOtDays")
                 .getList(nextPage, pageSize, {
                     ...otDaysCollectionOptions,
-                    filter: pb.filter("otList.department = {:departmentId}", {
-                        departmentId: selectedDepartmentId,
-                    }),
+                    filter: departmentFilter(departmentId),
                 });
+
+            // The department may have been switched while the page loaded
+            if (departmentId !== departmentIdRef.current) return;
 
             dispatchOtDaysList({
                 type: "ADD_DAYS",
@@ -97,8 +111,8 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
             });
             setCurrentPage(nextPage);
         } catch (e) {
-            console.log(e);
-            setError(e.message);
+            console.error(e);
+            setListError(e.message);
         } finally {
             setLoadingMore(false);
         }
@@ -111,10 +125,15 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
             return;
         }
 
+        // Guards every state update below, so that a request still in flight
+        // when the department changes cannot overwrite the newer department.
+        let cancelled = false;
+
         (async () => {
-            console.log("fetch otDays for department", selectedDepartmentId);
             setLoadingList(true);
+            setListError("");
             setCurrentPage(1);
+            setTotalPages(1);
             dispatchOtDaysList({ type: "SET_LIST", payload: [] });
             try {
                 const lists = await pb.collection("otLists").getFullList({
@@ -122,70 +141,85 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                         departmentId: selectedDepartmentId,
                     }),
                 });
+                if (cancelled) return;
                 setOtLists(lists);
-                setSelectedOtList(null);
-                console.log("otLists", lists);
 
                 const result = await pb
                     .collection("upcomingOtDays")
                     .getList(1, pageSize, {
                         ...otDaysCollectionOptions,
-                        filter: pb.filter(
-                            "otList.department = {:departmentId}",
-                            {
-                                departmentId: selectedDepartmentId,
-                            },
-                        ),
+                        filter: departmentFilter(selectedDepartmentId),
                     });
+                if (cancelled) return;
                 dispatchOtDaysList({ type: "SET_LIST", payload: result.items });
                 setTotalPages(result.totalPages);
-                console.log("otDays", result.items);
             } catch (e) {
-                console.log(e);
-                setError(e.message);
+                if (cancelled) return;
+                console.error(e);
+                setListError(e.message);
             } finally {
-                setLoadingList(false);
+                if (!cancelled) setLoadingList(false);
             }
         })();
 
-        console.log("subscribe", "otDays");
-        pb.collection("otDays").subscribe(
-            "*",
-            function (e) {
-                console.log(e.action);
-                console.log(e.record);
-                if (e.action === "update") {
-                    dispatchOtDaysList({
-                        type: "UPDATE_DAY",
-                        payload: e.record,
-                    });
+        // subscribe() resolves to its own unsubscribe function. Holding on to
+        // it, rather than unsubscribing by topic, keeps a fast department
+        // switch from tearing down a subscription that has not registered yet.
+        let unsubscribe = null;
+
+        (async () => {
+            try {
+                const off = await pb.collection("otDays").subscribe(
+                    "*",
+                    (e) => {
+                        if (e.action === "delete") {
+                            dispatchOtDaysList({
+                                type: "REMOVE_DAY",
+                                payload: e.record,
+                            });
+                            return;
+                        }
+                        if (e.action === "update") {
+                            dispatchOtDaysList({
+                                type: "UPDATE_DAY",
+                                payload: e.record,
+                            });
+                            return;
+                        }
+                        if (
+                            e.action === "create" &&
+                            dayjs(e.record.date).isSameOrAfter(dayjs(), "day")
+                        ) {
+                            dispatchOtDaysList({
+                                type: "ADD_DAY",
+                                payload: e.record,
+                            });
+                        }
+                    },
+                    {
+                        expand: otDaysCollectionOptions.expand,
+                        filter: departmentFilter(selectedDepartmentId),
+                    },
+                );
+                if (cancelled) {
+                    off();
                     return;
                 }
-                if (e.action === "create") {
-                    if (dayjs(e.record.date).isSameOrAfter(dayjs(), "day")) {
-                        dispatchOtDaysList({
-                            type: "ADD_DAY",
-                            payload: e.record,
-                        });
-                        return;
-                    }
-                }
-            },
-            {
-                ...otDaysCollectionOptions,
-            },
-        );
+                unsubscribe = off;
+            } catch (e) {
+                console.error(e);
+            }
+        })();
 
         return () => {
-            console.log("unsubscribe", "otDays");
-            pb.collection("otDays").unsubscribe("*");
+            cancelled = true;
+            if (unsubscribe) unsubscribe();
         };
     }, [selectedDepartmentId]);
 
     const handleShowAllToggle = (value) => {
         if (value) {
             setShowAll(true);
-            console.log("show all", otDay);
             setBrowserSelectedYear(otDay ? dayjs(otDay.date).year() : null);
             setBrowserSelectedMonth(
                 otDay ? dayjs(otDay.date).month() + 1 : null,
@@ -229,28 +263,25 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                 </select>
             </div>
             <ToolBar className="sticky top-0 bg-gray-200 grid grid-cols-1">
-                {
-                    <ToolBarPill
-                        items={[
-                            ...otLists.map((otList, index) => ({
-                                value: otList.id,
-                                label: otList.name,
-                                color:
-                                    OtListColours[otList.colour ?? ""] ||
-                                    "bg-gray-300",
-                            })),
-                            {
-                                value: null,
-                                label: "All Lists",
-                                color: "bg-gray-300",
-                            },
-                        ]}
-                        value={selectedOtList}
-                        setValue={(value) => setSelectedOtList(value)}
-                        className="grid grid-cols-2"
-                        disabled={loading}
-                    />
-                }
+                <ToolBarPill
+                    items={[
+                        ...otLists.map((otList) => ({
+                            value: otList.id,
+                            label: otList.name,
+                            color:
+                                OtListColours[otList.colour ?? ""] ||
+                                "bg-gray-300",
+                        })),
+                        {
+                            value: null,
+                            label: "All Lists",
+                            color: "bg-gray-300",
+                        },
+                    ]}
+                    value={selectedOtList}
+                    setValue={setSelectedOtList}
+                    className="grid grid-cols-2"
+                />
                 <ToolBarPill
                     items={[
                         {
@@ -263,19 +294,23 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                     value={showAll}
                     setValue={handleShowAllToggle}
                     className="grid grid-cols-2"
-                    disabled={loading}
                 />
 
                 <ToolBarButton
                     title="Add OT Dates"
                     onClick={() => setShowAddDates(true)}
                     className="bg-gray-300"
-                    disabled={loading}
                 >
                     <PlusIcon className="" width={16} height={16} />
                     <ToolBarButtonLabel>Add</ToolBarButtonLabel>
                 </ToolBarButton>
             </ToolBar>
+
+            {!!listError && (
+                <div role="alert" className="p-1 text-sm text-red-700">
+                    {listError}
+                </div>
+            )}
 
             {showAll ? (
                 <OtDaysBrowser
@@ -304,20 +339,18 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
             ) : loadingList ? (
                 <LoadingSpinner className={twMerge("bg-gray-200", className)} />
             ) : (
-                <>
-                    <OtDaysList
-                        otDays={otDaysList?.otDays}
-                        selectedDayId={selectedDayId}
-                        onSelectDay={onSelectDay}
-                        selectedOtList={selectedOtList}
-                        loadMorePages={loadMorePages}
-                        loadMorePagesDisabled={currentPage >= totalPages}
-                        loadingMore={loadingMore}
-                    />
-                </>
+                <OtDaysList
+                    otDays={otDaysList.otDays}
+                    selectedDayId={selectedDayId}
+                    onSelectDay={onSelectDay}
+                    selectedOtList={selectedOtList}
+                    loadMorePages={loadMorePages}
+                    loadMorePagesDisabled={currentPage >= totalPages}
+                    loadingMore={loadingMore}
+                />
             )}
 
-            {!!showAddDates && (
+            {showAddDates && (
                 <AddDatesModal
                     otLists={otLists}
                     onClose={() => setShowAddDates(false)}
@@ -331,7 +364,7 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
 
                         setShowAddDates(false);
                         if (addedDates && addedDates.length === 1) {
-                            onSelectDay();
+                            onSelectDay(addedDates[0].id);
                             navigate(`/lists/${addedDates[0].id}`);
                         }
                     }}
