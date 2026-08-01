@@ -4,7 +4,7 @@ import { XIcon } from "lucide-react";
 import { ToolBar, ToolBarButton } from "@/components/toolbar";
 
 /**
- * BodySidebarLayout - Two pane layout of a main body and a sidebar
+ * SidebarLayout - Two pane layout of a main body and a sidebar
  *
  * On large screens the sidebar is a fixed width column next to the body. On
  * smaller screens it becomes an overlay panel with its own bar and close
@@ -24,7 +24,7 @@ import { ToolBar, ToolBarButton } from "@/components/toolbar";
  * @param {string} [props.sidebarClassName] - Additional CSS classes for the sidebar column
  */
 
-function BodySidebarLayout({
+function SidebarLayout({
     children,
     sidebar,
     sidebarTitle,
@@ -77,4 +77,4 @@ function BodySidebarLayout({
     );
 }
 
-export default BodySidebarLayout;
+export default SidebarLayout;

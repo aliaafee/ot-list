@@ -1,7 +1,7 @@
 import { useParams } from "react-router";
 import { useEffect, useState } from "react";
 
-import BodySidebarLayout from "@/components/body-sidebar-layout";
+import SidebarLayout from "@/components/sidebar-layout";
 import OtDaysEditor from "@/components/ot-days-editor";
 import ProcedureListEditor from "@/components/procedure-list-editor";
 
@@ -16,7 +16,7 @@ function OperatingLists() {
     }, [otDayId]);
 
     return (
-        <BodySidebarLayout
+        <SidebarLayout
             sidebarTitle="Lists"
             open={showDaysList}
             onClose={() => setShowDaysList(false)}
@@ -33,7 +33,7 @@ function OperatingLists() {
                 handleShowDaysList={() => setShowDaysList(true)}
                 className="lg:grow"
             />
-        </BodySidebarLayout>
+        </SidebarLayout>
     );
 }
 
