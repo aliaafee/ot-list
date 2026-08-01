@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import { insertDayInOrder } from "@/utils/ot-days";
 
 function OtDaysReducer(state, action) {
     switch (action.type) {
@@ -16,18 +16,9 @@ function OtDaysReducer(state, action) {
             }
             // The list is kept in date order, so slot the day into place
             // instead of appending it. payload: new OT day object
-            const otDays = [...state.otDays];
-            const index = otDays.findIndex((day) =>
-                dayjs(day.date).isAfter(dayjs(action.payload.date)),
-            );
-            otDays.splice(
-                index === -1 ? otDays.length : index,
-                0,
-                action.payload,
-            );
             return {
                 ...state,
-                otDays,
+                otDays: insertDayInOrder(state.otDays, action.payload),
             };
         }
 

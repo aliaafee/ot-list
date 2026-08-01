@@ -1,9 +1,10 @@
 import dayjs from "dayjs";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { twMerge } from "tailwind-merge";
 
 import { pb } from "@/lib/pb";
+import { insertDayInOrder, isInMonth } from "@/utils/ot-days";
 import OtListMarker from "./ot-list-marker";
 
 function DayItem({ day, isSelected, onSelect }) {
@@ -216,46 +217,52 @@ function OtDaysBrowser({
         navigate(`/lists/${day.id}`);
     };
 
-    useEffect(() => {
-        const fetchYears = async () => {
-            setLoadingYears(true);
-            try {
-                const result = await pb.collection("otDayYears").getFullList({
-                    sort: "year",
-                });
-                setYears(result);
-            } catch (error) {
-                console.error("Error fetching OT day years:", error);
-            } finally {
-                setLoadingYears(false);
-            }
-        };
-        fetchYears();
+    // A realtime refresh must not flip the loading flags, because those flags
+    // are what drive the scroll-into-view effects above. Hence the silent mode.
+    const fetchYears = useCallback(async ({ silent = false } = {}) => {
+        if (!silent) setLoadingYears(true);
+        try {
+            const result = await pb.collection("otDayYears").getFullList({
+                sort: "year",
+            });
+            setYears(result);
+        } catch (error) {
+            console.error("Error fetching OT day years:", error);
+        } finally {
+            if (!silent) setLoadingYears(false);
+        }
     }, []);
+
+    // Takes the year as an argument rather than closing over it, so that the
+    // callback stays stable and the subscription below is registered only once.
+    const fetchMonths = useCallback(
+        async (targetYear, { silent = false } = {}) => {
+            if (!targetYear) return;
+            if (!silent) setLoadingMonths(true);
+            try {
+                const result = await pb.collection("otDayMonths").getFullList({
+                    filter: pb.filter("year = {:year}", { year: targetYear }),
+                    sort: "month",
+                });
+                setMonths(result);
+            } catch (error) {
+                console.error("Error fetching OT day months:", error);
+            } finally {
+                if (!silent) setLoadingMonths(false);
+            }
+        },
+        [],
+    );
+
+    useEffect(() => {
+        fetchYears();
+    }, [fetchYears]);
 
     useEffect(() => {
         setMonths([]);
         setDays([]);
-        const fetchMonths = async () => {
-            if (year) {
-                setLoadingMonths(true);
-                try {
-                    const result = await pb
-                        .collection("otDayMonths")
-                        .getFullList({
-                            filter: pb.filter("year = {:year}", { year }),
-                            sort: "month",
-                        });
-                    setMonths(result);
-                } catch (error) {
-                    console.error("Error fetching OT day months:", error);
-                } finally {
-                    setLoadingMonths(false);
-                }
-            }
-        };
-        fetchMonths();
-    }, [year]);
+        fetchMonths(year);
+    }, [fetchMonths, year]);
 
     useEffect(() => {
         setDays([]);
@@ -288,6 +295,81 @@ function OtDaysBrowser({
         };
         fetchDays();
     }, [year, month]);
+
+    // The subscription is registered once for the life of the component, so
+    // its handler reads what is currently open through this ref rather than
+    // through a closure captured at subscribe time.
+    const viewRef = useRef({});
+    viewRef.current = { year, month, years, months };
+
+    useEffect(() => {
+        let cancelled = false;
+        let unsubscribe = null;
+
+        // Deliberately unfiltered: a day whose date moves out of the open
+        // month has to be removed from the list, and a server side filter on
+        // the date range would simply not deliver that event.
+        const handleEvent = (e) => {
+            const record = e.record;
+            const { year, month, years, months } = viewRef.current;
+            const deleted = e.action === "delete";
+
+            if (year && month) {
+                const belongsHere =
+                    !deleted && isInMonth(record.date, year, month);
+
+                setDays((prev) => {
+                    const existing = prev.find((d) => d.id === record.id);
+                    // Pull the day out and put it back in date order, so that
+                    // an edited date moves it to its new place in the list.
+                    const without = existing
+                        ? prev.filter((d) => d.id !== record.id)
+                        : prev;
+                    if (!belongsHere) return without;
+                    return insertDayInOrder(without, {
+                        ...existing,
+                        ...record,
+                    });
+                });
+            }
+
+            // The year and month lists are aggregates, so a day can add a
+            // branch to the tree by being the first in a month, or empty one
+            // by being the last. Neither is visible from the day list alone,
+            // so refresh them unless this lands in a branch already on screen.
+            const recordYear = dayjs(record.date).year();
+            const recordMonth = dayjs(record.date).month() + 1;
+            const knownBranch =
+                years.some((y) => y.year === recordYear) &&
+                (year !== recordYear ||
+                    months.some((m) => m.month === recordMonth));
+
+            if (deleted || !knownBranch) {
+                fetchYears({ silent: true });
+                if (year) fetchMonths(year, { silent: true });
+            }
+        };
+
+        (async () => {
+            try {
+                const off = await pb
+                    .collection("otDays")
+                    .subscribe("*", handleEvent, { expand: "otList" });
+                if (cancelled) {
+                    off();
+                    return;
+                }
+                unsubscribe = off;
+            } catch (error) {
+                console.error("Error subscribing to OT days:", error);
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+            if (unsubscribe) unsubscribe();
+        };
+    }, [fetchYears, fetchMonths]);
 
     return (
         <ul className="flex flex-col overflow-y-auto overscroll-contain grow">
