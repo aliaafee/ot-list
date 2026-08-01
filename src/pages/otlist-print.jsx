@@ -11,6 +11,15 @@ import { twMerge } from "tailwind-merge";
 const controlButtonClasses =
     "grow sm:grow-0 px-4 sm:min-h-0 sm:px-2 sm:text-sm";
 
+// The checkbox column stays put while the table is panned sideways. Each cell
+// needs its own opaque background or the row would show through it, and its
+// grid lines come from an outline rather than a border: under border-collapse
+// the borders belong to the table instead of the cell, so they do not travel
+// with a sticky one. Pulling the outline in by its own width lands it on the
+// cell edge, where the collapsed borders of the other columns sit.
+const stickyCell =
+    "print:hidden sticky left-0 z-10 outline outline-1 outline-black";
+
 function SubOtListPrint({ procedures, operatingRoom, excluded, onToggle }) {
     const proceduresByRoom = useMemo(
         () =>
@@ -37,7 +46,7 @@ function SubOtListPrint({ procedures, operatingRoom, excluded, onToggle }) {
     return (
         <>
             <tr key={operatingRoom?.name}>
-                <td className="print:hidden border border-black bg-red-400"></td>
+                <td className={`${stickyCell} bg-red-400`}></td>
                 <td
                     className="border border-black p-1 text-center font-bold bg-red-400"
                     colSpan={13}
@@ -60,7 +69,7 @@ function SubOtListPrint({ procedures, operatingRoom, excluded, onToggle }) {
             )}
             {proceduresByRoom.length === 0 ? (
                 <tr key={`${operatingRoom.id}-empty`}>
-                    <td className="print:hidden border border-black p-1"></td>
+                    <td className={`${stickyCell} p-1 bg-white`}></td>
                     <td
                         className="border border-black p-1 font-italic"
                         colSpan={13}
@@ -77,7 +86,9 @@ function SubOtListPrint({ procedures, operatingRoom, excluded, onToggle }) {
                                 "print:hidden text-gray-400 border border-black",
                         )}
                     >
-                        <td className="print:hidden p-1 align-text-top border border-black">
+                        <td
+                            className={`${stickyCell} p-1 align-text-top bg-white`}
+                        >
                             <input
                                 type="checkbox"
                                 checked={!excluded.has(item.id)}
@@ -212,7 +223,9 @@ function OtListPrint({}) {
 
     return (
         <div className="w-full inline-block">
-            <div className="sticky top-0 z-10 bg-white border-b border-gray-300 mb-2 p-2 flex flex-col gap-2 sm:flex-row sm:items-center print:hidden">
+            {/* Above the sticky checkbox column, which comes later in the
+                markup and would otherwise win on equal z-index */}
+            <div className="sticky top-0 z-20 bg-white border-b border-gray-300 mb-2 p-2 flex flex-col gap-2 sm:flex-row sm:items-center print:hidden">
                 <div className="grow text-sm">
                     <span className="font-semibold">
                         {includedCount} of {printable.length} procedures
@@ -269,39 +282,58 @@ function OtListPrint({}) {
                     </span>
                 )}
             </div>
-            <table className="w-full border-collapse text-xs table-auto">
-                <thead>
-                    <tr className="font-bold bg-gray-400">
-                        <th className="print:hidden border border-black p-1"></th>
-                        <th className="border border-black p-1">#</th>
-                        <th className="border border-black p-1">Bed</th>
-                        <th className="border border-black p-1">NID</th>
-                        <th className="border border-black p-1">Name</th>
-                        <th className="border border-black p-1">Age / Sex</th>
-                        <th className="border border-black p-1">Diagnosis</th>
-                        <th className="border border-black p-1">Procedure</th>
-                        <th className="border border-black p-1">Surgeon</th>
-                        <th className="border border-black p-1">Comorbids</th>
-                        <th className="border border-black p-1">
-                            Special Requirements
-                        </th>
-                        <th className="border border-black p-1">Anes</th>
-                        <th className="border border-black p-1">Phone</th>
-                        <th className="border border-black p-1">OT Use Only</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {operatingRooms.map((operatingRoom) => (
-                        <SubOtListPrint
-                            key={operatingRoom.id}
-                            procedures={proceduresList.procedures}
-                            operatingRoom={operatingRoom}
-                            excluded={excluded}
-                            onToggle={toggleProcedure}
-                        />
-                    ))}
-                </tbody>
-            </table>
+            {/* The table is the only thing allowed to scroll sideways. Left
+                on the page, its width would scroll the whole document and
+                carry the control bar and headings off screen with it. The
+                clipping has to be lifted for print or the paper copy loses
+                whatever sits past the fold. */}
+            <div className="overflow-x-auto print:overflow-visible">
+                <table className="w-full border-collapse text-xs table-auto">
+                    <thead>
+                        <tr className="font-bold bg-gray-400">
+                            <th
+                                className={`${stickyCell} p-1 bg-gray-400`}
+                            ></th>
+                            <th className="border border-black p-1">#</th>
+                            <th className="border border-black p-1">Bed</th>
+                            <th className="border border-black p-1">NID</th>
+                            <th className="border border-black p-1">Name</th>
+                            <th className="border border-black p-1">
+                                Age / Sex
+                            </th>
+                            <th className="border border-black p-1">
+                                Diagnosis
+                            </th>
+                            <th className="border border-black p-1">
+                                Procedure
+                            </th>
+                            <th className="border border-black p-1">Surgeon</th>
+                            <th className="border border-black p-1">
+                                Comorbids
+                            </th>
+                            <th className="border border-black p-1">
+                                Special Requirements
+                            </th>
+                            <th className="border border-black p-1">Anes</th>
+                            <th className="border border-black p-1">Phone</th>
+                            <th className="border border-black p-1">
+                                OT Use Only
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {operatingRooms.map((operatingRoom) => (
+                            <SubOtListPrint
+                                key={operatingRoom.id}
+                                procedures={proceduresList.procedures}
+                                operatingRoom={operatingRoom}
+                                excluded={excluded}
+                                onToggle={toggleProcedure}
+                            />
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 }
