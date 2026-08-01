@@ -5,7 +5,8 @@ import { useRef } from "react";
  *
  * Rows opt in by carrying a data-tree-item attribute, and must be focusable
  * in their own right (a button or a link) so that Tab reaches them too. The
- * rendered order of those rows is taken to be the visible order.
+ * rendered order of those rows is taken to be the visible order. Link rows
+ * get Space activation, which they would otherwise not have.
  *
  * Rows that expand also carry data-expanded ("true" or "false") and
  * data-level (1 based depth), which is what lets ArrowRight and ArrowLeft
@@ -25,6 +26,7 @@ export function useTreeKeyboardNav() {
             "ArrowLeft",
             "Home",
             "End",
+            " ",
         ];
         if (!keys.includes(e.key)) return;
 
@@ -34,18 +36,30 @@ export function useTreeKeyboardNav() {
         const index = items.indexOf(document.activeElement);
         if (index === -1) return;
 
+        const current = items[index];
+
         const focus = (item) => {
             if (!item) return;
             e.preventDefault();
             item.focus();
         };
 
+        // Space activates a button on its own, but on a link it only scrolls.
+        // Give link rows the activation that the button rows already have,
+        // and leave the buttons to the browser so nothing fires twice.
+        if (e.key === " ") {
+            if (current.tagName === "A") {
+                e.preventDefault();
+                current.click();
+            }
+            return;
+        }
+
         if (e.key === "ArrowDown") return focus(items[index + 1]);
         if (e.key === "ArrowUp") return focus(items[index - 1]);
         if (e.key === "Home") return focus(items[0]);
         if (e.key === "End") return focus(items[items.length - 1]);
 
-        const current = items[index];
         const expanded = current.dataset.expanded;
 
         if (e.key === "ArrowRight") {
