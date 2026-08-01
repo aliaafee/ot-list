@@ -45,21 +45,23 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
         () =>
             procedures
                 .filter(
-                    (procedure) => procedure.operatingRoom === operatingRoom?.id
+                    (procedure) =>
+                        procedure.operatingRoom === operatingRoom?.id,
                 )
                 .filter((procedure) => !procedure.removed)
                 .sort((a, b) => a.order - b.order),
-        [procedures, operatingRoom]
+        [procedures, operatingRoom],
     );
 
     const removedProcedures = useMemo(
         () =>
             procedures
                 .filter(
-                    (procedure) => procedure.operatingRoom === operatingRoom?.id
+                    (procedure) =>
+                        procedure.operatingRoom === operatingRoom?.id,
                 )
                 .filter((procedure) => procedure.removed),
-        [procedures, operatingRoom]
+        [procedures, operatingRoom],
     );
 
     // Scroll to procedure when scrollTo param is set
@@ -73,13 +75,56 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
         }
     }, [scrollToProcedureId, proceduresByRoom, removedProcedures]);
 
+    // Rows are plain containers rather than buttons, because an expanded one
+    // holds buttons and edit fields of its own and those cannot be nested in
+    // a button. So they take focus through tabIndex and handle opening and
+    // closing here. Moving between rows belongs to the list above.
+    const handleRowKeyDown = (e, procedure) => {
+        // Anything typed inside an expanded row's own controls is theirs
+        if (e.target !== e.currentTarget) {
+            return;
+        }
+
+        const isSelected = selectedProcedureId === procedure.id;
+        const current = isSelected ? procedure.id : null;
+        let wanted;
+
+        if (e.key === "Enter" || e.key === " ") {
+            wanted = isSelected ? null : procedure.id;
+        } else if (e.key === "ArrowRight") {
+            wanted = procedure.id;
+        } else if (e.key === "ArrowLeft") {
+            wanted = null;
+        } else {
+            // Up, down, home and end are the list's to handle
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+        // Guard against pushing a history entry that changes nothing, such as
+        // pressing right on a row that is already open
+        if (wanted !== current) {
+            handleProcedureSelected(wanted);
+        }
+    };
+
+    const rowProps = (procedure) => ({
+        "data-tree-item": true,
+        tabIndex: 0,
+        onKeyDown: (e) => handleRowKeyDown(e, procedure),
+    });
+
+    const rowFocusClasses =
+        "rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-600";
+
     const handleChangeOrder = (newList) => {
         updateProcedures(newList);
     };
 
     const handleMoveUp = (item) => {
         const itemToMoveIndex = proceduresByRoom.findIndex(
-            (row) => row.id === item.id
+            (row) => row.id === item.id,
         );
 
         if (proceduresByRoom[itemToMoveIndex].order <= 1) {
@@ -94,7 +139,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
         });
 
         const previousItemIndex = proceduresByRoom.findIndex(
-            (row) => row.order === proceduresByRoom[itemToMoveIndex].order - 1
+            (row) => row.order === proceduresByRoom[itemToMoveIndex].order - 1,
         );
 
         if (previousItemIndex !== -1) {
@@ -110,7 +155,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
     const handleMoveDown = (item) => {
         console.log("down", item);
         const itemToMoveIndex = proceduresByRoom.findIndex(
-            (row) => row.id === item.id
+            (row) => row.id === item.id,
         );
 
         if (
@@ -127,7 +172,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
         });
 
         const previousItemIndex = proceduresByRoom.findIndex(
-            (row) => row.order === proceduresByRoom[itemToMoveIndex].order + 1
+            (row) => row.order === proceduresByRoom[itemToMoveIndex].order + 1,
         );
 
         if (previousItemIndex !== -1) {
@@ -147,7 +192,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
 
     const handleRemove = (item) => {
         const itemToRemoveIndex = proceduresByRoom.findIndex(
-            (row) => row.id === item.id
+            (row) => row.id === item.id,
         );
         if (itemToRemoveIndex === -1) {
             return;
@@ -201,10 +246,14 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                     items={proceduresByRoom}
                     itemRender={(procedure) => (
                         <div
+                            {...rowProps(procedure)}
                             ref={(el) =>
                                 (procedureRefs.current[procedure.id] = el)
                             }
-                            className="scroll-mt-28 lg:scroll-mt-12"
+                            className={twMerge(
+                                "scroll-mt-28 lg:scroll-mt-12",
+                                rowFocusClasses,
+                            )}
                         >
                             <ProcedureItem
                                 procedure={procedure}
@@ -233,7 +282,10 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                                 <div className="p-2 hidden md:block">
                                     <span className="invisible">⠿</span>
                                 </div>
-                                <div className="grow">
+                                <div
+                                    {...rowProps(procedure)}
+                                    className={twMerge("grow", rowFocusClasses)}
+                                >
                                     <ProcedureItem
                                         procedure={procedure}
                                         onRestore={handleRestore}
@@ -265,7 +317,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                     {!showAddForm && (
                         <div
                             className={twMerge(
-                                "flex-auto bg-gray-100 rounded-lg mt-2"
+                                "flex-auto bg-gray-100 rounded-lg mt-2",
                             )}
                         >
                             <ToolBarButton

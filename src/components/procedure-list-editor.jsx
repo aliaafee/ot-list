@@ -19,6 +19,7 @@ import {
     ToolBarLink,
 } from "./toolbar";
 import ProcedureSublist from "./procedure-sublist";
+import { useTreeKeyboardNav } from "@/hooks/use-tree-keyboard-nav";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import DisableOtDayModal from "@/modals/disable-ot-day-modal";
 import BodyLayout from "./body-layout";
@@ -76,6 +77,8 @@ function ProcedureListEditor({
     const [showDisable, setShowDisable] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
     const [downloading, setDownloading] = useState(false);
+
+    const rowNav = useTreeKeyboardNav();
 
     const showRemoved = searchParams.get("showRemoved") === "true";
 
@@ -271,7 +274,10 @@ function ProcedureListEditor({
                 )}
             </div>
             <TableHeader />
-            <ul>
+            {/* Arrow keys move between procedure rows, which are spread
+                across the operating room sublists, so the handler has to sit
+                on the one element that contains all of them */}
+            <ul ref={rowNav.ref} onKeyDown={rowNav.onKeyDown}>
                 {otDay.expand.otList.expand.operatingRooms.map(
                     (operatingRoom, index) => (
                         <li key={index}>
