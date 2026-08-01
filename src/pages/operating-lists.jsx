@@ -1,11 +1,9 @@
 import { useParams } from "react-router";
 import { useEffect, useState } from "react";
-import { XIcon } from "lucide-react";
 
+import BodySidebarLayout from "@/components/body-sidebar-layout";
 import OtDaysEditor from "@/components/ot-days-editor";
 import ProcedureListEditor from "@/components/procedure-list-editor";
-import { twMerge } from "tailwind-merge";
-import { ToolBar, ToolBarButton } from "@/components/toolbar";
 
 function OperatingLists() {
     const { otDayId } = useParams();
@@ -18,50 +16,24 @@ function OperatingLists() {
     }, [otDayId]);
 
     return (
-        <div className="lg:flex lg:flex-col overflow-hidden grow">
-            <div className="lg:flex lg:flex-row-reverse lg:overflow-hidden grow">
-                <ProcedureListEditor
-                    procedureDayId={otDayId}
-                    handleShowDaysList={() => setShowDaysList(true)}
-                    className="lg:grow"
+        <BodySidebarLayout
+            sidebarTitle="Lists"
+            open={showDaysList}
+            onClose={() => setShowDaysList(false)}
+            sidebar={
+                <OtDaysEditor
+                    selectedDayId={otDayId}
+                    onSelectDay={() => setShowDaysList(false)}
+                    className="grow"
                 />
-
-                <div
-                    className={twMerge(
-                        "bg-gray-600/50 top-0 h-[calc(100%-4rem)] w-full fixed overflow-hidden lg:static lg:w-72 lg:min-w-72 flex mt-16 lg:mt-0 lg:h-auto z-30",
-                        !showDaysList && "hidden lg:flex"
-                    )}
-                >
-                    <div className="w-full sm:max-w-72 lg:mt-0 lg:grow flex flex-col">
-                        <div className="bg-gray-300 lg:hidden flex flex-col">
-                            <ToolBar className="h-10 bg-gray-200">
-                                <div className="grow px-3 uppercase font-medium text-gray-500 text-xs">
-                                    Lists
-                                </div>
-                                <ToolBarButton
-                                    title="close"
-                                    disabled={false}
-                                    onClick={() => setShowDaysList(false)}
-                                >
-                                    <XIcon
-                                        className=""
-                                        width={16}
-                                        height={16}
-                                    />
-                                </ToolBarButton>
-                            </ToolBar>
-                        </div>
-                        <OtDaysEditor
-                            selectedDayId={otDayId}
-                            onSelectDay={(dayId) => {
-                                setShowDaysList(false);
-                            }}
-                            className={"grow"}
-                        />
-                    </div>
-                </div>
-            </div>
-        </div>
+            }
+        >
+            <ProcedureListEditor
+                procedureDayId={otDayId}
+                handleShowDaysList={() => setShowDaysList(true)}
+                className="lg:grow"
+            />
+        </BodySidebarLayout>
     );
 }
 
