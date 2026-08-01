@@ -19,6 +19,7 @@ import OtDaysReducer from "@/reducers/ot-days-reducer";
 import { OtListColours } from "@/utils/colours";
 import { LoadingSpinner } from "./loading-spinner";
 import OtDaysBrowser from "./ot-days-browser";
+import { useProcedureList } from "@/contexts/procedure-list-context";
 
 const otDaysCollectionOptions = {
     sort: "+date",
@@ -33,6 +34,8 @@ const otDaysCollectionOptions = {
  * @param {string} className - Additional CSS classes for the container
  */
 function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
+    const { otDay } = useProcedureList();
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [otLists, setOtLists] = useState([]);
@@ -179,6 +182,19 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
         };
     }, [selectedDepartmentId]);
 
+    const handleShowAllToggle = (value) => {
+        if (value) {
+            setShowAll(true);
+            console.log("show all", otDay);
+            setBrowserSelectedYear(otDay ? dayjs(otDay.date).year() : null);
+            setBrowserSelectedMonth(
+                otDay ? dayjs(otDay.date).month() + 1 : null,
+            );
+            return;
+        }
+        setShowAll(false);
+    };
+
     if (loading) {
         return <LoadingSpinner className={twMerge("bg-gray-200", className)} />;
     }
@@ -245,7 +261,7 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                         { value: true, label: "All", color: "bg-gray-300" },
                     ]}
                     value={showAll}
-                    setValue={(value) => setShowAll(value)}
+                    setValue={handleShowAllToggle}
                     className="grid grid-cols-2"
                     disabled={loading}
                 />
