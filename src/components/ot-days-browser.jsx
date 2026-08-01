@@ -7,8 +7,21 @@ import { pb } from "@/lib/pb";
 import OtListMarker from "./ot-list-marker";
 
 function DayItem({ day, isSelected, onSelect }) {
+    const ref = useRef(null);
+
+    useEffect(() => {
+        if (isSelected && ref.current) {
+            ref.current.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest",
+                inline: "nearest",
+            });
+        }
+    }, [isSelected]);
+
     return (
         <li
+            ref={ref}
             className={twMerge(
                 "flex items-center p-1 gap-2 pl-12 cursor-pointer hover:bg-blue-200",
                 isSelected && "bg-blue-300 hover:bg-blue-300",
@@ -44,15 +57,18 @@ function MonthItem({
 }) {
     const ref = useRef(null);
 
+    const hasSelectedDay = filteredDays.some((d) => d.id === selectedDayId);
+
     useEffect(() => {
-        if (isSelected && ref.current) {
+        // the selected day scrolls itself into view, don't fight it
+        if (isSelected && !hasSelectedDay && ref.current) {
             ref.current.scrollIntoView({
                 behavior: "smooth",
                 block: "start",
                 inline: "nearest",
             });
         }
-    }, [isSelected, loadingDays]);
+    }, [isSelected, loadingDays, hasSelectedDay]);
 
     return (
         <li ref={ref} className="flex flex-col">
@@ -117,7 +133,7 @@ function YearItem({
                 block: "start",
             });
         }
-    }, [isSelected, loadingMonths]);
+    }, [isSelected, loadingMonths, month]);
 
     return (
         <li ref={ref} className="flex flex-col">
