@@ -11,6 +11,24 @@ import { twMerge } from "tailwind-merge";
 const controlButtonClasses =
     "grow sm:grow-0 px-4 sm:min-h-0 sm:px-2 sm:text-sm";
 
+// Safari on iOS gates window.print() behind its Block Pop-ups setting and
+// says nothing at all when it refuses, so the button can look dead. The Share
+// sheet's own Print entry always works, being a native action rather than a
+// scripted one. Every iOS browser runs the same engine, but that gate belongs
+// to the Safari app, so the other ones are unaffected and need no hint.
+const isIosSafari = () => {
+    if (typeof navigator === "undefined") {
+        return false;
+    }
+    const ua = navigator.userAgent;
+    const isIos =
+        /iPad|iPhone|iPod/.test(ua) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    return isIos && !/FxiOS|CriOS|EdgiOS|OPiOS/.test(ua);
+};
+
+const showSharePrintHint = isIosSafari();
+
 // The checkbox column stays put while the table is panned sideways. Each cell
 // needs its own opaque background or the row would show through it, and its
 // grid lines come from an outline rather than a border: under border-collapse
@@ -237,35 +255,42 @@ function OtListPrint({}) {
                 </div>
                 {/* Full width and thumb sized on a phone, back to compact
                     toolbar buttons once there is room for them */}
-                <div className="flex gap-2">
-                    <Button
-                        variant="secondary"
-                        size="sm"
-                        className={controlButtonClasses}
-                        onClick={() => setExcluded(new Set())}
-                        disabled={includedCount === printable.length}
-                    >
-                        All
-                    </Button>
-                    <Button
-                        variant="secondary"
-                        size="sm"
-                        className={controlButtonClasses}
-                        onClick={() =>
-                            setExcluded(new Set(printable.map((p) => p.id)))
-                        }
-                        disabled={includedCount === 0}
-                    >
-                        None
-                    </Button>
-                    <Button
-                        size="sm"
-                        className={controlButtonClasses}
-                        onClick={() => window.print()}
-                        disabled={includedCount === 0}
-                    >
-                        Print
-                    </Button>
+                <div className="flex flex-col gap-1">
+                    <div className="flex gap-2">
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            className={controlButtonClasses}
+                            onClick={() => setExcluded(new Set())}
+                            disabled={includedCount === printable.length}
+                        >
+                            All
+                        </Button>
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            className={controlButtonClasses}
+                            onClick={() =>
+                                setExcluded(new Set(printable.map((p) => p.id)))
+                            }
+                            disabled={includedCount === 0}
+                        >
+                            None
+                        </Button>
+                        <Button
+                            size="sm"
+                            className={controlButtonClasses}
+                            onClick={() => window.print()}
+                            disabled={includedCount === 0}
+                        >
+                            Print
+                        </Button>
+                    </div>
+                    {showSharePrintHint && (
+                        <div className="text-xs text-gray-500 text-center sm:text-right">
+                            If nothing happens, use Share then Print
+                        </div>
+                    )}
                 </div>
             </div>
             <div className="text-center font-bold"></div>
