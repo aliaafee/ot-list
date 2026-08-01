@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router";
 import { twMerge } from "tailwind-merge";
 
@@ -42,8 +42,20 @@ function MonthItem({
     onSelectDay,
     filteredDays,
 }) {
+    const ref = useRef(null);
+
+    useEffect(() => {
+        if (isSelected && ref.current) {
+            ref.current.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+                inline: "nearest",
+            });
+        }
+    }, [isSelected, loadingDays]);
+
     return (
-        <li className="flex flex-col">
+        <li ref={ref} className="flex flex-col">
             <div
                 className={twMerge(
                     "flex items-center p-1 gap-2 pl-8 cursor-pointer hover:bg-gray-300",
@@ -53,7 +65,8 @@ function MonthItem({
             >
                 {dayjs()
                     .month(monthData.month - 1)
-                    .format("MMMM")}
+                    .format("MMMM")}{" "}
+                {isSelected && monthData.year}
             </div>
             {isSelected && (
                 <ul>
@@ -95,8 +108,19 @@ function YearItem({
     onSelectDay,
     filteredDays,
 }) {
+    const ref = useRef(null);
+
+    useEffect(() => {
+        if (isSelected && ref.current && month === null) {
+            ref.current.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+            });
+        }
+    }, [isSelected, loadingMonths]);
+
     return (
-        <li className="flex flex-col">
+        <li ref={ref} className="flex flex-col">
             <div
                 className={twMerge(
                     "flex items-center p-1 gap-2 pl-4 cursor-pointer hover:bg-gray-300",
