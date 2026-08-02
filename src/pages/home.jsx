@@ -16,7 +16,7 @@ export default function Home() {
         <BodyLayout title={<Title />}>
             <div className="grid grid-cols-2 justify-items-center justify-center-safe w-full ">
                 <Link
-                    to="/operating-lists"
+                    to="/lists"
                     className="flex flex-col p-4 bg-amber-200 m-2 rounded-lg shadow-md hover:bg-amber-300 transition max-h-40 overflow-hidden"
                 >
                     <div className="flex gap-2 items-center justify-center mb-4">
