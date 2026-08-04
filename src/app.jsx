@@ -9,6 +9,7 @@ import OtListPrint from "./pages/otlist-print";
 import Settings from "./pages/settings";
 import Patients from "./pages/patients";
 import AllProcedures from "./pages/all-procedures";
+import NotFound from "./pages/not-found";
 
 export default function App() {
     return (
@@ -39,7 +40,7 @@ export default function App() {
             </Route>
 
             {/* Fallback */}
-            <Route path="*" element={<Login />} />
+            <Route path="*" element={<NotFound />} />
         </Routes>
     );
 }

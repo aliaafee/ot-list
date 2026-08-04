@@ -9,7 +9,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
  * @param {Function} onClose - Callback when modal is closed
  * @param {Object} data - Additional error data to show in expandable JSON tree
  */
-function ErrorModal({ message, onClose, data = {} }) {
+function ErrorModal({ message, onClose, data }) {
     const [showDetails, setShowDetails] = useState(false);
     return (
         <ModalWindow
