@@ -7,6 +7,7 @@ import {
 } from "react";
 import { pb } from "@/lib/pb";
 import { api } from "@/lib/api";
+import { saveProcedureCode } from "@/lib/procedure-codes";
 import ProcedureListReducer from "@/reducers/procedure-list-reducer";
 import FatalErrorModal from "@/modals/fatal-error-modal";
 import ErrorModal from "@/modals/error-modal";
@@ -253,7 +254,12 @@ export function ProcedureListProvider({ children }) {
         setSearchParams(params);
     };
 
-    const addProcedure = async (patient, procedure, otDay) => {
+    const addProcedure = async (
+        patient,
+        procedure,
+        otDay,
+        procedureCode = null,
+    ) => {
         try {
             const newProcedure = await api.addProcedureWithPatient(
                 patient,
@@ -265,6 +271,22 @@ export function ProcedureListProvider({ children }) {
                 payload: newProcedure,
             });
             setSelected(newProcedure.id, true);
+
+            // The code is a child record, so it can only be written once
+            // the procedure has an id. Coding is optional and additive:
+            // failing here leaves an uncoded procedure, which is a state
+            // the system already handles, so it must not fail the add.
+            if (procedureCode) {
+                try {
+                    await saveProcedureCode(newProcedure.id, procedureCode);
+                } catch (e) {
+                    console.error("Failed to save procedure code:", e);
+                    showToast(
+                        "Procedure added, but its code could not be saved",
+                        "error",
+                    );
+                }
+            }
 
             // Show success toast
             showToast("Procedure added successfully", "success");

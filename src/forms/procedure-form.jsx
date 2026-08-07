@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-
 import FormField from "@/components/form-field";
+import ProcedureCodeSelector from "@/components/procedure-code-selector";
 
 export const initialProcedureValue = {
     diagnosis: "",
@@ -13,6 +12,10 @@ export const initialProcedureValue = {
     bed: "",
     anesthesia: "",
     requirements: "",
+    // The coded procedure. Lives on the form value rather than in local
+    // state so whoever saves the procedure can persist it too; it is
+    // stored in `procedureCodes`, never in `procedures`.
+    procedureCode: null,
 };
 
 export const validateProcedure = (procedure) => {
@@ -54,6 +57,12 @@ export function ProcedureForm({
         });
     };
 
+    // The code is a parallel lookup alongside the free-text Procedure
+    // field, not a replacement for it: picking a code never rewrites
+    // `procedure`, and typing in `procedure` never clears the code.
+    const setProcedureCode = (procedureCode) =>
+        onChange({ ...value, procedureCode });
+
     return (
         <form className="grid grid-cols-1 md:grid-cols-4 gap-2">
             <FormField
@@ -73,6 +82,18 @@ export function ProcedureForm({
                 className="md:col-span-2"
                 error={"procedure" in errorFields}
                 errorMessage={errorFields["procedure"]?.message}
+            />
+            <ProcedureCodeSelector
+                label="Procedure code (NSPC, optional - does not change Procedure above)"
+                value={value.procedureCode}
+                onChange={setProcedureCode}
+                showPostCoordination={true}
+                postCoordinationFields={[
+                    "priority",
+                    "laterality",
+                    "spinalLevels",
+                ]}
+                className="md:col-span-4"
             />
             <FormField
                 label="Comorbidities"

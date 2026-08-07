@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import Button from "@/components/button";
 import dayjs from "dayjs";
@@ -10,6 +10,11 @@ import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 
 import { ProcedureForm, validateProcedure } from "@/forms/procedure-form";
+import { useCatalogue } from "@/contexts/catalogue-context";
+import {
+    loadProcedureCode,
+    saveProcedureCode,
+} from "@/lib/procedure-codes";
 import PatientInfo from "./patient-info";
 import { PacStatus } from "./pac-status";
 
@@ -32,6 +37,7 @@ function ProcedureEditor({
     error,
 }) {
     const { otDay, updateProcedures } = useProcedureList();
+    const { findById } = useCatalogue();
 
     const [updatedProcedure, setUpdatedProcedure] = useState({
         diagnosis: procedure?.diagnosis || "",
@@ -44,8 +50,37 @@ function ProcedureEditor({
         bed: procedure?.bed || "",
         anesthesia: procedure?.anesthesia || "",
         requirements: procedure?.requirements || "",
+        procedureCode: null,
     });
     const [updatedProcedureErrors, setUpdatedProcedureErrors] = useState({});
+
+    // The stored code lives in its own collection, so it is fetched
+    // rather than read off the procedure record. It arrives after first
+    // paint; the rest of the form is editable meanwhile, and a code the
+    // user picks in that window is not overwritten.
+    useEffect(() => {
+        if (!procedure?.id) return;
+        let cancelled = false;
+
+        (async () => {
+            try {
+                const code = await loadProcedureCode(procedure.id, findById);
+                if (cancelled || !code) return;
+                setUpdatedProcedure((current) =>
+                    current.procedureCode
+                        ? current
+                        : { ...current, procedureCode: code },
+                );
+            } catch {
+                // Leave the code field empty - the procedure itself is
+                // still perfectly editable without it.
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [procedure?.id, findById]);
 
     const handleUpdateProcedure = () => {
         const inputErrors = validateProcedure(updatedProcedure);
@@ -72,6 +107,12 @@ function ProcedureEditor({
         };
 
         updateProcedures([updatedProcedureRecord], null, false);
+
+        // Coding is additive: if this fails the procedure edit still
+        // stands, so it is not worth blocking the save or the close on.
+        saveProcedureCode(procedure.id, updatedProcedure.procedureCode).catch(
+            (e) => console.error("Failed to save procedure code:", e),
+        );
 
         onAfterSave();
     };

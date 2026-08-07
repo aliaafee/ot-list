@@ -16,6 +16,7 @@ import ModalContainer from "./modal-container";
  * @param {string} okColor - Tailwind classes for OK button color
  * @param {boolean} showButtons - Whether to show the button footer
  * @param {boolean} loading - Whether to show loading state on buttons
+ * @param {boolean} okDisabled - Whether to disable the OK/confirm button
  * @param {boolean} large - Whether to use large modal size
  * @param {React.ReactNode} children - Content to display in the modal body
  * @param {React.ReactNode} customButtons - Custom button elements to replace default buttons
@@ -31,6 +32,7 @@ export default function ModalWindow({
     okColor = "bg-red-600 hover:bg-red-500",
     showButtons = true,
     loading = false,
+    okDisabled = false,
     large = false,
     children,
     customButtons = null,
@@ -66,7 +68,7 @@ export default function ModalWindow({
                                 okColor.includes("red") ? "danger" : "primary"
                             }
                             onClick={() => onOk()}
-                            disabled={loading}
+                            disabled={loading || okDisabled}
                             loading={loading}
                             className="w-full sm:ml-3 sm:w-auto"
                         >

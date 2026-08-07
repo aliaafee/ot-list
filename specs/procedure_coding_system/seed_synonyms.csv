@@ -1,0 +1,210 @@
+concept_id,term,language,is_abbreviation,active,effective_from
+NSX-00001,chronic SDH,en,0,1,2026-08-07
+NSX-00001,CSDH,en,1,1,2026-08-07
+NSX-00001,burr hole SDH,en,0,1,2026-08-07
+NSX-00002,twist drill,en,0,1,2026-08-07
+NSX-00002,TDC,en,1,1,2026-08-07
+NSX-00003,acute SDH,en,0,1,2026-08-07
+NSX-00003,ASDH,en,1,1,2026-08-07
+NSX-00003,crani SDH,en,0,1,2026-08-07
+NSX-00004,EDH,en,1,1,2026-08-07
+NSX-00004,epidural haematoma,en,0,1,2026-08-07
+NSX-00004,extradural,en,0,1,2026-08-07
+NSX-00005,traumatic ICH,en,0,1,2026-08-07
+NSX-00005,contusion evacuation,en,0,1,2026-08-07
+NSX-00006,DC,en,1,1,2026-08-07
+NSX-00006,hemicraniectomy,en,0,1,2026-08-07
+NSX-00006,decompressive crani,en,0,1,2026-08-07
+NSX-00007,bifrontal DC,en,0,1,2026-08-07
+NSX-00007,Kjellberg,en,0,1,2026-08-07
+NSX-00008,depressed fracture,en,0,1,2026-08-07
+NSX-00008,elevation fracture,en,0,1,2026-08-07
+NSX-00009,CSF leak repair,en,0,1,2026-08-07
+NSX-00009,rhinorrhoea repair,en,0,1,2026-08-07
+NSX-00010,cranioplasty,en,0,1,2026-08-07
+NSX-00010,bone flap replacement,en,0,1,2026-08-07
+NSX-00011,titanium cranioplasty,en,0,1,2026-08-07
+NSX-00011,PMMA cranioplasty,en,0,1,2026-08-07
+NSX-00012,ICP bolt,en,0,1,2026-08-07
+NSX-00012,ICP monitor,en,0,1,2026-08-07
+NSX-00012,Codman,en,0,1,2026-08-07
+NSX-00013,EVD,en,1,1,2026-08-07
+NSX-00013,ventriculostomy,en,0,1,2026-08-07
+NSX-00013,external drain,en,0,1,2026-08-07
+NSX-00014,glioma resection,en,0,1,2026-08-07
+NSX-00014,brain tumour excision,en,0,1,2026-08-07
+NSX-00014,crani tumour,en,0,1,2026-08-07
+NSX-00015,debulking,en,0,1,2026-08-07
+NSX-00015,subtotal resection,en,0,1,2026-08-07
+NSX-00016,convexity meningioma,en,0,1,2026-08-07
+NSX-00017,sphenoid wing meningioma,en,0,1,2026-08-07
+NSX-00017,skull base meningioma,en,0,1,2026-08-07
+NSX-00018,acoustic neuroma,en,0,1,2026-08-07
+NSX-00018,vestibular schwannoma,en,0,1,2026-08-07
+NSX-00018,CPA tumour,en,0,1,2026-08-07
+NSX-00019,posterior fossa tumour,en,0,1,2026-08-07
+NSX-00019,PF tumour,en,0,1,2026-08-07
+NSX-00020,TSS,en,1,1,2026-08-07
+NSX-00020,transsphenoidal,en,0,1,2026-08-07
+NSX-00020,pituitary surgery,en,0,1,2026-08-07
+NSX-00021,brain met excision,en,0,1,2026-08-07
+NSX-00021,metastasectomy,en,0,1,2026-08-07
+NSX-00022,intraventricular tumour,en,0,1,2026-08-07
+NSX-00023,stereotactic biopsy,en,0,1,2026-08-07
+NSX-00023,frame biopsy,en,0,1,2026-08-07
+NSX-00023,needle biopsy brain,en,0,1,2026-08-07
+NSX-00024,open biopsy,en,0,1,2026-08-07
+NSX-00025,awake crani,en,0,1,2026-08-07
+NSX-00025,cortical mapping,en,0,1,2026-08-07
+NSX-00026,aneurysm clipping,en,0,1,2026-08-07
+NSX-00026,clipping,en,0,1,2026-08-07
+NSX-00026,SAH clipping,en,0,1,2026-08-07
+NSX-00027,AVM excision,en,0,1,2026-08-07
+NSX-00027,AVM resection,en,0,1,2026-08-07
+NSX-00028,cavernoma,en,0,1,2026-08-07
+NSX-00028,cavernous angioma,en,0,1,2026-08-07
+NSX-00029,spontaneous ICH,en,0,1,2026-08-07
+NSX-00029,hypertensive bleed,en,0,1,2026-08-07
+NSX-00030,malignant MCA,en,0,1,2026-08-07
+NSX-00030,stroke craniectomy,en,0,1,2026-08-07
+NSX-00031,STA-MCA,en,0,1,2026-08-07
+NSX-00031,EC-IC bypass,en,0,1,2026-08-07
+NSX-00031,bypass,en,0,1,2026-08-07
+NSX-00032,VP shunt,en,0,1,2026-08-07
+NSX-00032,VPS,en,1,1,2026-08-07
+NSX-00032,shunt insertion,en,0,1,2026-08-07
+NSX-00033,shunt revision,en,0,1,2026-08-07
+NSX-00033,VP shunt revision,en,0,1,2026-08-07
+NSX-00034,shunt removal,en,0,1,2026-08-07
+NSX-00034,externalisation,en,0,1,2026-08-07
+NSX-00035,VA shunt,en,0,1,2026-08-07
+NSX-00036,LP shunt,en,0,1,2026-08-07
+NSX-00037,ETV,en,1,1,2026-08-07
+NSX-00037,third ventriculostomy,en,0,1,2026-08-07
+NSX-00038,Ommaya,en,0,1,2026-08-07
+NSX-00039,lumbar drain,en,0,1,2026-08-07
+NSX-00039,LD,en,1,1,2026-08-07
+NSX-00040,brain abscess crani,en,0,1,2026-08-07
+NSX-00041,abscess aspiration,en,0,1,2026-08-07
+NSX-00041,brain abscess tap,en,0,1,2026-08-07
+NSX-00042,subdural empyema,en,0,1,2026-08-07
+NSX-00042,SDE,en,1,1,2026-08-07
+NSX-00043,wound washout,en,0,1,2026-08-07
+NSX-00043,bone flap infection,en,0,1,2026-08-07
+NSX-00044,foraminotomy,en,0,1,2026-08-07
+NSX-00045,PLIF,en,1,1,2026-08-07
+NSX-00046,TLIF,en,1,1,2026-08-07
+NSX-00047,PLF,en,1,1,2026-08-07
+NSX-00047,pedicle screw fusion,en,0,1,2026-08-07
+NSX-00047,instrumented fusion,en,0,1,2026-08-07
+NSX-00048,corpectomy,en,0,1,2026-08-07
+NSX-00048,ACCF,en,1,1,2026-08-07
+NSX-00049,cervical laminectomy,en,0,1,2026-08-07
+NSX-00049,posterior cervical decompression,en,0,1,2026-08-07
+NSX-00050,laminoplasty,en,0,1,2026-08-07
+NSX-00051,lateral mass fusion,en,0,1,2026-08-07
+NSX-00051,posterior cervical fixation,en,0,1,2026-08-07
+NSX-00052,thoracic disc,en,0,1,2026-08-07
+NSX-00053,spinal fixation,en,0,1,2026-08-07
+NSX-00053,posterior instrumentation,en,0,1,2026-08-07
+NSX-00054,odontoid screw,en,0,1,2026-08-07
+NSX-00054,dens fixation,en,0,1,2026-08-07
+NSX-00055,occipitocervical,en,0,1,2026-08-07
+NSX-00055,OC fusion,en,0,1,2026-08-07
+NSX-00056,vertebroplasty,en,0,1,2026-08-07
+NSX-00056,kyphoplasty,en,0,1,2026-08-07
+NSX-00056,cement augmentation,en,0,1,2026-08-07
+NSX-00057,IDEM,en,1,1,2026-08-07
+NSX-00057,spinal meningioma,en,0,1,2026-08-07
+NSX-00057,schwannoma spine,en,0,1,2026-08-07
+NSX-00058,IMSCT,en,1,1,2026-08-07
+NSX-00058,intramedullary tumour,en,0,1,2026-08-07
+NSX-00059,spinal met decompression,en,0,1,2026-08-07
+NSX-00059,MSCC surgery,en,0,1,2026-08-07
+NSX-00060,vertebral biopsy,en,0,1,2026-08-07
+NSX-00060,spine biopsy,en,0,1,2026-08-07
+NSX-00061,SEA,en,1,1,2026-08-07
+NSX-00061,epidural abscess spine,en,0,1,2026-08-07
+NSX-00062,MMC repair,en,0,1,2026-08-07
+NSX-00062,spina bifida repair,en,0,1,2026-08-07
+NSX-00063,encephalocele,en,0,1,2026-08-07
+NSX-00064,untethering,en,0,1,2026-08-07
+NSX-00064,tethered cord release,en,0,1,2026-08-07
+NSX-00065,dermal sinus,en,0,1,2026-08-07
+NSX-00066,craniosynostosis,en,0,1,2026-08-07
+NSX-00066,cranial vault remodelling,en,0,1,2026-08-07
+NSX-00067,carpal tunnel,en,0,1,2026-08-07
+NSX-00067,CTR,en,1,1,2026-08-07
+NSX-00067,median nerve release,en,0,1,2026-08-07
+NSX-00068,cubital tunnel,en,0,1,2026-08-07
+NSX-00068,ulnar release,en,0,1,2026-08-07
+NSX-00069,ulnar transposition,en,0,1,2026-08-07
+NSX-00070,schwannoma peripheral,en,0,1,2026-08-07
+NSX-00070,PNST,en,1,1,2026-08-07
+NSX-00071,nerve biopsy,en,0,1,2026-08-07
+NSX-00071,sural biopsy,en,0,1,2026-08-07
+NSX-00072,MVD,en,1,1,2026-08-07
+NSX-00072,Jannetta,en,0,1,2026-08-07
+NSX-00073,rhizotomy,en,0,1,2026-08-07
+NSX-00073,balloon compression,en,0,1,2026-08-07
+NSX-00073,RFA trigeminal,en,0,1,2026-08-07
+NSX-00074,ACoA aneurysm,en,1,1,2026-08-07
+NSX-00074,AComm aneurysm,en,0,1,2026-08-07
+NSX-00074,anterior communicating artery aneurysm,en,0,1,2026-08-07
+NSX-00075,PCoA aneurysm,en,1,1,2026-08-07
+NSX-00075,PComm aneurysm,en,0,1,2026-08-07
+NSX-00075,posterior communicating artery aneurysm,en,0,1,2026-08-07
+NSX-00076,ICA aneurysm,en,1,1,2026-08-07
+NSX-00076,carotid aneurysm,en,0,1,2026-08-07
+NSX-00076,internal carotid artery aneurysm,en,0,1,2026-08-07
+NSX-00077,MCA aneurysm,en,1,1,2026-08-07
+NSX-00077,MCA bifurcation aneurysm,en,0,1,2026-08-07
+NSX-00077,middle cerebral artery aneurysm,en,0,1,2026-08-07
+NSX-00078,ACA aneurysm,en,1,1,2026-08-07
+NSX-00078,pericallosal aneurysm,en,0,1,2026-08-07
+NSX-00078,anterior cerebral artery aneurysm,en,0,1,2026-08-07
+NSX-00079,basilar tip aneurysm,en,0,1,2026-08-07
+NSX-00079,BA aneurysm,en,1,1,2026-08-07
+NSX-00079,basilar artery aneurysm,en,0,1,2026-08-07
+NSX-00080,PICA aneurysm,en,1,1,2026-08-07
+NSX-00080,posterior inferior cerebellar artery aneurysm,en,0,1,2026-08-07
+NSX-00081,VA aneurysm,en,1,1,2026-08-07
+NSX-00081,vertebral artery aneurysm,en,0,1,2026-08-07
+NSX-00082,microdisc,en,0,1,2026-08-07
+NSX-00082,lumbar discectomy,en,0,1,2026-08-07
+NSX-00082,MD,en,1,1,2026-08-07
+NSX-00082,multilevel discectomy,en,0,1,2026-08-07
+NSX-00082,microdiscectomy,en,0,1,2026-08-07
+NSX-00082,lumbar microdiscectomy,en,0,1,2026-08-07
+NSX-00083,lumbar laminectomy,en,0,1,2026-08-07
+NSX-00083,decompression lumbar,en,0,1,2026-08-07
+NSX-00083,multilevel laminectomy,en,0,1,2026-08-07
+NSX-00083,laminectomy lumbar,en,0,1,2026-08-07
+NSX-00083,lumbar decompression,en,0,1,2026-08-07
+NSX-00084,ACDF,en,1,1,2026-08-07
+NSX-00084,anterior cervical,en,0,1,2026-08-07
+NSX-00084,multilevel ACDF,en,0,1,2026-08-07
+NSX-00084,anterior cervical discectomy and fusion,en,0,1,2026-08-07
+NSX-00084,cervical fusion anterior,en,0,1,2026-08-07
+NSX-00085,dorsal fusion,en,0,1,2026-08-07
+NSX-00085,dorsal posterolateral fusion,en,0,1,2026-08-07
+NSX-00085,thoracic posterolateral fusion,en,0,1,2026-08-07
+NSX-00085,dorsal PLF,en,1,1,2026-08-07
+NSX-00086,dorsolumbar fusion,en,0,1,2026-08-07
+NSX-00086,dorsal lumbar fusion,en,0,1,2026-08-07
+NSX-00086,thoracolumbar fusion,en,0,1,2026-08-07
+NSX-00086,dorsolumbar PLF,en,1,1,2026-08-07
+NSX-00086,DL fusion,en,1,1,2026-08-07
+NSX-00087,cervicodorsal fusion,en,0,1,2026-08-07
+NSX-00087,cervico-dorsal fusion,en,0,1,2026-08-07
+NSX-00087,cervicothoracic fusion,en,0,1,2026-08-07
+NSX-00087,cervicodorsal fixation,en,0,1,2026-08-07
+NSX-00051,PCF,en,1,1,2026-08-07
+NSX-00051,cervical posterior fusion,en,0,1,2026-08-07
+NSX-00052,dorsal discectomy,en,0,1,2026-08-07
+NSX-00052,dorsal disc,en,0,1,2026-08-07
+NSX-00053,dorsal spine fixation,en,0,1,2026-08-07
+NSX-00059,dorsal spine metastasis,en,0,1,2026-08-07
+NSX-00088,DC ICH evacuation,en,1,1,2026-08-07
+NSX-00088,hemicraniectomy ICH evacuation,en,0,1,2026-08-07
+NSX-00088,decompressive crani ICH,en,0,1,2026-08-07

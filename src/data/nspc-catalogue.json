@@ -1,0 +1,3627 @@
+[
+    {
+        "conceptId": "NSX-00001",
+        "fsn": "Burr hole drainage of chronic subdural haematoma (procedure)",
+        "preferredTerm": "Burr hole drainage chronic SDH",
+        "subspecialty": "cranial-trauma",
+        "facets": {
+            "method": "Drainage",
+            "procedureSite": "Subdural space",
+            "surgicalApproach": "Burr hole",
+            "device": null,
+            "morphology": "Chronic subdural haematoma",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "chronic SDH",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "CSDH",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "burr hole SDH",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00002",
+        "fsn": "Twist drill craniostomy and drainage of subdural collection (procedure)",
+        "preferredTerm": "Twist drill subdural drainage",
+        "subspecialty": "cranial-trauma",
+        "facets": {
+            "method": "Drainage",
+            "procedureSite": "Subdural space",
+            "surgicalApproach": "Twist drill craniostomy",
+            "device": null,
+            "morphology": "Chronic subdural haematoma",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "twist drill",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "TDC",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00003",
+        "fsn": "Craniotomy and evacuation of acute subdural haematoma (procedure)",
+        "preferredTerm": "Craniotomy acute SDH evacuation",
+        "subspecialty": "cranial-trauma",
+        "facets": {
+            "method": "Evacuation",
+            "procedureSite": "Subdural space",
+            "surgicalApproach": "Craniotomy",
+            "device": null,
+            "morphology": "Acute subdural haematoma",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "acute SDH",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "ASDH",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "crani SDH",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00004",
+        "fsn": "Craniotomy and evacuation of extradural haematoma (procedure)",
+        "preferredTerm": "Craniotomy EDH evacuation",
+        "subspecialty": "cranial-trauma",
+        "facets": {
+            "method": "Evacuation",
+            "procedureSite": "Extradural space",
+            "surgicalApproach": "Craniotomy",
+            "device": null,
+            "morphology": "Extradural haematoma",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "EDH",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "epidural haematoma",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "extradural",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00005",
+        "fsn": "Craniotomy and evacuation of traumatic intracerebral haematoma (procedure)",
+        "preferredTerm": "Craniotomy ICH evacuation traumatic",
+        "subspecialty": "cranial-trauma",
+        "facets": {
+            "method": "Evacuation",
+            "procedureSite": "Cerebral hemisphere",
+            "surgicalApproach": "Craniotomy",
+            "device": null,
+            "morphology": "Intracerebral haematoma",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "traumatic ICH",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "contusion evacuation",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00006",
+        "fsn": "Unilateral decompressive craniectomy for trauma (procedure)",
+        "preferredTerm": "Decompressive craniectomy unilateral traumatic",
+        "subspecialty": "cranial-trauma",
+        "facets": {
+            "method": "Decompression",
+            "procedureSite": "Skull",
+            "surgicalApproach": "Decompressive craniectomy",
+            "device": null,
+            "morphology": null,
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "DC",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "hemicraniectomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "decompressive crani",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00007",
+        "fsn": "Bifrontal decompressive craniectomy (procedure)",
+        "preferredTerm": "Bifrontal decompressive craniectomy",
+        "subspecialty": "cranial-trauma",
+        "facets": {
+            "method": "Decompression",
+            "procedureSite": "Skull",
+            "surgicalApproach": "Bifrontal",
+            "device": null,
+            "morphology": null,
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "bifrontal DC",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "Kjellberg",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00008",
+        "fsn": "Elevation of depressed skull fracture (procedure)",
+        "preferredTerm": "Elevation depressed skull fracture",
+        "subspecialty": "cranial-trauma",
+        "facets": {
+            "method": "Reduction",
+            "procedureSite": "Skull",
+            "surgicalApproach": "Open direct exposure",
+            "device": null,
+            "morphology": "Depressed skull fracture",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "depressed fracture",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "elevation fracture",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00009",
+        "fsn": "Repair of anterior skull base cerebrospinal fluid leak (procedure)",
+        "preferredTerm": "Anterior skull base CSF leak repair",
+        "subspecialty": "cranial-trauma",
+        "facets": {
+            "method": "Repair",
+            "procedureSite": "Anterior skull base",
+            "surgicalApproach": "Subfrontal",
+            "device": "Dural graft",
+            "morphology": "Cerebrospinal fluid leak",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "CSF leak repair",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "rhinorrhoea repair",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00010",
+        "fsn": "Cranioplasty using autologous bone flap (procedure)",
+        "preferredTerm": "Cranioplasty autologous",
+        "subspecialty": "cranial-trauma",
+        "facets": {
+            "method": "Reconstruction",
+            "procedureSite": "Skull",
+            "surgicalApproach": "Open direct exposure",
+            "device": "Autologous bone flap",
+            "morphology": null,
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "cranioplasty",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "bone flap replacement",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00011",
+        "fsn": "Cranioplasty using synthetic implant (procedure)",
+        "preferredTerm": "Cranioplasty synthetic",
+        "subspecialty": "cranial-trauma",
+        "facets": {
+            "method": "Reconstruction",
+            "procedureSite": "Skull",
+            "surgicalApproach": "Open direct exposure",
+            "device": "Cranioplasty implant",
+            "morphology": null,
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "titanium cranioplasty",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "PMMA cranioplasty",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00012",
+        "fsn": "Insertion of intracranial pressure monitor (procedure)",
+        "preferredTerm": "ICP monitor insertion",
+        "subspecialty": "cranial-trauma",
+        "facets": {
+            "method": "Insertion",
+            "procedureSite": "Brain",
+            "surgicalApproach": "Burr hole",
+            "device": "Intracranial pressure monitor",
+            "morphology": null,
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "ICP bolt",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "ICP monitor",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "Codman",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00013",
+        "fsn": "Insertion of external ventricular drain (procedure)",
+        "preferredTerm": "External ventricular drain insertion",
+        "subspecialty": "cranial-csf",
+        "facets": {
+            "method": "Insertion",
+            "procedureSite": "Lateral ventricle",
+            "surgicalApproach": "Burr hole",
+            "device": "External ventricular drain catheter",
+            "morphology": "Hydrocephalus",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "EVD",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "ventriculostomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "external drain",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00014",
+        "fsn": "Craniotomy and excision of supratentorial intra-axial tumour (procedure)",
+        "preferredTerm": "Craniotomy supratentorial tumour excision",
+        "subspecialty": "cranial-tumour",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Cerebral hemisphere",
+            "surgicalApproach": "Craniotomy",
+            "device": null,
+            "morphology": "Glioma",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "glioma resection",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "brain tumour excision",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "crani tumour",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00015",
+        "fsn": "Craniotomy and partial excision of supratentorial intra-axial tumour (procedure)",
+        "preferredTerm": "Craniotomy supratentorial tumour debulking",
+        "subspecialty": "cranial-tumour",
+        "facets": {
+            "method": "Partial excision",
+            "procedureSite": "Cerebral hemisphere",
+            "surgicalApproach": "Craniotomy",
+            "device": null,
+            "morphology": "Glioma",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "debulking",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "subtotal resection",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00016",
+        "fsn": "Craniotomy and excision of convexity meningioma (procedure)",
+        "preferredTerm": "Craniotomy convexity meningioma excision",
+        "subspecialty": "cranial-tumour",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Dura mater",
+            "surgicalApproach": "Craniotomy",
+            "device": null,
+            "morphology": "Meningioma",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "convexity meningioma",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00017",
+        "fsn": "Craniotomy and excision of skull base meningioma (procedure)",
+        "preferredTerm": "Craniotomy skull base meningioma excision",
+        "subspecialty": "cranial-tumour",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Anterior skull base",
+            "surgicalApproach": "Pterional",
+            "device": null,
+            "morphology": "Meningioma",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "sphenoid wing meningioma",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "skull base meningioma",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00018",
+        "fsn": "Retrosigmoid craniotomy and excision of cerebellopontine angle tumour (procedure)",
+        "preferredTerm": "Retrosigmoid CPA tumour excision",
+        "subspecialty": "cranial-tumour",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Cerebellopontine angle",
+            "surgicalApproach": "Retrosigmoid",
+            "device": null,
+            "morphology": "Vestibular schwannoma",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "acoustic neuroma",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "vestibular schwannoma",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "CPA tumour",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00019",
+        "fsn": "Suboccipital craniotomy and excision of posterior fossa tumour (procedure)",
+        "preferredTerm": "Suboccipital posterior fossa tumour excision",
+        "subspecialty": "cranial-tumour",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Posterior cranial fossa",
+            "surgicalApproach": "Suboccipital midline",
+            "device": null,
+            "morphology": "Neoplasm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "posterior fossa tumour",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "PF tumour",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00020",
+        "fsn": "Endoscopic transsphenoidal excision of pituitary adenoma (procedure)",
+        "preferredTerm": "Endoscopic transsphenoidal pituitary excision",
+        "subspecialty": "cranial-tumour",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Pituitary fossa",
+            "surgicalApproach": "Endoscopic transsphenoidal",
+            "device": null,
+            "morphology": "Pituitary adenoma",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "TSS",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "transsphenoidal",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "pituitary surgery",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00021",
+        "fsn": "Craniotomy and excision of intracranial metastasis (procedure)",
+        "preferredTerm": "Craniotomy metastasis excision",
+        "subspecialty": "cranial-tumour",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Cerebral hemisphere",
+            "surgicalApproach": "Craniotomy",
+            "device": null,
+            "morphology": "Intracranial metastasis",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "brain met excision",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "metastasectomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00022",
+        "fsn": "Craniotomy and excision of intraventricular tumour (procedure)",
+        "preferredTerm": "Craniotomy intraventricular tumour excision",
+        "subspecialty": "cranial-tumour",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Lateral ventricle",
+            "surgicalApproach": "Interhemispheric",
+            "device": null,
+            "morphology": "Intraventricular neoplasm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "intraventricular tumour",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00023",
+        "fsn": "Stereotactic biopsy of intracranial lesion (procedure)",
+        "preferredTerm": "Stereotactic brain biopsy",
+        "subspecialty": "cranial-tumour",
+        "facets": {
+            "method": "Biopsy",
+            "procedureSite": "Brain",
+            "surgicalApproach": "Stereotactic",
+            "device": null,
+            "morphology": "Neoplasm",
+            "intent": "Diagnostic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "stereotactic biopsy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "frame biopsy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "needle biopsy brain",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00024",
+        "fsn": "Open biopsy of intracranial lesion (procedure)",
+        "preferredTerm": "Open brain biopsy",
+        "subspecialty": "cranial-tumour",
+        "facets": {
+            "method": "Biopsy",
+            "procedureSite": "Brain",
+            "surgicalApproach": "Craniotomy",
+            "device": null,
+            "morphology": "Neoplasm",
+            "intent": "Diagnostic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "open biopsy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00025",
+        "fsn": "Awake craniotomy with cortical mapping and tumour resection (procedure)",
+        "preferredTerm": "Awake craniotomy tumour resection",
+        "subspecialty": "cranial-tumour",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Cerebral hemisphere",
+            "surgicalApproach": "Craniotomy",
+            "device": null,
+            "morphology": "Glioma",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "awake crani",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "cortical mapping",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00026",
+        "fsn": "Craniotomy and clipping of intracranial aneurysm (procedure)",
+        "preferredTerm": "Craniotomy aneurysm clipping",
+        "subspecialty": "cranial-vascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Cerebral artery",
+            "surgicalApproach": "Pterional",
+            "device": "Intracranial aneurysm clip",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "aneurysm clipping",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "clipping",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "SAH clipping",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00027",
+        "fsn": "Craniotomy and excision of cerebral arteriovenous malformation (procedure)",
+        "preferredTerm": "Craniotomy AVM excision",
+        "subspecialty": "cranial-vascular",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Cerebral hemisphere",
+            "surgicalApproach": "Craniotomy",
+            "device": null,
+            "morphology": "Arteriovenous malformation",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "AVM excision",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "AVM resection",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00028",
+        "fsn": "Craniotomy and excision of cerebral cavernous malformation (procedure)",
+        "preferredTerm": "Craniotomy cavernoma excision",
+        "subspecialty": "cranial-vascular",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Cerebral hemisphere",
+            "surgicalApproach": "Craniotomy",
+            "device": null,
+            "morphology": "Cavernous malformation",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "cavernoma",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "cavernous angioma",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00029",
+        "fsn": "Craniotomy and evacuation of spontaneous intracerebral haematoma (procedure)",
+        "preferredTerm": "Craniotomy spontaneous ICH evacuation",
+        "subspecialty": "cranial-vascular",
+        "facets": {
+            "method": "Evacuation",
+            "procedureSite": "Cerebral hemisphere",
+            "surgicalApproach": "Craniotomy",
+            "device": null,
+            "morphology": "Intracerebral haematoma",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "spontaneous ICH",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "hypertensive bleed",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00030",
+        "fsn": "Decompressive craniectomy for malignant middle cerebral artery infarction (procedure)",
+        "preferredTerm": "Decompressive craniectomy malignant MCA",
+        "subspecialty": "cranial-vascular",
+        "facets": {
+            "method": "Decompression",
+            "procedureSite": "Skull",
+            "surgicalApproach": "Decompressive craniectomy",
+            "device": null,
+            "morphology": "Malignant middle cerebral artery infarction",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "malignant MCA",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "stroke craniectomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00031",
+        "fsn": "Superficial temporal artery to middle cerebral artery bypass (procedure)",
+        "preferredTerm": "STA-MCA bypass",
+        "subspecialty": "cranial-vascular",
+        "facets": {
+            "method": "Anastomosis",
+            "procedureSite": "Cerebral artery",
+            "surgicalApproach": "Craniotomy",
+            "device": null,
+            "morphology": null,
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "STA-MCA",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "EC-IC bypass",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "bypass",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00032",
+        "fsn": "Insertion of ventriculoperitoneal shunt (procedure)",
+        "preferredTerm": "Ventriculoperitoneal shunt insertion",
+        "subspecialty": "cranial-csf",
+        "facets": {
+            "method": "Insertion",
+            "procedureSite": "Lateral ventricle",
+            "surgicalApproach": "Burr hole",
+            "device": "Ventriculoperitoneal shunt system",
+            "morphology": "Hydrocephalus",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "VP shunt",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "VPS",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "shunt insertion",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00033",
+        "fsn": "Revision of ventriculoperitoneal shunt (procedure)",
+        "preferredTerm": "Ventriculoperitoneal shunt revision",
+        "subspecialty": "cranial-csf",
+        "facets": {
+            "method": "Revision",
+            "procedureSite": "Lateral ventricle",
+            "surgicalApproach": "Burr hole",
+            "device": "Ventriculoperitoneal shunt system",
+            "morphology": "Hydrocephalus",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "shunt revision",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "VP shunt revision",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00034",
+        "fsn": "Removal of ventriculoperitoneal shunt (procedure)",
+        "preferredTerm": "Ventriculoperitoneal shunt removal",
+        "subspecialty": "cranial-csf",
+        "facets": {
+            "method": "Removal",
+            "procedureSite": "Lateral ventricle",
+            "surgicalApproach": "Burr hole",
+            "device": "Ventriculoperitoneal shunt system",
+            "morphology": null,
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "shunt removal",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "externalisation",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00035",
+        "fsn": "Insertion of ventriculoatrial shunt (procedure)",
+        "preferredTerm": "Ventriculoatrial shunt insertion",
+        "subspecialty": "cranial-csf",
+        "facets": {
+            "method": "Insertion",
+            "procedureSite": "Lateral ventricle",
+            "surgicalApproach": "Burr hole",
+            "device": "Ventriculoatrial shunt system",
+            "morphology": "Hydrocephalus",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "VA shunt",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00036",
+        "fsn": "Insertion of lumboperitoneal shunt (procedure)",
+        "preferredTerm": "Lumboperitoneal shunt insertion",
+        "subspecialty": "cranial-csf",
+        "facets": {
+            "method": "Insertion",
+            "procedureSite": "Lumbar subarachnoid space",
+            "surgicalApproach": "Percutaneous",
+            "device": "Lumboperitoneal shunt system",
+            "morphology": "Hydrocephalus",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "LP shunt",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00037",
+        "fsn": "Endoscopic third ventriculostomy (procedure)",
+        "preferredTerm": "Endoscopic third ventriculostomy",
+        "subspecialty": "cranial-csf",
+        "facets": {
+            "method": "Fenestration",
+            "procedureSite": "Third ventricle",
+            "surgicalApproach": "Endoscopic transventricular",
+            "device": null,
+            "morphology": "Hydrocephalus",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "ETV",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "third ventriculostomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00038",
+        "fsn": "Insertion of Ommaya reservoir (procedure)",
+        "preferredTerm": "Ommaya reservoir insertion",
+        "subspecialty": "cranial-csf",
+        "facets": {
+            "method": "Insertion",
+            "procedureSite": "Lateral ventricle",
+            "surgicalApproach": "Burr hole",
+            "device": "Ommaya reservoir",
+            "morphology": null,
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "Ommaya",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00039",
+        "fsn": "Insertion of lumbar drain (procedure)",
+        "preferredTerm": "Lumbar drain insertion",
+        "subspecialty": "cranial-csf",
+        "facets": {
+            "method": "Insertion",
+            "procedureSite": "Lumbar subarachnoid space",
+            "surgicalApproach": "Percutaneous",
+            "device": "Lumbar drain catheter",
+            "morphology": null,
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "lumbar drain",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "LD",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00040",
+        "fsn": "Craniotomy and evacuation of cerebral abscess (procedure)",
+        "preferredTerm": "Craniotomy cerebral abscess evacuation",
+        "subspecialty": "cranial-infection",
+        "facets": {
+            "method": "Evacuation",
+            "procedureSite": "Brain",
+            "surgicalApproach": "Craniotomy",
+            "device": null,
+            "morphology": "Cerebral abscess",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "brain abscess crani",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00041",
+        "fsn": "Burr hole aspiration of cerebral abscess (procedure)",
+        "preferredTerm": "Burr hole cerebral abscess aspiration",
+        "subspecialty": "cranial-infection",
+        "facets": {
+            "method": "Drainage",
+            "procedureSite": "Brain",
+            "surgicalApproach": "Burr hole",
+            "device": null,
+            "morphology": "Cerebral abscess",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "abscess aspiration",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "brain abscess tap",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00042",
+        "fsn": "Craniotomy and evacuation of subdural empyema (procedure)",
+        "preferredTerm": "Craniotomy subdural empyema evacuation",
+        "subspecialty": "cranial-infection",
+        "facets": {
+            "method": "Evacuation",
+            "procedureSite": "Subdural space",
+            "surgicalApproach": "Craniotomy",
+            "device": null,
+            "morphology": "Subdural empyema",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "subdural empyema",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "SDE",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00043",
+        "fsn": "Debridement of infected craniotomy wound (procedure)",
+        "preferredTerm": "Craniotomy wound debridement",
+        "subspecialty": "cranial-infection",
+        "facets": {
+            "method": "Debridement",
+            "procedureSite": "Scalp",
+            "surgicalApproach": "Open direct exposure",
+            "device": null,
+            "morphology": "Surgical site infection",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "wound washout",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "bone flap infection",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00044",
+        "fsn": "Lumbar foraminotomy (procedure)",
+        "preferredTerm": "Lumbar foraminotomy",
+        "subspecialty": "spine-degenerative",
+        "facets": {
+            "method": "Decompression",
+            "procedureSite": "Lumbar vertebral column",
+            "surgicalApproach": "Transforaminal",
+            "device": null,
+            "morphology": "Spinal canal stenosis",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+            "lumbar",
+            "lumbosacral"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "foraminotomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00045",
+        "fsn": "Posterior lumbar interbody fusion (procedure)",
+        "preferredTerm": "Posterior lumbar interbody fusion",
+        "subspecialty": "spine-degenerative",
+        "facets": {
+            "method": "Fusion",
+            "procedureSite": "Lumbar vertebral column",
+            "surgicalApproach": "Posterior midline",
+            "device": "Intervertebral cage",
+            "morphology": "Spondylolisthesis",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+            "lumbar",
+            "lumbosacral"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "PLIF",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00046",
+        "fsn": "Transforaminal lumbar interbody fusion (procedure)",
+        "preferredTerm": "Transforaminal lumbar interbody fusion",
+        "subspecialty": "spine-degenerative",
+        "facets": {
+            "method": "Fusion",
+            "procedureSite": "Lumbar vertebral column",
+            "surgicalApproach": "Transforaminal",
+            "device": "Intervertebral cage",
+            "morphology": "Spondylolisthesis",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+            "lumbar",
+            "lumbosacral"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "TLIF",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00047",
+        "fsn": "Posterolateral lumbar fusion with pedicle screw fixation (procedure)",
+        "preferredTerm": "Posterolateral lumbar fusion",
+        "subspecialty": "spine-degenerative",
+        "facets": {
+            "method": "Fusion",
+            "procedureSite": "Lumbar vertebral column",
+            "surgicalApproach": "Posterolateral",
+            "device": "Pedicle screw system",
+            "morphology": "Spondylolisthesis",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "lumbar",
+            "sacral"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "PLF",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "pedicle screw fusion",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "instrumented fusion",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00048",
+        "fsn": "Anterior cervical corpectomy and fusion (procedure)",
+        "preferredTerm": "Anterior cervical corpectomy and fusion",
+        "subspecialty": "spine-degenerative",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Vertebral body",
+            "surgicalApproach": "Anterior cervical",
+            "device": "Anterior cervical plate",
+            "morphology": "Cervical spondylotic myelopathy",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "cervical"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "corpectomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "ACCF",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00049",
+        "fsn": "Cervical laminectomy and decompression (procedure)",
+        "preferredTerm": "Cervical laminectomy",
+        "subspecialty": "spine-degenerative",
+        "facets": {
+            "method": "Decompression",
+            "procedureSite": "Cervical vertebral column",
+            "surgicalApproach": "Posterior midline",
+            "device": null,
+            "morphology": "Cervical spondylotic myelopathy",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "craniocervical",
+            "cervical"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "cervical laminectomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "posterior cervical decompression",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00050",
+        "fsn": "Cervical laminoplasty (procedure)",
+        "preferredTerm": "Cervical laminoplasty",
+        "subspecialty": "spine-degenerative",
+        "facets": {
+            "method": "Decompression",
+            "procedureSite": "Cervical vertebral column",
+            "surgicalApproach": "Posterior midline",
+            "device": null,
+            "morphology": "Cervical spondylotic myelopathy",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "cervical"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "laminoplasty",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00051",
+        "fsn": "Posterior cervical fusion with lateral mass screw fixation (procedure)",
+        "preferredTerm": "Posterior cervical fusion",
+        "subspecialty": "spine-degenerative",
+        "facets": {
+            "method": "Fusion",
+            "procedureSite": "Cervical vertebral column",
+            "surgicalApproach": "Posterior midline",
+            "device": "Lateral mass screw system",
+            "morphology": null,
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "craniocervical",
+            "cervical"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "lateral mass fusion",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "posterior cervical fixation",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "PCF",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "cervical posterior fusion",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00052",
+        "fsn": "Thoracic discectomy (procedure)",
+        "preferredTerm": "Thoracic discectomy",
+        "subspecialty": "spine-degenerative",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Intervertebral disc",
+            "surgicalApproach": "Posterolateral",
+            "device": null,
+            "morphology": "Herniated intervertebral disc",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+            "thoracic",
+            "thoracolumbar"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "thoracic disc",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "dorsal discectomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "dorsal disc",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00053",
+        "fsn": "Posterior spinal instrumentation and fusion for vertebral fracture (procedure)",
+        "preferredTerm": "Posterior spinal fixation fracture",
+        "subspecialty": "spine-trauma",
+        "facets": {
+            "method": "Fixation",
+            "procedureSite": "Thoracic vertebral column",
+            "surgicalApproach": "Posterior midline",
+            "device": "Pedicle screw system",
+            "morphology": "Vertebral fracture",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "thoracic",
+            "lumbar"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "spinal fixation",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "posterior instrumentation",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "dorsal spine fixation",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00054",
+        "fsn": "Odontoid screw fixation (procedure)",
+        "preferredTerm": "Odontoid screw fixation",
+        "subspecialty": "spine-trauma",
+        "facets": {
+            "method": "Fixation",
+            "procedureSite": "Craniocervical junction",
+            "surgicalApproach": "Anterior cervical",
+            "device": "Odontoid screw",
+            "morphology": "Vertebral fracture",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "craniocervical"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "odontoid screw",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "dens fixation",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00055",
+        "fsn": "Occipitocervical fusion (procedure)",
+        "preferredTerm": "Occipitocervical fusion",
+        "subspecialty": "spine-trauma",
+        "facets": {
+            "method": "Fusion",
+            "procedureSite": "Craniocervical junction",
+            "surgicalApproach": "Posterior midline",
+            "device": "Occipitocervical fixation system",
+            "morphology": null,
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "craniocervical",
+            "cervical"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "occipitocervical",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "OC fusion",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00056",
+        "fsn": "Percutaneous vertebroplasty (procedure)",
+        "preferredTerm": "Percutaneous vertebroplasty",
+        "subspecialty": "spine-trauma",
+        "facets": {
+            "method": "Insertion",
+            "procedureSite": "Vertebral body",
+            "surgicalApproach": "Percutaneous",
+            "device": "Bone cement",
+            "morphology": "Vertebral fracture",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "thoracic",
+            "lumbar"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "vertebroplasty",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "kyphoplasty",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "cement augmentation",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00057",
+        "fsn": "Excision of intradural extramedullary spinal tumour (procedure)",
+        "preferredTerm": "Intradural extramedullary spinal tumour excision",
+        "subspecialty": "spine-tumour",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Spinal cord",
+            "surgicalApproach": "Posterior midline",
+            "device": null,
+            "morphology": "Intradural extramedullary neoplasm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "cervical",
+            "thoracic",
+            "lumbar"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "IDEM",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "spinal meningioma",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "schwannoma spine",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00058",
+        "fsn": "Excision of intramedullary spinal cord tumour (procedure)",
+        "preferredTerm": "Intramedullary spinal cord tumour excision",
+        "subspecialty": "spine-tumour",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Spinal cord",
+            "surgicalApproach": "Posterior midline",
+            "device": null,
+            "morphology": "Intramedullary neoplasm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "cervical",
+            "thoracic"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "IMSCT",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "intramedullary tumour",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00059",
+        "fsn": "Laminectomy and decompression for metastatic spinal tumour (procedure)",
+        "preferredTerm": "Laminectomy metastatic spinal tumour",
+        "subspecialty": "spine-tumour",
+        "facets": {
+            "method": "Decompression",
+            "procedureSite": "Thoracic vertebral column",
+            "surgicalApproach": "Posterior midline",
+            "device": null,
+            "morphology": "Metastatic spinal tumour",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "cervical",
+            "thoracic",
+            "lumbar"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "spinal met decompression",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "MSCC surgery",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "dorsal spine metastasis",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00060",
+        "fsn": "Biopsy of vertebral lesion (procedure)",
+        "preferredTerm": "Vertebral lesion biopsy",
+        "subspecialty": "spine-tumour",
+        "facets": {
+            "method": "Biopsy",
+            "procedureSite": "Vertebral body",
+            "surgicalApproach": "Percutaneous",
+            "device": null,
+            "morphology": "Neoplasm",
+            "intent": "Diagnostic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "cervical",
+            "thoracic",
+            "lumbar",
+            "sacral"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "vertebral biopsy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "spine biopsy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00061",
+        "fsn": "Debridement and drainage of spinal epidural abscess (procedure)",
+        "preferredTerm": "Spinal epidural abscess drainage",
+        "subspecialty": "spine-infection",
+        "facets": {
+            "method": "Drainage",
+            "procedureSite": "Spinal epidural space",
+            "surgicalApproach": "Posterior midline",
+            "device": null,
+            "morphology": "Spinal epidural abscess",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "cervical",
+            "thoracic",
+            "lumbar"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "SEA",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "epidural abscess spine",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00062",
+        "fsn": "Repair of myelomeningocele (procedure)",
+        "preferredTerm": "Myelomeningocele repair",
+        "subspecialty": "paediatric",
+        "facets": {
+            "method": "Repair",
+            "procedureSite": "Spinal cord",
+            "surgicalApproach": "Posterior midline",
+            "device": null,
+            "morphology": "Myelomeningocele",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "lumbar",
+            "sacral"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "MMC repair",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "spina bifida repair",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00063",
+        "fsn": "Repair of encephalocele (procedure)",
+        "preferredTerm": "Encephalocele repair",
+        "subspecialty": "paediatric",
+        "facets": {
+            "method": "Repair",
+            "procedureSite": "Skull",
+            "surgicalApproach": "Open direct exposure",
+            "device": null,
+            "morphology": "Encephalocele",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "encephalocele",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00064",
+        "fsn": "Untethering of spinal cord (procedure)",
+        "preferredTerm": "Spinal cord untethering",
+        "subspecialty": "paediatric",
+        "facets": {
+            "method": "Release",
+            "procedureSite": "Spinal cord",
+            "surgicalApproach": "Posterior midline",
+            "device": null,
+            "morphology": "Tethered cord",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "lumbar",
+            "sacral"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "untethering",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "tethered cord release",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00065",
+        "fsn": "Excision of spinal dermal sinus tract (procedure)",
+        "preferredTerm": "Spinal dermal sinus excision",
+        "subspecialty": "paediatric",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Spinal cord",
+            "surgicalApproach": "Posterior midline",
+            "device": null,
+            "morphology": "Spinal dermal sinus",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "lumbar",
+            "sacral"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "dermal sinus",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00066",
+        "fsn": "Surgical correction of craniosynostosis (procedure)",
+        "preferredTerm": "Craniosynostosis correction",
+        "subspecialty": "paediatric",
+        "facets": {
+            "method": "Reconstruction",
+            "procedureSite": "Skull",
+            "surgicalApproach": "Open direct exposure",
+            "device": null,
+            "morphology": "Craniosynostosis",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "craniosynostosis",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "cranial vault remodelling",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00067",
+        "fsn": "Carpal tunnel decompression (procedure)",
+        "preferredTerm": "Carpal tunnel decompression",
+        "subspecialty": "peripheral-nerve",
+        "facets": {
+            "method": "Decompression",
+            "procedureSite": "Median nerve",
+            "surgicalApproach": "Open direct exposure",
+            "device": null,
+            "morphology": "Entrapment neuropathy",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "carpal tunnel",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "CTR",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "median nerve release",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00068",
+        "fsn": "Ulnar nerve decompression at elbow (procedure)",
+        "preferredTerm": "Ulnar nerve decompression",
+        "subspecialty": "peripheral-nerve",
+        "facets": {
+            "method": "Decompression",
+            "procedureSite": "Ulnar nerve",
+            "surgicalApproach": "Open direct exposure",
+            "device": null,
+            "morphology": "Entrapment neuropathy",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "cubital tunnel",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "ulnar release",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00069",
+        "fsn": "Anterior transposition of ulnar nerve (procedure)",
+        "preferredTerm": "Ulnar nerve transposition",
+        "subspecialty": "peripheral-nerve",
+        "facets": {
+            "method": "Transposition",
+            "procedureSite": "Ulnar nerve",
+            "surgicalApproach": "Open direct exposure",
+            "device": null,
+            "morphology": "Entrapment neuropathy",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "ulnar transposition",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00070",
+        "fsn": "Excision of peripheral nerve sheath tumour (procedure)",
+        "preferredTerm": "Peripheral nerve sheath tumour excision",
+        "subspecialty": "peripheral-nerve",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Peripheral nerve",
+            "surgicalApproach": "Open direct exposure",
+            "device": null,
+            "morphology": "Peripheral nerve sheath tumour",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "schwannoma peripheral",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "PNST",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00071",
+        "fsn": "Biopsy of peripheral nerve (procedure)",
+        "preferredTerm": "Peripheral nerve biopsy",
+        "subspecialty": "peripheral-nerve",
+        "facets": {
+            "method": "Biopsy",
+            "procedureSite": "Peripheral nerve",
+            "surgicalApproach": "Open direct exposure",
+            "device": null,
+            "morphology": null,
+            "intent": "Diagnostic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "nerve biopsy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "sural biopsy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00072",
+        "fsn": "Microvascular decompression for trigeminal neuralgia (procedure)",
+        "preferredTerm": "Microvascular decompression trigeminal",
+        "subspecialty": "peripheral-nerve",
+        "facets": {
+            "method": "Decompression",
+            "procedureSite": "Trigeminal nerve",
+            "surgicalApproach": "Retrosigmoid",
+            "device": null,
+            "morphology": "Trigeminal neuralgia",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "MVD",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "Jannetta",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00073",
+        "fsn": "Percutaneous rhizotomy of trigeminal nerve (procedure)",
+        "preferredTerm": "Percutaneous trigeminal rhizotomy",
+        "subspecialty": "peripheral-nerve",
+        "facets": {
+            "method": "Destruction",
+            "procedureSite": "Trigeminal nerve",
+            "surgicalApproach": "Percutaneous",
+            "device": null,
+            "morphology": "Trigeminal neuralgia",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "rhizotomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "balloon compression",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "RFA trigeminal",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00074",
+        "fsn": "Craniotomy and clipping of anterior communicating artery aneurysm (procedure)",
+        "preferredTerm": "Craniotomy ACoA aneurysm clipping",
+        "subspecialty": "cranial-vascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Anterior communicating artery",
+            "surgicalApproach": "Pterional",
+            "device": "Intracranial aneurysm clip",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "ACoA aneurysm",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "AComm aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "anterior communicating artery aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00075",
+        "fsn": "Craniotomy and clipping of posterior communicating artery aneurysm (procedure)",
+        "preferredTerm": "Craniotomy PCoA aneurysm clipping",
+        "subspecialty": "cranial-vascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Posterior communicating artery",
+            "surgicalApproach": "Pterional",
+            "device": "Intracranial aneurysm clip",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "PCoA aneurysm",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "PComm aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "posterior communicating artery aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00076",
+        "fsn": "Craniotomy and clipping of internal carotid artery aneurysm (procedure)",
+        "preferredTerm": "Craniotomy ICA aneurysm clipping",
+        "subspecialty": "cranial-vascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Internal carotid artery",
+            "surgicalApproach": "Pterional",
+            "device": "Intracranial aneurysm clip",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "ICA aneurysm",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "carotid aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "internal carotid artery aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00077",
+        "fsn": "Craniotomy and clipping of middle cerebral artery aneurysm (procedure)",
+        "preferredTerm": "Craniotomy MCA aneurysm clipping",
+        "subspecialty": "cranial-vascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Middle cerebral artery",
+            "surgicalApproach": "Pterional",
+            "device": "Intracranial aneurysm clip",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "MCA aneurysm",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "MCA bifurcation aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "middle cerebral artery aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00078",
+        "fsn": "Craniotomy and clipping of anterior cerebral artery aneurysm (procedure)",
+        "preferredTerm": "Craniotomy ACA aneurysm clipping",
+        "subspecialty": "cranial-vascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Anterior cerebral artery",
+            "surgicalApproach": "Craniotomy",
+            "device": "Intracranial aneurysm clip",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "ACA aneurysm",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "pericallosal aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "anterior cerebral artery aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00079",
+        "fsn": "Craniotomy and clipping of basilar artery aneurysm (procedure)",
+        "preferredTerm": "Craniotomy basilar tip aneurysm clipping",
+        "subspecialty": "cranial-vascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Basilar artery",
+            "surgicalApproach": "Craniotomy",
+            "device": "Intracranial aneurysm clip",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "basilar tip aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "BA aneurysm",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "basilar artery aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00080",
+        "fsn": "Craniotomy and clipping of posterior inferior cerebellar artery aneurysm (procedure)",
+        "preferredTerm": "Craniotomy PICA aneurysm clipping",
+        "subspecialty": "cranial-vascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Posterior inferior cerebellar artery",
+            "surgicalApproach": "Far lateral",
+            "device": "Intracranial aneurysm clip",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "PICA aneurysm",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "posterior inferior cerebellar artery aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00081",
+        "fsn": "Craniotomy and clipping of vertebral artery aneurysm (procedure)",
+        "preferredTerm": "Craniotomy vertebral artery aneurysm clipping",
+        "subspecialty": "cranial-vascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Vertebral artery",
+            "surgicalApproach": "Far lateral",
+            "device": "Intracranial aneurysm clip",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "VA aneurysm",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "vertebral artery aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00082",
+        "fsn": "Lumbar microdiscectomy (procedure)",
+        "preferredTerm": "Lumbar microdiscectomy",
+        "subspecialty": "spine-degenerative",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Intervertebral disc",
+            "surgicalApproach": "Posterior midline",
+            "device": null,
+            "morphology": "Herniated intervertebral disc",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+            "lumbar",
+            "lumbosacral"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "microdisc",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "lumbar discectomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "MD",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "multilevel discectomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "microdiscectomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "lumbar microdiscectomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00083",
+        "fsn": "Lumbar laminectomy and decompression (procedure)",
+        "preferredTerm": "Lumbar laminectomy",
+        "subspecialty": "spine-degenerative",
+        "facets": {
+            "method": "Decompression",
+            "procedureSite": "Lumbar vertebral column",
+            "surgicalApproach": "Posterior midline",
+            "device": null,
+            "morphology": "Spinal canal stenosis",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "lumbar",
+            "sacral"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "lumbar laminectomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "decompression lumbar",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "multilevel laminectomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "laminectomy lumbar",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "lumbar decompression",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00084",
+        "fsn": "Anterior cervical discectomy and fusion (procedure)",
+        "preferredTerm": "Anterior cervical discectomy and fusion",
+        "subspecialty": "spine-degenerative",
+        "facets": {
+            "method": "Fusion",
+            "procedureSite": "Intervertebral disc",
+            "surgicalApproach": "Anterior cervical",
+            "device": "Intervertebral cage",
+            "morphology": "Herniated intervertebral disc",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+            "cervical",
+            "cervicothoracic"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "ACDF",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "anterior cervical",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "multilevel ACDF",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "anterior cervical discectomy and fusion",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "cervical fusion anterior",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00085",
+        "fsn": "Posterolateral thoracic fusion with pedicle screw fixation (procedure)",
+        "preferredTerm": "Posterolateral thoracic fusion",
+        "subspecialty": "spine-degenerative",
+        "facets": {
+            "method": "Fusion",
+            "procedureSite": "Thoracic vertebral column",
+            "surgicalApproach": "Posterolateral",
+            "device": "Pedicle screw system",
+            "morphology": null,
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "thoracic"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "dorsal fusion",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "dorsal posterolateral fusion",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "thoracic posterolateral fusion",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "dorsal PLF",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00086",
+        "fsn": "Posterolateral thoracolumbar fusion with pedicle screw fixation (procedure)",
+        "preferredTerm": "Posterolateral thoracolumbar fusion",
+        "subspecialty": "spine-degenerative",
+        "facets": {
+            "method": "Fusion",
+            "procedureSite": "Thoracolumbar vertebral column",
+            "surgicalApproach": "Posterolateral",
+            "device": "Pedicle screw system",
+            "morphology": null,
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "thoracic",
+            "lumbar"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "dorsolumbar fusion",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "dorsal lumbar fusion",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "thoracolumbar fusion",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "dorsolumbar PLF",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "DL fusion",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00087",
+        "fsn": "Posterior cervicothoracic fusion with instrumented fixation (procedure)",
+        "preferredTerm": "Posterior cervicothoracic fusion",
+        "subspecialty": "spine-degenerative",
+        "facets": {
+            "method": "Fusion",
+            "procedureSite": "Cervicothoracic vertebral column",
+            "surgicalApproach": "Posterior midline",
+            "device": "Cervicothoracic fixation system",
+            "morphology": null,
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "craniocervical",
+            "cervical",
+            "thoracic"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "cervicodorsal fusion",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "cervico-dorsal fusion",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "cervicothoracic fusion",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "cervicodorsal fixation",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00088",
+        "fsn": "Decompressive craniectomy and evacuation of spontaneous intracerebral haematoma (procedure)",
+        "preferredTerm": "Decompressive craniectomy spontaneous ICH evacuation",
+        "subspecialty": "cranial-vascular",
+        "facets": {
+            "method": "Evacuation",
+            "procedureSite": "Cerebral hemisphere",
+            "surgicalApproach": "Decompressive craniectomy",
+            "device": null,
+            "morphology": "Intracerebral haematoma",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": [
+            {
+                "term": "DC ICH evacuation",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "hemicraniectomy ICH evacuation",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "decompressive crani ICH",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    }
+]

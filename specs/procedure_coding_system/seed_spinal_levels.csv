@@ -1,0 +1,53 @@
+spinal_level_id,kind,code,long_name,region,ordinal,active,effective_from
+VRT-0001,vertebra,Occiput,Occipital bone,craniocervical,1,1,2026-08-07
+VRT-0002,vertebra,C1,First cervical vertebra (atlas),craniocervical,2,1,2026-08-07
+VRT-0003,vertebra,C2,Second cervical vertebra (axis),craniocervical,3,1,2026-08-07
+VRT-0004,vertebra,C3,Third cervical vertebra,cervical,4,1,2026-08-07
+VRT-0005,vertebra,C4,Fourth cervical vertebra,cervical,5,1,2026-08-07
+VRT-0006,vertebra,C5,Fifth cervical vertebra,cervical,6,1,2026-08-07
+VRT-0007,vertebra,C6,Sixth cervical vertebra,cervical,7,1,2026-08-07
+VRT-0008,vertebra,C7,Seventh cervical vertebra,cervical,8,1,2026-08-07
+VRT-0009,vertebra,T1,First thoracic vertebra,thoracic,9,1,2026-08-07
+VRT-0010,vertebra,T2,Second thoracic vertebra,thoracic,10,1,2026-08-07
+VRT-0011,vertebra,T3,Third thoracic vertebra,thoracic,11,1,2026-08-07
+VRT-0012,vertebra,T4,Fourth thoracic vertebra,thoracic,12,1,2026-08-07
+VRT-0013,vertebra,T5,Fifth thoracic vertebra,thoracic,13,1,2026-08-07
+VRT-0014,vertebra,T6,Sixth thoracic vertebra,thoracic,14,1,2026-08-07
+VRT-0015,vertebra,T7,Seventh thoracic vertebra,thoracic,15,1,2026-08-07
+VRT-0016,vertebra,T8,Eighth thoracic vertebra,thoracic,16,1,2026-08-07
+VRT-0017,vertebra,T9,Ninth thoracic vertebra,thoracic,17,1,2026-08-07
+VRT-0018,vertebra,T10,Tenth thoracic vertebra,thoracic,18,1,2026-08-07
+VRT-0019,vertebra,T11,Eleventh thoracic vertebra,thoracic,19,1,2026-08-07
+VRT-0020,vertebra,T12,Twelfth thoracic vertebra,thoracic,20,1,2026-08-07
+VRT-0021,vertebra,L1,First lumbar vertebra,lumbar,21,1,2026-08-07
+VRT-0022,vertebra,L2,Second lumbar vertebra,lumbar,22,1,2026-08-07
+VRT-0023,vertebra,L3,Third lumbar vertebra,lumbar,23,1,2026-08-07
+VRT-0024,vertebra,L4,Fourth lumbar vertebra,lumbar,24,1,2026-08-07
+VRT-0025,vertebra,L5,Fifth lumbar vertebra,lumbar,25,1,2026-08-07
+VRT-0026,vertebra,S1,First sacral segment,sacral,26,1,2026-08-07
+VRT-0027,vertebra,S2,Second sacral segment,sacral,27,1,2026-08-07
+ISP-0001,interspace,C0-C1,Occipito-atlantal junction,craniocervical,1,1,2026-08-07
+ISP-0002,interspace,C1-C2,Atlanto-axial junction,craniocervical,2,1,2026-08-07
+ISP-0003,interspace,C2-C3,C2-C3 intervertebral level,cervical,3,1,2026-08-07
+ISP-0004,interspace,C3-C4,C3-C4 intervertebral level,cervical,4,1,2026-08-07
+ISP-0005,interspace,C4-C5,C4-C5 intervertebral level,cervical,5,1,2026-08-07
+ISP-0006,interspace,C5-C6,C5-C6 intervertebral level,cervical,6,1,2026-08-07
+ISP-0007,interspace,C6-C7,C6-C7 intervertebral level,cervical,7,1,2026-08-07
+ISP-0008,interspace,C7-T1,C7-T1 intervertebral level,cervicothoracic,8,1,2026-08-07
+ISP-0009,interspace,T1-T2,T1-T2 intervertebral level,thoracic,9,1,2026-08-07
+ISP-0010,interspace,T2-T3,T2-T3 intervertebral level,thoracic,10,1,2026-08-07
+ISP-0011,interspace,T3-T4,T3-T4 intervertebral level,thoracic,11,1,2026-08-07
+ISP-0012,interspace,T4-T5,T4-T5 intervertebral level,thoracic,12,1,2026-08-07
+ISP-0013,interspace,T5-T6,T5-T6 intervertebral level,thoracic,13,1,2026-08-07
+ISP-0014,interspace,T6-T7,T6-T7 intervertebral level,thoracic,14,1,2026-08-07
+ISP-0015,interspace,T7-T8,T7-T8 intervertebral level,thoracic,15,1,2026-08-07
+ISP-0016,interspace,T8-T9,T8-T9 intervertebral level,thoracic,16,1,2026-08-07
+ISP-0017,interspace,T9-T10,T9-T10 intervertebral level,thoracic,17,1,2026-08-07
+ISP-0018,interspace,T10-T11,T10-T11 intervertebral level,thoracic,18,1,2026-08-07
+ISP-0019,interspace,T11-T12,T11-T12 intervertebral level,thoracic,19,1,2026-08-07
+ISP-0020,interspace,T12-L1,T12-L1 intervertebral level,thoracolumbar,20,1,2026-08-07
+ISP-0021,interspace,L1-L2,L1-L2 intervertebral level,lumbar,21,1,2026-08-07
+ISP-0022,interspace,L2-L3,L2-L3 intervertebral level,lumbar,22,1,2026-08-07
+ISP-0023,interspace,L3-L4,L3-L4 intervertebral level,lumbar,23,1,2026-08-07
+ISP-0024,interspace,L4-L5,L4-L5 intervertebral level,lumbar,24,1,2026-08-07
+ISP-0025,interspace,L5-S1,L5-S1 intervertebral level,lumbosacral,25,1,2026-08-07

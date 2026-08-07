@@ -1,0 +1,522 @@
+[
+    {
+        "spinalLevelId": "VRT-0001",
+        "kind": "vertebra",
+        "code": "Occiput",
+        "longName": "Occipital bone",
+        "region": "craniocervical",
+        "ordinal": 1,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0002",
+        "kind": "vertebra",
+        "code": "C1",
+        "longName": "First cervical vertebra (atlas)",
+        "region": "craniocervical",
+        "ordinal": 2,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0003",
+        "kind": "vertebra",
+        "code": "C2",
+        "longName": "Second cervical vertebra (axis)",
+        "region": "craniocervical",
+        "ordinal": 3,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0004",
+        "kind": "vertebra",
+        "code": "C3",
+        "longName": "Third cervical vertebra",
+        "region": "cervical",
+        "ordinal": 4,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0005",
+        "kind": "vertebra",
+        "code": "C4",
+        "longName": "Fourth cervical vertebra",
+        "region": "cervical",
+        "ordinal": 5,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0006",
+        "kind": "vertebra",
+        "code": "C5",
+        "longName": "Fifth cervical vertebra",
+        "region": "cervical",
+        "ordinal": 6,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0007",
+        "kind": "vertebra",
+        "code": "C6",
+        "longName": "Sixth cervical vertebra",
+        "region": "cervical",
+        "ordinal": 7,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0008",
+        "kind": "vertebra",
+        "code": "C7",
+        "longName": "Seventh cervical vertebra",
+        "region": "cervical",
+        "ordinal": 8,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0009",
+        "kind": "vertebra",
+        "code": "T1",
+        "longName": "First thoracic vertebra",
+        "region": "thoracic",
+        "ordinal": 9,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0010",
+        "kind": "vertebra",
+        "code": "T2",
+        "longName": "Second thoracic vertebra",
+        "region": "thoracic",
+        "ordinal": 10,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0011",
+        "kind": "vertebra",
+        "code": "T3",
+        "longName": "Third thoracic vertebra",
+        "region": "thoracic",
+        "ordinal": 11,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0012",
+        "kind": "vertebra",
+        "code": "T4",
+        "longName": "Fourth thoracic vertebra",
+        "region": "thoracic",
+        "ordinal": 12,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0013",
+        "kind": "vertebra",
+        "code": "T5",
+        "longName": "Fifth thoracic vertebra",
+        "region": "thoracic",
+        "ordinal": 13,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0014",
+        "kind": "vertebra",
+        "code": "T6",
+        "longName": "Sixth thoracic vertebra",
+        "region": "thoracic",
+        "ordinal": 14,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0015",
+        "kind": "vertebra",
+        "code": "T7",
+        "longName": "Seventh thoracic vertebra",
+        "region": "thoracic",
+        "ordinal": 15,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0016",
+        "kind": "vertebra",
+        "code": "T8",
+        "longName": "Eighth thoracic vertebra",
+        "region": "thoracic",
+        "ordinal": 16,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0017",
+        "kind": "vertebra",
+        "code": "T9",
+        "longName": "Ninth thoracic vertebra",
+        "region": "thoracic",
+        "ordinal": 17,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0018",
+        "kind": "vertebra",
+        "code": "T10",
+        "longName": "Tenth thoracic vertebra",
+        "region": "thoracic",
+        "ordinal": 18,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0019",
+        "kind": "vertebra",
+        "code": "T11",
+        "longName": "Eleventh thoracic vertebra",
+        "region": "thoracic",
+        "ordinal": 19,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0020",
+        "kind": "vertebra",
+        "code": "T12",
+        "longName": "Twelfth thoracic vertebra",
+        "region": "thoracic",
+        "ordinal": 20,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0021",
+        "kind": "vertebra",
+        "code": "L1",
+        "longName": "First lumbar vertebra",
+        "region": "lumbar",
+        "ordinal": 21,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0022",
+        "kind": "vertebra",
+        "code": "L2",
+        "longName": "Second lumbar vertebra",
+        "region": "lumbar",
+        "ordinal": 22,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0023",
+        "kind": "vertebra",
+        "code": "L3",
+        "longName": "Third lumbar vertebra",
+        "region": "lumbar",
+        "ordinal": 23,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0024",
+        "kind": "vertebra",
+        "code": "L4",
+        "longName": "Fourth lumbar vertebra",
+        "region": "lumbar",
+        "ordinal": 24,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0025",
+        "kind": "vertebra",
+        "code": "L5",
+        "longName": "Fifth lumbar vertebra",
+        "region": "lumbar",
+        "ordinal": 25,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0026",
+        "kind": "vertebra",
+        "code": "S1",
+        "longName": "First sacral segment",
+        "region": "sacral",
+        "ordinal": 26,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "VRT-0027",
+        "kind": "vertebra",
+        "code": "S2",
+        "longName": "Second sacral segment",
+        "region": "sacral",
+        "ordinal": 27,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0001",
+        "kind": "interspace",
+        "code": "C0-C1",
+        "longName": "Occipito-atlantal junction",
+        "region": "craniocervical",
+        "ordinal": 1,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0002",
+        "kind": "interspace",
+        "code": "C1-C2",
+        "longName": "Atlanto-axial junction",
+        "region": "craniocervical",
+        "ordinal": 2,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0003",
+        "kind": "interspace",
+        "code": "C2-C3",
+        "longName": "C2-C3 intervertebral level",
+        "region": "cervical",
+        "ordinal": 3,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0004",
+        "kind": "interspace",
+        "code": "C3-C4",
+        "longName": "C3-C4 intervertebral level",
+        "region": "cervical",
+        "ordinal": 4,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0005",
+        "kind": "interspace",
+        "code": "C4-C5",
+        "longName": "C4-C5 intervertebral level",
+        "region": "cervical",
+        "ordinal": 5,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0006",
+        "kind": "interspace",
+        "code": "C5-C6",
+        "longName": "C5-C6 intervertebral level",
+        "region": "cervical",
+        "ordinal": 6,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0007",
+        "kind": "interspace",
+        "code": "C6-C7",
+        "longName": "C6-C7 intervertebral level",
+        "region": "cervical",
+        "ordinal": 7,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0008",
+        "kind": "interspace",
+        "code": "C7-T1",
+        "longName": "C7-T1 intervertebral level",
+        "region": "cervicothoracic",
+        "ordinal": 8,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0009",
+        "kind": "interspace",
+        "code": "T1-T2",
+        "longName": "T1-T2 intervertebral level",
+        "region": "thoracic",
+        "ordinal": 9,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0010",
+        "kind": "interspace",
+        "code": "T2-T3",
+        "longName": "T2-T3 intervertebral level",
+        "region": "thoracic",
+        "ordinal": 10,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0011",
+        "kind": "interspace",
+        "code": "T3-T4",
+        "longName": "T3-T4 intervertebral level",
+        "region": "thoracic",
+        "ordinal": 11,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0012",
+        "kind": "interspace",
+        "code": "T4-T5",
+        "longName": "T4-T5 intervertebral level",
+        "region": "thoracic",
+        "ordinal": 12,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0013",
+        "kind": "interspace",
+        "code": "T5-T6",
+        "longName": "T5-T6 intervertebral level",
+        "region": "thoracic",
+        "ordinal": 13,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0014",
+        "kind": "interspace",
+        "code": "T6-T7",
+        "longName": "T6-T7 intervertebral level",
+        "region": "thoracic",
+        "ordinal": 14,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0015",
+        "kind": "interspace",
+        "code": "T7-T8",
+        "longName": "T7-T8 intervertebral level",
+        "region": "thoracic",
+        "ordinal": 15,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0016",
+        "kind": "interspace",
+        "code": "T8-T9",
+        "longName": "T8-T9 intervertebral level",
+        "region": "thoracic",
+        "ordinal": 16,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0017",
+        "kind": "interspace",
+        "code": "T9-T10",
+        "longName": "T9-T10 intervertebral level",
+        "region": "thoracic",
+        "ordinal": 17,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0018",
+        "kind": "interspace",
+        "code": "T10-T11",
+        "longName": "T10-T11 intervertebral level",
+        "region": "thoracic",
+        "ordinal": 18,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0019",
+        "kind": "interspace",
+        "code": "T11-T12",
+        "longName": "T11-T12 intervertebral level",
+        "region": "thoracic",
+        "ordinal": 19,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0020",
+        "kind": "interspace",
+        "code": "T12-L1",
+        "longName": "T12-L1 intervertebral level",
+        "region": "thoracolumbar",
+        "ordinal": 20,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0021",
+        "kind": "interspace",
+        "code": "L1-L2",
+        "longName": "L1-L2 intervertebral level",
+        "region": "lumbar",
+        "ordinal": 21,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0022",
+        "kind": "interspace",
+        "code": "L2-L3",
+        "longName": "L2-L3 intervertebral level",
+        "region": "lumbar",
+        "ordinal": 22,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0023",
+        "kind": "interspace",
+        "code": "L3-L4",
+        "longName": "L3-L4 intervertebral level",
+        "region": "lumbar",
+        "ordinal": 23,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0024",
+        "kind": "interspace",
+        "code": "L4-L5",
+        "longName": "L4-L5 intervertebral level",
+        "region": "lumbar",
+        "ordinal": 24,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "spinalLevelId": "ISP-0025",
+        "kind": "interspace",
+        "code": "L5-S1",
+        "longName": "L5-S1 intervertebral level",
+        "region": "lumbosacral",
+        "ordinal": 25,
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    }
+]

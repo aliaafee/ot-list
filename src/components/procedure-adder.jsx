@@ -274,10 +274,15 @@ function ProcedureAdder({
 
             setAdding(true);
             // Add procedure
+            // The code is passed alongside rather than inside `procedure`:
+            // it is persisted to `procedureCodes`, and the add-procedure
+            // endpoint copies every key it is given onto the procedure
+            // record itself.
             const resultError = await addProcedure(
                 patientData,
                 procedure,
                 otDay,
+                newProcedure.procedureCode,
             );
             setAdding(false);
 
