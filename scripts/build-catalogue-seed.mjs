@@ -5,9 +5,12 @@
  * Two artefacts are generated from them, and neither should be edited by
  * hand:
  *
- *   pb/pb_migrations/..._seed_procedure_catalogue.js
- *       Seeds the PocketBase catalogue collections. PocketBase is the
- *       runtime source of truth - the catalogue can be revised there
+ *   pb/pb_migrations/..._procedure_coding_system.js
+ *       The whole coding system: collections, seed data, the backfill of
+ *       existing procedures and the removal of the old free-text column.
+ *       Its shape lives in scripts/templates/, which is ordinary readable
+ *       JS; this script only injects the CSV data into it. PocketBase is
+ *       the runtime source of truth - the catalogue can be revised there
  *       without redeploying the app.
  *
  *   src/data/nspc-catalogue.json, src/data/spinal-levels.json
@@ -26,19 +29,46 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SPEC_DIR = join(ROOT, "specs", "procedure_coding_system");
-// The migration for the release currently being built. Bump this - name
-// and timestamp - when publishing a new catalogue release, and leave the
-// previous file in place: an applied migration never re-runs, so a
-// database that already has v2026.1 would otherwise never see v2026.2.
-// The seed upserts on business identifiers, so a fresh database running
-// every release migration in order ends up in the same state as one that
-// only ran the latest.
-const OUT = join(
-    ROOT,
-    "pb",
-    "pb_migrations",
-    "1786090400_seed_procedure_catalogue_v2026_2.js",
-);
+const TEMPLATE_DIR = join(ROOT, "scripts", "templates");
+const MIGRATIONS_DIR = join(ROOT, "pb", "pb_migrations");
+const SEED_MARKER = "/*__SEED__*/ null";
+
+// The bootstrap migration: creates the collections, seeds them, backfills
+// existing procedures and drops the old free-text column. It runs once,
+// on a database that has never had the coding system, and cannot run
+// twice - creating a collection that already exists is an error.
+const BOOTSTRAP = {
+    out: join(MIGRATIONS_DIR, "1786089600_procedure_coding_system.js"),
+    template: join(TEMPLATE_DIR, "procedure-coding-system.migration.js"),
+};
+
+// Every later change to the catalogue is a release: seed-only, against
+// collections that already exist, under its own new timestamp. An applied
+// migration never re-runs, so editing the bootstrap would move the repo
+// without moving any database that has already run it.
+//
+//   node scripts/build-catalogue-seed.mjs --release 1786500000_catalogue_v2026_2
+//
+const releaseArg = (() => {
+    const i = process.argv.indexOf("--release");
+    if (i === -1) return null;
+    const name = process.argv[i + 1];
+    if (!name || name.startsWith("--")) {
+        console.error(
+            "--release needs a migration filename, e.g.\n" +
+                "  --release 1786500000_catalogue_v2026_2",
+        );
+        process.exit(1);
+    }
+    return name.endsWith(".js") ? name : name + ".js";
+})();
+
+const { out: OUT, template: TEMPLATE } = releaseArg
+    ? {
+          out: join(MIGRATIONS_DIR, releaseArg),
+          template: join(TEMPLATE_DIR, "catalogue-release.migration.js"),
+      }
+    : BOOTSTRAP;
 const OUT_CATALOGUE = join(ROOT, "src", "data", "nspc-catalogue.json");
 const OUT_LEVELS = join(ROOT, "src", "data", "spinal-levels.json");
 
@@ -81,8 +111,10 @@ async function assertMigrationNotApplied() {
         console.error(
             `\n${basename(OUT)} has already been applied to pb/pb_data.\n\n` +
                 `Rewriting it would change the repo without changing any\n` +
-                `database that has run it. Bump OUT in this script to a new\n` +
-                `timestamp and re-run; leave the old migration in place.\n`,
+                `database that has run it. Publish the change as a new\n` +
+                `release instead, and leave this file alone:\n\n` +
+                `  node scripts/build-catalogue-seed.mjs --release ` +
+                `${Math.floor(Date.now() / 1000)}_catalogue_vYYYY_N\n`,
         );
         process.exit(1);
     }
@@ -331,264 +363,23 @@ writeFileSync(OUT_CATALOGUE, JSON.stringify(clientCatalogue, null, 4) + "\n");
 writeFileSync(OUT_LEVELS, JSON.stringify(spinalLevels, null, 4) + "\n");
 
 // ---------------------------------------------------------------------
-// Emit the PocketBase seed migration with the data embedded.
+// Emit the migration: the template with the CSV data injected.
 //
-// Embedded rather than read at runtime so the migration is self-contained
-// and needs no filesystem access from PocketBase's JS VM. It upserts on
-// the business identifiers (conceptId, facetValueId, spinalLevelId)
-// rather than inserting blindly, so re-running it against an already
-// seeded database applies a catalogue release instead of duplicating it.
+// The data is embedded rather than read at runtime so the migration is
+// self-contained and needs no filesystem access from PocketBase's JS VM.
+// The template is a plain .js file rather than a string in this script,
+// so the migration stays readable, lintable and diffable as the code it
+// becomes - the alternative is a 400-line string literal nothing can
+// check.
 // ---------------------------------------------------------------------
 
-const migration = `/// <reference path="../pb_data/types.d.ts" />
-
-// GENERATED by scripts/build-catalogue-seed.mjs - do not edit by hand.
-// Source of truth: specs/procedure_coding_system/seed_*.csv
-//
-// Regenerate with: node scripts/build-catalogue-seed.mjs
-//
-// Upserts keyed on the NSPC business identifiers, so this is safe to
-// re-run. For a new catalogue release, regenerate this file under a new
-// timestamp: already-applied migrations never re-run on their own.
-
-const SEED = ${JSON.stringify(seed)};
-
-/** PocketBase date fields want a full timestamp, the CSVs carry a day. */
-function asDate(day) {
-    return day ? day + " 00:00:00.000Z" : "";
+const template = readFileSync(TEMPLATE, "utf8");
+if (!template.includes(SEED_MARKER)) {
+    console.error(`Template has no ${SEED_MARKER} placeholder: ${TEMPLATE}`);
+    process.exit(1);
 }
 
-/** Load a whole collection into a { businessId: record } map. */
-function indexBy(app, collectionName, keyField) {
-    const map = {};
-    for (const record of app.findAllRecords(collectionName)) {
-        map[record.get(keyField)] = record;
-    }
-    return map;
-}
-
-/**
- * Add any missing options to a select field, keeping the ones already
- * there. Widening only: a value this seed no longer uses may still be on
- * records written by an earlier release, and removing it would make them
- * invalid on next save.
- */
-function widenSelect(app, collectionName, fieldName, values) {
-    const collection = app.findCollectionByNameOrId(collectionName);
-    const field = collection.fields.getByName(fieldName);
-
-    const merged = [];
-    for (let i = 0; i < field.values.length; i++) {
-        merged.push(field.values[i]);
-    }
-
-    let added = false;
-    for (const value of values) {
-        if (merged.indexOf(value) === -1) {
-            merged.push(value);
-            added = true;
-        }
-    }
-    if (!added) return;
-
-    field.values = merged;
-    app.save(collection);
-}
-
-/** Find-or-create by business key, apply changes, save. */
-function upsert(app, collectionName, index, keyField, keyValue, apply) {
-    let record = index[keyValue];
-    if (!record) {
-        record = new Record(app.findCollectionByNameOrId(collectionName));
-        record.set(keyField, keyValue);
-        index[keyValue] = record;
-    }
-    apply(record);
-    app.save(record);
-    return record;
-}
-
-migrate(
-    (app) => {
-        // --- facet values -------------------------------------------
-        const facetIndex = indexBy(
-            app,
-            "procedureFacetValues",
-            "facetValueId",
-        );
-        for (const row of SEED.facetValues) {
-            upsert(
-                app,
-                "procedureFacetValues",
-                facetIndex,
-                "facetValueId",
-                row.facetValueId,
-                (r) => {
-                    r.set("facet", row.facet);
-                    r.set("term", row.term);
-                    r.set("snomedAttribute", row.snomedAttribute);
-                    r.set("active", row.active);
-                    r.set("effectiveFrom", asDate(row.effectiveFrom));
-                },
-            );
-        }
-
-        // --- spinal levels ------------------------------------------
-        const levelIndex = indexBy(app, "spinalLevels", "spinalLevelId");
-        for (const row of SEED.spinalLevels) {
-            upsert(
-                app,
-                "spinalLevels",
-                levelIndex,
-                "spinalLevelId",
-                row.spinalLevelId,
-                (r) => {
-                    r.set("kind", row.kind);
-                    r.set("code", row.code);
-                    r.set("longName", row.longName);
-                    r.set("region", row.region);
-                    r.set("ordinal", row.ordinal);
-                    r.set("active", row.active);
-                    r.set("effectiveFrom", asDate(row.effectiveFrom));
-                },
-            );
-        }
-
-        // --- concepts -----------------------------------------------
-        // The subspecialty vocabulary has to be widened before any row
-        // using a new value is written, or the first such row fails and
-        // takes the migration with it.
-        widenSelect(
-            app,
-            "procedureConcepts",
-            "subspecialty",
-            SEED.subspecialties,
-        );
-
-        // Facet relations resolve here; replacedBy cannot, because it
-        // may point at a concept later in the list. It gets a second
-        // pass once every row exists.
-        const conceptIndex = indexBy(app, "procedureConcepts", "conceptId");
-        const facetRef = (facetValueId) =>
-            facetValueId ? facetIndex[facetValueId].id : "";
-
-        for (const row of SEED.concepts) {
-            upsert(
-                app,
-                "procedureConcepts",
-                conceptIndex,
-                "conceptId",
-                row.conceptId,
-                (r) => {
-                    r.set("fsn", row.fsn);
-                    r.set("preferredTerm", row.preferredTerm);
-                    r.set("subspecialty", row.subspecialty);
-                    r.set("method", facetRef(row.method));
-                    r.set("procedureSite", facetRef(row.procedureSite));
-                    r.set("surgicalApproach", facetRef(row.surgicalApproach));
-                    r.set("device", facetRef(row.device));
-                    r.set("morphology", facetRef(row.morphology));
-                    r.set("defaultIntent", facetRef(row.defaultIntent));
-                    r.set("lateralityApplicable", row.lateralityApplicable);
-                    r.set("revisionApplicable", row.revisionApplicable);
-                    r.set("levelApplicable", row.levelApplicable);
-                    r.set("levelKind", row.levelKind ?? "");
-                    r.set("levelRegions", row.levelRegions);
-                    r.set("active", row.active);
-                    r.set("inactivationReason", row.inactivationReason ?? "");
-                    r.set("effectiveFrom", asDate(row.effectiveFrom));
-                    r.set("effectiveTo", asDate(row.effectiveTo));
-                    r.set("catalogueRelease", row.catalogueRelease);
-                },
-            );
-        }
-
-        // --- replacement chains -------------------------------------
-        for (const row of SEED.concepts) {
-            if (!row.replacedBy) continue;
-            const record = conceptIndex[row.conceptId];
-            record.set("replacedBy", conceptIndex[row.replacedBy].id);
-            app.save(record);
-        }
-
-        // --- synonyms -----------------------------------------------
-        // Replaced wholesale per concept rather than upserted: a synonym
-        // has no stable identifier of its own, and a release that drops
-        // one should not leave it behind.
-        for (const row of SEED.concepts) {
-            const conceptRecordId = conceptIndex[row.conceptId].id;
-            const stale = app.findRecordsByFilter(
-                "procedureConceptSynonyms",
-                "concept = {:concept}",
-                "",
-                0,
-                0,
-                { concept: conceptRecordId },
-            );
-            for (const record of stale) app.delete(record);
-        }
-
-        const synonymCollection = app.findCollectionByNameOrId(
-            "procedureConceptSynonyms",
-        );
-        for (const row of SEED.synonyms) {
-            const record = new Record(synonymCollection);
-            record.set("concept", conceptIndex[row.concept].id);
-            record.set("term", row.term);
-            record.set("language", row.language);
-            record.set("isAbbreviation", row.isAbbreviation);
-            record.set("active", row.active);
-            record.set("effectiveFrom", asDate(row.effectiveFrom));
-            app.save(record);
-        }
-
-        return null;
-    },
-    (app) => {
-        // Remove only what this seed introduced. Concepts go first -
-        // their synonyms cascade with them. A concept still referenced
-        // by a procedureCodes row will refuse to delete, which is the
-        // intended safety net rather than an error to work around.
-        const purge = (collectionName, keyField, rows, keyOf) => {
-            for (const row of rows) {
-                let record;
-                try {
-                    record = app.findFirstRecordByFilter(
-                        collectionName,
-                        keyField + " = {:id}",
-                        { id: keyOf(row) },
-                    );
-                } catch {
-                    continue; // Never seeded, or already removed.
-                }
-                app.delete(record);
-            }
-        };
-
-        purge(
-            "procedureConcepts",
-            "conceptId",
-            SEED.concepts,
-            (r) => r.conceptId,
-        );
-        purge(
-            "spinalLevels",
-            "spinalLevelId",
-            SEED.spinalLevels,
-            (r) => r.spinalLevelId,
-        );
-        purge(
-            "procedureFacetValues",
-            "facetValueId",
-            SEED.facetValues,
-            (r) => r.facetValueId,
-        );
-        return null;
-    },
-);
-`;
-
-writeFileSync(OUT, migration);
+writeFileSync(OUT, template.replace(SEED_MARKER, JSON.stringify(seed)));
 
 console.log(
     `facet values  ${facetValues.length}\n` +

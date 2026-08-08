@@ -70,8 +70,11 @@ export default defineConfig([
   // (which is where `require` and `module` come from), no browser, and
   // none of the React rules apply. `sourceType` sits on languageOptions
   // in flat config - under parserOptions it is silently ignored.
+  //
+  // scripts/templates holds migration source that is copied into pb/ by
+  // the generator, so it is the same runtime despite the location.
   {
-    files: ['pb/**/*.js'],
+    files: ['pb/**/*.js', 'scripts/templates/**/*.js'],
     languageOptions: {
       sourceType: 'commonjs',
       globals: { ...globals.es2021, ...pocketbaseGlobals },
