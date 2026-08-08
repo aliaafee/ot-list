@@ -85,7 +85,7 @@ export default function ReorderList({
             {ordered.map((item) => (
                 <li
                     key={item.id}
-                    draggable={!!!disabled}
+                    draggable={!disabled}
                     onDragStart={(e) => handleDragStart(e, item.id)}
                     onDragOver={handleDragOver}
                     onDrop={(e) => handleDrop(e, item.id)}
@@ -99,7 +99,7 @@ export default function ReorderList({
                             <div
                                 className={twMerge(
                                     "p-2 hidden md:block",
-                                    !!!disabled && "cursor-grab"
+                                    !disabled && "cursor-grab"
                                 )}
                             >
                                 <span

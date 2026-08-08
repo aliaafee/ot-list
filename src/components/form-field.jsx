@@ -73,7 +73,7 @@ export default function FormField({
                     name={name}
                     value={value}
                     onChange={onChange}
-                    placeholder={!!placeholder ? placeholder : label}
+                    placeholder={placeholder ? placeholder : label}
                     disabled={disabled}
                     className={twMerge(
                         "w-full rounded p-1 bg-white",
@@ -87,7 +87,7 @@ export default function FormField({
                     name={name}
                     value={value}
                     onChange={onChange}
-                    placeholder={!!placeholder ? placeholder : label}
+                    placeholder={placeholder ? placeholder : label}
                     disabled={disabled}
                     className={twMerge(
                         "w-full rounded p-1 bg-white",

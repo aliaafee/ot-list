@@ -19,7 +19,7 @@ function FatalErrorModal({ message, data = {} }) {
                         className="mt-2 flex items-center gap-2 cursor-pointer rounded-lg hover:underline"
                         onClick={() => setShowDetails(!showDetails)}
                     >
-                        {!!showDetails ? (
+                        {showDetails ? (
                             <ChevronDown width={16} height={16} />
                         ) : (
                             <ChevronRight width={16} height={16} />

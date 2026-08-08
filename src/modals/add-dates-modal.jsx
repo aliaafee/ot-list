@@ -43,7 +43,7 @@ export default function AddDatesModal({
     const { user } = useAuth();
 
     useEffect(() => {
-        setSelectedOtList(!!initialOtList ? initialOtList : "");
+        setSelectedOtList(initialOtList ? initialOtList : "");
     }, []);
 
     function getDaysInRange(startDate, endDate, days = []) {
@@ -68,12 +68,12 @@ export default function AddDatesModal({
     );
 
     const handleAddDate = async () => {
-        if (!!!selectedOtList) {
+        if (!selectedOtList) {
             setError("Select a ot list to add dates.");
             return;
         }
 
-        const datesToCreate = !!!addMultiple ? [addDate] : listDays;
+        const datesToCreate = !addMultiple ? [addDate] : listDays;
 
         if (datesToCreate.length === 0) {
             setError("Select at least one date.");
@@ -156,7 +156,7 @@ export default function AddDatesModal({
                 value={selectedOtList}
                 onChange={(e) => setSelectedOtList(e.target.value)}
                 type="select"
-                error={!!!selectedOtList}
+                error={!selectedOtList}
             >
                 <option value="">Select List</option>
                 {otLists.map((otList) => (
@@ -177,7 +177,7 @@ export default function AddDatesModal({
                     }}
                     buttonClassName="flex-grow"
                     className="mr-0 rounded-r-none bg-gray-300"
-                    active={!!!addMultiple}
+                    active={!addMultiple}
                 >
                     <ToolBarButtonLabel className="text-center pr-0">
                         Add One Date
@@ -203,7 +203,7 @@ export default function AddDatesModal({
             <p className="mt-2">
                 Add OT dates to the list by entering the date below.
             </p>
-            {!!!addMultiple ? (
+            {!addMultiple ? (
                 <div className="mt-2">
                     <FormField
                         label=""

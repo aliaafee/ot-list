@@ -336,10 +336,10 @@ export function ProcedureListProvider({ children }) {
                 return {
                     ...original,
                     ...newProcedure,
-                    procedureDay: !!updatedOtDay ? updatedOtDay.id : otDay.id,
+                    procedureDay: updatedOtDay ? updatedOtDay.id : otDay.id,
                     expand: {
                         ...original.expand,
-                        procedureDay: !!updatedOtDay ? updatedOtDay : otDay,
+                        procedureDay: updatedOtDay ? updatedOtDay : otDay,
                         // The name is read off this expand, so carrying
                         // the old one forward would show the edit as
                         // having done nothing until the server echoes
@@ -528,7 +528,7 @@ export function ProcedureListProvider({ children }) {
         };
     }, [proceduresList, loading, error, otDay]);
 
-    if (!!error) {
+    if (error) {
         return (
             <FatalErrorModal
                 message={`Error while loading procedures. ${error.message} Please reload page.`}
