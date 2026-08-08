@@ -51,8 +51,32 @@ function AllProcedures() {
             const filters = [];
 
             if (query.trim()) {
+                // The procedure name lives on the code row, so that is
+                // what a name search reaches: `displayTermSnapshot` is
+                // the term for a coded procedure and the typed text for
+                // an uncoded one, and the level snapshot is searched
+                // beside it because the levels are part of the name on
+                // screen ("... C5-C6").
+                //
+                // `procedures.procedure` is deliberately not searched.
+                // Matching it would surface records under names they no
+                // longer carry, since nothing rewrites that column when a
+                // procedure is renamed.
+                //
+                // Built with pb.filter so a quote or brace in the query
+                // is escaped rather than breaking the expression.
                 filters.push(
-                    `(patient.nid ~ "${query}" || patient.hospitalId ~ "${query}" || patient.name ~ "${query}" || diagnosis ~ "${query}" || procedure ~ "${query}")`,
+                    pb.filter(
+                        `(
+                            patient.nid ~ {:q}
+                            || patient.hospitalId ~ {:q}
+                            || patient.name ~ {:q}
+                            || diagnosis ~ {:q}
+                            || procedureCodes_via_procedure.displayTermSnapshot ~ {:q}
+                            || procedureCodes_via_procedure.spinalLevelsSnapshot ~ {:q}
+                        )`,
+                        { q: query },
+                    ),
                 );
             }
 

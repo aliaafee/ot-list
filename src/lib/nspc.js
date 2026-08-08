@@ -426,17 +426,19 @@ export function renderStoredProcedureName(record) {
 /**
  * The name to display for a procedure record.
  *
- * `procedures.procedure` is no longer written - the name lives on the
- * code row. It is still read here, and only here, for procedures recorded
- * before the coding system existed: those have no code row, and that
- * column is the only record of what was done.
+ * The code row is the only source. `procedures.procedure` is neither
+ * written nor read any more: every procedure has a code row - new ones
+ * get theirs in the same transaction, and the backfill migration gave one
+ * to every record that predated coding - so there is nothing left for a
+ * fallback to catch. Reading a stale second copy would only let the two
+ * disagree.
  *
- * Requires `procedureCodes_via_procedure` to have been expanded. Without
- * it every procedure looks historical and silently falls back, which for
- * a record saved since the change means showing nothing.
+ * Requires `procedureCodes_via_procedure` to have been expanded. Missing
+ * that, this returns "" rather than a name, which is the visible symptom
+ * of a query that forgot the expand.
  */
 export function procedureName(procedure) {
-    const code = procedure?.expand?.procedureCodes_via_procedure?.[0];
-    if (code) return renderStoredProcedureName(code);
-    return procedure?.procedure ?? "";
+    return renderStoredProcedureName(
+        procedure?.expand?.procedureCodes_via_procedure?.[0],
+    );
 }

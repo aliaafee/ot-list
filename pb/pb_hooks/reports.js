@@ -69,8 +69,10 @@ const LATERALITY_LABELS = {
  * uncoded procedure needs no special case - its snapshot is the text the
  * surgeon typed.
  *
- * Falls back to `procedures.procedure` for the records that predate the
- * coding system, which is the only thing that column still holds.
+ * The code row is the only source - `procedures.procedure` is neither
+ * written nor read any more, since every procedure has a code row and a
+ * second copy could only disagree with the first. A procedure without one
+ * prints blank, which is the visible symptom of a missing expand.
  *
  * NOTE: this mirrors composeName() in src/lib/nspc.js. They cannot share
  * an implementation - one is bundled ESM, the other runs in PocketBase's
@@ -81,7 +83,7 @@ const procedureName = (procedureRecord) => {
     const codes = procedureRecord.expandedAll("procedureCodes_via_procedure");
 
     if (!codes || codes.length === 0) {
-        return procedureRecord.getString("procedure");
+        return "";
     }
 
     const code = codes[0];

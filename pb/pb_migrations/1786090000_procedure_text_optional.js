@@ -8,9 +8,12 @@
 // column any more.
 //
 // It is kept, and kept populated, for every procedure recorded before the
-// coding system existed: those rows have no code and this text is the
-// only record of what was done. Readers fall back to it when a procedure
-// has no code row, which is precisely the set of historical records.
+// coding system existed: those rows had no code and this text was the
+// only record of what was done.
+//
+// (Superseded by 1786090100, which gave those records code rows of their
+// own. Nothing reads this column any more - it is retained as the
+// original of what that migration copied, not as a live fallback.)
 //
 // Dropping the column outright would destroy that history, which is why
 // this only relaxes the constraint.
