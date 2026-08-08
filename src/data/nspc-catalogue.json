@@ -65,6 +65,24 @@
                 "language": "en",
                 "isAbbreviation": false,
                 "active": true
+            },
+            {
+                "term": "burrhole evacuation",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "burr hole evacuation of subdural haematoma",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "subdural haematoma evacuation",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
             }
         ]
     },
@@ -273,6 +291,18 @@
                 "language": "en",
                 "isAbbreviation": false,
                 "active": true
+            },
+            {
+                "term": "FTP craniectomy",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "frontotemporoparietal decompressive craniectomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
             }
         ]
     },
@@ -346,6 +376,18 @@
             },
             {
                 "term": "elevation fracture",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "removal of depressed bone fragments",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "elevation of depressed bone",
                 "language": "en",
                 "isAbbreviation": false,
                 "active": true
@@ -665,6 +707,18 @@
                 "language": "en",
                 "isAbbreviation": false,
                 "active": true
+            },
+            {
+                "term": "meningioma excision",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "excision of meningioma",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
             }
         ]
     },
@@ -826,6 +880,24 @@
             },
             {
                 "term": "pituitary surgery",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "transphenoidal",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "endoscopic endonasal",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "endonasal pituitary excision",
                 "language": "en",
                 "isAbbreviation": false,
                 "active": true
@@ -1294,6 +1366,18 @@
             },
             {
                 "term": "shunt insertion",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "programmable VP shunt",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "programmable ventriculoperitoneal shunt",
                 "language": "en",
                 "isAbbreviation": false,
                 "active": true
@@ -1840,6 +1924,18 @@
             },
             {
                 "term": "instrumented fusion",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "MIS fusion",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "short segment fusion",
                 "language": "en",
                 "isAbbreviation": false,
                 "active": true
@@ -2686,6 +2782,30 @@
                 "language": "en",
                 "isAbbreviation": false,
                 "active": true
+            },
+            {
+                "term": "CTS release",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "CT release",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "carpal tunnel release",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "CTS",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
             }
         ]
     },
@@ -2793,6 +2913,18 @@
                 "term": "PNST",
                 "language": "en",
                 "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "nerve sheath tumour excision",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "schwannoma excision",
+                "language": "en",
+                "isAbbreviation": false,
                 "active": true
             }
         ]
@@ -3319,6 +3451,18 @@
                 "language": "en",
                 "isAbbreviation": false,
                 "active": true
+            },
+            {
+                "term": "laminotomy and discectomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "laminectomy and discectomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
             }
         ]
     },
@@ -3375,6 +3519,18 @@
             },
             {
                 "term": "lumbar decompression",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "decompressive laminectomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "laminectomy and decompression",
                 "language": "en",
                 "isAbbreviation": false,
                 "active": true
@@ -3643,6 +3799,1517 @@
             },
             {
                 "term": "decompressive crani ICH",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00089",
+        "fsn": "Diagnostic cerebral digital subtraction angiography (procedure)",
+        "preferredTerm": "Diagnostic cerebral DSA",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Angiography",
+            "procedureSite": "Cerebral artery",
+            "surgicalApproach": "Endovascular",
+            "device": null,
+            "morphology": null,
+            "intent": "Diagnostic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "DSA",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "cerebral DSA",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "check DSA",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "diagnostic angiogram",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "ADA",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00090",
+        "fsn": "Endovascular coil occlusion of intracranial aneurysm (procedure)",
+        "preferredTerm": "Aneurysm coiling",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Cerebral artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Endovascular coil",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "coiling",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "stent assisted coiling",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00091",
+        "fsn": "Flow diverter stent placement for intracranial aneurysm (procedure)",
+        "preferredTerm": "Flow diverter placement",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Insertion",
+            "procedureSite": "Cerebral artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Flow diverter stent",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": []
+    },
+    {
+        "conceptId": "NSX-00092",
+        "fsn": "Embolisation of cerebral arteriovenous malformation (procedure)",
+        "preferredTerm": "AVM embolisation",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Cerebral artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Liquid embolic agent",
+            "morphology": "Arteriovenous malformation",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": []
+    },
+    {
+        "conceptId": "NSX-00093",
+        "fsn": "Embolisation of dural arteriovenous fistula (procedure)",
+        "preferredTerm": "Dural AVF embolisation",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Cerebral artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Liquid embolic agent",
+            "morphology": "Dural arteriovenous fistula",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": []
+    },
+    {
+        "conceptId": "NSX-00094",
+        "fsn": "Stent placement in extracranial carotid artery (procedure)",
+        "preferredTerm": "Carotid artery stenting",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Insertion",
+            "procedureSite": "Internal carotid artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Intraluminal arterial stent",
+            "morphology": "Carotid artery stenosis",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "ICA stenting",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "carotid stent",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00095",
+        "fsn": "Cerebral venous sinus stenting with venous manometry (procedure)",
+        "preferredTerm": "Venous sinus stenting",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Insertion",
+            "procedureSite": "Cerebral venous sinus",
+            "surgicalApproach": "Endovascular",
+            "device": "Intraluminal arterial stent",
+            "morphology": "Idiopathic intracranial hypertension",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": []
+    },
+    {
+        "conceptId": "NSX-00096",
+        "fsn": "Mechanical thrombectomy for acute ischaemic stroke (procedure)",
+        "preferredTerm": "Mechanical thrombectomy",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Removal",
+            "procedureSite": "Cerebral artery",
+            "surgicalApproach": "Endovascular",
+            "device": null,
+            "morphology": "Acute ischaemic stroke",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": []
+    },
+    {
+        "conceptId": "NSX-00097",
+        "fsn": "Transforaminal epidural steroid injection (procedure)",
+        "preferredTerm": "Transforaminal epidural steroid injection",
+        "subspecialty": "pain",
+        "facets": {
+            "method": "Injection",
+            "procedureSite": "Intervertebral foramen",
+            "surgicalApproach": "Transforaminal",
+            "device": null,
+            "morphology": "Lumbar radiculopathy",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": false,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+            "cervical",
+            "thoracic",
+            "lumbar",
+            "lumbosacral"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "TFESI",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "transforaminal block",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "nerve root block",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00098",
+        "fsn": "Interlaminar epidural steroid injection (procedure)",
+        "preferredTerm": "Interlaminar epidural steroid injection",
+        "subspecialty": "pain",
+        "facets": {
+            "method": "Injection",
+            "procedureSite": "Spinal epidural space",
+            "surgicalApproach": "Percutaneous",
+            "device": null,
+            "morphology": "Lumbar radiculopathy",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": false,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+            "cervical",
+            "thoracic",
+            "lumbar",
+            "lumbosacral"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "epidural steroid injection",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "ESI",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "epidural block",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00099",
+        "fsn": "Caudal epidural steroid injection (procedure)",
+        "preferredTerm": "Caudal epidural steroid injection",
+        "subspecialty": "pain",
+        "facets": {
+            "method": "Injection",
+            "procedureSite": "Spinal epidural space",
+            "surgicalApproach": "Percutaneous",
+            "device": null,
+            "morphology": "Lumbar radiculopathy",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": []
+    },
+    {
+        "conceptId": "NSX-00100",
+        "fsn": "Zygapophyseal joint medial branch block (procedure)",
+        "preferredTerm": "Facet joint block",
+        "subspecialty": "pain",
+        "facets": {
+            "method": "Injection",
+            "procedureSite": "Zygapophyseal joint",
+            "surgicalApproach": "Percutaneous",
+            "device": null,
+            "morphology": "Facet joint arthropathy",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": false,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+            "cervical",
+            "thoracic",
+            "lumbar",
+            "lumbosacral"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "facet block",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "medial branch block",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "MBB",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00101",
+        "fsn": "Sacroiliac joint injection (procedure)",
+        "preferredTerm": "Sacroiliac joint injection",
+        "subspecialty": "pain",
+        "facets": {
+            "method": "Injection",
+            "procedureSite": "Sacroiliac joint",
+            "surgicalApproach": "Percutaneous",
+            "device": null,
+            "morphology": "Sacroiliac joint dysfunction",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "SIJ block",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "SI joint injection",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00102",
+        "fsn": "Erector spinae plane block (procedure)",
+        "preferredTerm": "Erector spinae plane block",
+        "subspecialty": "pain",
+        "facets": {
+            "method": "Injection",
+            "procedureSite": "Spinal epidural space",
+            "surgicalApproach": "Percutaneous",
+            "device": null,
+            "morphology": null,
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": []
+    },
+    {
+        "conceptId": "NSX-00103",
+        "fsn": "Peripheral nerve steroid injection (procedure)",
+        "preferredTerm": "Peripheral nerve steroid injection",
+        "subspecialty": "pain",
+        "facets": {
+            "method": "Injection",
+            "procedureSite": "Peripheral nerve",
+            "surgicalApproach": "Percutaneous",
+            "device": null,
+            "morphology": "Entrapment neuropathy",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": []
+    },
+    {
+        "conceptId": "NSX-00104",
+        "fsn": "Full-endoscopic transforaminal lumbar discectomy (procedure)",
+        "preferredTerm": "Endoscopic transforaminal lumbar discectomy",
+        "subspecialty": "spine-degenerative",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Intervertebral disc",
+            "surgicalApproach": "Full-endoscopic transforaminal",
+            "device": null,
+            "morphology": "Herniated intervertebral disc",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+            "lumbar",
+            "lumbosacral"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "endoscopic discectomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "TELD",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00105",
+        "fsn": "Full-endoscopic interlaminar lumbar discectomy (procedure)",
+        "preferredTerm": "Endoscopic interlaminar lumbar discectomy",
+        "subspecialty": "spine-degenerative",
+        "facets": {
+            "method": "Excision",
+            "procedureSite": "Intervertebral disc",
+            "surgicalApproach": "Full-endoscopic interlaminar",
+            "device": null,
+            "morphology": "Herniated intervertebral disc",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+            "lumbar",
+            "lumbosacral"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "IELD",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00106",
+        "fsn": "Lumbar puncture with measurement of opening pressure (procedure)",
+        "preferredTerm": "Lumbar puncture with manometry",
+        "subspecialty": "cranial-csf",
+        "facets": {
+            "method": "Puncture",
+            "procedureSite": "Lumbar subarachnoid space",
+            "surgicalApproach": "Percutaneous",
+            "device": null,
+            "morphology": "Hydrocephalus",
+            "intent": "Diagnostic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "LP",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "tap test",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "CSF tap",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00107",
+        "fsn": "Insertion of intrathecal baclofen infusion pump (procedure)",
+        "preferredTerm": "Intrathecal baclofen pump insertion",
+        "subspecialty": "pain",
+        "facets": {
+            "method": "Insertion",
+            "procedureSite": "Lumbar subarachnoid space",
+            "surgicalApproach": "Open direct exposure",
+            "device": "Intrathecal drug delivery pump",
+            "morphology": "Spasticity",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": []
+    },
+    {
+        "conceptId": "NSX-00108",
+        "fsn": "Refill of intrathecal baclofen infusion pump (procedure)",
+        "preferredTerm": "Intrathecal baclofen pump refill",
+        "subspecialty": "pain",
+        "facets": {
+            "method": "Injection",
+            "procedureSite": "Lumbar subarachnoid space",
+            "surgicalApproach": "Percutaneous",
+            "device": "Intrathecal drug delivery pump",
+            "morphology": "Spasticity",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": []
+    },
+    {
+        "conceptId": "NSX-00109",
+        "fsn": "Tracheostomy (procedure)",
+        "preferredTerm": "Tracheostomy",
+        "subspecialty": "cranial-trauma",
+        "facets": {
+            "method": "Incision",
+            "procedureSite": "Trachea",
+            "surgicalApproach": "Open direct exposure",
+            "device": "Tracheostomy tube",
+            "morphology": null,
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "trachy",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00110",
+        "fsn": "Stent placement in intracranial artery (procedure)",
+        "preferredTerm": "Intracranial arterial stenting",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Insertion",
+            "procedureSite": "Cerebral artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Intraluminal arterial stent",
+            "morphology": "Intracranial arterial stenosis",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "MCA stenting",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "intracranial stenting",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00111",
+        "fsn": "Endovascular coil occlusion of anterior communicating artery aneurysm (procedure)",
+        "preferredTerm": "ACoA aneurysm coiling",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Anterior communicating artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Endovascular coil",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "ACoA coiling",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "ACoA aneurysm coiling",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "coiling anterior communicating artery aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00112",
+        "fsn": "Endovascular coil occlusion of posterior communicating artery aneurysm (procedure)",
+        "preferredTerm": "PCoA aneurysm coiling",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Posterior communicating artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Endovascular coil",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "PCoA coiling",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "PCoA aneurysm coiling",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "coiling posterior communicating artery aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00113",
+        "fsn": "Endovascular coil occlusion of internal carotid artery aneurysm (procedure)",
+        "preferredTerm": "ICA aneurysm coiling",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Internal carotid artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Endovascular coil",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "ICA coiling",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "ICA aneurysm coiling",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "coiling internal carotid artery aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00114",
+        "fsn": "Endovascular coil occlusion of middle cerebral artery aneurysm (procedure)",
+        "preferredTerm": "MCA aneurysm coiling",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Middle cerebral artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Endovascular coil",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "MCA coiling",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "MCA aneurysm coiling",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "coiling middle cerebral artery aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00115",
+        "fsn": "Endovascular coil occlusion of anterior cerebral artery aneurysm (procedure)",
+        "preferredTerm": "ACA aneurysm coiling",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Anterior cerebral artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Endovascular coil",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "ACA coiling",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "ACA aneurysm coiling",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "coiling anterior cerebral artery aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00116",
+        "fsn": "Endovascular coil occlusion of basilar artery aneurysm (procedure)",
+        "preferredTerm": "basilar aneurysm coiling",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Basilar artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Endovascular coil",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "basilar coiling",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "basilar aneurysm coiling",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "coiling basilar artery aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00117",
+        "fsn": "Endovascular coil occlusion of posterior inferior cerebellar artery aneurysm (procedure)",
+        "preferredTerm": "PICA aneurysm coiling",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Posterior inferior cerebellar artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Endovascular coil",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "PICA coiling",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "PICA aneurysm coiling",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "coiling posterior inferior cerebellar artery aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00118",
+        "fsn": "Endovascular coil occlusion of vertebral artery aneurysm (procedure)",
+        "preferredTerm": "VA aneurysm coiling",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Vertebral artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Endovascular coil",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "VA coiling",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "VA aneurysm coiling",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "coiling vertebral artery aneurysm",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00119",
+        "fsn": "Intrasaccular flow disruptor placement in intracranial aneurysm (procedure)",
+        "preferredTerm": "Aneurysm intrasaccular device",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Cerebral artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Intrasaccular flow disruptor",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "intrasaccular device",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "WEB device",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "intrasaccular seal",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "flow disruptor",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00120",
+        "fsn": "Intrasaccular flow disruptor placement in anterior communicating artery aneurysm (procedure)",
+        "preferredTerm": "ACoA aneurysm intrasaccular device",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Anterior communicating artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Intrasaccular flow disruptor",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "ACoA intrasaccular",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "ACoA WEB",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "ACoA aneurysm intrasaccular device",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00121",
+        "fsn": "Intrasaccular flow disruptor placement in posterior communicating artery aneurysm (procedure)",
+        "preferredTerm": "PCoA aneurysm intrasaccular device",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Posterior communicating artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Intrasaccular flow disruptor",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "PCoA intrasaccular",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "PCoA WEB",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "PCoA aneurysm intrasaccular device",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00122",
+        "fsn": "Intrasaccular flow disruptor placement in internal carotid artery aneurysm (procedure)",
+        "preferredTerm": "ICA aneurysm intrasaccular device",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Internal carotid artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Intrasaccular flow disruptor",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "ICA intrasaccular",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "ICA WEB",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "ICA aneurysm intrasaccular device",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00123",
+        "fsn": "Intrasaccular flow disruptor placement in middle cerebral artery aneurysm (procedure)",
+        "preferredTerm": "MCA aneurysm intrasaccular device",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Middle cerebral artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Intrasaccular flow disruptor",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "MCA intrasaccular",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "MCA WEB",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "MCA aneurysm intrasaccular device",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00124",
+        "fsn": "Intrasaccular flow disruptor placement in anterior cerebral artery aneurysm (procedure)",
+        "preferredTerm": "ACA aneurysm intrasaccular device",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Anterior cerebral artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Intrasaccular flow disruptor",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "ACA intrasaccular",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "ACA WEB",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "ACA aneurysm intrasaccular device",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00125",
+        "fsn": "Intrasaccular flow disruptor placement in basilar artery aneurysm (procedure)",
+        "preferredTerm": "basilar aneurysm intrasaccular device",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Basilar artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Intrasaccular flow disruptor",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "basilar intrasaccular",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "basilar WEB",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "basilar aneurysm intrasaccular device",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00126",
+        "fsn": "Intrasaccular flow disruptor placement in posterior inferior cerebellar artery aneurysm (procedure)",
+        "preferredTerm": "PICA aneurysm intrasaccular device",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Posterior inferior cerebellar artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Intrasaccular flow disruptor",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "PICA intrasaccular",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "PICA WEB",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "PICA aneurysm intrasaccular device",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
+    },
+    {
+        "conceptId": "NSX-00127",
+        "fsn": "Intrasaccular flow disruptor placement in vertebral artery aneurysm (procedure)",
+        "preferredTerm": "VA aneurysm intrasaccular device",
+        "subspecialty": "endovascular",
+        "facets": {
+            "method": "Occlusion",
+            "procedureSite": "Vertebral artery",
+            "surgicalApproach": "Endovascular",
+            "device": "Intrasaccular flow disruptor",
+            "morphology": "Saccular aneurysm",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-08",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "VA intrasaccular",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "VA WEB",
+                "language": "en",
+                "isAbbreviation": true,
+                "active": true
+            },
+            {
+                "term": "VA aneurysm intrasaccular device",
                 "language": "en",
                 "isAbbreviation": false,
                 "active": true

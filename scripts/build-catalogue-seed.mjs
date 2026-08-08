@@ -20,20 +20,75 @@
  * Usage: node scripts/build-catalogue-seed.mjs
  */
 
-import { readFileSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SPEC_DIR = join(ROOT, "specs", "procedure_coding_system");
+// The migration for the release currently being built. Bump this - name
+// and timestamp - when publishing a new catalogue release, and leave the
+// previous file in place: an applied migration never re-runs, so a
+// database that already has v2026.1 would otherwise never see v2026.2.
+// The seed upserts on business identifiers, so a fresh database running
+// every release migration in order ends up in the same state as one that
+// only ran the latest.
 const OUT = join(
     ROOT,
     "pb",
     "pb_migrations",
-    "1786089800_seed_procedure_catalogue.js",
+    "1786090400_seed_procedure_catalogue_v2026_2.js",
 );
 const OUT_CATALOGUE = join(ROOT, "src", "data", "nspc-catalogue.json");
 const OUT_LEVELS = join(ROOT, "src", "data", "spinal-levels.json");
+
+/**
+ * Refuse to rewrite a migration the local database has already run.
+ *
+ * An applied migration never re-runs, so editing one in place is a silent
+ * no-op against every database that already has it: the CSVs, the bundled
+ * snapshot and the file on disk all move on, and the database quietly
+ * does not. That has happened once already - a regenerated release file
+ * left a database short of a whole batch of concepts with nothing to
+ * indicate it.
+ *
+ * Only advisory. A checkout with no `pb_data` (CI, a fresh clone) has
+ * nothing to check against and builds normally.
+ */
+async function assertMigrationNotApplied() {
+    const db = join(ROOT, "pb", "pb_data", "data.db");
+    if (!existsSync(db)) return;
+
+    let DatabaseSync;
+    try {
+        ({ DatabaseSync } = await import("node:sqlite"));
+    } catch {
+        return; // Older Node without node:sqlite - skip rather than fail.
+    }
+
+    let applied = false;
+    try {
+        const handle = new DatabaseSync(db, { readOnly: true });
+        applied = !!handle
+            .prepare("SELECT 1 FROM _migrations WHERE file = ?")
+            .get(basename(OUT));
+        handle.close();
+    } catch {
+        return; // Locked by a running server, or no _migrations table yet.
+    }
+
+    if (applied) {
+        console.error(
+            `\n${basename(OUT)} has already been applied to pb/pb_data.\n\n` +
+                `Rewriting it would change the repo without changing any\n` +
+                `database that has run it. Bump OUT in this script to a new\n` +
+                `timestamp and re-run; leave the old migration in place.\n`,
+        );
+        process.exit(1);
+    }
+}
+
+await assertMigrationNotApplied();
 
 /**
  * Minimal RFC 4180 parser. The seed CSVs quote any field containing a

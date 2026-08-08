@@ -208,3 +208,110 @@ NSX-00059,dorsal spine metastasis,en,0,1,2026-08-07
 NSX-00088,DC ICH evacuation,en,1,1,2026-08-07
 NSX-00088,hemicraniectomy ICH evacuation,en,0,1,2026-08-07
 NSX-00088,decompressive crani ICH,en,0,1,2026-08-07
+NSX-00089,DSA,en,1,1,2026-08-08
+NSX-00089,cerebral DSA,en,0,1,2026-08-08
+NSX-00089,check DSA,en,0,1,2026-08-08
+NSX-00089,diagnostic angiogram,en,0,1,2026-08-08
+NSX-00089,ADA,en,1,1,2026-08-08
+NSX-00090,coiling,en,0,1,2026-08-08
+NSX-00090,stent assisted coiling,en,0,1,2026-08-08
+NSX-00094,ICA stenting,en,1,1,2026-08-08
+NSX-00094,carotid stent,en,0,1,2026-08-08
+NSX-00110,MCA stenting,en,1,1,2026-08-08
+NSX-00110,intracranial stenting,en,0,1,2026-08-08
+NSX-00097,TFESI,en,1,1,2026-08-08
+NSX-00097,transforaminal block,en,0,1,2026-08-08
+NSX-00097,nerve root block,en,0,1,2026-08-08
+NSX-00098,epidural steroid injection,en,0,1,2026-08-08
+NSX-00098,ESI,en,1,1,2026-08-08
+NSX-00098,epidural block,en,0,1,2026-08-08
+NSX-00100,facet block,en,0,1,2026-08-08
+NSX-00100,medial branch block,en,0,1,2026-08-08
+NSX-00100,MBB,en,1,1,2026-08-08
+NSX-00101,SIJ block,en,1,1,2026-08-08
+NSX-00101,SI joint injection,en,0,1,2026-08-08
+NSX-00104,endoscopic discectomy,en,0,1,2026-08-08
+NSX-00104,TELD,en,1,1,2026-08-08
+NSX-00105,IELD,en,1,1,2026-08-08
+NSX-00106,LP,en,1,1,2026-08-08
+NSX-00106,tap test,en,0,1,2026-08-08
+NSX-00106,CSF tap,en,0,1,2026-08-08
+NSX-00109,trachy,en,1,1,2026-08-08NSX-00001,burrhole,en,0,1,2026-08-08
+NSX-00001,burrhole evacuation,en,0,1,2026-08-08
+NSX-00001,burr hole evacuation of subdural haematoma,en,0,1,2026-08-08
+NSX-00001,subdural haematoma evacuation,en,0,1,2026-08-08
+NSX-00020,transphenoidal,en,0,1,2026-08-08
+NSX-00020,endoscopic endonasal,en,0,1,2026-08-08
+NSX-00020,endonasal pituitary excision,en,0,1,2026-08-08
+NSX-00067,CTS release,en,0,1,2026-08-08
+NSX-00067,CT release,en,0,1,2026-08-08
+NSX-00067,carpal tunnel release,en,0,1,2026-08-08
+NSX-00067,CTS,en,1,1,2026-08-08
+NSX-00032,programmable VP shunt,en,0,1,2026-08-08
+NSX-00032,programmable ventriculoperitoneal shunt,en,0,1,2026-08-08
+NSX-00083,decompressive laminectomy,en,0,1,2026-08-08
+NSX-00083,laminectomy and decompression,en,0,1,2026-08-08
+NSX-00082,laminotomy and discectomy,en,0,1,2026-08-08
+NSX-00082,laminectomy and discectomy,en,0,1,2026-08-08
+NSX-00006,FTP craniectomy,en,1,1,2026-08-08
+NSX-00006,frontotemporoparietal decompressive craniectomy,en,0,1,2026-08-08
+NSX-00008,removal of depressed bone fragments,en,0,1,2026-08-08
+NSX-00008,elevation of depressed bone,en,0,1,2026-08-08
+NSX-00070,nerve sheath tumour excision,en,0,1,2026-08-08
+NSX-00070,schwannoma excision,en,0,1,2026-08-08
+NSX-00016,meningioma excision,en,0,1,2026-08-08
+NSX-00016,excision of meningioma,en,0,1,2026-08-08
+NSX-00047,MIS fusion,en,1,1,2026-08-08
+NSX-00047,short segment fusion,en,0,1,2026-08-08
+NSX-00111,ACoA coiling,en,1,1,2026-08-08
+NSX-00111,ACoA aneurysm coiling,en,0,1,2026-08-08
+NSX-00111,coiling anterior communicating artery aneurysm,en,0,1,2026-08-08
+NSX-00112,PCoA coiling,en,1,1,2026-08-08
+NSX-00112,PCoA aneurysm coiling,en,0,1,2026-08-08
+NSX-00112,coiling posterior communicating artery aneurysm,en,0,1,2026-08-08
+NSX-00113,ICA coiling,en,1,1,2026-08-08
+NSX-00113,ICA aneurysm coiling,en,0,1,2026-08-08
+NSX-00113,coiling internal carotid artery aneurysm,en,0,1,2026-08-08
+NSX-00114,MCA coiling,en,1,1,2026-08-08
+NSX-00114,MCA aneurysm coiling,en,0,1,2026-08-08
+NSX-00114,coiling middle cerebral artery aneurysm,en,0,1,2026-08-08
+NSX-00115,ACA coiling,en,1,1,2026-08-08
+NSX-00115,ACA aneurysm coiling,en,0,1,2026-08-08
+NSX-00115,coiling anterior cerebral artery aneurysm,en,0,1,2026-08-08
+NSX-00116,basilar coiling,en,1,1,2026-08-08
+NSX-00116,basilar aneurysm coiling,en,0,1,2026-08-08
+NSX-00116,coiling basilar artery aneurysm,en,0,1,2026-08-08
+NSX-00117,PICA coiling,en,1,1,2026-08-08
+NSX-00117,PICA aneurysm coiling,en,0,1,2026-08-08
+NSX-00117,coiling posterior inferior cerebellar artery aneurysm,en,0,1,2026-08-08
+NSX-00118,VA coiling,en,1,1,2026-08-08
+NSX-00118,VA aneurysm coiling,en,0,1,2026-08-08
+NSX-00118,coiling vertebral artery aneurysm,en,0,1,2026-08-08
+NSX-00119,intrasaccular device,en,0,1,2026-08-08
+NSX-00119,WEB device,en,1,1,2026-08-08
+NSX-00119,intrasaccular seal,en,0,1,2026-08-08
+NSX-00119,flow disruptor,en,0,1,2026-08-08
+NSX-00120,ACoA intrasaccular,en,1,1,2026-08-08
+NSX-00120,ACoA WEB,en,1,1,2026-08-08
+NSX-00120,ACoA aneurysm intrasaccular device,en,0,1,2026-08-08
+NSX-00121,PCoA intrasaccular,en,1,1,2026-08-08
+NSX-00121,PCoA WEB,en,1,1,2026-08-08
+NSX-00121,PCoA aneurysm intrasaccular device,en,0,1,2026-08-08
+NSX-00122,ICA intrasaccular,en,1,1,2026-08-08
+NSX-00122,ICA WEB,en,1,1,2026-08-08
+NSX-00122,ICA aneurysm intrasaccular device,en,0,1,2026-08-08
+NSX-00123,MCA intrasaccular,en,1,1,2026-08-08
+NSX-00123,MCA WEB,en,1,1,2026-08-08
+NSX-00123,MCA aneurysm intrasaccular device,en,0,1,2026-08-08
+NSX-00124,ACA intrasaccular,en,1,1,2026-08-08
+NSX-00124,ACA WEB,en,1,1,2026-08-08
+NSX-00124,ACA aneurysm intrasaccular device,en,0,1,2026-08-08
+NSX-00125,basilar intrasaccular,en,1,1,2026-08-08
+NSX-00125,basilar WEB,en,1,1,2026-08-08
+NSX-00125,basilar aneurysm intrasaccular device,en,0,1,2026-08-08
+NSX-00126,PICA intrasaccular,en,1,1,2026-08-08
+NSX-00126,PICA WEB,en,1,1,2026-08-08
+NSX-00126,PICA aneurysm intrasaccular device,en,0,1,2026-08-08
+NSX-00127,VA intrasaccular,en,1,1,2026-08-08
+NSX-00127,VA WEB,en,1,1,2026-08-08
+NSX-00127,VA aneurysm intrasaccular device,en,0,1,2026-08-08

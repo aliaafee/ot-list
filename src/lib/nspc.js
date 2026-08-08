@@ -86,6 +86,8 @@ export const SUBSPECIALTY_LABELS = {
     "spine-infection": "Spine - Infection",
     paediatric: "Paediatric",
     "peripheral-nerve": "Peripheral nerve",
+    endovascular: "Endovascular / neurointervention",
+    pain: "Interventional pain",
 };
 
 // Clinical grouping order rather than alphabetical - cranial, then
@@ -101,6 +103,8 @@ export const SUBSPECIALTY_ORDER = [
     "spine-trauma",
     "spine-tumour",
     "spine-infection",
+    "endovascular",
+    "pain",
     "paediatric",
     "peripheral-nerve",
 ];
