@@ -92,9 +92,11 @@ server.tool(
   async ({ otDayId }) => {
     await ensureAuth();
 
+    // The procedure's name is on its code row, not on the procedure
+    // itself, so without this expand every record comes back unnamed.
     const records = await pb.collection("procedures").getFullList({
       filter: `procedureDay = "${otDayId}"`,
-      expand: "patient,addedBy,procedureDay.otList",
+      expand: "patient,addedBy,procedureDay.otList,procedureCodes_via_procedure",
       sort: "+order",
     });
 
