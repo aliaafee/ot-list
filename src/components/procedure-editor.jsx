@@ -11,9 +11,10 @@ import { useProcedureList } from "@/contexts/procedure-list-context";
 
 import { ProcedureForm, validateProcedure } from "@/forms/procedure-form";
 import { useCatalogue } from "@/contexts/catalogue-context";
+import { procedureName } from "@/lib/nspc";
 import {
+    buildProcedureCodeBody,
     loadProcedureCode,
-    saveProcedureCode,
 } from "@/lib/procedure-codes";
 import PatientInfo from "./patient-info";
 import { PacStatus } from "./pac-status";
@@ -42,7 +43,11 @@ function ProcedureEditor({
     const [updatedProcedure, setUpdatedProcedure] = useState({
         diagnosis: procedure?.diagnosis || "",
         comorbids: procedure?.comorbids || "",
-        procedure: procedure?.procedure || "",
+        // The name as it currently reads, from the code row or - for a
+        // procedure older than the coding system - from the legacy
+        // column. Either way it starts as free text; the effect below
+        // swaps in the catalogue selection if there is one to restore.
+        procedure: procedureName(procedure),
         addedDate: dayjs(procedure?.addedDate).format("YYYY-MM-DD") || "",
         addedBy: procedure?.addedBy || "",
         remarks: procedure?.remarks || "",
@@ -82,7 +87,7 @@ function ProcedureEditor({
         };
     }, [procedure?.id, findById]);
 
-    const handleUpdateProcedure = () => {
+    const handleUpdateProcedure = async () => {
         const inputErrors = validateProcedure(updatedProcedure);
 
         setUpdatedProcedureErrors(inputErrors);
@@ -91,6 +96,29 @@ function ProcedureEditor({
             return;
         }
 
+        // Resolving the code to its record body needs the catalogue id
+        // maps, so it can fail on its own - before anything is written,
+        // which is the point. `procedureCode` travels with the procedure
+        // from here on and the two are saved in one transaction.
+        let procedureCode;
+        try {
+            procedureCode = await buildProcedureCodeBody(
+                updatedProcedure.procedureCode ?? updatedProcedure.procedure,
+            );
+        } catch (e) {
+            console.error("Failed to resolve procedure code:", e);
+            setUpdatedProcedureErrors({
+                procedure: {
+                    name: "procedure",
+                    message:
+                        "Could not resolve this procedure against the catalogue. Try again.",
+                },
+            });
+            return;
+        }
+
+        // No `procedure` key: the name is on the code row now, and that
+        // column belongs to the records that predate it.
         const updatedProcedureRecord = {
             id: procedure.id,
             addedBy: updatedProcedure.addedBy,
@@ -100,19 +128,13 @@ function ProcedureEditor({
             comorbids: updatedProcedure.comorbids,
             diagnosis: updatedProcedure.diagnosis,
             duration: updatedProcedure.duration,
-            procedure: updatedProcedure.procedure,
             remarks: updatedProcedure.remarks,
             removed: updatedProcedure.removed,
             requirements: updatedProcedure.requirements,
+            procedureCode,
         };
 
         updateProcedures([updatedProcedureRecord], null, false);
-
-        // Coding is additive: if this fails the procedure edit still
-        // stands, so it is not worth blocking the save or the close on.
-        saveProcedureCode(procedure.id, updatedProcedure.procedureCode).catch(
-            (e) => console.error("Failed to save procedure code:", e),
-        );
 
         onAfterSave();
     };

@@ -8,6 +8,7 @@ import {
     buildValueFromConcept,
     levelOptions,
     searchWithLevel,
+    selectableConcepts,
     sortLevelCodes,
 } from "@/lib/nspc";
 
@@ -56,16 +57,20 @@ export function CatalogueProvider({ children }) {
     // the fetch lands. The search index is 88 entries, but it is walked on
     // every keystroke, so it must not be rebuilt per render.
     const value = useMemo(() => {
-        const index = buildSearchIndex(data.concepts);
+        // The uncoded sentinel is dropped from everything a user reaches
+        // - search and the browser tree both read `concepts` - but stays
+        // in `findById`, which resolves codes already stored.
+        const selectable = selectableConcepts(data.concepts);
+        const index = buildSearchIndex(selectable);
         const lookup = buildLevelLookup(data.levels);
         const byId = new Map(data.concepts.map((c) => [c.conceptId, c]));
 
         return {
-            concepts: data.concepts,
+            concepts: selectable,
             levels: data.levels,
             // Whichever release the data in hand came from, which is what
             // gets snapshotted onto a coded procedure.
-            release: data.concepts[0]?.catalogueRelease ?? "",
+            release: selectable[0]?.catalogueRelease ?? "",
             error,
 
             // Bound against the catalogue currently in hand, so callers

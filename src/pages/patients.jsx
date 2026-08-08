@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import BodyLayout from "@/components/body-layout";
 import { ToolBar, ToolBarButtonLabel, ToolBarLink } from "@/components/toolbar";
+import { procedureName } from "@/lib/nspc";
 import { pb } from "@/lib/pb";
 import { age } from "@/utils/dates";
 import dayjs from "dayjs";
@@ -90,7 +91,7 @@ function Patients({}) {
                     patientId: patient.id,
                 }),
                 sort: "-created",
-                expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom",
+                expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom,procedureCodes_via_procedure",
             });
 
             setPatientProcedures(result.items);
@@ -132,7 +133,7 @@ function Patients({}) {
                             patientId: patientId,
                         }),
                         sort: "-created",
-                        expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom",
+                        expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom,procedureCodes_via_procedure",
                     });
 
                 setPatientProcedures(result.items);
@@ -425,9 +426,9 @@ function Patients({}) {
                                                                                 <span className="font-medium">
                                                                                     Procedure:
                                                                                 </span>{" "}
-                                                                                {
-                                                                                    proc.procedure
-                                                                                }
+                                                                                {procedureName(
+                                                                                    proc,
+                                                                                )}
                                                                             </div>
                                                                             {proc.comorbids && (
                                                                                 <div className="mt-1">

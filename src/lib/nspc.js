@@ -9,6 +9,23 @@
  * `useCatalogue`.
  */
 
+/**
+ * The sentinel concept a free-text procedure is coded against, so that
+ * "not coded" is a row in `procedureCodes` rather than the absence of
+ * one, and the custodian's backlog is a query instead of a guess. See
+ * spec section 8, "The uncoded sentinel".
+ *
+ * Never offered in the picker - the system assigns it when the user
+ * selected nothing, and a sentinel anyone can pick on purpose stops
+ * measuring what it exists to measure.
+ */
+export const UNCODED_CONCEPT_ID = "NSX-00000";
+
+/** Concepts a user may actually search for or browse to. */
+export function selectableConcepts(concepts) {
+    return concepts.filter((c) => c.conceptId !== UNCODED_CONCEPT_ID);
+}
+
 export const INTENT_OPTIONS = [
     "Therapeutic",
     "Diagnostic",
@@ -342,4 +359,79 @@ export function buildValueFromConcept(
 /** Renders the level list the way an operative note prints it. */
 export function renderLevels(codes) {
     return (codes ?? []).join(", ");
+}
+
+/**
+ * Composes the one-line procedure name from its parts.
+ *
+ * Post-coordination is folded into the text because most readers only
+ * ever see the string: a coded ACDF whose levels live in a relation would
+ * otherwise print as plain "ACDF", losing what the surgeon used to type
+ * by hand. Priority and staged sequence are deliberately left out - they
+ * qualify the encounter, not the name of the operation.
+ */
+function composeName({ term, levels, laterality, revisionStatus }) {
+    const side = LATERALITY_OPTIONS.find(
+        (opt) => opt.value === laterality && opt.value !== "not-applicable",
+    );
+
+    return [
+        revisionStatus === "revision" && "Revision",
+        term,
+        levels,
+        side && `(${side.label})`,
+    ]
+        .filter(Boolean)
+        .join(" ");
+}
+
+/** The name for a value the selector is currently holding. */
+export function renderProcedureText(value) {
+    if (!isCoded(value)) return typeof value === "string" ? value : "";
+
+    return composeName({
+        term: value.preferredTerm,
+        levels: renderLevels(value.spinalLevels),
+        laterality: value.laterality,
+        revisionStatus: value.revisionStatus,
+    });
+}
+
+/**
+ * The name for a stored `procedureCodes` row.
+ *
+ * Reads the snapshots rather than the related concept, which is both what
+ * they are for - per spec section 6, printing the term that was on screen
+ * when the record was signed - and what lets any list render a procedure
+ * name without expanding the catalogue or holding it in memory. An
+ * uncoded row needs no special case: its snapshot is the text the surgeon
+ * typed.
+ */
+export function renderStoredProcedureName(record) {
+    if (!record) return "";
+
+    return composeName({
+        term: record.displayTermSnapshot,
+        levels: record.spinalLevelsSnapshot,
+        laterality: record.laterality,
+        revisionStatus: record.revisionStatus,
+    });
+}
+
+/**
+ * The name to display for a procedure record.
+ *
+ * `procedures.procedure` is no longer written - the name lives on the
+ * code row. It is still read here, and only here, for procedures recorded
+ * before the coding system existed: those have no code row, and that
+ * column is the only record of what was done.
+ *
+ * Requires `procedureCodes_via_procedure` to have been expanded. Without
+ * it every procedure looks historical and silently falls back, which for
+ * a record saved since the change means showing nothing.
+ */
+export function procedureName(procedure) {
+    const code = procedure?.expand?.procedureCodes_via_procedure?.[0];
+    if (code) return renderStoredProcedureName(code);
+    return procedure?.procedure ?? "";
 }

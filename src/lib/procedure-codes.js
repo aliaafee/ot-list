@@ -1,15 +1,23 @@
 import { pb } from "@/lib/pb";
-import { isCoded, renderLevels } from "@/lib/nspc";
+import { isCoded, renderLevels, UNCODED_CONCEPT_ID } from "@/lib/nspc";
 
 /**
- * Reading and writing the `procedureCodes` child collection.
+ * Reading the `procedureCodes` child collection, and building the rows
+ * written to it.
  *
- * Coding is additive and optional: a procedure with no code is a normal,
- * valid record, and `procedures.procedure` remains the free-text field it
- * always was. That is why these writes run after the procedure itself has
- * saved rather than inside its transaction - a failed code write leaves an
- * uncoded procedure, which is a state the system already handles, instead
- * of failing the whole save.
+ * Every procedure has one: a coded concept, or the `NSX-00000` sentinel
+ * carrying the text the surgeon typed, flagged `needsReview`. "Uncoded"
+ * is a value in the data rather than a missing row, so the custodian's
+ * backlog can be queried and counted instead of inferred from what isn't
+ * there.
+ *
+ * This row is where a procedure's name lives - `procedures.procedure` is
+ * no longer written, and holds only the names of records that predate the
+ * coding system. That is why nothing here writes: coding was once
+ * additive, saved after the procedure and allowed to fail on its own, but
+ * a failure now means a procedure with no name. The bodies built here are
+ * carried into the same transaction as the procedure by the save
+ * endpoints in pb_hooks/transactions.pb.js.
  */
 
 const EXPAND = "concept,spinalLevels,intentOverride";
@@ -30,6 +38,12 @@ const EXPAND = "concept,spinalLevels,intentOverride";
 export function toSelectorValue(record, findConcept) {
     const conceptId = record.expand?.concept?.conceptId;
     if (!conceptId) return null;
+
+    // A sentinel row carries no catalogue selection to restore - only
+    // text, which the form has already read off the same row via
+    // `procedureName`. Handing it back here would give one string two
+    // owners that can disagree.
+    if (conceptId === UNCODED_CONCEPT_ID) return null;
 
     // The catalogue can legitimately not have it - a concept retired in a
     // later release, or a code written by a newer client. The snapshot is
@@ -72,12 +86,18 @@ export function toSelectorValue(record, findConcept) {
  */
 const idCache = { concepts: null, levels: null, intents: null };
 
+/** conceptId -> { id, catalogueRelease }. */
 async function conceptIdMap() {
     if (!idCache.concepts) {
         const records = await pb
             .collection("procedureConcepts")
-            .getFullList({ fields: "id,conceptId" });
-        idCache.concepts = new Map(records.map((r) => [r.conceptId, r.id]));
+            .getFullList({ fields: "id,conceptId,catalogueRelease" });
+        idCache.concepts = new Map(
+            records.map((r) => [
+                r.conceptId,
+                { id: r.id, catalogueRelease: r.catalogueRelease },
+            ]),
+        );
     }
     return idCache.concepts;
 }
@@ -105,16 +125,53 @@ async function intentIdMap() {
     return idCache.intents;
 }
 
+/**
+ * Build the record body for free text: the sentinel concept, the typed
+ * text kept verbatim, and the review flag that puts it in the custodian's
+ * queue. No post-coordination - laterality or a spinal level on a
+ * procedure nobody has identified would be a qualifier with nothing to
+ * qualify.
+ */
+async function toUncodedRecordBody(text) {
+    const concepts = await conceptIdMap();
+    const sentinel = concepts.get(UNCODED_CONCEPT_ID);
+    if (!sentinel) {
+        throw new Error(
+            `Uncoded sentinel ${UNCODED_CONCEPT_ID} missing from the catalogue`,
+        );
+    }
+
+    return {
+        concept: sentinel.id,
+        isPrimary: true,
+        laterality: "",
+        priority: "",
+        revisionStatus: "primary",
+        stagedSequence: null,
+        intentOverride: "",
+        spinalLevels: [],
+        // The one copy this row keeps. It has to be the snapshot rather
+        // than `note`, because the snapshot is what anything rendering a
+        // code prints - and it must not print "Uncoded procedure" where
+        // the surgeon wrote a procedure name. The custodian reads the
+        // same field when working the queue.
+        displayTermSnapshot: text,
+        spinalLevelsSnapshot: "",
+        catalogueRelease: sentinel.catalogueRelease,
+        needsReview: true,
+    };
+}
+
 /** Build the record body for a coded value. */
-async function toRecordBody(procedureId, value) {
+async function toRecordBody(value) {
     const [concepts, levels, intents] = await Promise.all([
         conceptIdMap(),
         levelIdMap(),
         intentIdMap(),
     ]);
 
-    const conceptRecordId = concepts.get(value.conceptId);
-    if (!conceptRecordId) {
+    const concept = concepts.get(value.conceptId);
+    if (!concept) {
         throw new Error(`Unknown procedure concept: ${value.conceptId}`);
     }
 
@@ -126,8 +183,7 @@ async function toRecordBody(procedureId, value) {
         .filter(Boolean);
 
     return {
-        procedure: procedureId,
-        concept: conceptRecordId,
+        concept: concept.id,
         isPrimary: true,
         laterality: value.laterality || "",
         priority: value.priority || "",
@@ -152,41 +208,36 @@ async function toRecordBody(procedureId, value) {
 }
 
 /**
- * Make the stored code for a procedure match `value`.
+ * Turn the selector's value into the `procedureCodes` body to store for
+ * it, resolving catalogue identifiers to record ids on the way.
  *
- * Creates, updates or clears as needed, so callers can hand over whatever
- * the form currently holds without tracking what was there before. Only
- * the single primary code is managed here; combined cases needing a
- * second concept are supported by the schema but not yet by this form.
+ * This builds the row but does not write it. The name of a procedure now
+ * lives on this row and nowhere else, so it cannot be written after the
+ * procedure in a second request that might fail on its own - the save
+ * endpoints carry the body into the same transaction as the procedure.
+ * The `procedure` relation is left for the server to set, since on an add
+ * the parent does not exist yet.
  *
- * @param {string} procedureId - The parent `procedures` record id.
- * @param {Object|string|null} value - The selector's current value.
- * @param {Object|null} existing - The `procedureCodes` record already
- *   stored for this procedure, if any.
+ * Returns null when there is nothing to store, which the endpoints treat
+ * as "remove any row that is there".
+ *
+ * @param {Object|string|null} value - The selector's current value:
+ *   a coded object, the free text typed instead, or null.
  */
-export async function saveProcedureCode(procedureId, value, existing = null) {
-    const existingId = existing?.id ?? value?.procedureCodeId ?? null;
+export async function buildProcedureCodeBody(value) {
+    if (isCoded(value)) return await toRecordBody(value);
 
-    // Free text or cleared: any code that was there no longer applies.
-    if (!isCoded(value)) {
-        if (existingId) await pb.collection("procedureCodes").delete(existingId);
-        return null;
-    }
+    const text = typeof value === "string" ? value.trim() : "";
+    if (text === "") return null;
 
-    const body = await toRecordBody(procedureId, value);
-
-    if (existingId) {
-        return await pb
-            .collection("procedureCodes")
-            .update(existingId, body, { expand: EXPAND });
-    }
-
-    return await pb
-        .collection("procedureCodes")
-        .create(body, { expand: EXPAND });
+    return await toUncodedRecordBody(text);
 }
 
-/** The primary stored code for a procedure, in selector shape. */
+/**
+ * The primary stored code for a procedure, in selector shape. Null both
+ * when nothing is stored and when what is stored is the uncoded sentinel;
+ * either way the form has no catalogue selection to restore.
+ */
 export async function loadProcedureCode(procedureId, findConcept) {
     const records = await pb.collection("procedureCodes").getFullList({
         filter: pb.filter("procedure = {:id}", { id: procedureId }),

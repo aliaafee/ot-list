@@ -2,8 +2,12 @@
 
 console.log("Loading hooks/transactions.js");
 
+// The `procedureCodes` writer lives in its own module and is required
+// inside each handler: a route handler runs in an isolated scope and
+// cannot see functions defined beside it in this file.
+
 // POST /api/add-procedure-with-patient
-// Atomically creates a patient (if new) and a procedure
+// Atomically creates a patient (if new), a procedure, and its code
 routerAdd(
     "POST",
     "/api/add-procedure-with-patient",
@@ -39,6 +43,10 @@ routerAdd(
 
         let createdPatient = null;
         let createdProcedure = null;
+
+        const { writeProcedureCode } = require(
+            `${__hooks}/procedure-codes.js`,
+        );
 
         try {
             $app.runInTransaction((txApp) => {
@@ -87,6 +95,16 @@ routerAdd(
                 console.log(
                     `[add-procedure-with-patient] Created procedure: ${procedureRecord.id}`,
                 );
+
+                // Inside the transaction deliberately: this row carries
+                // the procedure's name, so a procedure without it is not
+                // a procedure anyone can read off a list.
+                writeProcedureCode(
+                    txApp,
+                    procedureRecord.id,
+                    data.procedureCode || null,
+                    authRecord.id,
+                );
             });
 
             // Fetch expanded procedure for response
@@ -96,7 +114,17 @@ routerAdd(
             );
             $app.expandRecord(
                 expandedProcedure,
-                ["patient", "addedBy", "procedureDay", "creator", "updater"],
+                [
+                    "patient",
+                    "addedBy",
+                    "procedureDay",
+                    "creator",
+                    "updater",
+                    // The name is on the code row, so a response without
+                    // it renders a nameless procedure until the next
+                    // refetch.
+                    "procedureCodes_via_procedure",
+                ],
                 null,
             );
 
@@ -149,6 +177,10 @@ routerAdd(
 
         const updated = [];
 
+        const { writeProcedureCode } = require(
+            `${__hooks}/procedure-codes.js`,
+        );
+
         try {
             $app.runInTransaction((txApp) => {
                 data.procedures.forEach((procedureUpdate) => {
@@ -158,7 +190,12 @@ routerAdd(
                         );
                     }
 
-                    const { id, ...changes } = procedureUpdate;
+                    // `procedureCode` is not a column on `procedures` - it
+                    // is the child row, and only rewritten when the caller
+                    // sends the key at all. Omitting it leaves the code
+                    // alone, so the reorder and remove paths that update
+                    // one field don't have to carry a procedure's name.
+                    const { id, procedureCode, ...changes } = procedureUpdate;
                     const record = txApp.findRecordById("procedures", id);
 
                     for (const key in changes) {
@@ -167,6 +204,16 @@ routerAdd(
                     record.set("updater", authRecord.id);
 
                     txApp.save(record);
+
+                    if ("procedureCode" in procedureUpdate) {
+                        writeProcedureCode(
+                            txApp,
+                            record.id,
+                            procedureCode || null,
+                            authRecord.id,
+                        );
+                    }
+
                     updated.push({ id: record.id });
                     console.log(
                         `[bulk-update-procedures] Updated procedure: ${record.id}`,

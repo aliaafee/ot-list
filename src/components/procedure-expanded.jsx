@@ -5,6 +5,7 @@ import { ChevronRight } from "lucide-react";
 
 import { age } from "@/utils/dates";
 import LabelValue from "./label-value";
+import { procedureName } from "@/lib/nspc";
 import { PacStatusSmall } from "./pac-status";
 import ProcedureComments from "./procedure-comments";
 
@@ -72,7 +73,7 @@ function ProcedureExpandedView({
                 <LabelValue
                     className="col-span-3"
                     // label="Procedure"
-                    value={procedure.procedure}
+                    value={procedureName(procedure)}
                 />
                 <div className="col-span-2">
                     <PacStatusSmall status={procedure?.pacStatus} />

@@ -1,13 +1,18 @@
 import { pb } from "./pb";
 
 export const api = {
-    async addProcedureWithPatient(patient, procedure) {
+    /**
+     * @param {Object|null} procedureCode - The `procedureCodes` body from
+     *   buildProcedureCodeBody. Written in the same transaction as the
+     *   procedure, because it carries the procedure's name.
+     */
+    async addProcedureWithPatient(patient, procedure, procedureCode = null) {
         const response = await pb.send("/api/add-procedure-with-patient", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ patient, procedure }),
+            body: JSON.stringify({ patient, procedure, procedureCode }),
         });
 
         console.log("API response:", response);
@@ -22,6 +27,13 @@ export const api = {
         return response.procedure;
     },
 
+    /**
+     * @param {Array} procedures - Each needs an `id`; every other key is
+     *   set on the record. A `procedureCode` key is the exception: it is
+     *   the `procedureCodes` body to store, written in the same
+     *   transaction. Omit it to leave the existing code untouched, which
+     *   is what the reorder and remove paths want.
+     */
     async bulkUpdateProcedures(procedures) {
         const response = await pb.send(`/api/bulk-update-procedures`, {
             method: "POST",

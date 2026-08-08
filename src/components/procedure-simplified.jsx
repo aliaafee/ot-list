@@ -2,6 +2,7 @@ import { twMerge } from "tailwind-merge";
 
 import { age } from "@/utils/dates";
 import LabelValue from "./label-value";
+import { procedureName } from "@/lib/nspc";
 import { PacStatusSmall } from "./pac-status";
 
 /**
@@ -59,7 +60,7 @@ function ProcedureSimplifiedView({
             <LabelValue
                 className="col-span-3"
                 // label="Procedure"
-                value={procedure.procedure}
+                value={procedureName(procedure)}
             />
             <div className="col-span-2">
                 <PacStatusSmall status={procedure?.pacStatus} />

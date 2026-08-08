@@ -7,7 +7,6 @@ import {
 } from "react";
 import { pb } from "@/lib/pb";
 import { api } from "@/lib/api";
-import { saveProcedureCode } from "@/lib/procedure-codes";
 import ProcedureListReducer from "@/reducers/procedure-list-reducer";
 import FatalErrorModal from "@/modals/fatal-error-modal";
 import ErrorModal from "@/modals/error-modal";
@@ -17,9 +16,12 @@ import { useAuth } from "./auth-context";
 
 const ProcedureListContext = createContext(null);
 
+// `procedureCodes_via_procedure` carries the procedure's name, so it is
+// not an optional detail expand - without it every procedure saved since
+// the coding system landed renders blank.
 const proceduresCollectionOptions = {
     sort: "+order",
-    expand: "patient,addedBy,procedureDay.otList,procedureDay, updater, creator",
+    expand: "patient,addedBy,procedureDay.otList,procedureDay, updater, creator,procedureCodes_via_procedure",
 };
 
 const otDayCollectionOptions = {
@@ -261,9 +263,15 @@ export function ProcedureListProvider({ children }) {
         procedureCode = null,
     ) => {
         try {
+            // The code row goes with the procedure rather than after it.
+            // It holds the procedure's name, so a half-applied add would
+            // put an unnamed procedure on the list; the endpoint writes
+            // both in one transaction and fails as a unit, which is why
+            // there is no longer a second call to fail on its own here.
             const newProcedure = await api.addProcedureWithPatient(
                 patient,
                 procedure,
+                procedureCode,
             );
 
             dispatchData({
@@ -271,22 +279,6 @@ export function ProcedureListProvider({ children }) {
                 payload: newProcedure,
             });
             setSelected(newProcedure.id, true);
-
-            // The code is a child record, so it can only be written once
-            // the procedure has an id. Coding is optional and additive:
-            // failing here leaves an uncoded procedure, which is a state
-            // the system already handles, so it must not fail the add.
-            if (procedureCode) {
-                try {
-                    await saveProcedureCode(newProcedure.id, procedureCode);
-                } catch (e) {
-                    console.error("Failed to save procedure code:", e);
-                    showToast(
-                        "Procedure added, but its code could not be saved",
-                        "error",
-                    );
-                }
-            }
 
             // Show success toast
             showToast("Procedure added successfully", "success");
@@ -348,6 +340,17 @@ export function ProcedureListProvider({ children }) {
                     expand: {
                         ...original.expand,
                         procedureDay: !!updatedOtDay ? updatedOtDay : otDay,
+                        // The name is read off this expand, so carrying
+                        // the old one forward would show the edit as
+                        // having done nothing until the server echoes
+                        // back. The body holds the same snapshot fields
+                        // the renderer reads, so it stands in until then.
+                        ...("procedureCode" in newProcedure && {
+                            procedureCodes_via_procedure:
+                                newProcedure.procedureCode
+                                    ? [newProcedure.procedureCode]
+                                    : [],
+                        }),
                     },
                     original: original,
                 };

@@ -16,6 +16,7 @@ import {
 import { twMerge } from "tailwind-merge";
 
 import LabelValue from "./label-value";
+import { procedureName } from "@/lib/nspc";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { PacStatus } from "./pac-status";
@@ -57,7 +58,7 @@ function ProcedureDetails({
     const [copied, setCopied] = useState(false);
 
     const handleCopyAdvice = () => {
-        const adviceText = `${procedure?.procedure} for ${procedure?.diagnosis} on ${formateDateLong(procedure?.expand?.procedureDay?.date)} in ${procedure?.expand?.procedureDay?.expand?.otList?.name}`;
+        const adviceText = `${procedureName(procedure)} for ${procedure?.diagnosis} on ${formateDateLong(procedure?.expand?.procedureDay?.date)} in ${procedure?.expand?.procedureDay?.expand?.otList?.name}`;
         // Copy to clipboard
         navigator.clipboard
             .writeText(adviceText)
@@ -198,7 +199,7 @@ function ProcedureDetails({
                 <LabelValue
                     className="md:col-span-2"
                     label="Procedure"
-                    value={procedure.procedure}
+                    value={procedureName(procedure)}
                 />
                 <LabelValue
                     className="md:col-span-4"
@@ -252,7 +253,7 @@ function ProcedureDetails({
                     <p className="mb-2">
                         {procedure?.expand?.patient?.nid}{" "}
                         {procedure?.expand?.patient?.name} planned for{" "}
-                        {procedure.procedure} on{" "}
+                        {procedureName(procedure)} on{" "}
                         {dayjs(procedure?.expand?.procedureDay.date).format(
                             "DD MMM YYYY",
                         )}

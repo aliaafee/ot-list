@@ -35,6 +35,7 @@ import {
 import PatientSearchModal from "@/modals/patient-search-modal";
 import PatientInfo from "./patient-info";
 import { pb } from "@/lib/pb";
+import { buildProcedureCodeBody } from "@/lib/procedure-codes";
 import dayjs from "dayjs";
 // import IdCardScanModal from "@/modals/id-card-scan-modal";
 
@@ -182,6 +183,9 @@ function ProcedureAdder({
         };
 
         // Helper function to build procedure object
+        //
+        // No `procedure` key: the name lives on the code row now, and this
+        // column is left to the historical records that predate it.
         const buildProcedure = (order) => ({
             addedBy: newProcedure.addedBy,
             addedDate: newProcedure.addedDate,
@@ -191,7 +195,6 @@ function ProcedureAdder({
             diagnosis: newProcedure.diagnosis,
             duration: newProcedure.duration,
             operatingRoom: operatingRoom.id,
-            procedure: newProcedure.procedure,
             procedureDay: otDay.id,
             remarks: newProcedure.remarks,
             removed: newProcedure.removed,
@@ -273,16 +276,22 @@ function ProcedureAdder({
             const procedure = buildProcedure(nextOrder);
 
             setAdding(true);
-            // Add procedure
             // The code is passed alongside rather than inside `procedure`:
-            // it is persisted to `procedureCodes`, and the add-procedure
-            // endpoint copies every key it is given onto the procedure
-            // record itself.
+            // the endpoint copies every key it is given onto the procedure
+            // record, and this one is a child row. It carries the
+            // procedure's name, so the endpoint writes it in the same
+            // transaction - if it can't be stored, the procedure isn't
+            // created either. With no concept picked the typed text goes
+            // instead, recorded against the uncoded sentinel.
+            const procedureCode = await buildProcedureCodeBody(
+                newProcedure.procedureCode ?? newProcedure.procedure,
+            );
+
             const resultError = await addProcedure(
                 patientData,
                 procedure,
                 otDay,
-                newProcedure.procedureCode,
+                procedureCode,
             );
             setAdding(false);
 

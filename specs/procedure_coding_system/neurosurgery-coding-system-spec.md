@@ -197,6 +197,16 @@ A vocabulary without an owner degrades within months. Minimum viable process:
 
 The single most common failure mode is allowing free-text entry as a fallback "for now". Free text becomes permanent. If a concept genuinely doesn't exist, record the closest one plus a structured free-text `note`, and flag the record for the custodian's review queue.
 
+### The uncoded sentinel
+
+`NSX-00000` — *Procedure not represented in the catalogue* — exists so that "free text" is still a row in `procedure_code`, not the absence of one. A procedure the surgeon typed by hand is stored against it with the typed text in `display_term_snapshot` and `needs_review = 1`.
+
+The text goes in the snapshot rather than in `note`, and in exactly one of them. `display_term_snapshot` is what every renderer already prints for a coded row, so the sentinel needs it populated regardless — writing the same string to `note` as well would add a second copy that nothing keeps in sync. The custodian's queue reads the snapshot.
+
+This is not a licence to leave things uncoded; it is what makes the backlog *visible*. Before the sentinel, an uncoded procedure was indistinguishable from one nobody had got to yet, and the custodian's review queue could only ever contain records someone had already chosen to flag. After it, the queue is a query — `WHERE concept_id = 'NSX-00000'` — and every gap is in it by construction. The count of sentinel rows over time is the metric that says whether the catalogue is keeping up with the department.
+
+It is deliberately unsearchable and unbrowsable in the picker. Nobody selects it; the system assigns it when nothing was selected, which is the only way it stays an honest measure of coverage rather than a convenient escape hatch. It carries no facets, no subspecialty of clinical meaning (`uncoded`), and no post-coordination applicability — there is nothing to qualify about a procedure that has not been identified.
+
 ---
 
 ## 9. Migration path

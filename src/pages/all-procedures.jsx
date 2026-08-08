@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import BodyLayout from "@/components/body-layout";
 import { ToolBar, ToolBarButtonLabel, ToolBarLink } from "@/components/toolbar";
+import { procedureName } from "@/lib/nspc";
 import { pb } from "@/lib/pb";
 import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
@@ -44,7 +45,7 @@ function AllProcedures() {
         try {
             const options = {
                 sort: "procedureDay.date",
-                expand: "patient,addedBy,procedureDay,procedureDay.otList,operatingRoom",
+                expand: "patient,addedBy,procedureDay,procedureDay.otList,operatingRoom,procedureCodes_via_procedure",
             };
 
             const filters = [];
@@ -284,7 +285,7 @@ function AllProcedures() {
                                             {proc.diagnosis}
                                         </td>
                                         <td className="px-3 py-2 text-sm">
-                                            {proc.procedure}
+                                            {procedureName(proc)}
                                         </td>
                                         <td className="px-3 py-2 text-sm">
                                             {

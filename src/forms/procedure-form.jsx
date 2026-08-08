@@ -1,9 +1,14 @@
 import FormField from "@/components/form-field";
 import ProcedureCodeSelector from "@/components/procedure-code-selector";
+import { isCoded, renderProcedureText } from "@/lib/nspc";
 
 export const initialProcedureValue = {
     diagnosis: "",
     comorbids: "",
+    // What the operation is called, as one line of text. Form state only
+    // - it is what the required-field check looks at and what the field
+    // renders - and is not saved to `procedures.procedure`, which now
+    // holds nothing but the names of pre-coding-system records.
     procedure: "",
     addedDate: "",
     addedBy: "",
@@ -12,9 +17,11 @@ export const initialProcedureValue = {
     bed: "",
     anesthesia: "",
     requirements: "",
-    // The coded procedure. Lives on the form value rather than in local
-    // state so whoever saves the procedure can persist it too; it is
-    // stored in `procedureCodes`, never in `procedures`.
+    // The catalogue entry behind `procedure`, when the text came from a
+    // catalogue pick rather than being typed. Lives on the form value
+    // rather than in local state so whoever saves the procedure can
+    // persist it too; it is stored in `procedureCodes`, never in
+    // `procedures`.
     procedureCode: null,
 };
 
@@ -57,11 +64,18 @@ export function ProcedureForm({
         });
     };
 
-    // The code is a parallel lookup alongside the free-text Procedure
-    // field, not a replacement for it: picking a code never rewrites
-    // `procedure`, and typing in `procedure` never clears the code.
-    const setProcedureCode = (procedureCode) =>
-        onChange({ ...value, procedureCode });
+    // One field, two outputs. The selector hands back either a catalogue
+    // value or the raw text typed into it. `procedure` mirrors whichever
+    // it is as display text, so the required-field check has something to
+    // look at; `procedureCode` is set only when there is a catalogue
+    // entry, and dropped the moment the text stops coming from one. What
+    // gets stored is derived from `procedureCode ?? procedure` at save.
+    const setProcedure = (next) =>
+        onChange({
+            ...value,
+            procedure: renderProcedureText(next),
+            procedureCode: isCoded(next) ? next : null,
+        });
 
     return (
         <form className="grid grid-cols-1 md:grid-cols-4 gap-2">
@@ -70,23 +84,16 @@ export function ProcedureForm({
                 name="diagnosis"
                 value={value.diagnosis}
                 onChange={handleChange}
-                className="md:col-span-2"
+                className="md:col-span-4"
                 error={"diagnosis" in errorFields}
                 errorMessage={errorFields["diagnosis"]?.message}
             />
-            <FormField
-                label="Procedure"
-                name="procedure"
-                value={value.procedure}
-                onChange={handleChange}
-                className="md:col-span-2"
+            <ProcedureCodeSelector
+                label="Procedure (NSPC coded, or type freely)"
+                value={value.procedureCode ?? value.procedure}
+                onChange={setProcedure}
                 error={"procedure" in errorFields}
                 errorMessage={errorFields["procedure"]?.message}
-            />
-            <ProcedureCodeSelector
-                label="Procedure code (NSPC, optional - does not change Procedure above)"
-                value={value.procedureCode}
-                onChange={setProcedureCode}
                 showPostCoordination={true}
                 postCoordinationFields={[
                     "priority",

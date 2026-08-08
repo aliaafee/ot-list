@@ -1,5 +1,30 @@
 [
     {
+        "conceptId": "NSX-00000",
+        "fsn": "Procedure not represented in the catalogue (procedure)",
+        "preferredTerm": "Uncoded procedure",
+        "subspecialty": "uncoded",
+        "facets": {
+            "method": null,
+            "procedureSite": null,
+            "surgicalApproach": null,
+            "device": null,
+            "morphology": null,
+            "intent": null
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": null,
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-07",
+        "catalogueRelease": "v2026.1",
+        "synonyms": []
+    },
+    {
         "conceptId": "NSX-00001",
         "fsn": "Burr hole drainage of chronic subdural haematoma (procedure)",
         "preferredTerm": "Burr hole drainage chronic SDH",

@@ -211,7 +211,13 @@ if (problems.length > 0) {
     process.exit(1);
 }
 
-const seed = { facetValues, spinalLevels, concepts, synonyms };
+// `subspecialty` is a closed select on procedureConcepts, so the CSV can
+// introduce a value the column will reject - which is a migration that
+// fails halfway, not a validation message. The vocabulary travels with
+// the seed and is reconciled before the rows that need it are written.
+const subspecialties = [...new Set(concepts.map((c) => c.subspecialty))];
+
+const seed = { facetValues, spinalLevels, concepts, synonyms, subspecialties };
 
 // ---------------------------------------------------------------------
 // Client snapshot. Facets are flattened back to their display terms
@@ -306,6 +312,34 @@ function indexBy(app, collectionName, keyField) {
     return map;
 }
 
+/**
+ * Add any missing options to a select field, keeping the ones already
+ * there. Widening only: a value this seed no longer uses may still be on
+ * records written by an earlier release, and removing it would make them
+ * invalid on next save.
+ */
+function widenSelect(app, collectionName, fieldName, values) {
+    const collection = app.findCollectionByNameOrId(collectionName);
+    const field = collection.fields.getByName(fieldName);
+
+    const merged = [];
+    for (let i = 0; i < field.values.length; i++) {
+        merged.push(field.values[i]);
+    }
+
+    let added = false;
+    for (const value of values) {
+        if (merged.indexOf(value) === -1) {
+            merged.push(value);
+            added = true;
+        }
+    }
+    if (!added) return;
+
+    field.values = merged;
+    app.save(collection);
+}
+
 /** Find-or-create by business key, apply changes, save. */
 function upsert(app, collectionName, index, keyField, keyValue, apply) {
     let record = index[keyValue];
@@ -366,6 +400,16 @@ migrate(
         }
 
         // --- concepts -----------------------------------------------
+        // The subspecialty vocabulary has to be widened before any row
+        // using a new value is written, or the first such row fails and
+        // takes the migration with it.
+        widenSelect(
+            app,
+            "procedureConcepts",
+            "subspecialty",
+            SEED.subspecialties,
+        );
+
         // Facet relations resolve here; replacedBy cannot, because it
         // may point at a concept later in the list. It gets a second
         // pass once every row exists.
