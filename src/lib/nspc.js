@@ -369,6 +369,11 @@ export function renderLevels(codes) {
  * otherwise print as plain "ACDF", losing what the surgeon used to type
  * by hand. Priority and staged sequence are deliberately left out - they
  * qualify the encounter, not the name of the operation.
+ *
+ * NOTE: mirrored by procedureName() in pb/pb_hooks/reports.js, which
+ * renders the server-side printed OT list and cannot import this - it
+ * runs in PocketBase's JS VM. Change both together or the print-out
+ * stops matching the screen.
  */
 function composeName({ term, levels, laterality, revisionStatus }) {
     const side = LATERALITY_OPTIONS.find(

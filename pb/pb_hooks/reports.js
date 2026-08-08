@@ -52,6 +52,51 @@ const sexShort = (sex) => {
     return sex ? sex[0].toUpperCase() : "-";
 };
 
+// "not-applicable" is absent on purpose - it reads as a qualifier when
+// printed, and it means the opposite.
+const LATERALITY_LABELS = {
+    left: "Left",
+    right: "Right",
+    bilateral: "Bilateral",
+};
+
+/**
+ * The printed name of a procedure.
+ *
+ * Composed from the code row's snapshots, which is what they are for:
+ * the term and levels frozen at coding time, so a list reprinted after a
+ * catalogue revision still reads the way it did when it was signed. An
+ * uncoded procedure needs no special case - its snapshot is the text the
+ * surgeon typed.
+ *
+ * Falls back to `procedures.procedure` for the records that predate the
+ * coding system, which is the only thing that column still holds.
+ *
+ * NOTE: this mirrors composeName() in src/lib/nspc.js. They cannot share
+ * an implementation - one is bundled ESM, the other runs in PocketBase's
+ * JS VM - so a change to how a name reads has to be made in both, or the
+ * printed list stops matching the screen.
+ */
+const procedureName = (procedureRecord) => {
+    const codes = procedureRecord.expandedAll("procedureCodes_via_procedure");
+
+    if (!codes || codes.length === 0) {
+        return procedureRecord.getString("procedure");
+    }
+
+    const code = codes[0];
+    const side = LATERALITY_LABELS[code.getString("laterality")];
+
+    return [
+        code.getString("revisionStatus") === "revision" ? "Revision" : "",
+        code.getString("displayTermSnapshot"),
+        code.getString("spinalLevelsSnapshot"),
+        side ? `(${side})` : "",
+    ]
+        .filter((part) => !!part)
+        .join(" ");
+};
+
 // Manual base64 encoding for PocketBase/Goja environment
 const base64Encode = (str) => {
     const base64chars =
@@ -144,7 +189,12 @@ const getOtListHTMLReport = (otDayId) => {
         }
 
         procedureRecords.forEach((procedureRecord) => {
-            $app.expandRecord(procedureRecord, ["patient"]);
+            $app.expandRecord(procedureRecord, [
+                "patient",
+                // Carries the procedure's name; without it every row
+                // falls back and only the historical ones print.
+                "procedureCodes_via_procedure",
+            ]);
             const patientRecord = procedureRecord.expandedOne("patient");
             const patient = patientRecord.publicExport();
             const procedure = procedureRecord.publicExport();
@@ -157,7 +207,7 @@ const getOtListHTMLReport = (otDayId) => {
                     patient.name,
                     `${age(patient.dateOfBirth)} / ${sexShort(patient.sex)}`,
                     procedure.diagnosis,
-                    procedure.procedure,
+                    procedureName(procedureRecord),
                     `${department.name} Team`,
                     procedure.comorbids,
                     procedure.requirements,
