@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { FolderTree, SearchIcon, XIcon } from "lucide-react";
+import { ChevronRight, FolderTree, SearchIcon, XIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
 import FormField from "@/components/form-field";
@@ -29,7 +29,7 @@ import {
  * @param {function} onChange - Called with the new ordered level codes.
  * @param {boolean} disabled - Disables every chip.
  */
-function SpinalLevelPicker({ value, onChange, disabled }) {
+function SpinalLevelPicker({ value, onChange, disabled, className }) {
     const catalogue = useCatalogue();
     const [showAll, setShowAll] = useState(false);
 
@@ -64,7 +64,7 @@ function SpinalLevelPicker({ value, onChange, disabled }) {
     };
 
     return (
-        <div className="rounded-md border border-gray-200 p-2">
+        <div className={twMerge("p-1", className)}>
             <div className="flex items-baseline justify-between gap-2">
                 <label className="text-xs text-gray-700">
                     Spinal level{" "}
@@ -169,6 +169,7 @@ export default function ProcedureCodeSelector({
     const [open, setOpen] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState(0);
     const [showBrowser, setShowBrowser] = useState(false);
+    const [showDetails, setShowDetails] = useState(false);
     const containerRef = useRef(null);
     const inputRef = useRef(null);
 
@@ -300,280 +301,302 @@ export default function ProcedureCodeSelector({
                     {label}
                 </label>
             )}
-            <div className="relative">
-                <div
-                    className={twMerge(
-                        "flex items-center gap-1 rounded p-1 bg-white",
-                        !!error && "border border-red-500 bg-red-50",
-                    )}
-                >
-                    <SearchIcon
-                        width={16}
-                        height={16}
-                        className="ml-1 text-gray-400 shrink-0"
-                    />
-                    <input
-                        ref={inputRef}
-                        type="text"
-                        role="combobox"
-                        aria-expanded={open}
-                        aria-autocomplete="list"
-                        autoComplete="off"
-                        disabled={disabled}
-                        value={query}
-                        onChange={handleQueryChange}
-                        onFocus={() => setOpen(true)}
-                        onBlur={() => setOpen(false)}
-                        onKeyDown={handleKeyDown}
-                        placeholder="Procedure (search NSPC catalogue - e.g. crani, VP shunt, C5-C6 ACDF)"
-                        className="w-full text-sm outline-none bg-transparent disabled:text-gray-400"
-                    />
-                    {!disabled && (
-                        <button
-                            type="button"
-                            title="Browse procedure codes"
-                            onMouseDown={(e) => e.preventDefault()}
-                            onClick={() => setShowBrowser(true)}
-                            className="mr-1 text-gray-400 hover:text-gray-700 shrink-0 cursor-pointer"
-                        >
-                            <FolderTree width={16} height={16} />
-                        </button>
-                    )}
-                    {!!query && !disabled && (
-                        <button
-                            type="button"
-                            title="Clear"
-                            onMouseDown={(e) => e.preventDefault()}
-                            onClick={handleClear}
-                            className="mr-1 text-gray-400 hover:text-gray-700 shrink-0 cursor-pointer"
-                        >
-                            <XIcon width={16} height={16} />
-                        </button>
+
+            <div className="bg-white rounded border border-gray-200 flex flex-col divide-y divide-gray-200">
+                <div className="relative">
+                    <div
+                        className={twMerge(
+                            "flex items-center gap-1 rounded p-1 bg-white",
+                            !!error && "border border-red-500 bg-red-50",
+                            coded && "rounded-b-none",
+                        )}
+                    >
+                        <SearchIcon
+                            width={16}
+                            height={16}
+                            className="ml-1 text-gray-400 shrink-0"
+                        />
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            role="combobox"
+                            aria-expanded={open}
+                            aria-autocomplete="list"
+                            autoComplete="off"
+                            disabled={disabled}
+                            value={query}
+                            onChange={handleQueryChange}
+                            onFocus={() => setOpen(true)}
+                            onBlur={() => setOpen(false)}
+                            onKeyDown={handleKeyDown}
+                            placeholder="Procedure (search NSPC catalogue - e.g. crani, VP shunt, C5-C6 ACDF)"
+                            className="w-full outline-none bg-transparent disabled:text-gray-400"
+                        />
+                        {!disabled && (
+                            <button
+                                type="button"
+                                title="Browse procedure codes"
+                                onMouseDown={(e) => e.preventDefault()}
+                                onClick={() => setShowBrowser(true)}
+                                className="mr-1 text-gray-400 hover:text-gray-700 shrink-0 cursor-pointer"
+                            >
+                                <FolderTree width={16} height={16} />
+                            </button>
+                        )}
+                        {!!query && !disabled && (
+                            <button
+                                type="button"
+                                title="Clear"
+                                onMouseDown={(e) => e.preventDefault()}
+                                onClick={handleClear}
+                                className="mr-1 text-gray-400 hover:text-gray-700 shrink-0 cursor-pointer"
+                            >
+                                <XIcon width={16} height={16} />
+                            </button>
+                        )}
+                    </div>
+
+                    {open && !disabled && (
+                        <div className="absolute z-20 mt-1 w-full rounded-md bg-white shadow-lg ring-1 ring-gray-300 overflow-hidden">
+                            {query.trim() === "" && (
+                                <p className="p-3 text-xs text-gray-500">
+                                    Type a procedure name, formal term or
+                                    abbreviation to search the NSPC catalogue,
+                                    or just type freely if it isn't coded yet.
+                                </p>
+                            )}
+                            {query.trim() !== "" && results.length === 0 && (
+                                <p className="p-3 text-xs text-gray-500">
+                                    No matching catalogue entry - the text
+                                    you've typed will be used as-is.
+                                </p>
+                            )}
+                            {results.length > 0 && (
+                                <ul
+                                    role="listbox"
+                                    className="max-h-80 overflow-y-auto divide-y divide-gray-100"
+                                >
+                                    {results.map((concept, index) => (
+                                        <li
+                                            key={concept.conceptId}
+                                            role="option"
+                                            aria-selected={
+                                                index === highlightedIndex
+                                            }
+                                        >
+                                            <button
+                                                type="button"
+                                                onMouseDown={(e) =>
+                                                    e.preventDefault()
+                                                }
+                                                onClick={() =>
+                                                    handleSelect(concept)
+                                                }
+                                                onMouseEnter={() =>
+                                                    setHighlightedIndex(index)
+                                                }
+                                                className={twMerge(
+                                                    "w-full text-left px-3 py-2 cursor-pointer",
+                                                    index ===
+                                                        highlightedIndex &&
+                                                        "bg-blue-50",
+                                                )}
+                                            >
+                                                <div className="flex items-baseline justify-between gap-2">
+                                                    <span className="text-sm font-medium text-gray-900">
+                                                        {concept.preferredTerm}
+                                                    </span>
+                                                    <span className="text-[11px] font-mono text-gray-400 shrink-0">
+                                                        {concept.conceptId}
+                                                    </span>
+                                                </div>
+                                                <div className="text-xs text-gray-500">
+                                                    {concept.fsn}
+                                                </div>
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
                     )}
                 </div>
+                {!!errorMessage && (
+                    <p className="text-xs text-red-500">{errorMessage}</p>
+                )}
 
-                {open && !disabled && (
-                    <div className="absolute z-20 mt-1 w-full rounded-md bg-white shadow-lg ring-1 ring-gray-300 overflow-hidden">
-                        {query.trim() === "" && (
-                            <p className="p-3 text-xs text-gray-500">
-                                Type a procedure name, formal term or
-                                abbreviation to search the NSPC catalogue, or
-                                just type freely if it isn't coded yet.
-                            </p>
-                        )}
-                        {query.trim() !== "" && results.length === 0 && (
-                            <p className="p-3 text-xs text-gray-500">
-                                No matching catalogue entry - the text you've
-                                typed will be used as-is.
-                            </p>
-                        )}
-                        {results.length > 0 && (
-                            <ul
-                                role="listbox"
-                                className="max-h-80 overflow-y-auto divide-y divide-gray-100"
+                {coded &&
+                    showPostCoordination &&
+                    postCoordinationFields.includes("spinalLevels") &&
+                    value.levelApplicable && (
+                        <SpinalLevelPicker
+                            value={value}
+                            onChange={(levels) =>
+                                updatePostCoordination({ spinalLevels: levels })
+                            }
+                            disabled={disabled}
+                            className=""
+                        />
+                    )}
+
+                {coded && showPostCoordination && (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-1 pl-7">
+                        {postCoordinationFields.includes("laterality") && (
+                            <FormField
+                                label="Laterality (side)"
+                                name="laterality"
+                                type="select"
+                                value={value.laterality}
+                                onChange={(e) =>
+                                    updatePostCoordination({
+                                        laterality: e.target.value,
+                                    })
+                                }
+                                disabled={
+                                    disabled || !value.lateralityApplicable
+                                }
                             >
-                                {results.map((concept, index) => (
-                                    <li
-                                        key={concept.conceptId}
-                                        role="option"
-                                        aria-selected={
-                                            index === highlightedIndex
-                                        }
-                                    >
-                                        <button
-                                            type="button"
-                                            onMouseDown={(e) =>
-                                                e.preventDefault()
-                                            }
-                                            onClick={() =>
-                                                handleSelect(concept)
-                                            }
-                                            onMouseEnter={() =>
-                                                setHighlightedIndex(index)
-                                            }
-                                            className={twMerge(
-                                                "w-full text-left px-3 py-2 cursor-pointer",
-                                                index === highlightedIndex &&
-                                                    "bg-blue-50",
-                                            )}
-                                        >
-                                            <div className="flex items-baseline justify-between gap-2">
-                                                <span className="text-sm font-medium text-gray-900">
-                                                    {concept.preferredTerm}
-                                                </span>
-                                                <span className="text-[11px] font-mono text-gray-400 shrink-0">
-                                                    {concept.conceptId}
-                                                </span>
-                                            </div>
-                                            <div className="text-xs text-gray-500">
-                                                {concept.fsn}
-                                            </div>
-                                        </button>
-                                    </li>
+                                <option value="">Select</option>
+                                {LATERALITY_OPTIONS.map((opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                    </option>
                                 ))}
-                            </ul>
+                            </FormField>
+                        )}
+
+                        {postCoordinationFields.includes("revisionStatus") && (
+                            <FormField
+                                label="Revision status"
+                                name="revisionStatus"
+                                type="select"
+                                value={value.revisionStatus}
+                                onChange={(e) =>
+                                    updatePostCoordination({
+                                        revisionStatus: e.target.value,
+                                    })
+                                }
+                                disabled={disabled || !value.revisionApplicable}
+                            >
+                                {REVISION_OPTIONS.map((opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))}
+                            </FormField>
+                        )}
+
+                        {postCoordinationFields.includes("stagedSequence") && (
+                            <FormField
+                                label="Staged sequence"
+                                name="stagedSequence"
+                                type="number"
+                                placeholder="n/a"
+                                value={value.stagedSequence}
+                                onChange={(e) =>
+                                    updatePostCoordination({
+                                        stagedSequence: e.target.value,
+                                    })
+                                }
+                                disabled={disabled}
+                            />
+                        )}
+
+                        {postCoordinationFields.includes("intentOverride") && (
+                            <FormField
+                                label="Intent override"
+                                name="intentOverride"
+                                type="select"
+                                className="col-span-2 sm:col-span-1"
+                                value={value.intentOverride}
+                                onChange={(e) =>
+                                    updatePostCoordination({
+                                        intentOverride: e.target.value,
+                                    })
+                                }
+                                disabled={disabled}
+                            >
+                                <option value="">
+                                    {value.facets?.intent
+                                        ? `Default (${value.facets.intent})`
+                                        : "Default"}
+                                </option>
+                                {INTENT_OPTIONS.map((intent) => (
+                                    <option key={intent} value={intent}>
+                                        {intent}
+                                    </option>
+                                ))}
+                            </FormField>
+                        )}
+
+                        {postCoordinationFields.includes("priority") && (
+                            <FormField
+                                label="Priority (urgency)"
+                                name="priority"
+                                type="select"
+                                value={value.priority}
+                                onChange={(e) =>
+                                    updatePostCoordination({
+                                        priority: e.target.value,
+                                    })
+                                }
+                                disabled={disabled}
+                            >
+                                <option value="">Select</option>
+                                {PRIORITY_OPTIONS.map((opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))}
+                            </FormField>
+                        )}
+                    </div>
+                )}
+
+                {coded && (
+                    <div className="p-1 rounded-b">
+                        <button
+                            type="button"
+                            onClick={() => setShowDetails((prev) => !prev)}
+                            className="flex w-full items-center gap-1 text-left cursor-pointer"
+                        >
+                            <ChevronRight
+                                className={twMerge(
+                                    "h-3 w-3 shrink-0 text-blue-700 transition-transform",
+                                    showDetails && "rotate-90",
+                                )}
+                            />
+                            <span className="text-xs font-mono text-blue-700">
+                                {value.conceptId} · {value.catalogueRelease}
+                            </span>
+                        </button>
+                        {showDetails && (
+                            <div className="mt-1 pl-4">
+                                <div className="text-xs text-gray-600">
+                                    {value.fsn}
+                                </div>
+                                {facetChips.length > 0 && (
+                                    <div className="mt-2 flex flex-wrap gap-1">
+                                        {facetChips.map(([facetKey, term]) => (
+                                            <span
+                                                key={facetKey}
+                                                className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[11px] text-gray-700 ring-1 ring-inset ring-blue-200"
+                                            >
+                                                <span className="text-blue-500">
+                                                    {FACET_LABELS[facetKey] ??
+                                                        facetKey}
+                                                    :
+                                                </span>
+                                                {term}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         )}
                     </div>
                 )}
             </div>
-            {!!errorMessage && (
-                <p className="text-xs text-red-500">{errorMessage}</p>
-            )}
-
-            {coded && (
-                <div className="rounded-md border border-blue-200 bg-blue-50 p-2">
-                    <div className="flex items-start justify-between gap-2">
-                        <div>
-                            <div className="text-[11px] font-mono text-blue-700">
-                                {value.conceptId} · {value.catalogueRelease}
-                            </div>
-                            <div className="text-xs text-gray-600">
-                                {value.fsn}
-                            </div>
-                        </div>
-                    </div>
-                    {facetChips.length > 0 && (
-                        <div className="mt-2 flex flex-wrap gap-1">
-                            {facetChips.map(([facetKey, term]) => (
-                                <span
-                                    key={facetKey}
-                                    className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[11px] text-gray-700 ring-1 ring-inset ring-blue-200"
-                                >
-                                    <span className="text-blue-500">
-                                        {FACET_LABELS[facetKey] ?? facetKey}:
-                                    </span>
-                                    {term}
-                                </span>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            )}
-
-            {coded && showPostCoordination && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {postCoordinationFields.includes("priority") && (
-                        <FormField
-                            label="Priority (urgency)"
-                            name="priority"
-                            type="select"
-                            value={value.priority}
-                            onChange={(e) =>
-                                updatePostCoordination({
-                                    priority: e.target.value,
-                                })
-                            }
-                            disabled={disabled}
-                        >
-                            <option value="">Select</option>
-                            {PRIORITY_OPTIONS.map((opt) => (
-                                <option key={opt.value} value={opt.value}>
-                                    {opt.label}
-                                </option>
-                            ))}
-                        </FormField>
-                    )}
-
-                    {postCoordinationFields.includes("laterality") && (
-                        <FormField
-                            label="Laterality"
-                            name="laterality"
-                            type="select"
-                            value={value.laterality}
-                            onChange={(e) =>
-                                updatePostCoordination({
-                                    laterality: e.target.value,
-                                })
-                            }
-                            disabled={disabled || !value.lateralityApplicable}
-                        >
-                            <option value="">Select</option>
-                            {LATERALITY_OPTIONS.map((opt) => (
-                                <option key={opt.value} value={opt.value}>
-                                    {opt.label}
-                                </option>
-                            ))}
-                        </FormField>
-                    )}
-
-                    {postCoordinationFields.includes("revisionStatus") && (
-                        <FormField
-                            label="Revision status"
-                            name="revisionStatus"
-                            type="select"
-                            value={value.revisionStatus}
-                            onChange={(e) =>
-                                updatePostCoordination({
-                                    revisionStatus: e.target.value,
-                                })
-                            }
-                            disabled={disabled || !value.revisionApplicable}
-                        >
-                            {REVISION_OPTIONS.map((opt) => (
-                                <option key={opt.value} value={opt.value}>
-                                    {opt.label}
-                                </option>
-                            ))}
-                        </FormField>
-                    )}
-
-                    {postCoordinationFields.includes("stagedSequence") && (
-                        <FormField
-                            label="Staged sequence"
-                            name="stagedSequence"
-                            type="number"
-                            placeholder="n/a"
-                            value={value.stagedSequence}
-                            onChange={(e) =>
-                                updatePostCoordination({
-                                    stagedSequence: e.target.value,
-                                })
-                            }
-                            disabled={disabled}
-                        />
-                    )}
-
-                    {postCoordinationFields.includes("intentOverride") && (
-                        <FormField
-                            label="Intent override"
-                            name="intentOverride"
-                            type="select"
-                            className="col-span-2 sm:col-span-1"
-                            value={value.intentOverride}
-                            onChange={(e) =>
-                                updatePostCoordination({
-                                    intentOverride: e.target.value,
-                                })
-                            }
-                            disabled={disabled}
-                        >
-                            <option value="">
-                                {value.facets?.intent
-                                    ? `Default (${value.facets.intent})`
-                                    : "Default"}
-                            </option>
-                            {INTENT_OPTIONS.map((intent) => (
-                                <option key={intent} value={intent}>
-                                    {intent}
-                                </option>
-                            ))}
-                        </FormField>
-                    )}
-                </div>
-            )}
-
-            {coded &&
-                showPostCoordination &&
-                postCoordinationFields.includes("spinalLevels") &&
-                value.levelApplicable && (
-                    <SpinalLevelPicker
-                        value={value}
-                        onChange={(levels) =>
-                            updatePostCoordination({ spinalLevels: levels })
-                        }
-                        disabled={disabled}
-                    />
-                )}
 
             {showBrowser && (
                 <ProcedureCodeBrowserModal
