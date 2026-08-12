@@ -5315,5 +5315,63 @@
                 "active": true
             }
         ]
+    },
+    {
+        "conceptId": "NSX-00128",
+        "fsn": "Thoracic laminectomy and decompression (procedure)",
+        "preferredTerm": "Thoracic laminectomy",
+        "subspecialty": "spine-degenerative",
+        "facets": {
+            "method": "Decompression",
+            "procedureSite": "Thoracic vertebral column",
+            "surgicalApproach": "Posterior midline",
+            "device": null,
+            "morphology": "Spinal canal stenosis",
+            "intent": "Therapeutic"
+        },
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+            "thoracic"
+        ],
+        "active": true,
+        "inactivationReason": null,
+        "replacedBy": null,
+        "effectiveFrom": "2026-08-12",
+        "catalogueRelease": "v2026.2",
+        "synonyms": [
+            {
+                "term": "thoracic laminectomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "decompressive laminectomy thoracic",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "laminectomy thoracic",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "thoracic decompression",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            },
+            {
+                "term": "multilevel thoracic laminectomy",
+                "language": "en",
+                "isAbbreviation": false,
+                "active": true
+            }
+        ]
     }
 ]
