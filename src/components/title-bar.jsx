@@ -18,6 +18,11 @@ const Sections = [
         link: "/procedures?upcoming=true",
     },
     {
+        name: "procedure-codes",
+        label: "Procedure Codes",
+        link: "/procedure-codes",
+    },
+    {
         name: "settings",
         label: "Settings",
         icon: <SettingsIcon size={16} className="inline-block" />,

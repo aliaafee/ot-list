@@ -332,6 +332,37 @@ generated from them and must not be edited by hand.
 6. **Rebuild the client** (`npm run build`) so the bundled snapshot ships
    with the new concept.
 
+### Retiring a procedure code
+
+A code that turns out to be wrong, duplicated or obsolete is retired, not
+deleted and not edited into meaning something else - identifiers are
+permanent, and every operative note already coded against one has to keep
+resolving.
+
+Retiring changes the concept's **existing** row in `seed_procedures.csv`;
+it never adds a second one. On that row set:
+
+- `active` to `0`,
+- `inactivation_reason` to one of `duplicate`, `ambiguous`, `erroneous`,
+  `outdated`,
+- `replaced_by` to the successor's `concept_id`, if there is one - mint
+  it first, in the same release, or the build will reject the reference,
+- `effective_to` to the date it stops being offered,
+- `catalogue_release` to the release doing the retiring.
+
+Leave everything else alone: the name, facets and flags are what the code
+meant, and historical records are rendered with them.
+
+The **Procedure codes** page in the app (Browse → pick a code → "Retire
+this code…") produces exactly these columns as
+`retire_procedures.<date>.csv`, which is a list of edits to apply to rows
+that already exist - unlike the `seed_*.csv` files it downloads beside
+it, it is not a file to append.
+
+Then publish, apply and rebuild as in steps 4-6 above. The pickers stop
+offering the code as soon as the release lands; anything already coded
+against it still resolves and still renders.
+
 ### Notes
 
 - **The release payload is the whole catalogue, not a delta.** Every row

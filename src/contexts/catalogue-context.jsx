@@ -6,6 +6,7 @@ import {
     buildLevelLookup,
     buildSearchIndex,
     buildValueFromConcept,
+    latestCatalogueRelease,
     levelOptions,
     searchWithLevel,
     selectableConcepts,
@@ -68,9 +69,10 @@ export function CatalogueProvider({ children }) {
         return {
             concepts: selectable,
             levels: data.levels,
-            // Whichever release the data in hand came from, which is what
-            // gets snapshotted onto a coded procedure.
-            release: selectable[0]?.catalogueRelease ?? "",
+            // The newest release represented in the data in hand. Each
+            // concept carries the release it last changed in, so most of
+            // them sit on older ones.
+            release: latestCatalogueRelease(selectable),
             error,
 
             // Bound against the catalogue currently in hand, so callers

@@ -9,6 +9,7 @@ import OtListPrint from "./pages/otlist-print";
 import Settings from "./pages/settings";
 import Patients from "./pages/patients";
 import AllProcedures from "./pages/all-procedures";
+import ProcedureCodes from "./pages/procedure-codes";
 import NotFound from "./pages/not-found";
 
 export default function App() {
@@ -35,6 +36,10 @@ export default function App() {
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/patients" element={<Patients />} />
                     <Route path="/procedures" element={<AllProcedures />} />
+                    <Route
+                        path="/procedure-codes"
+                        element={<ProcedureCodes />}
+                    />
                 </Route>
                 <Route path="/lists/:otDayId/print" element={<OtListPrint />} />
             </Route>

@@ -26,6 +26,44 @@ export function selectableConcepts(concepts) {
     return concepts.filter((c) => c.conceptId !== UNCODED_CONCEPT_ID);
 }
 
+/** Numbers in a release label, "v2026.10" -> [2026, 10]. */
+function releaseParts(release) {
+    return (release.match(/\d+/g) ?? []).map(Number);
+}
+
+/** Older < newer, comparing segment by segment as numbers. */
+function compareReleases(left, right) {
+    const a = releaseParts(left);
+    const b = releaseParts(right);
+    for (let i = 0; i < Math.max(a.length, b.length); i++) {
+        const difference = (a[i] ?? 0) - (b[i] ?? 0);
+        if (difference !== 0) return difference;
+    }
+    // Same numbers - fall back to text so labels that carry no digits, or
+    // differ only in wording, still order deterministically.
+    return left < right ? -1 : left > right ? 1 : 0;
+}
+
+/**
+ * The release the catalogue in hand is at.
+ *
+ * `catalogueRelease` is stamped per concept - the release that concept
+ * last changed in - so the catalogue's release is the newest of them,
+ * not whichever concept happens to sort first. Compared numerically:
+ * "v2026.10" is newer than "v2026.2", which a plain string compare gets
+ * backwards.
+ */
+export function latestCatalogueRelease(concepts) {
+    let latest = "";
+    for (const concept of concepts) {
+        const release = concept.catalogueRelease;
+        if (release && (!latest || compareReleases(release, latest) > 0)) {
+            latest = release;
+        }
+    }
+    return latest;
+}
+
 export const INTENT_OPTIONS = [
     "Therapeutic",
     "Diagnostic",
@@ -283,6 +321,74 @@ export function searchWithLevel(index, query) {
         results: searchConcepts(index, extracted.rest),
         queryLevel: extracted,
     };
+}
+
+// ---------------------------------------------------------------------
+// Browser tree
+//
+// Shared by ProcedureCatalogueBrowser (the modal and the procedure-codes
+// page both render it) - there is no explicit hierarchy table, so the
+// browser's three levels are derived here from fields every concept
+// already carries. Nothing extra to keep in sync.
+// ---------------------------------------------------------------------
+
+/**
+ * Groups concepts into subspecialty -> procedure site -> concepts.
+ *
+ * Retired concepts are left out: the picker exists to code today's
+ * operations, and a code nobody may choose has no business being
+ * offered. `includeInactive` is for the catalogue-authoring page, which
+ * has to show what it is about to retire - and what earlier releases
+ * already did - rather than only what is choosable.
+ */
+export function buildProcedureTree(concepts, { includeInactive = false } = {}) {
+    const bySubspecialty = new Map();
+
+    for (const concept of concepts) {
+        if (!concept.active && !includeInactive) continue;
+
+        const site = concept.facets?.procedureSite || "Other";
+        if (!bySubspecialty.has(concept.subspecialty)) {
+            bySubspecialty.set(concept.subspecialty, new Map());
+        }
+        const bySite = bySubspecialty.get(concept.subspecialty);
+        if (!bySite.has(site)) bySite.set(site, []);
+        bySite.get(site).push(concept);
+    }
+
+    // Anything the catalogue grows that the fixed order doesn't know
+    // about still renders, just at the end.
+    const order = [
+        ...SUBSPECIALTY_ORDER,
+        ...[...bySubspecialty.keys()].filter(
+            (key) => !SUBSPECIALTY_ORDER.includes(key),
+        ),
+    ];
+
+    return order
+        .filter((key) => bySubspecialty.has(key))
+        .map((subspecialty) => {
+            const sites = [...bySubspecialty.get(subspecialty).entries()]
+                .sort(([a], [b]) => a.localeCompare(b))
+                .map(([site, siteConcepts]) => ({
+                    site,
+                    concepts: [...siteConcepts].sort((a, b) =>
+                        a.preferredTerm.localeCompare(b.preferredTerm),
+                    ),
+                }));
+            const count = sites.reduce((n, s) => n + s.concepts.length, 0);
+            return { subspecialty, sites, count };
+        });
+}
+
+/** True when a concept matches a free-text filter (name, FSN, synonyms). */
+export function matchesProcedureFilter(concept, filterLower) {
+    if (!filterLower) return true;
+    if (concept.preferredTerm.toLowerCase().includes(filterLower)) return true;
+    if (concept.fsn.toLowerCase().includes(filterLower)) return true;
+    return concept.synonyms.some(
+        (s) => s.active && s.term.toLowerCase().includes(filterLower),
+    );
 }
 
 // ---------------------------------------------------------------------
