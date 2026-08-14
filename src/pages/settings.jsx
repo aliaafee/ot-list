@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { pb } from "@/lib/pb";
 import { useAuth } from "@/contexts/auth-context";
 import Accordion from "@/components/accordion";
+import { Link } from "react-router";
 
 function Settings({}) {
     const [departments, setDepartments] = useState([]);
@@ -18,7 +19,10 @@ function Settings({}) {
     const fetchData = async () => {
         const gotDepartments = await pb.collection("departments").getFullList();
         setDepartments(
-            gotDepartments.map((dept) => ({ label: dept.name, value: dept.id }))
+            gotDepartments.map((dept) => ({
+                label: dept.name,
+                value: dept.id,
+            })),
         );
 
         const gotOperatingRooms = await pb
@@ -28,7 +32,7 @@ function Settings({}) {
             gotOperatingRooms.map((room) => ({
                 label: room.name,
                 value: room.id,
-            }))
+            })),
         );
     };
 
@@ -46,10 +50,14 @@ function Settings({}) {
     );
 
     const accordionItems = [
-        ...(user?.role === "admin" ? [{
-            title: "Users",
-            content: <EditUser />,
-        }] : []),
+        ...(user?.role === "admin"
+            ? [
+                  {
+                      title: "Users",
+                      content: <EditUser />,
+                  },
+              ]
+            : []),
         {
             title: "Departments",
             content: (
@@ -158,6 +166,21 @@ function Settings({}) {
                 />
             ),
         },
+        ...(user?.role === "admin"
+            ? [
+                  {
+                      title: "Procedure Codes",
+                      content: (
+                          <Link
+                              to="/procedure-codes"
+                              className="text-blue-500 hover:underline"
+                          >
+                              Manage Procedures
+                          </Link>
+                      ),
+                  },
+              ]
+            : []),
     ];
 
     return (
