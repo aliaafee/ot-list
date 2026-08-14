@@ -12,6 +12,7 @@ dist
 dist-ssr
 releases
 *.local
+vite.proxy.local.js
 pb/pb_data
 pb/pocketbase.exe
 pb/pocketbase
