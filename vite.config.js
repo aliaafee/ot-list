@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import path from "path";
 import fs from "fs";
+import { pathToFileURL } from "url";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { version } from "./package.json";
@@ -13,10 +14,18 @@ const defaultProxy = {
 };
 
 async function resolveProxy() {
-    if (!fs.existsSync(path.resolve(__dirname, "vite.proxy.local.js"))) {
+    const localProxyPath = path.resolve(__dirname, "vite.proxy.local.js");
+    if (!fs.existsSync(localProxyPath)) {
         return defaultProxy;
     }
-    const { proxy } = await import("./vite.proxy.local.js");
+    // Vite bundles this config with rolldown before running it, and a
+    // literal "./vite.proxy.local.js" specifier gets resolved at that
+    // bundle step - unconditionally, ignoring the existsSync guard above -
+    // which fails the whole config load for anyone without their own
+    // local override file. Importing a file:// URL built from a variable
+    // isn't statically resolvable, so the bundler leaves it as a runtime
+    // import() and the guard above actually gates it.
+    const { proxy } = await import(pathToFileURL(localProxyPath).href);
     return proxy ?? defaultProxy;
 }
 
