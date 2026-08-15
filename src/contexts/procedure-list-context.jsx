@@ -21,7 +21,7 @@ const ProcedureListContext = createContext(null);
 // the coding system landed renders blank.
 const proceduresCollectionOptions = {
     sort: "+order",
-    expand: "patient,addedBy,procedureDay.otList,procedureDay, updater, creator,procedureCodes_via_procedure",
+    expand: "patient,addedBy,procedureDay.otList,procedureDay, updater, creator,procedureCodes_via_procedure.concept",
 };
 
 const otDayCollectionOptions = {

@@ -16,7 +16,7 @@ import {
 import { twMerge } from "tailwind-merge";
 
 import LabelValue from "./label-value";
-import { procedureName } from "@/lib/nspc";
+import { procedureName, procedureConceptId } from "@/lib/nspc";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { PacStatus } from "./pac-status";
@@ -192,14 +192,23 @@ function ProcedureDetails({
             <PacStatus procedureId={procedure?.id} className="p-2" />
             <div className=" p-2 grid grid-cols-1 md:grid-cols-4 gap-2">
                 <LabelValue
-                    className="md:col-span-2"
+                    className="md:col-span-4"
                     label="Diagnosis"
                     value={procedure.diagnosis}
                 />
                 <LabelValue
-                    className="md:col-span-2"
+                    className="md:col-span-4"
                     label="Procedure"
-                    value={procedureName(procedure)}
+                    value={
+                        <div>
+                            {procedureName(procedure)}
+                            {procedureConceptId(procedure) && (
+                                <span className="text-gray-500 ml-2 text-xs font-mono">
+                                    (ID: {procedureConceptId(procedure)})
+                                </span>
+                            )}
+                        </div>
+                    }
                 />
                 <LabelValue
                     className="md:col-span-4"

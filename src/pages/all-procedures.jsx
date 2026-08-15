@@ -45,7 +45,7 @@ function AllProcedures() {
         try {
             const options = {
                 sort: "procedureDay.date",
-                expand: "patient,addedBy,procedureDay,procedureDay.otList,operatingRoom,procedureCodes_via_procedure",
+                expand: "patient,addedBy,procedureDay,procedureDay.otList,operatingRoom,procedureCodes_via_procedure.concept",
             };
 
             const filters = [];

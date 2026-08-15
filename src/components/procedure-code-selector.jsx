@@ -440,7 +440,7 @@ export default function ProcedureCodeSelector({
                     )}
 
                 {coded && showPostCoordination && (
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-1 pl-7">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-1">
                         {postCoordinationFields.includes("laterality") && (
                             <FormField
                                 label="Laterality (side)"

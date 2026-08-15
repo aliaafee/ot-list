@@ -91,7 +91,7 @@ function Patients({}) {
                     patientId: patient.id,
                 }),
                 sort: "-created",
-                expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom,procedureCodes_via_procedure",
+                expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom,procedureCodes_via_procedure.concept",
             });
 
             setPatientProcedures(result.items);
@@ -133,7 +133,7 @@ function Patients({}) {
                             patientId: patientId,
                         }),
                         sort: "-created",
-                        expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom,procedureCodes_via_procedure",
+                        expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom,procedureCodes_via_procedure.concept",
                     });
 
                 setPatientProcedures(result.items);

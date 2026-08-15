@@ -552,3 +552,22 @@ export function procedureName(procedure) {
         procedure?.expand?.procedureCodes_via_procedure?.[0],
     );
 }
+
+/**
+ * The NSPC concept id for a procedure record, or null if it is uncoded.
+ *
+ * Unlike the name, the concept id isn't a snapshot on the `procedureCodes`
+ * row itself - that row only holds a relation to `procedureConcepts` - so
+ * this needs `concept` expanded one level further than `procedureName`
+ * does. The `NSX-00000` sentinel is collapsed to null here rather than
+ * handed back as a concept id, since an uncoded procedure has none.
+ *
+ * Requires `procedureCodes_via_procedure.concept` to have been expanded.
+ * Missing that, this returns null.
+ */
+export function procedureConceptId(procedure) {
+    const conceptId =
+        procedure?.expand?.procedureCodes_via_procedure?.[0]?.expand?.concept
+            ?.conceptId;
+    return conceptId && conceptId !== UNCODED_CONCEPT_ID ? conceptId : null;
+}
