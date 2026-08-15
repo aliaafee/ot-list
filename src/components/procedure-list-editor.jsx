@@ -27,7 +27,7 @@ import { api } from "@/lib/api";
 import { formatDate, formateDateLong } from "@/utils/dates";
 
 const TableHeader = ({ className }) => (
-    <div className={twMerge("flex text-sm", className)}>
+    <div className={twMerge("flex text-sm select-none", className)}>
         <div className="px-2 hidden md:inline">
             <span className="invisible">⠿</span>
         </div>

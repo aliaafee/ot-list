@@ -12,14 +12,16 @@ function LabelValue({ label, value, className, blank = <>&mdash;</> }) {
     return (
         <div className={twMerge("flex flex-col", className)}>
             {label ? (
-                <span className=" text-gray-700 text-xs">{label}</span>
+                <span className=" text-gray-700 text-xs select-none">
+                    {label}
+                </span>
             ) : (
                 <></>
             )}
             <span
                 className={twMerge(
-                    "text-gray-900 overflow-clip overflow-ellipsis",
-                    label ? "p-1" : ""
+                    "text-gray-900 overflow-clip text-ellipsis",
+                    label ? "p-1" : "",
                 )}
             >
                 <span className="select-all">{value ? value : blank}</span>

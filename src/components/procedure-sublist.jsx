@@ -265,7 +265,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                             />
                         </div>
                     )}
-                    itemClassName="group select-none flex bg-gray-100 rounded-lg hover:bg-blue-200 mt-2 has-[.selected]:ring-2 ring-blue-300 has-[.selected]:bg-blue-300"
+                    itemClassName="group flex bg-gray-100 rounded-lg hover:bg-blue-200 mt-2 has-[.selected]:ring-2 ring-blue-300 has-[.selected]:bg-blue-300"
                     onChange={handleChangeOrder}
                     disabled={isBusy()}
                 />
@@ -277,7 +277,7 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
                                 ref={(el) =>
                                     (procedureRefs.current[procedure.id] = el)
                                 }
-                                className="select-none flex bg-gray-100 rounded-lg hover:bg-blue-200 mt-2 has-[.selected]:ring-2 ring-blue-300 has-[.selected]:bg-blue-300"
+                                className="flex bg-gray-100 rounded-lg hover:bg-blue-200 mt-2 has-[.selected]:ring-2 ring-blue-300 has-[.selected]:bg-blue-300"
                             >
                                 <div className="p-2 hidden md:block">
                                     <span className="invisible">⠿</span>
