@@ -37,6 +37,7 @@ function ProcedureSimplifiedView({
                 // label="NID"
                 value={procedure?.expand?.patient?.nid}
                 className="col-span-2 lg:col-span-2"
+                copyButton={true}
             />
             <LabelValue
                 className="col-span-2 lg:col-span-2"
