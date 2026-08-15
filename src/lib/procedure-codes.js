@@ -32,11 +32,13 @@ const EXPAND = "concept,spinalLevels,intentOverride";
  * qualifiers, and the snapshots, which record what was true at coding
  * time and must never be refreshed from the current catalogue.
  *
- * @param {Object} record - The `procedureCodes` record, expanded.
+ * @param {Object} record - The `procedureCodes` record, expanded. May be
+ *   null/undefined - a procedure whose code row hasn't loaded yet, or has
+ *   none - in which case this returns null.
  * @param {function} findConcept - Looks a concept up by its NSPC id.
  */
 export function toSelectorValue(record, findConcept) {
-    const conceptId = record.expand?.concept?.conceptId;
+    const conceptId = record?.expand?.concept?.conceptId;
     if (!conceptId) return null;
 
     // A sentinel row carries no catalogue selection to restore - only

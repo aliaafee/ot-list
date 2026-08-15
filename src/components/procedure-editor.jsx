@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import Button from "@/components/button";
 import dayjs from "dayjs";
@@ -12,10 +12,7 @@ import { useProcedureList } from "@/contexts/procedure-list-context";
 import { ProcedureForm, validateProcedure } from "@/forms/procedure-form";
 import { useCatalogue } from "@/contexts/catalogue-context";
 import { procedureName } from "@/lib/nspc";
-import {
-    buildProcedureCodeBody,
-    loadProcedureCode,
-} from "@/lib/procedure-codes";
+import { buildProcedureCodeBody, toSelectorValue } from "@/lib/procedure-codes";
 import PatientInfo from "./patient-info";
 import { PacStatus } from "./pac-status";
 
@@ -45,9 +42,18 @@ function ProcedureEditor({
         comorbids: procedure?.comorbids || "",
         // The name as it currently reads, from the code row or - for a
         // procedure older than the coding system - from the legacy
-        // column. Either way it starts as free text; the effect below
-        // swaps in the catalogue selection if there is one to restore.
+        // column. Either way it starts as free text; `procedureCode`
+        // below swaps in the catalogue selection if there is one to
+        // restore.
         procedure: procedureName(procedure),
+        // The stored code lives in its own collection, but every caller
+        // that hands a procedure to this editor already expands
+        // `procedureCodes_via_procedure.concept`, so it travels with the
+        // procedure record - no separate fetch needed to restore it.
+        procedureCode: toSelectorValue(
+            procedure?.expand?.procedureCodes_via_procedure?.[0],
+            findById,
+        ),
         addedDate: dayjs(procedure?.addedDate).format("YYYY-MM-DD") || "",
         addedBy: procedure?.addedBy || "",
         remarks: procedure?.remarks || "",
@@ -55,37 +61,8 @@ function ProcedureEditor({
         bed: procedure?.bed || "",
         anesthesia: procedure?.anesthesia || "",
         requirements: procedure?.requirements || "",
-        procedureCode: null,
     });
     const [updatedProcedureErrors, setUpdatedProcedureErrors] = useState({});
-
-    // The stored code lives in its own collection, so it is fetched
-    // rather than read off the procedure record. It arrives after first
-    // paint; the rest of the form is editable meanwhile, and a code the
-    // user picks in that window is not overwritten.
-    useEffect(() => {
-        if (!procedure?.id) return;
-        let cancelled = false;
-
-        (async () => {
-            try {
-                const code = await loadProcedureCode(procedure.id, findById);
-                if (cancelled || !code) return;
-                setUpdatedProcedure((current) =>
-                    current.procedureCode
-                        ? current
-                        : { ...current, procedureCode: code },
-                );
-            } catch {
-                // Leave the code field empty - the procedure itself is
-                // still perfectly editable without it.
-            }
-        })();
-
-        return () => {
-            cancelled = true;
-        };
-    }, [procedure?.id, findById]);
 
     const handleUpdateProcedure = async () => {
         const inputErrors = validateProcedure(updatedProcedure);
