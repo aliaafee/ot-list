@@ -129,7 +129,7 @@ Each catalogue concept therefore carries:
 `spinal_levels` is an **ordered set**, not a single value. A two-level ACDF is one `procedure_performed` row with two levels attached, not two rows and not a different concept:
 
 ```
-concept_id     NSX-00089   (Anterior cervical discectomy and fusion)
+concept_id     NSX-00084   (Anterior cervical discectomy and fusion)
 spinal_levels  [C4-C5, C5-C6]
 laterality     not-applicable
 priority       elective
@@ -137,7 +137,7 @@ priority       elective
 
 Order is cranio-caudal, held explicitly in `sequence` rather than left to string sorting — `T2` sorts before `T10` anatomically and after it alphabetically, and every level list is wrong the first time someone forgets this. The vocabulary carries an `ordinal` column for exactly this reason.
 
-**Level count is derived, never stored.** "Single level" versus "multilevel" is `COUNT(*)` over the attached levels. Concepts that previously encoded the count in their name (`… at single level`, `… at multiple levels`) were inactivated in release `v2026.3` and replaced by a single count-neutral concept each, per the identifier policy in §2.
+**Level count is derived, never stored.** "Single level" versus "multilevel" is `COUNT(*)` over the attached levels. A concept must never encode the count in its name (`… at single level`, `… at multiple levels`) — that is the same error as minting separate left and right concepts, and it is an expensive one to correct: per the identifier policy in §2 a concept's meaning may not be edited, so a count-bearing concept has to be inactivated and replaced by a count-neutral one rather than simply renamed.
 
 ### Rendering and snapshots
 

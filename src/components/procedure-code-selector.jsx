@@ -173,7 +173,7 @@ export default function ProcedureCodeSelector({
     const containerRef = useRef(null);
     const inputRef = useRef(null);
 
-    const { results, queryLevel } = useMemo(
+    const { results, queryLevel, queryLaterality } = useMemo(
         () => catalogue.search(query),
         [catalogue, query],
     );
@@ -204,26 +204,30 @@ export default function ProcedureCodeSelector({
     }, []);
 
     const handleSelect = (concept) => {
-        // A level typed into the query pre-fills the slot, but only when
-        // it is the kind this procedure takes and a real level: "L4-L5"
-        // means nothing to a vertebroplasty, and "C8-T1" means nothing
-        // to anyone.
-        const typed = concept.levelApplicable
+        // A level or a side typed into the query pre-fills its slot, but
+        // only where the qualifier means something to this procedure and
+        // is real: "L4-L5" means nothing to a vertebroplasty, "C8-T1"
+        // means nothing to anyone, and a side means nothing to a
+        // midline craniotomy.
+        const typedLevel = concept.levelApplicable
             ? queryLevel?.[concept.levelKind]
             : null;
-        const prefill =
-            typed && catalogue.levelOrdinal(concept.levelKind, typed)
-                ? [typed]
+        const levels =
+            typedLevel && catalogue.levelOrdinal(concept.levelKind, typedLevel)
+                ? [typedLevel]
                 : undefined;
+        const laterality = concept.lateralityApplicable
+            ? (queryLaterality ?? undefined)
+            : undefined;
 
-        onChange(catalogue.buildValue(concept, value, prefill));
+        onChange(catalogue.buildValue(concept, value, { levels, laterality }));
         setQuery(concept.preferredTerm);
         setOpen(false);
         inputRef.current?.blur();
     };
 
     // A pick from the browser modal isn't derived from anything typed, so
-    // (unlike handleSelect) there's no query-level to prefill from.
+    // (unlike handleSelect) there are no typed qualifiers to prefill from.
     const handleBrowserSelect = (concept) => {
         onChange(catalogue.buildValue(concept, value));
         setQuery(concept.preferredTerm);

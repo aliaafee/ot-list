@@ -8,7 +8,7 @@ import {
     buildValueFromConcept,
     latestCatalogueRelease,
     levelOptions,
-    searchWithLevel,
+    searchWithQualifiers,
     selectableConcepts,
     sortLevelCodes,
 } from "@/lib/nspc";
@@ -77,14 +77,9 @@ export function CatalogueProvider({ children }) {
 
             // Bound against the catalogue currently in hand, so callers
             // never have to thread it through themselves.
-            search: (query) => searchWithLevel(index, query),
-            buildValue: (concept, previous, initialLevels) =>
-                buildValueFromConcept(
-                    lookup,
-                    concept,
-                    previous,
-                    initialLevels,
-                ),
+            search: (query) => searchWithQualifiers(index, lookup, query),
+            buildValue: (concept, previous, typed) =>
+                buildValueFromConcept(lookup, concept, previous, typed),
             findById: (conceptId) => byId.get(conceptId) ?? null,
             levelsFor: (concept, all) => levelOptions(lookup, concept, all),
             sortLevels: (codes, kind) => sortLevelCodes(lookup, codes, kind),

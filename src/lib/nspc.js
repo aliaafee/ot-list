@@ -245,7 +245,14 @@ export function buildLevelLookup(levels) {
         levels.map((l) => [`${l.kind}:${l.code}`, l.ordinal]),
     );
 
-    return { byKind, ordinals, all: levels };
+    // Which region a level belongs to, so a level typed into a search
+    // query can be checked against the regions a concept plausibly
+    // covers - see searchWithQualifiers.
+    const regions = Object.fromEntries(
+        levels.map((l) => [`${l.kind}:${l.code}`, l.region]),
+    );
+
+    return { byKind, ordinals, regions, all: levels };
 }
 
 /** Levels a concept can take, narrowed to its regions unless `all`. */
@@ -303,23 +310,120 @@ export function extractLevelFromQuery(query) {
     return null;
 }
 
+// Laterality is an encounter qualifier too, and surgeons type it the
+// same way they type a level - in front of the procedure. "Right CTR"
+// is one concept, not a right-sided one, so the side is stripped before
+// searching rather than looked for in the catalogue.
+// The optional "sided" is what makes "right-sided craniotomy" work:
+// without it the side comes off and the hyphen stays behind, leaving
+// "-sided craniotomy" to search for.
+const LATERALITY_QUERY =
+    /^(left|right|bilateral|lt|rt|bilat|b\/l)\b(?:[\s-]*sided)?[\s.:-]*/;
+
+/** Shorthand as typed -> the value stored on a coded procedure. */
+const LATERALITY_TERMS = {
+    left: "left",
+    lt: "left",
+    right: "right",
+    rt: "right",
+    bilateral: "bilateral",
+    bilat: "bilateral",
+    "b/l": "bilateral",
+};
+
 /**
- * Search with a spinal-level-aware fallback. The query as typed always
- * wins; only when it finds nothing do we strip a level token and search
- * the remainder, so "C5-C6 ACDF" finds the ACDF concept (levels are not
- * in the catalogue, so the literal query cannot match) while an ordinary
- * search is never shadowed by the level regex.
+ * Pulls a leading side off a query. "rt ctr" yields { rest: "ctr",
+ * laterality: "right" }; null when the query doesn't start with one.
  */
-export function searchWithLevel(index, query) {
-    const results = searchConcepts(index, query);
-    if (results.length > 0) return { results, queryLevel: null };
-
-    const extracted = extractLevelFromQuery(query.trim().toLowerCase());
-    if (!extracted?.rest) return { results, queryLevel: null };
-
+export function extractLateralityFromQuery(query) {
+    const matched = query.match(LATERALITY_QUERY);
+    if (!matched) return null;
     return {
-        results: searchConcepts(index, extracted.rest),
-        queryLevel: extracted,
+        rest: query.slice(matched[0].length),
+        laterality: LATERALITY_TERMS[matched[1]],
+    };
+}
+
+/**
+ * Pushes concepts the typed level contradicts to the end of the results.
+ *
+ * `L4-L5 fusion` finding *Anterior cervical corpectomy and fusion* is
+ * not a harmless mis-sort: the level prefill is rejected afterwards, so
+ * the wrong concept is offered at the top of the list with nothing to
+ * signal it, which is a silent mis-coding path.
+ *
+ * Demoted, never hidden. `levelRegions` is a picker hint and not a hard
+ * constraint (spec section 5.1) - thoracic discs do get approached in
+ * ways the catalogue didn't anticipate - so a concept that disagrees
+ * with the typed region has to stay reachable. Only concepts that
+ * positively contradict it move; a concept with no regions declared, or
+ * one that takes no level at all, keeps its place.
+ *
+ * Note this compares regions, not `levelKind`: `L4-L5 laminectomy`
+ * parses as an interspace while a laminectomy takes vertebrae, and per
+ * section 5.1 that query means the laminae of L4 and L5 - a real search
+ * that a kind check would wrongly reject.
+ */
+function demoteImplausibleRegions(results, extracted, lookup) {
+    const kind = extracted.interspace ? "interspace" : "vertebra";
+    const code = extracted.interspace ?? extracted.vertebra;
+    const region = lookup?.regions?.[`${kind}:${code}`];
+
+    // "C8-T1" parses but is not a level anyone can record, and carries
+    // no region to judge anything against.
+    if (!region) return results;
+
+    const contradicts = (concept) =>
+        concept.levelApplicable &&
+        concept.levelRegions?.length > 0 &&
+        !concept.levelRegions.includes(region);
+
+    const plausible = results.filter((c) => !contradicts(c));
+    if (plausible.length === results.length) return results;
+    return [...plausible, ...results.filter(contradicts)];
+}
+
+/**
+ * Search with a qualifier-aware fallback. The query as typed always
+ * wins; only when it finds nothing are the encounter qualifiers a
+ * surgeon types in front of a procedure - a side, a spinal level -
+ * stripped and the remainder searched. So "C5-C6 ACDF" finds the ACDF
+ * concept and "Right CTR" finds carpal tunnel decompression (neither
+ * levels nor sides are in the catalogue, so the literal query cannot
+ * match), while an ordinary search is never shadowed by either pattern.
+ *
+ * Both are stripped together, since "Right L4-L5 TFESI" carries both,
+ * and both are handed back so what was typed can pre-fill the slot it
+ * belongs in rather than being thrown away - see buildValueFromConcept.
+ *
+ * @returns {{results: Object[], queryLevel: Object|null,
+ *   queryLaterality: string|null}}
+ */
+export function searchWithQualifiers(index, lookup, query) {
+    const results = searchConcepts(index, query);
+    if (results.length > 0) {
+        return { results, queryLevel: null, queryLaterality: null };
+    }
+
+    const typed = query.trim().toLowerCase();
+    const side = extractLateralityFromQuery(typed);
+    const withoutSide = side ? side.rest : typed;
+    const extracted = extractLevelFromQuery(withoutSide);
+    const rest = extracted ? extracted.rest : withoutSide;
+
+    // Nothing came off, or nothing is left: either way there is no
+    // second query to run that the first one hasn't already tried.
+    if (!rest || rest === typed) {
+        return { results, queryLevel: null, queryLaterality: null };
+    }
+
+    const fallback = searchConcepts(index, rest);
+    return {
+        results: extracted
+            ? demoteImplausibleRegions(fallback, extracted, lookup)
+            : fallback,
+        queryLevel: extracted ?? null,
+        queryLaterality: side?.laterality ?? null,
     };
 }
 
@@ -413,15 +517,18 @@ export function displayText(value) {
  * revision status, staged sequence, intent and spinal level are encounter
  * qualifiers, never baked into the catalogue row.
  *
- * @param {string[]} initialLevels - Level codes to start from, used when
- *   the search query itself carried a level ("C5-C6 ACDF").
+ * Qualifiers the search query itself carried win over whatever the
+ * previous value had: someone who types "Right L4-L5 TFESI" has already
+ * said which side and which level, and being made to pick them again
+ * from the dropdown is the search having quietly discarded half of what
+ * they typed.
+ *
+ * @param {Object} typed - What the query carried, from
+ *   searchWithQualifiers: `{ levels?: string[], laterality?: string }`.
+ *   Empty for a pick that wasn't derived from typing, e.g. the browser
+ *   modal.
  */
-export function buildValueFromConcept(
-    lookup,
-    concept,
-    previous,
-    initialLevels,
-) {
+export function buildValueFromConcept(lookup, concept, previous, typed = {}) {
     // Levels only carry across a concept change when both concepts draw
     // from the same vocabulary. Switching an ACDF to a cervical
     // laminectomy must not drag "C5-C6" into a field that takes vertebrae.
@@ -444,9 +551,8 @@ export function buildValueFromConcept(
         levelRegions: concept.levelRegions,
         catalogueRelease: concept.catalogueRelease,
         laterality: concept.lateralityApplicable
-            ? isCoded(previous)
-                ? previous.laterality
-                : ""
+            ? (typed.laterality ??
+              (isCoded(previous) ? previous.laterality : ""))
             : "not-applicable",
         priority: isCoded(previous) ? previous.priority : "",
         revisionStatus: concept.revisionApplicable
@@ -459,7 +565,7 @@ export function buildValueFromConcept(
         spinalLevels: concept.levelApplicable
             ? sortLevelCodes(
                   lookup,
-                  initialLevels ?? carriedLevels,
+                  typed.levels ?? carriedLevels,
                   concept.levelKind,
               )
             : [],
