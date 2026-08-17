@@ -208,14 +208,22 @@ export default function ProcedureCodeSelector({
         // only where the qualifier means something to this procedure and
         // is real: "L4-L5" means nothing to a vertebroplasty, "C8-T1"
         // means nothing to anyone, and a side means nothing to a
-        // midline craniotomy.
+        // midline craniotomy. A dashed range carries both readings (see
+        // extractLevelFromQuery) - queryLevel.interspace is one code,
+        // queryLevel.vertebra a list - so both shapes are normalised to
+        // an array before being checked against the catalogue.
         const typedLevel = concept.levelApplicable
             ? queryLevel?.[concept.levelKind]
             : null;
-        const levels =
-            typedLevel && catalogue.levelOrdinal(concept.levelKind, typedLevel)
-                ? [typedLevel]
-                : undefined;
+        const typedCodes = typedLevel == null
+            ? []
+            : Array.isArray(typedLevel)
+              ? typedLevel
+              : [typedLevel];
+        const validCodes = typedCodes.filter((code) =>
+            catalogue.levelOrdinal(concept.levelKind, code),
+        );
+        const levels = validCodes.length > 0 ? validCodes : undefined;
         const laterality = concept.lateralityApplicable
             ? (queryLaterality ?? undefined)
             : undefined;

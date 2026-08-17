@@ -281,19 +281,48 @@ const VERTEBRA_QUERY =
     /\b([cC][1-7]|[tT](?:1[0-2]|[1-9])|[lL][1-5]|[sS][12]|occiput)\b/;
 
 /**
+ * Vertebra codes a dashed range spans, for when the matched concept turns
+ * out to draw from the vertebra vocabulary rather than the interspace one
+ * - see extractLevelFromQuery. Same letter expands numerically ("T4-T10"
+ * -> T4..T10, per spec section 5.1's multi-level fixation example);
+ * crossing letters ("L5-S1") has no numeric relationship between the two,
+ * so both endpoints are returned as-is.
+ */
+function vertebraRange(from, to) {
+    if (from[0] !== to[0]) return [from, to];
+    const low = Math.min(Number(from.slice(1)), Number(to.slice(1)));
+    const high = Math.max(Number(from.slice(1)), Number(to.slice(1)));
+    const codes = [];
+    for (let n = low; n <= high; n++) codes.push(`${from[0]}${n}`);
+    return codes;
+}
+
+/**
  * Pulls a level out of a search query, returning the remaining text and
- * the canonical level code. "l4/5 microdisc" yields { rest: "microdisc",
- * interspace: "L4-L5" } - the shorthand second half ("5") is expanded
- * using the first half's region letter.
+ * the canonical level code(s). "l4/5 microdisc" yields { rest: "microdisc",
+ * interspace: "L4-L5", vertebra: ["L4", "L5"] } - the shorthand second
+ * half ("5") is expanded using the first half's region letter.
+ *
+ * A dashed range gets both readings because the query alone can't say
+ * which vocabulary the concept it ends up matching draws from: per spec
+ * section 5.1, "L4-L5 laminectomy" means the two vertebrae, "L4-L5 ACDF"
+ * means the interspace between them. The caller (searchWithQualifiers'
+ * callers) picks whichever key matches the concept's `levelKind`.
+ * `vertebra` is always an array, even for a lone level ("L4 laminectomy"
+ * yields `vertebra: ["L4"]`, no `interspace`), so both shapes are handled
+ * the same way downstream.
  */
 export function extractLevelFromQuery(query) {
     const interspace = query.match(INTERSPACE_QUERY);
     if (interspace) {
         const [matched, from, toRaw] = interspace;
         const to = /^\d/.test(toRaw) ? from[0].toUpperCase() + toRaw : toRaw;
+        const fromCode = from.toUpperCase();
+        const toCode = to.toUpperCase();
         return {
             rest: query.replace(matched, " ").trim(),
-            interspace: `${from.toUpperCase()}-${to.toUpperCase()}`,
+            interspace: `${fromCode}-${toCode}`,
+            vertebra: vertebraRange(fromCode, toCode),
         };
     }
     const vertebra = query.match(VERTEBRA_QUERY);
@@ -301,10 +330,11 @@ export function extractLevelFromQuery(query) {
         const code = vertebra[1];
         return {
             rest: query.replace(vertebra[0], " ").trim(),
-            vertebra:
+            vertebra: [
                 code.toLowerCase() === "occiput"
                     ? "Occiput"
                     : code.toUpperCase(),
+            ],
         };
     }
     return null;
@@ -366,7 +396,7 @@ export function extractLateralityFromQuery(query) {
  */
 function demoteImplausibleRegions(results, extracted, lookup) {
     const kind = extracted.interspace ? "interspace" : "vertebra";
-    const code = extracted.interspace ?? extracted.vertebra;
+    const code = extracted.interspace ?? extracted.vertebra?.[0];
     const region = lookup?.regions?.[`${kind}:${code}`];
 
     // "C8-T1" parses but is not a level anyone can record, and carries
