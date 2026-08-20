@@ -21,7 +21,7 @@ export default function ReorderList({
 
     const ordered = useMemo(
         () => [...items].sort((a, b) => a.order - b.order),
-        [items]
+        [items],
     );
 
     const handleDragStart = (e, id) => {
@@ -42,10 +42,10 @@ export default function ReorderList({
         if (!draggedId || draggedId === overId) return;
 
         const fromIndex = ordered.findIndex(
-            (it) => String(it.id) === String(draggedId)
+            (it) => String(it.id) === String(draggedId),
         );
         const toIndex = ordered.findIndex(
-            (it) => String(it.id) === String(overId)
+            (it) => String(it.id) === String(overId),
         );
         if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) return;
 
@@ -85,48 +85,48 @@ export default function ReorderList({
             {ordered.map((item) => (
                 <li
                     key={item.id}
-                    draggable={!!!disabled}
-                    onDragStart={(e) => handleDragStart(e, item.id)}
                     onDragOver={handleDragOver}
                     onDrop={(e) => handleDrop(e, item.id)}
                     onDragEnd={handleDragEnd}
                     role="option"
                     aria-grabbed={dragIdRef.current === item.id}
-                    className={twMerge("group flex select-none", itemClassName)}
+                    className={twMerge("group flex", itemClassName)}
                 >
                     {itemRender ? (
                         <>
-                            <div
-                                className={twMerge(
-                                    "p-2 hidden md:block",
-                                    !!!disabled && "cursor-grab"
-                                )}
-                            >
-                                <span
+                            <div className="hidden md:block">
+                                <div
+                                    draggable={!disabled}
+                                    onDragStart={(e) =>
+                                        handleDragStart(e, item.id)
+                                    }
                                     className={twMerge(
-                                        "invisible group-hover:visible",
-                                        !!disabled && "text-gray-300"
+                                        "p-2",
+                                        !disabled && "cursor-grab",
                                     )}
                                 >
-                                    ⠿
-                                </span>
+                                    <span
+                                        className={twMerge(
+                                            "invisible group-hover:visible",
+                                            !disabled && "cursor-grab",
+                                            !!disabled && "text-gray-300",
+                                        )}
+                                    >
+                                        ⠿
+                                    </span>
+                                </div>
                             </div>
-                            <div
-                                className="grow"
-                                draggable
-                                onDragStart={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                }}
-                            >
-                                {itemRender(item)}
-                            </div>
+                            <div className="grow">{itemRender(item)}</div>
                         </>
                     ) : (
                         <div className="flex items-center gap-2">
                             <span className="text-gray-500">#{item.order}</span>
                             <span className="font-medium">{item.label}</span>
-                            <span className="ml-auto inline-flex items-center text-xs text-gray-400">
+                            <span
+                                draggable={!disabled}
+                                onDragStart={(e) => handleDragStart(e, item.id)}
+                                className="ml-auto inline-flex items-center text-xs text-gray-400"
+                            >
                                 ⠿
                             </span>
                         </div>
