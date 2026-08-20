@@ -18,6 +18,7 @@ export default function ReorderList({
     itemClassName,
 }) {
     const dragIdRef = useRef(null);
+    const itemRefs = useRef({});
 
     const ordered = useMemo(
         () => [...items].sort((a, b) => a.order - b.order),
@@ -28,6 +29,20 @@ export default function ReorderList({
         dragIdRef.current = id;
         e.dataTransfer.setData("text/plain", String(id));
         e.dataTransfer.effectAllowed = "move";
+
+        // The draggable node is just the small handle icon, so the browser's
+        // default drag image would be that icon alone. Use the whole row
+        // instead, so the ghost shows the same details as the item itself
+        // (e.g. the procedure's simplified view).
+        const node = itemRefs.current[id];
+        if (node && e.dataTransfer.setDragImage) {
+            const rect = node.getBoundingClientRect();
+            e.dataTransfer.setDragImage(
+                node,
+                e.clientX - rect.left,
+                e.clientY - rect.top,
+            );
+        }
     };
 
     const handleDragOver = (e) => {
@@ -85,6 +100,7 @@ export default function ReorderList({
             {ordered.map((item) => (
                 <li
                     key={item.id}
+                    ref={(el) => (itemRefs.current[item.id] = el)}
                     onDragOver={handleDragOver}
                     onDrop={(e) => handleDrop(e, item.id)}
                     onDragEnd={handleDragEnd}
