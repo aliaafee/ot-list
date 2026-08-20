@@ -49,6 +49,7 @@ function ProcedureExpandedView({
                     // label="NID"
                     value={procedure?.expand?.patient?.nid}
                     className="col-span-2 lg:col-span-2"
+                    copyButton={true}
                 />
                 <LabelValue
                     className="col-span-2 lg:col-span-2"
@@ -103,11 +104,13 @@ function ProcedureExpandedView({
                     label="Hospital ID"
                     value={procedure?.expand?.patient?.hospitalId}
                     className="col-span-1 md:col-span-3"
+                    copyButton={true}
                 />
                 <LabelValue
                     label="Phone"
                     value={procedure?.expand?.patient?.phone}
                     className="col-span-1 md:col-span-2"
+                    copyButton={true}
                 />
                 <LabelValue
                     label="Address"
