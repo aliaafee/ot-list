@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 
 import FormField from "@/components/form-field";
+import ProcedureCodeSelector from "@/components/procedure-code-selector";
 
 export const initialProcedureValue = {
     diagnosis: "",
     comorbids: "",
     procedure: "",
+    procedureCode: null,
     addedDate: "",
     addedBy: "",
     remarks: "",
@@ -17,12 +19,7 @@ export const initialProcedureValue = {
 
 export const validateProcedure = (procedure) => {
     const errorFields = {};
-    const requiredFields = [
-        "diagnosis",
-        "procedure",
-        "addedDate",
-        "addedBy",
-    ];
+    const requiredFields = ["diagnosis", "procedure", "addedDate", "addedBy"];
     requiredFields.forEach((field) => {
         if (!procedure[field] || procedure[field].toString().trim() === "") {
             errorFields[field] = {
@@ -47,6 +44,8 @@ export function ProcedureForm({
             ...value,
             [name]: newValue,
         };
+
+        console.log(newProcedureValue);
 
         onChange({
             ...value,
@@ -73,6 +72,15 @@ export function ProcedureForm({
                 className="md:col-span-2"
                 error={"procedure" in errorFields}
                 errorMessage={errorFields["procedure"]?.message}
+            />
+            <ProcedureCodeSelector
+                label="Procedure Code"
+                name="procedureCode"
+                value={value.procedureCode}
+                onChange={handleChange}
+                className="md:col-span-2"
+                error={"procedureCode" in errorFields}
+                errorMessage={errorFields["procedureCode"]?.message}
             />
             <FormField
                 label="Comorbidities"
