@@ -4,56 +4,64 @@ import { twMerge } from "tailwind-merge";
 import { useCatalogue } from "@/contexts/catalogue-context";
 import SearchBox from "@/components/search-box";
 
-// TODO: replace with codes fetched from the backend
-const SAMPLE_CODES = [
-    { code: "0DTJ4ZZ", description: "Laparoscopic cholecystectomy" },
-    { code: "0DTJ0ZZ", description: "Open cholecystectomy" },
-    { code: "0DBJ4ZZ", description: "Laparoscopic appendectomy" },
-    { code: "0DTU0ZZ", description: "Open appendectomy" },
-    { code: "0YQ50ZZ", description: "Inguinal hernia repair, open" },
-    { code: "0YQ54ZZ", description: "Inguinal hernia repair, laparoscopic" },
-    { code: "0SRC0J9", description: "Total knee replacement, right" },
-    { code: "0SRD0J9", description: "Total knee replacement, left" },
-    { code: "0UT90ZZ", description: "Total abdominal hysterectomy" },
-    { code: "10D00Z1", description: "Lower segment caesarean section" },
-    { code: "08RJ3JZ", description: "Cataract extraction with IOL, right" },
-    { code: "08RK3JZ", description: "Cataract extraction with IOL, left" },
-    { code: "0CTP0ZZ", description: "Tonsillectomy" },
-    { code: "0W9G3ZZ", description: "Drainage of abscess, percutaneous" },
-];
-
-export const UNCODED_CODE = "0000";
+/** Concept id of the catalogue's "not represented here" sentinel */
+const UNCODED_CONCEPT_ID = "NSX-00000";
 
 /** Value used while the entered text does not match a known procedure code */
-export const uncodedProcedure = (text) => ({
-    code: UNCODED_CODE,
-    description: "uncoded",
-    freeText: text,
+const uncodedConcept = () => ({
+    conceptId: UNCODED_CONCEPT_ID,
+    fsn: "Procedure not represented in the catalogue (procedure)",
+    preferredTerm: "Uncoded procedure",
+    subspecialty: "uncoded",
+    facets: {
+        method: null,
+        procedureSite: null,
+        surgicalApproach: null,
+        device: null,
+        morphology: null,
+        intent: null,
+    },
+    lateralityApplicable: false,
+    revisionApplicable: false,
+    levelApplicable: false,
+    levelKind: null,
+    levelRegions: [],
+    active: true,
+    inactivationReason: null,
+    replacedBy: null,
+    effectiveFrom: "2026-08-07",
+    catalogueRelease: "v2026.1",
+    synonyms: [],
 });
+
+/** Whether a value carries a real catalogue concept rather than free text */
+const isCodedValue = (value) =>
+    !!value?.concept && value.concept.conceptId !== UNCODED_CONCEPT_ID;
 
 /** Text shown in the search box for a given value */
 const textOf = (value) => {
-    if (!value?.code) {
+    if (!value) {
         return "";
     }
-    return value.code === UNCODED_CODE
-        ? (value.freeText ?? "")
-        : (value.description ?? "");
+    return isCodedValue(value)
+        ? (value.concept.preferredTerm ?? "")
+        : (value.freeText ?? "");
 };
 
 /**
  * ProcedureCodeSelector - Searchable procedure code picker
  *
  * Behaves like FormField: `onChange` is called with a change event carrying
- * `name` and a code object as `value`. Picking a result emits that code, e.g.
- * `{ code: "0CTP0ZZ", description: "Tonsillectomy" }`. Text that matches no
- * code is kept as `{ code: "0000", description: "uncoded", freeText: "..." }`,
- * and an empty box emits null. The box shows the description, with the code
- * shown as subtext beneath it.
+ * `name` and a value object as `value`. Picking a result emits the catalogue
+ * concept, e.g. `{ concept: { conceptId: "NSX-00001", ... }, freeText: "" }`.
+ * Text that matches no code is kept against the uncoded sentinel concept as
+ * `{ concept: { conceptId: "NSX-00000", ... }, freeText: "..." }`, and an
+ * empty box emits null. The box shows the preferred term for a coded value,
+ * with the concept id shown as subtext beneath it.
  *
  * @param {string} label - Label text for the field
  * @param {string} name - Name attribute reported back through onChange
- * @param {Object} value - Currently selected code object, or null
+ * @param {Object} value - Currently selected value object, or null
  * @param {function} onChange - Change handler function, receives a change event
  * @param {boolean} error - Whether the field has an error
  * @param {string} errorMessage - Error message to display
@@ -82,7 +90,7 @@ export default function ProcedureCodeSelector({
     const [highlight, setHighlight] = useState(-1);
 
     const query = textOf(value);
-    const isCoded = !!value?.code && value.code !== UNCODED_CODE;
+    const isCoded = isCodedValue(value);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -97,19 +105,19 @@ export default function ProcedureCodeSelector({
     }, []);
 
     const results = useMemo(() => {
-        const searchQuery = query.trim().toLowerCase();
+        const searchQuery = query.trim();
 
         // Nothing to search yet, the hint is shown instead
         if (!searchQuery) {
             return [];
         }
 
-        return search(searchQuery);
-    }, [query, isCoded]);
-
-    useEffect(() => {
-        setHighlight(-1);
-    }, [query]);
+        // The uncoded sentinel is a real catalogue entry, but it is what we
+        // fall back to on our own - it must never be offered as a match.
+        return search(searchQuery).filter(
+            (concept) => concept.conceptId !== UNCODED_CONCEPT_ID,
+        );
+    }, [query, search]);
 
     useEffect(() => {
         if (highlight < 0) {
@@ -121,24 +129,36 @@ export default function ProcedureCodeSelector({
         });
     }, [highlight]);
 
+    const buildValue = (concept, freeText) => {
+        return {
+            concept: concept,
+            freeText: freeText,
+        };
+    };
+
     const emitChange = (newValue) => {
         onChange?.({ target: { name, value: newValue } });
     };
 
     const handleQueryChange = (newQuery) => {
         setOpen(true);
-        emitChange(!newQuery ? null : uncodedProcedure(newQuery));
+        // Results are about to change, so the old index no longer points at
+        // the row the user was on.
+        setHighlight(-1);
+        emitChange(!newQuery ? null : buildValue(uncodedConcept(), newQuery));
     };
 
+    // SearchBox already reports the emptied box through onChange, so this only
+    // has to put the dropdown back to its initial state.
     const handleClear = () => {
         setOpen(true);
-        emitChange(null);
+        setHighlight(-1);
     };
 
-    const handleSelect = (item) => {
+    const handleSelect = (selectedConcept) => {
         setOpen(false);
         setHighlight(-1);
-        emitChange(item);
+        emitChange(buildValue(selectedConcept, ""));
     };
 
     const handleKeyDown = (e) => {
@@ -171,21 +191,32 @@ export default function ProcedureCodeSelector({
             return;
         }
 
-        if (e.key === "Enter" && open && highlight >= 0) {
+        // The field lives inside a form, so Enter has to be swallowed while the
+        // dropdown is open - it either picks the highlighted result or accepts
+        // the typed text, but it never submits.
+        if (e.key === "Enter" && open) {
             e.preventDefault();
-            handleSelect(results[highlight]);
+
+            if (highlight >= 0 && results[highlight]) {
+                handleSelect(results[highlight]);
+            } else {
+                setOpen(false);
+            }
         }
     };
 
     return (
-        <div className={twMerge("flex flex-col", className)} ref={containerRef}>
+        <div
+            className={twMerge("flex flex-col borde", className)}
+            ref={containerRef}
+        >
             <SearchBox
                 label={label}
                 name={name}
                 value={query}
                 onChange={handleQueryChange}
                 onClear={handleClear}
-                placeholder={!!placeholder ? placeholder : label}
+                placeholder={placeholder || label}
                 inputClassName={inputClassName}
                 error={error}
                 errorMessage={errorMessage}
@@ -207,30 +238,30 @@ export default function ProcedureCodeSelector({
                             </div>
                         ) : results.length === 0 ? (
                             <div className="px-2 py-3 text-xs text-gray-500">
-                                No matching catalogue entry - the text you've
-                                typed will be used as-is.
+                                No matching catalogue entry - the text
+                                you&apos;ve typed will be used as-is.
                             </div>
                         ) : (
                             results.map((item, index) => (
                                 <button
                                     type="button"
-                                    key={item.code}
+                                    key={item.conceptId}
                                     role="option"
-                                    aria-selected={value?.code === item.code}
+                                    aria-selected={
+                                        value?.concept?.conceptId ===
+                                        item.conceptId
+                                    }
                                     onClick={() => handleSelect(item)}
                                     onMouseEnter={() => setHighlight(index)}
                                     className={twMerge(
                                         "w-full text-left px-2 py-1",
-                                        value?.code === item.code &&
-                                            "bg-gray-100",
+                                        value?.concept?.conceptId ===
+                                            item.conceptId && "bg-gray-100",
                                         index === highlight && "bg-blue-50",
                                     )}
                                 >
                                     <div className="text-sm">
-                                        {item.description}
-                                    </div>
-                                    <div className="text-xs text-gray-500">
-                                        {item.code}
+                                        {item.preferredTerm}
                                     </div>
                                 </button>
                             ))
@@ -238,15 +269,10 @@ export default function ProcedureCodeSelector({
                     </div>
                 )}
             </SearchBox>
-            {!errorMessage && !!value?.code && (
-                <p
-                    className={twMerge(
-                        "text-xs text-gray-500",
-                        !isCoded && "text-amber-600",
-                    )}
-                >
-                    {isCoded ? value.code : value.description}
-                </p>
+            {isCoded && (
+                <div className="px-2 py-0.5 text-xs font-mono bg-white rounded-b border-gray-200 border-b border-r border-l">
+                    {value.concept.conceptId}
+                </div>
             )}
         </div>
     );

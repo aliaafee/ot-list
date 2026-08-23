@@ -81,7 +81,7 @@ const SearchBox = forwardRef(
                         disabled={disabled}
                         autoComplete="off"
                         className={twMerge(
-                            "w-full rounded p-1 pl-7 bg-white",
+                            "w-full rounded p-1 pl-7 bg-white border border-gray-200",
                             !!value && showClear && "pr-7",
                             !!error && "border-red-500 bg-red-50",
                             inputClassName,

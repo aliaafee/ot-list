@@ -1,35 +1,25 @@
-const SAMPLE_CODES = [
-    { code: "0DTJ4ZZ", description: "Laparoscopic cholecystectomy" },
-    { code: "0DTJ0ZZ", description: "Open cholecystectomy" },
-    { code: "0DBJ4ZZ", description: "Laparoscopic appendectomy" },
-    { code: "0DTU0ZZ", description: "Open appendectomy" },
-    { code: "0YQ50ZZ", description: "Inguinal hernia repair, open" },
-    { code: "0YQ54ZZ", description: "Inguinal hernia repair, laparoscopic" },
-    { code: "0SRC0J9", description: "Total knee replacement, right" },
-    { code: "0SRD0J9", description: "Total knee replacement, left" },
-    { code: "0UT90ZZ", description: "Total abdominal hysterectomy" },
-    { code: "10D00Z1", description: "Lower segment caesarean section" },
-    { code: "08RJ3JZ", description: "Cataract extraction with IOL, right" },
-    { code: "08RK3JZ", description: "Cataract extraction with IOL, left" },
-    { code: "0CTP0ZZ", description: "Tonsillectomy" },
-    { code: "0W9G3ZZ", description: "Drainage of abscess, percutaneous" },
-];
+import bundledCatalogue from "@/data/nspc-catalogue.json";
+import bundledLevels from "@/data/spinal-levels.json";
 
 export async function fetchCatalogue() {
     return {
-        concepts: SAMPLE_CODES,
+        concepts: bundledCatalogue,
+        levels: bundledLevels,
     };
 }
 
 export function buildSearchIndex(concepts) {
-    console.log("Building search index");
-    return concepts.map((concept) => ({
-        concept,
-        preferredTermLower: concept.description.toLowerCase(),
-        fsnLower: "",
-        subspecialtyLower: "",
-        synonymsLower: ["", ""],
-    }));
+    return concepts
+        .filter((concept) => concept.active)
+        .map((concept) => ({
+            concept,
+            preferredTermLower: concept.preferredTerm.toLowerCase(),
+            fsnLower: concept.fsn.toLowerCase(),
+            subspecialtyLower: concept.subspecialty.toLowerCase(),
+            synonymsLower: concept.synonyms
+                .filter((s) => s.active)
+                .map((s) => s.term.toLowerCase()),
+        }));
 }
 
 /** Score one index entry against a query. Lower is better. Null = no match. */

@@ -42,10 +42,10 @@ export default function FormField({
                     value={value}
                     onChange={onChange}
                     className={twMerge(
-                        "w-full rounded p-1 bg-white",
+                        "w-full rounded p-1 bg-white border border-gray-200",
                         inputClassName,
                         !!error && "border-red-500 bg-red-50",
-                        disabled && "appearance-none"
+                        disabled && "appearance-none",
                     )}
                     disabled={disabled}
                 >
@@ -63,7 +63,7 @@ export default function FormField({
             <label
                 className={twMerge(
                     "text-xs opacity-0 text-left text-gray-700",
-                    !!value && "opacity-100"
+                    !!value && "opacity-100",
                 )}
             >
                 {label}
@@ -76,9 +76,9 @@ export default function FormField({
                     placeholder={!!placeholder ? placeholder : label}
                     disabled={disabled}
                     className={twMerge(
-                        "w-full rounded p-1 bg-white",
+                        "w-full rounded p-1 bg-white border border-gray-200",
                         inputClassName,
-                        !!error && "border-red-500 bg-red-50"
+                        !!error && "border-red-500 bg-red-50",
                     )}
                 ></textarea>
             ) : (
@@ -90,9 +90,9 @@ export default function FormField({
                     placeholder={!!placeholder ? placeholder : label}
                     disabled={disabled}
                     className={twMerge(
-                        "w-full rounded p-1 bg-white",
+                        "w-full rounded p-1 bg-white border border-gray-200",
                         inputClassName,
-                        !!error && "border-red-500 bg-red-50"
+                        !!error && "border-red-500 bg-red-50",
                     )}
                 />
             )}

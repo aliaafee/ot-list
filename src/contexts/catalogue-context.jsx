@@ -24,11 +24,13 @@ export function CatalogueProvider({ children }) {
         (async () => {
             try {
                 const fresh = await fetchCatalogue();
+                console.log(fresh);
                 if (!cancelled) {
                     setData(fresh);
                     setError(null);
                 }
             } catch (e) {
+                console.log(e);
                 if (!cancelled) setError(e);
             }
         })();
