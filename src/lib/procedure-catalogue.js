@@ -1,6 +1,15 @@
 import bundledCatalogue from "@/data/nspc-catalogue.json";
 import bundledLevels from "@/data/spinal-levels.json";
 
+export const FACET_LABELS = {
+    method: "Method",
+    procedureSite: "Site",
+    surgicalApproach: "Approach",
+    device: "Device",
+    morphology: "Morphology",
+    intent: "Intent",
+};
+
 export async function fetchCatalogue() {
     return {
         concepts: bundledCatalogue,

@@ -3,6 +3,8 @@ import { twMerge } from "tailwind-merge";
 
 import { useCatalogue } from "@/contexts/catalogue-context";
 import SearchBox from "@/components/search-box";
+import { ChevronRightIcon } from "lucide-react";
+import { FACET_LABELS } from "@/lib/procedure-catalogue";
 
 /** Concept id of the catalogue's "not represented here" sentinel */
 const UNCODED_CONCEPT_ID = "NSX-00000";
@@ -88,6 +90,7 @@ export default function ProcedureCodeSelector({
     const listRef = useRef(null);
     const [open, setOpen] = useState(false);
     const [highlight, setHighlight] = useState(-1);
+    const [codeDetails, setCodeDetails] = useState(false);
 
     const query = textOf(value);
     const isCoded = isCodedValue(value);
@@ -205,9 +208,15 @@ export default function ProcedureCodeSelector({
         }
     };
 
+    const facetChips = isCoded
+        ? Object.entries(value?.concept?.facets ?? {}).filter(
+              ([, term]) => !!term,
+          )
+        : [];
+
     return (
         <div
-            className={twMerge("flex flex-col borde", className)}
+            className={twMerge("flex flex-col ", className)}
             ref={containerRef}
         >
             <SearchBox
@@ -217,7 +226,10 @@ export default function ProcedureCodeSelector({
                 onChange={handleQueryChange}
                 onClear={handleClear}
                 placeholder={placeholder || label}
-                inputClassName={inputClassName}
+                inputClassName={twMerge(
+                    isCoded && "rounded-b-none",
+                    inputClassName,
+                )}
                 error={error}
                 errorMessage={errorMessage}
                 disabled={disabled}
@@ -270,8 +282,45 @@ export default function ProcedureCodeSelector({
                 )}
             </SearchBox>
             {isCoded && (
-                <div className="px-2 py-0.5 text-xs font-mono bg-white rounded-b border-gray-200 border-b border-r border-l">
-                    {value.concept.conceptId}
+                <div className="px-1 py-0.5 text-xs  bg-white rounded-b border-gray-200 border-b border-r border-l flex flex-col">
+                    <button
+                        type="button"
+                        className="flex items-center gap-1 cursor-pointer font-mono"
+                        onClick={() => setCodeDetails((prev) => !prev)}
+                    >
+                        <ChevronRightIcon
+                            className={twMerge(
+                                "h-3 w-3 shrink-0 text-blue-700 transition-transform",
+                                codeDetails && "rotate-90",
+                            )}
+                        />
+                        {value?.concept?.conceptId} -{" "}
+                        {value?.concept?.catalogueRelease}
+                    </button>
+                    {codeDetails && (
+                        <div className="px-1 py-0.5">
+                            <div className="text-xs text-gray-600">
+                                {value?.concept?.fsn}
+                            </div>
+                            {facetChips.length > 0 && (
+                                <div className="mt-2 flex flex-wrap gap-1">
+                                    {facetChips.map(([facetKey, term]) => (
+                                        <span
+                                            key={facetKey}
+                                            className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[11px] text-gray-700 ring-1 ring-inset ring-blue-200"
+                                        >
+                                            <span className="text-blue-500">
+                                                {FACET_LABELS[facetKey] ??
+                                                    facetKey}
+                                                :
+                                            </span>
+                                            {term}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             )}
         </div>
