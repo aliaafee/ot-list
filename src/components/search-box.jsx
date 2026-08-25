@@ -1,4 +1,4 @@
-import { forwardRef, useId } from "react";
+import { forwardRef, useId, useRef } from "react";
 import { SearchIcon, XIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
@@ -47,9 +47,25 @@ const SearchBox = forwardRef(
         const inputId = props.id ?? `${generatedId}-input`;
         const errorId = `${generatedId}-error`;
 
+        // The input is needed here to restore focus, but `ref` belongs to the
+        // caller, so keep our own and feed both from one callback.
+        const inputRef = useRef(null);
+        const attachInput = (node) => {
+            inputRef.current = node;
+            if (typeof ref === "function") {
+                ref(node);
+            } else if (ref) {
+                ref.current = node;
+            }
+        };
+
         const handleClear = () => {
             onChange?.("", null);
             onClear?.();
+            // The clear button unmounts the moment the box empties, so focus
+            // would land on <body> and the field would be lost to the
+            // keyboard. Put the caret back where the user was typing.
+            inputRef.current?.focus();
         };
 
         return (
@@ -73,7 +89,7 @@ const SearchBox = forwardRef(
                         className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
                     />
                     <input
-                        ref={ref}
+                        ref={attachInput}
                         id={inputId}
                         type="text"
                         name={name}

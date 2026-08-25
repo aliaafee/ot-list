@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 
 import { useCatalogue } from "@/contexts/catalogue-context";
 import SearchBox from "@/components/search-box";
-import { ChevronRightIcon } from "lucide-react";
+import { ChevronRightIcon, TriangleAlertIcon } from "lucide-react";
 import { FACET_LABELS, LEVEL_KIND_LABELS } from "@/lib/procedure-catalogue";
 
 /** Concept id of the catalogue's "not represented here" sentinel */
@@ -340,6 +340,14 @@ export default function ProcedureCodeSelector({
     // describe that listbox, so they follow it rather than the popup.
     const hasListbox = showList && results.length > 0;
 
+    // Free text the catalogue did not match. Distinct from an empty box:
+    // there is a value, it just is not a code.
+    const isUncoded = !!value?.concept && !isCoded;
+
+    // The bordered panel below the input only earns its borders when it has
+    // something in it.
+    const hasPanel = !!value?.concept;
+
     const facetChips = isCoded
         ? Object.entries(value?.concept?.facets ?? {}).filter(
               ([, term]) => !!term,
@@ -359,7 +367,7 @@ export default function ProcedureCodeSelector({
                 onClear={handleClear}
                 placeholder={placeholder || label}
                 inputClassName={twMerge(
-                    isCoded && "rounded-b-none",
+                    hasPanel && "rounded-b-none",
                     inputClassName,
                 )}
                 error={error}
@@ -443,60 +451,77 @@ export default function ProcedureCodeSelector({
                     </div>
                 )}
             </SearchBox>
-            <div className="bg-white rounded-b border-gray-200 border-b border-r border-l flex flex-col divide-y divide-gray-200">
-                {isCoded && value?.concept?.levelApplicable && (
-                    <SpinalLevelPicker
-                        value={value}
-                        onChange={(levels) =>
-                            updatePostCoordination({ spinalLevels: levels })
-                        }
-                        disabled={disabled}
-                        className=""
-                    />
-                )}
-                {isCoded && (
-                    <div className="px-1 py-0.5 text-xs   flex flex-col">
-                        <button
-                            type="button"
-                            className="flex items-center gap-1 cursor-pointer font-mono text-gray-500"
-                            onClick={() => setCodeDetails((prev) => !prev)}
+            {hasPanel && (
+                <div className="bg-white rounded-b border-gray-200 border-b border-r border-l flex flex-col divide-y divide-gray-200">
+                    {isUncoded && (
+                        <div
+                            role="status"
+                            className="flex items-center gap-1 px-1 py-0.5 text-xs text-amber-600"
                         >
-                            <ChevronRightIcon
-                                className={twMerge(
-                                    "h-3 w-3 shrink-0  transition-transform",
-                                    codeDetails && "rotate-90",
-                                )}
+                            <TriangleAlertIcon
+                                className="h-3 w-3 shrink-0"
+                                aria-hidden="true"
                             />
-                            {value?.concept?.conceptId} -{" "}
-                            {value?.concept?.catalogueRelease}
-                        </button>
-                        {codeDetails && (
-                            <div className="px-1 py-0.5">
-                                <div className="text-xs text-gray-500">
-                                    {value?.concept?.fsn}
-                                </div>
-                                {facetChips.length > 0 && (
-                                    <div className="mt-2 flex flex-wrap gap-1">
-                                        {facetChips.map(([facetKey, term]) => (
-                                            <span
-                                                key={facetKey}
-                                                className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[11px] text-gray-700 ring-1 ring-inset ring-blue-200"
-                                            >
-                                                <span className="text-blue-500">
-                                                    {FACET_LABELS[facetKey] ??
-                                                        facetKey}
-                                                    :
-                                                </span>
-                                                {term}
-                                            </span>
-                                        ))}
+                            Uncoded procedure - the text will be used as-is.
+                        </div>
+                    )}
+                    {isCoded && value?.concept?.levelApplicable && (
+                        <SpinalLevelPicker
+                            value={value}
+                            onChange={(levels) =>
+                                updatePostCoordination({ spinalLevels: levels })
+                            }
+                            disabled={disabled}
+                            className=""
+                        />
+                    )}
+                    {isCoded && (
+                        <div className="px-1 py-0.5 text-xs   flex flex-col">
+                            <button
+                                type="button"
+                                className="flex items-center gap-1 cursor-pointer font-mono text-gray-500"
+                                onClick={() => setCodeDetails((prev) => !prev)}
+                            >
+                                <ChevronRightIcon
+                                    className={twMerge(
+                                        "h-3 w-3 shrink-0  transition-transform",
+                                        codeDetails && "rotate-90",
+                                    )}
+                                />
+                                {value?.concept?.conceptId} -{" "}
+                                {value?.concept?.catalogueRelease}
+                            </button>
+                            {codeDetails && (
+                                <div className="px-1 py-0.5">
+                                    <div className="text-xs text-gray-500">
+                                        {value?.concept?.fsn}
                                     </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                )}
-            </div>
+                                    {facetChips.length > 0 && (
+                                        <div className="mt-2 flex flex-wrap gap-1">
+                                            {facetChips.map(
+                                                ([facetKey, term]) => (
+                                                    <span
+                                                        key={facetKey}
+                                                        className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[11px] text-gray-700 ring-1 ring-inset ring-blue-200"
+                                                    >
+                                                        <span className="text-blue-500">
+                                                            {FACET_LABELS[
+                                                                facetKey
+                                                            ] ?? facetKey}
+                                                            :
+                                                        </span>
+                                                        {term}
+                                                    </span>
+                                                ),
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
