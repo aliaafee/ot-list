@@ -19,7 +19,13 @@ export const initialProcedureValue = {
 
 export const validateProcedure = (procedure) => {
     const errorFields = {};
-    const requiredFields = ["diagnosis", "procedure", "addedDate", "addedBy"];
+    const requiredFields = [
+        "diagnosis",
+        "procedure",
+        "procedureCode",
+        "addedDate",
+        "addedBy",
+    ];
     requiredFields.forEach((field) => {
         if (!procedure[field] || procedure[field].toString().trim() === "") {
             errorFields[field] = {
@@ -44,8 +50,6 @@ export function ProcedureForm({
             ...value,
             [name]: newValue,
         };
-
-        console.log(newProcedureValue);
 
         onChange({
             ...value,

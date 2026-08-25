@@ -292,6 +292,7 @@ export default function ProcedureCodeSelector({
 
     const baseId = useId();
     const listboxId = `${baseId}-listbox`;
+    const errorId = `${baseId}-error`;
     const optionId = (conceptId) => `${baseId}-option-${conceptId}`;
 
     const query = textOf(value);
@@ -463,11 +464,13 @@ export default function ProcedureCodeSelector({
                     inputClassName,
                 )}
                 error={error}
-                errorMessage={errorMessage}
                 disabled={disabled}
                 onFocus={() => setOpen(true)}
                 onKeyDown={handleKeyDown}
                 role="combobox"
+                // The message is rendered in the panel below, not by SearchBox,
+                // so the input has to be pointed at where it actually ended up.
+                aria-describedby={errorMessage ? errorId : undefined}
                 aria-expanded={hasListbox}
                 aria-controls={hasListbox ? listboxId : undefined}
                 aria-activedescendant={
@@ -695,6 +698,13 @@ export default function ProcedureCodeSelector({
                         </div>
                     )}
                 </div>
+            )}
+            {/* Outside the panel and after it, where FormField puts its own -
+                a message about the field, not another row of its contents. */}
+            {!!errorMessage && (
+                <p id={errorId} className="text-xs text-red-500">
+                    {errorMessage}
+                </p>
             )}
         </div>
     );

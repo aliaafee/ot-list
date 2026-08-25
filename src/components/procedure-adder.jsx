@@ -192,6 +192,7 @@ function ProcedureAdder({
             duration: newProcedure.duration,
             operatingRoom: operatingRoom.id,
             procedure: newProcedure.procedure,
+            procedureCode: newProcedure.procedureCode,
             procedureDay: otDay.id,
             remarks: newProcedure.remarks,
             removed: newProcedure.removed,
@@ -271,6 +272,8 @@ function ProcedureAdder({
             // Create procedure with calculated order
             const nextOrder = calculateNextOrder();
             const procedure = buildProcedure(nextOrder);
+
+            console.log(procedure);
 
             setAdding(true);
             // Add procedure
