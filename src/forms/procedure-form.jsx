@@ -78,7 +78,7 @@ export function ProcedureForm({
                 name="procedureCode"
                 value={value.procedureCode}
                 onChange={handleChange}
-                className="md:col-span-2"
+                className="md:col-span-4"
                 error={"procedureCode" in errorFields}
                 errorMessage={errorFields["procedureCode"]?.message}
             />

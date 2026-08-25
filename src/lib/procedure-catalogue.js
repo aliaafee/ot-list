@@ -10,6 +10,20 @@ export const FACET_LABELS = {
     intent: "Intent",
 };
 
+export const ALL_POST_COORDINATION_FIELDS = [
+    "priority",
+    "laterality",
+    "revisionStatus",
+    "stagedSequence",
+    "intentOverride",
+    "spinalLevels",
+];
+
+export const LEVEL_KIND_LABELS = {
+    interspace: "interspace",
+    vertebra: "vertebral level",
+};
+
 export async function fetchCatalogue() {
     return {
         concepts: bundledCatalogue,
@@ -83,4 +97,58 @@ export function searchCatalogue(index, query) {
     const results = searchConcepts(index, query);
 
     return results;
+}
+
+// ---------------------------------------------------------------------
+// Spinal levels (NSPC spec section 5.1)
+//
+// Level is an encounter qualifier, exactly like laterality - it is never
+// part of the concept. A concept declares which vocabulary it draws from
+// (`levelKind`: an interspace for disc/foramen work, a vertebra for bone
+// work) and which regions are plausible (`levelRegions`, a picker hint,
+// not a hard constraint).
+//
+// Everything here orders by `ordinal`, never by code: T2 precedes T10
+// anatomically and follows it lexically.
+// ---------------------------------------------------------------------
+
+export function buildLevelLookup(levels) {
+    const byKind = {
+        interspace: levels
+            .filter((l) => l.kind === "interspace" && l.active)
+            .sort((a, b) => a.ordinal - b.ordinal),
+        vertebra: levels
+            .filter((l) => l.kind === "vertebra" && l.active)
+            .sort((a, b) => a.ordinal - b.ordinal),
+    };
+
+    const ordinals = Object.fromEntries(
+        levels.map((l) => [`${l.kind}:${l.code}`, l.ordinal]),
+    );
+
+    // Which region a level belongs to, so a level typed into a search
+    // query can be checked against the regions a concept plausibly
+    // covers - see searchWithQualifiers.
+    const regions = Object.fromEntries(
+        levels.map((l) => [`${l.kind}:${l.code}`, l.region]),
+    );
+
+    return { byKind, ordinals, regions, all: levels };
+}
+
+/** Levels a concept can take, narrowed to its regions unless `all`. */
+export function levelOptions(lookup, concept, all) {
+    const options = lookup.byKind[concept?.levelKind] ?? [];
+    const regions = concept?.levelRegions ?? [];
+    if (all || regions.length === 0) return options;
+    return options.filter((l) => regions.includes(l.region));
+}
+
+/** Sort selected level codes cranio-caudally. */
+export function sortLevelCodes(lookup, codes, kind) {
+    return [...codes].sort(
+        (a, b) =>
+            (lookup.ordinals[`${kind}:${a}`] ?? 0) -
+            (lookup.ordinals[`${kind}:${b}`] ?? 0),
+    );
 }

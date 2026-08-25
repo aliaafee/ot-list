@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, useId } from "react";
 import { SearchIcon, XIcon } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
@@ -41,6 +41,12 @@ const SearchBox = forwardRef(
         },
         ref,
     ) => {
+        const generatedId = useId();
+        // Callers may supply their own id through props; theirs wins, because
+        // the spread below would override ours anyway.
+        const inputId = props.id ?? `${generatedId}-input`;
+        const errorId = `${generatedId}-error`;
+
         const handleClear = () => {
             onChange?.("", null);
             onClear?.();
@@ -50,6 +56,7 @@ const SearchBox = forwardRef(
             <div className={twMerge("flex flex-col gap-1", className)}>
                 {!!label && (
                     <label
+                        htmlFor={inputId}
                         className={twMerge(
                             "text-xs opacity-0 text-left text-gray-700",
                             !!value && "opacity-100",
@@ -62,22 +69,24 @@ const SearchBox = forwardRef(
                     <SearchIcon
                         width={16}
                         height={16}
+                        aria-hidden="true"
                         className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
                     />
                     <input
                         ref={ref}
+                        id={inputId}
                         type="text"
                         name={name}
                         value={value}
+                        aria-invalid={!!error || undefined}
+                        aria-describedby={errorMessage ? errorId : undefined}
                         onChange={(e) => onChange?.(e.target.value, e)}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
                                 onSearch?.(value);
                             }
                         }}
-                        placeholder={
-                            !!placeholder ? placeholder : label || "Search"
-                        }
+                        placeholder={placeholder || label || "Search"}
                         disabled={disabled}
                         autoComplete="off"
                         className={twMerge(
@@ -92,16 +101,19 @@ const SearchBox = forwardRef(
                         <button
                             type="button"
                             title="Clear"
+                            aria-label={label ? `Clear ${label}` : "Clear"}
                             onClick={handleClear}
                             className="absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded text-gray-400 hover:text-gray-700 hover:bg-gray-100"
                         >
-                            <XIcon width={14} height={14} />
+                            <XIcon width={14} height={14} aria-hidden="true" />
                         </button>
                     )}
                     {children}
                 </div>
                 {!!errorMessage && (
-                    <p className="text-xs text-red-500">{errorMessage}</p>
+                    <p id={errorId} className="text-xs text-red-500">
+                        {errorMessage}
+                    </p>
                 )}
             </div>
         );
