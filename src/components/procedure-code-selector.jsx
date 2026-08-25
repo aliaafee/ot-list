@@ -4,7 +4,15 @@ import { twMerge } from "tailwind-merge";
 import { useCatalogue } from "@/contexts/catalogue-context";
 import SearchBox from "@/components/search-box";
 import { ChevronRightIcon, TriangleAlertIcon } from "lucide-react";
-import { FACET_LABELS, LEVEL_KIND_LABELS } from "@/lib/procedure-catalogue";
+import {
+    FACET_LABELS,
+    LATERALITY_OPTIONS,
+    LEVEL_KIND_LABELS,
+    PRIORITY_OPTIONS,
+    REVISION_OPTIONS,
+    interspaceVertebrae,
+} from "@/lib/procedure-catalogue";
+import FormField from "./form-field";
 
 /** Concept id of the catalogue's "not represented here" sentinel */
 const UNCODED_CONCEPT_ID = "NSX-00000";
@@ -50,6 +58,77 @@ const textOf = (value) => {
         : (value.freeText ?? "");
 };
 
+/** The level code a query qualifier names, if this concept can take it. */
+const levelCodesFor = (concept, queryLevel, levels) => {
+    if (!queryLevel || !concept.levelApplicable) {
+        return [];
+    }
+
+    // The vocabulary is the authority - a level can parse cleanly and still
+    // name nothing this catalogue release knows.
+    const known = (code, kind) =>
+        levels.some((l) => l.kind === kind && l.code === code && l.active);
+
+    if (concept.levelKind === "interspace") {
+        // The reverse of the expansion below has no answer: a vertebra names
+        // no single interspace, since L4 lies between two of them. Better an
+        // empty slot than a guess at which one was meant.
+        const code = queryLevel.interspace;
+        return code && known(code, "interspace") ? [code] : [];
+    }
+
+    if (concept.levelKind === "vertebra") {
+        const code = queryLevel.vertebra;
+        if (code) {
+            return known(code, "vertebra") ? [code] : [];
+        }
+
+        // An interspace typed at a concept that records vertebrae is not a
+        // mismatch to discard - "L4-L5 laminectomy" means the laminae of L4
+        // and L5 - so it expands to the bodies it lies between.
+        return interspaceVertebrae(levels, queryLevel.interspace);
+    }
+
+    return [];
+};
+
+/**
+ * The value a picked concept becomes.
+ *
+ * Qualifiers the surgeon already typed - the "Right" and "L4-L5" of
+ * "Right L4-L5 TFESI" - pre-fill the slots they belong in instead of being
+ * dropped on selection. Only slots the concept actually declares are filled:
+ * a side on a concept that is not sided is not a default, it is a wrong
+ * answer the user would have to notice to correct.
+ */
+const buildValueFromConcept = (
+    concept,
+    queryLevel,
+    queryLaterality,
+    levels,
+) => {
+    const postCoordination = {};
+
+    if (queryLaterality && concept.lateralityApplicable) {
+        postCoordination.laterality = queryLaterality;
+    }
+
+    const levelCodes = levelCodesFor(concept, queryLevel, levels);
+    if (levelCodes.length) {
+        postCoordination.spinalLevels = levelCodes;
+    }
+
+    return {
+        concept,
+        freeText: "",
+        // Undefined rather than an empty object, so a selection carrying no
+        // qualifiers stays exactly what it was before any of this existed.
+        postCoordination: Object.keys(postCoordination).length
+            ? postCoordination
+            : undefined,
+    };
+};
+
 /**
  * SpinalLevelPicker - the `spinal_levels` post-coordination slot.
  *
@@ -88,7 +167,11 @@ function SpinalLevelPicker({ value, onChange, disabled, className }) {
         (a, b) => a.ordinal - b.ordinal,
     );
 
-    const hasHiddenLevels = options.length < catalogue.levelCount(kind);
+    // `showAll` has to keep the toggle rendered on its own account: once every
+    // level is on screen there is nothing hidden left to count, and testing
+    // the count alone would unmount the only way back to the narrowed list.
+    const hasHiddenLevels =
+        showAll || options.length < catalogue.levelCount(kind);
 
     const toggle = (code) => {
         const next = selected.includes(code)
@@ -193,7 +276,7 @@ export default function ProcedureCodeSelector({
     disabled = false,
     placeholder = "",
 }) {
-    const { search } = useCatalogue();
+    const { search, levels } = useCatalogue();
 
     const containerRef = useRef(null);
     const listRef = useRef(null);
@@ -220,19 +303,15 @@ export default function ProcedureCodeSelector({
             document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const results = useMemo(() => {
+    const { results, queryLevel, queryLaterality } = useMemo(() => {
         const searchQuery = query.trim();
 
         // Nothing to search yet, the hint is shown instead
         if (!searchQuery) {
-            return [];
+            return { results: [], queryLevel: null, queryLaterality: null };
         }
 
-        // The uncoded sentinel is a real catalogue entry, but it is what we
-        // fall back to on our own - it must never be offered as a match.
-        return search(searchQuery).filter(
-            (concept) => concept.conceptId !== UNCODED_CONCEPT_ID,
-        );
+        return search(searchQuery);
     }, [query, search]);
 
     useEffect(() => {
@@ -284,7 +363,17 @@ export default function ProcedureCodeSelector({
     const handleSelect = (selectedConcept) => {
         setOpen(false);
         setHighlight(-1);
-        emitChange(buildValue(selectedConcept, ""));
+        // The qualifiers belong to the query that produced this result, so
+        // they have to be read here - selecting replaces the query with the
+        // concept's own term and they are gone on the next render.
+        emitChange(
+            buildValueFromConcept(
+                selectedConcept,
+                queryLevel,
+                queryLaterality,
+                levels,
+            ),
+        );
     };
 
     const handleKeyDown = (e) => {
@@ -355,10 +444,7 @@ export default function ProcedureCodeSelector({
         : [];
 
     return (
-        <div
-            className={twMerge("flex flex-col ", className)}
-            ref={containerRef}
-        >
+        <div className={twMerge("flex flex-col", className)} ref={containerRef}>
             <SearchBox
                 label={label}
                 name={name}
@@ -472,11 +558,93 @@ export default function ProcedureCodeSelector({
                                 updatePostCoordination({ spinalLevels: levels })
                             }
                             disabled={disabled}
-                            className=""
                         />
                     )}
                     {isCoded && (
-                        <div className="px-1 py-0.5 text-xs   flex flex-col">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-1">
+                            {value?.concept?.lateralityApplicable && (
+                                <FormField
+                                    label="Laterality (side)"
+                                    name="laterality"
+                                    type="select"
+                                    value={
+                                        value?.postCoordination?.laterality ??
+                                        ""
+                                    }
+                                    onChange={(e) =>
+                                        updatePostCoordination({
+                                            laterality: e.target.value,
+                                        })
+                                    }
+                                    disabled={disabled}
+                                >
+                                    <option value="">Select</option>
+                                    {LATERALITY_OPTIONS.map((opt) => (
+                                        <option
+                                            key={opt.value}
+                                            value={opt.value}
+                                        >
+                                            {opt.label}
+                                        </option>
+                                    ))}
+                                </FormField>
+                            )}
+
+                            {value?.concept?.revisionApplicable && (
+                                <FormField
+                                    label="Revision status"
+                                    name="revisionStatus"
+                                    type="select"
+                                    value={
+                                        value?.postCoordination
+                                            ?.revisionStatus ?? ""
+                                    }
+                                    onChange={(e) =>
+                                        updatePostCoordination({
+                                            revisionStatus: e.target.value,
+                                        })
+                                    }
+                                    disabled={disabled}
+                                >
+                                    {/* Without this the browser would show
+                                        "Primary" while nothing was recorded -
+                                        the one default a surgical record must
+                                        not invent on the user's behalf. */}
+                                    <option value="">Select</option>
+                                    {REVISION_OPTIONS.map((opt) => (
+                                        <option
+                                            key={opt.value}
+                                            value={opt.value}
+                                        >
+                                            {opt.label}
+                                        </option>
+                                    ))}
+                                </FormField>
+                            )}
+
+                            <FormField
+                                label="Priority (urgency)"
+                                name="priority"
+                                type="select"
+                                value={value?.postCoordination?.priority ?? ""}
+                                onChange={(e) =>
+                                    updatePostCoordination({
+                                        priority: e.target.value,
+                                    })
+                                }
+                                disabled={disabled}
+                            >
+                                <option value="">Select</option>
+                                {PRIORITY_OPTIONS.map((opt) => (
+                                    <option key={opt.value} value={opt.value}>
+                                        {opt.label}
+                                    </option>
+                                ))}
+                            </FormField>
+                        </div>
+                    )}
+                    {isCoded && (
+                        <div className="px-1 py-0.5 text-xs flex flex-col">
                             <button
                                 type="button"
                                 className="flex items-center gap-1 cursor-pointer font-mono text-gray-500"
@@ -484,7 +652,7 @@ export default function ProcedureCodeSelector({
                             >
                                 <ChevronRightIcon
                                     className={twMerge(
-                                        "h-3 w-3 shrink-0  transition-transform",
+                                        "h-3 w-3 shrink-0 transition-transform",
                                         codeDetails && "rotate-90",
                                     )}
                                 />

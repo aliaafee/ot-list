@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useId } from "react";
 import { twMerge } from "tailwind-merge";
 
 /**
@@ -16,6 +16,7 @@ import { twMerge } from "tailwind-merge";
  * @param {string} inputClassName - Additional CSS classes for the input element
  * @param {boolean} disabled - Whether the input is disabled
  * @param {string} placeholder - Placeholder text for the input
+ * @param {string} id - Optional id for the control; generated when omitted
  */
 export default function FormField({
     label,
@@ -30,17 +31,32 @@ export default function FormField({
     inputClassName = "",
     disabled = false,
     placeholder = "",
+    id = "",
 }) {
+    // The label has to point at the control by id, so one is generated when
+    // the caller does not supply it - without it the field is unlabelled to
+    // assistive tech no matter how obvious the text above it looks.
+    const generatedId = useId();
+    const fieldId = id || `${generatedId}-field`;
+    const errorId = `${generatedId}-error`;
+    const describedBy = errorMessage ? errorId : undefined;
+
     if (type === "select") {
         return (
             <div className={twMerge("flex flex-col", className)}>
-                <label className="text-xs text-left text-gray-700">
+                <label
+                    htmlFor={fieldId}
+                    className="text-xs text-left text-gray-700"
+                >
                     {label}
                 </label>
                 <select
+                    id={fieldId}
                     name={name}
                     value={value}
                     onChange={onChange}
+                    aria-invalid={!!error || undefined}
+                    aria-describedby={describedBy}
                     className={twMerge(
                         "w-full rounded p-1 bg-white border border-gray-200",
                         inputClassName,
@@ -52,7 +68,9 @@ export default function FormField({
                     {children}
                 </select>
                 {!!errorMessage && (
-                    <p className="text-xs text-red-500">{errorMessage}</p>
+                    <p id={errorId} className="text-xs text-red-500">
+                        {errorMessage}
+                    </p>
                 )}
             </div>
         );
@@ -60,7 +78,11 @@ export default function FormField({
 
     return (
         <div className={twMerge("flex flex-col", className)}>
+            {/* The label fades out when the box is empty, but it stays in the
+                accessibility tree - opacity is not a way to hide it from a
+                screen reader, and the field still needs a name. */}
             <label
+                htmlFor={fieldId}
                 className={twMerge(
                     "text-xs opacity-0 text-left text-gray-700",
                     !!value && "opacity-100",
@@ -70,11 +92,14 @@ export default function FormField({
             </label>
             {type === "textarea" ? (
                 <textarea
+                    id={fieldId}
                     name={name}
                     value={value}
                     onChange={onChange}
-                    placeholder={!!placeholder ? placeholder : label}
+                    placeholder={placeholder || label}
                     disabled={disabled}
+                    aria-invalid={!!error || undefined}
+                    aria-describedby={describedBy}
                     className={twMerge(
                         "w-full rounded p-1 bg-white border border-gray-200",
                         inputClassName,
@@ -83,12 +108,15 @@ export default function FormField({
                 ></textarea>
             ) : (
                 <input
+                    id={fieldId}
                     type={type}
                     name={name}
                     value={value}
                     onChange={onChange}
-                    placeholder={!!placeholder ? placeholder : label}
+                    placeholder={placeholder || label}
                     disabled={disabled}
+                    aria-invalid={!!error || undefined}
+                    aria-describedby={describedBy}
                     className={twMerge(
                         "w-full rounded p-1 bg-white border border-gray-200",
                         inputClassName,
@@ -97,7 +125,9 @@ export default function FormField({
                 />
             )}
             {!!errorMessage && (
-                <p className="text-xs text-red-500">{errorMessage}</p>
+                <p id={errorId} className="text-xs text-red-500">
+                    {errorMessage}
+                </p>
             )}
         </div>
     );

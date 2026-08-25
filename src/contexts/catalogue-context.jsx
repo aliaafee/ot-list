@@ -7,6 +7,7 @@ import {
     fetchCatalogue,
     levelOptions,
     searchCatalogue,
+    searchWithQualifiers,
     sortLevelCodes,
 } from "@/lib/procedure-catalogue";
 
@@ -53,7 +54,7 @@ export function CatalogueProvider({ children }) {
             levels: data.levels,
             release: "v2026.1",
             error,
-            search: (query) => searchCatalogue(index, query),
+            search: (query) => searchWithQualifiers(index, levelLookup, query),
             levelsFor: (concept, all) =>
                 levelOptions(levelLookup, concept, all),
             levelCount: (kind) => levelLookup.byKind[kind]?.length ?? 0,
