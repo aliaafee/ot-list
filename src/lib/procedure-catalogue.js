@@ -173,6 +173,34 @@ export function extractLateralityFromQuery(query) {
 }
 
 /**
+ * The regions a typed level covers.
+ *
+ * A level the vocabulary lists answers for itself. A multi-level span like
+ * "L2-L5" has no entry of its own, so it answers with every region the
+ * levels it covers belong to - both kinds, because the junction regions
+ * (`lumbosacral`, `thoracolumbar`, `cervicothoracic`) exist only on
+ * interspaces, and a span judged on its vertebrae alone would call a
+ * lumbosacral concept implausible for "L4-S1".
+ */
+function regionsSpannedBy(lookup, extracted) {
+    const kind = extracted.interspace ? "interspace" : "vertebra";
+    const code = extracted.interspace ?? extracted.vertebra;
+
+    const exact = lookup?.regions?.[`${kind}:${code}`];
+    if (exact) return [exact];
+
+    const levels = lookup?.all ?? [];
+    const covered = [
+        ...spannedVertebrae(levels, code).map((c) => `vertebra:${c}`),
+        ...spannedInterspaces(levels, code).map((c) => `interspace:${c}`),
+    ];
+
+    return [
+        ...new Set(covered.map((k) => lookup?.regions?.[k]).filter(Boolean)),
+    ];
+}
+
+/**
  * Pushes concepts the typed level contradicts to the end of the results.
  *
  * `L4-L5 fusion` finding *Anterior cervical corpectomy and fusion* is
@@ -193,18 +221,18 @@ export function extractLateralityFromQuery(query) {
  * that a kind check would wrongly reject.
  */
 function demoteImplausibleRegions(results, extracted, lookup) {
-    const kind = extracted.interspace ? "interspace" : "vertebra";
-    const code = extracted.interspace ?? extracted.vertebra;
-    const region = lookup?.regions?.[`${kind}:${code}`];
+    const regions = regionsSpannedBy(lookup, extracted);
 
     // "C8-T1" parses but is not a level anyone can record, and carries
     // no region to judge anything against.
-    if (!region) return results;
+    if (regions.length === 0) return results;
 
+    // Overlap, not equality: a span can cover several regions, and a concept
+    // need only reach one of them to be plausible.
     const contradicts = (concept) =>
         concept.levelApplicable &&
         concept.levelRegions?.length > 0 &&
-        !concept.levelRegions.includes(region);
+        !concept.levelRegions.some((r) => regions.includes(r));
 
     const plausible = results.filter((c) => !contradicts(c));
     if (plausible.length === results.length) return results;
@@ -304,27 +332,83 @@ export function levelOptions(lookup, concept, all) {
 const VERTEBRA_ALIASES = { C0: "Occiput" };
 
 /**
- * The two vertebrae an interspace lies between.
+ * Every vertebra a typed level span covers, end to end.
  *
  * "L4-L5 laminectomy" names the laminae of L4 and L5 (spec section 5.1), so
- * an interspace typed at a concept that records vertebrae has to expand into
- * the bodies it sits between rather than be thrown away. The halves of the
- * code are those bodies, bar the one the catalogue spells differently: the
- * C0 of "C0-C1" is the occiput.
+ * a span typed at a concept that records vertebrae expands into the bodies
+ * it covers rather than being thrown away. The span is not always adjacent:
+ * "L2-L5 fusion" is four bodies, not the two that were typed, and recording
+ * only the ends would understate the construct.
  *
- * Both halves or neither. Half an interspace records less than was typed,
- * and a level naming one body when the surgeon meant two is worse than an
- * empty slot they can still fill themselves.
+ * Walks by `ordinal`, never by code - the endpoints may be typed in either
+ * order, and only ordinals know that T2 precedes T10. One code the catalogue
+ * spells differently: the C0 of "C0-C1" is the occiput.
+ *
+ * Both ends or neither. An end that names nothing leaves no span to walk,
+ * and half a construct is worse than an empty slot the surgeon still fills.
  */
-export function interspaceVertebrae(levels, code) {
-    const isVertebra = (c) =>
-        levels.some((l) => l.kind === "vertebra" && l.code === c && l.active);
-
-    const bounds = String(code ?? "")
+/**
+ * The vertebra ordinals a "X-Y" code runs between, or null if either end
+ * names nothing. Endpoints may be typed in either order.
+ */
+function spanBounds(levels, code) {
+    const ends = String(code ?? "")
         .split("-")
-        .map((half) => VERTEBRA_ALIASES[half] ?? half);
+        .map((half) => VERTEBRA_ALIASES[half] ?? half)
+        .map((c) =>
+            levels.find(
+                (l) => l.kind === "vertebra" && l.active && l.code === c,
+            ),
+        );
 
-    return bounds.length === 2 && bounds.every(isVertebra) ? bounds : [];
+    if (ends.length !== 2 || ends.some((l) => !l)) {
+        return null;
+    }
+
+    const [from, to] = ends.map((l) => l.ordinal).sort((a, b) => a - b);
+    return { from, to };
+}
+
+export function spannedVertebrae(levels, code) {
+    const span = spanBounds(levels, code);
+    if (!span) return [];
+
+    return levels
+        .filter(
+            (l) =>
+                l.kind === "vertebra" &&
+                l.active &&
+                l.ordinal >= span.from &&
+                l.ordinal <= span.to,
+        )
+        .sort((a, b) => a.ordinal - b.ordinal)
+        .map((l) => l.code);
+}
+
+/**
+ * Every interspace a typed level span covers.
+ *
+ * The mirror of spannedVertebrae, for concepts that record interspaces:
+ * "L2-L5 PLIF" is the three interspaces those four bodies enclose, not one
+ * entry the vocabulary has never heard of. An interspace counts as covered
+ * only when both the vertebrae it lies between fall inside the span, so
+ * "L2-L5" does not reach out to L1-L2 or L5-S1.
+ *
+ * An exact interspace resolves to itself - "C5-C6" encloses only C5-C6 -
+ * so this is the single answer for both adjacent and multi-level queries.
+ */
+export function spannedInterspaces(levels, code) {
+    const span = spanBounds(levels, code);
+    if (!span) return [];
+
+    return levels
+        .filter((l) => l.kind === "interspace" && l.active)
+        .filter((l) => {
+            const bounds = spanBounds(levels, l.code);
+            return bounds && bounds.from >= span.from && bounds.to <= span.to;
+        })
+        .sort((a, b) => a.ordinal - b.ordinal)
+        .map((l) => l.code);
 }
 
 /** Sort selected level codes cranio-caudally. */

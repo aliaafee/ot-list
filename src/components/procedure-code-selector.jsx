@@ -10,7 +10,8 @@ import {
     LEVEL_KIND_LABELS,
     PRIORITY_OPTIONS,
     REVISION_OPTIONS,
-    interspaceVertebrae,
+    spannedInterspaces,
+    spannedVertebrae,
 } from "@/lib/procedure-catalogue";
 import FormField from "./form-field";
 
@@ -70,11 +71,15 @@ const levelCodesFor = (concept, queryLevel, levels) => {
         levels.some((l) => l.kind === kind && l.code === code && l.active);
 
     if (concept.levelKind === "interspace") {
-        // The reverse of the expansion below has no answer: a vertebra names
-        // no single interspace, since L4 lies between two of them. Better an
-        // empty slot than a guess at which one was meant.
-        const code = queryLevel.interspace;
-        return code && known(code, "interspace") ? [code] : [];
+        // A bare vertebra has no answer here: L4 lies between two
+        // interspaces, and neither is the one that was meant.
+        if (!queryLevel.interspace) {
+            return [];
+        }
+
+        // "C5-C6" resolves to itself, "L2-L5" to the three interspaces those
+        // four bodies enclose.
+        return spannedInterspaces(levels, queryLevel.interspace);
     }
 
     if (concept.levelKind === "vertebra") {
@@ -83,10 +88,11 @@ const levelCodesFor = (concept, queryLevel, levels) => {
             return known(code, "vertebra") ? [code] : [];
         }
 
-        // An interspace typed at a concept that records vertebrae is not a
-        // mismatch to discard - "L4-L5 laminectomy" means the laminae of L4
-        // and L5 - so it expands to the bodies it lies between.
-        return interspaceVertebrae(levels, queryLevel.interspace);
+        // A span typed at a concept that records vertebrae is not a mismatch
+        // to discard - "L4-L5 laminectomy" means the laminae of L4 and L5,
+        // and "L2-L5 fusion" every body across those four - so it expands to
+        // everything it covers.
+        return spannedVertebrae(levels, queryLevel.interspace);
     }
 
     return [];
