@@ -1,13 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
-
 import FormField from "@/components/form-field";
-import ProcedureCodeSelector from "@/components/procedure-code-selector";
+import FormListField from "@/components/form-list-field";
 
 export const initialProcedureValue = {
     diagnosis: "",
     comorbids: "",
     procedure: "",
-    procedureCode: null,
+    procedureCodes: [],
     addedDate: "",
     addedBy: "",
     remarks: "",
@@ -77,14 +75,15 @@ export function ProcedureForm({
                 error={"procedure" in errorFields}
                 errorMessage={errorFields["procedure"]?.message}
             />
-            <ProcedureCodeSelector
-                label="Procedure Code"
-                name="procedureCode"
-                value={value.procedureCode}
+            <FormListField
+                type="procedure-code"
+                label="Proceduer Code"
+                name="procedureCodes"
+                value={value.procedureCodes}
                 onChange={handleChange}
                 className="md:col-span-4"
-                error={"procedureCode" in errorFields}
-                errorMessage={errorFields["procedureCode"]?.message}
+                error={"procedureCodes" in errorFields}
+                errorMessage={errorFields["procedureCodes"]?.message}
             />
             <FormField
                 label="Comorbidities"

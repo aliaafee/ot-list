@@ -150,6 +150,8 @@ function ProcedureAdder({
     };
 
     const handleAddProcedure = async () => {
+        console.log(newProcedure);
+
         // Clear previous errors
         setAddError(null);
         setDuplicatePatients([]);

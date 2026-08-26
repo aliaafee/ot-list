@@ -1,6 +1,11 @@
 import React, { useId } from "react";
 import { twMerge } from "tailwind-merge";
 
+// This is a cycle - ProcedureCodeSelector builds its own sub-fields out of
+// FormField. It resolves because neither module touches the other while its
+// body is evaluating; the reference is only reached once a component renders.
+import ProcedureCodeSelector from "@/components/procedure-code-selector";
+
 /**
  * FormField - Reusable form input field with label and error handling
  *
@@ -9,7 +14,7 @@ import { twMerge } from "tailwind-merge";
  * @param {string} value - Current value of the input
  * @param {function} onChange - Change handler function
  * @param {ReactNode} children - Options for select type (optional)
- * @param {string} type - Input type: 'text', 'email', 'password', 'number', 'date', 'textarea', 'select'
+ * @param {string} type - Input type: 'text', 'email', 'password', 'number', 'date', 'textarea', 'select', 'procedure-code'
  * @param {boolean} error - Whether the field has an error
  * @param {string} errorMessage - Error message to display
  * @param {string} className - Additional CSS classes for the container
@@ -40,6 +45,26 @@ export default function FormField({
     const fieldId = id || `${generatedId}-field`;
     const errorId = `${generatedId}-error`;
     const describedBy = errorMessage ? errorId : undefined;
+
+    // The procedure code picker is a field in its own right - it owns its
+    // label, error line and ids - so it is handed the props and left alone
+    // rather than being wrapped in the markup below.
+    if (type === "procedure-code") {
+        return (
+            <ProcedureCodeSelector
+                label={label}
+                name={name}
+                value={value}
+                onChange={onChange}
+                error={error}
+                errorMessage={errorMessage}
+                className={className}
+                inputClassName={inputClassName}
+                disabled={disabled}
+                placeholder={placeholder}
+            />
+        );
+    }
 
     if (type === "select") {
         return (
