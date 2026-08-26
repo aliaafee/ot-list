@@ -547,7 +547,12 @@ export default function ProcedureCodeSelector({
                 )}
             </SearchBox>
             {hasPanel && (
-                <div className="bg-white rounded-b border-gray-200 border-b border-r border-l flex flex-col divide-y divide-gray-200">
+                <div
+                    className={twMerge(
+                        "bg-white rounded-b border-gray-200 border-b border-r border-l flex flex-col divide-y divide-gray-200",
+                        !!errorMessage && "border-red-500",
+                    )}
+                >
                     {isUncoded && (
                         <div
                             role="status"
