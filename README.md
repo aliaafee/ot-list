@@ -8,6 +8,87 @@
 -   npm run dev
 -   npm run pb:serve
 
+## Procedure codes
+
+Procedure codes are versioned catalogue releases. Each release is a folder under
+`specs/procedure_codes` (`v2026.1`, `v2026.2`, ...) holding two files:
+
+-   `nspc-catalogue.json` — the procedure concepts
+-   `spinal-levels.json` — the vertebrae and interspaces concepts can be qualified with
+
+A release is a **complete copy** of the previous one plus that release's changes.
+Changes are only ever additive:
+
+-   **Nothing is deleted.** A code that should no longer be used is marked
+    `"active": false` with an `inactivationReason`. It disappears from the picker
+    but stays in the database, so procedures already recorded against it keep
+    reading correctly.
+-   **A conceptId is permanent.** Never repurpose one. If the meaning of a code
+    changes, retire the old code and add a new one.
+-   **Retirement is one way.** A code retired in an earlier release cannot be made
+    active again.
+-   **Replacements are recorded.** When a new code takes over from a retired one,
+    name the new code in the old code's `replacedBy`.
+-   **Every code you touch is stamped** with `"catalogueRelease": "<version>"`, so
+    the database says which release last changed each code.
+
+### Adding a new version
+
+1. **Start the release.** This copies the latest version into a new folder:
+
+    ```bash
+    npm run codes -- new v2026.2
+    ```
+
+2. **Edit the json files** in `specs/procedure_codes/v2026.2` — append new codes,
+   retire codes with `active: false` plus `inactivationReason` and `replacedBy`,
+   and set `catalogueRelease` to `v2026.2` on everything you changed.
+
+3. **Check what the release will do** before writing anything:
+
+    ```bash
+    npm run codes -- publish v2026.2 --dry-run
+    ```
+
+4. **Publish it:**
+
+    ```bash
+    npm run codes -- publish v2026.2 --stamp
+    ```
+
+    `--stamp` sets `catalogueRelease` on the changed codes for you; drop it if you
+    stamped them by hand.
+
+5. **Ship it.** Rebuild the client and restart PocketBase so the migration applies:
+
+    ```bash
+    npm run build
+    npm run pb:serve
+    ```
+
+### What publish does
+
+It first validates the release against its predecessor, and refuses to write
+anything if a code was deleted, a retired code was reactivated, a `replacedBy`
+points nowhere or loops, or ids are duplicated. When it passes, it writes:
+
+-   `pb/pb_migrations/<timestamp>_seeded_procedureCodes_v2026_2.js` — a migration
+    that seeds **only the changed records**. Each entry also carries the record's
+    previous values, so `pocketbase migrate down` restores the earlier release
+    exactly.
+-   `src/data/nspc-catalogue.json`, `src/data/spinal-levels.json` and
+    `src/data/catalogue-release.json` — the copies the client bundles at build time.
+
+To see every version and whether it has been published:
+
+```bash
+npm run codes -- list
+```
+
+Once a version is published its migration exists and `publish` will refuse to run
+again. To regenerate it (only ever before the migration has reached a real
+database), delete the migration file and publish again.
+
 ## Deploy
 
 ### Linux host

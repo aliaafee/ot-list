@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/auth-context";
 import {
     buildLevelLookup,
     buildSearchIndex,
+    CATALOGUE_RELEASE,
     fetchCatalogue,
     levelOptions,
     searchCatalogue,
@@ -52,7 +53,7 @@ export function CatalogueProvider({ children }) {
         return {
             concepts: concepts,
             levels: data.levels,
-            release: "v2026.1",
+            release: CATALOGUE_RELEASE,
             error,
             search: (query) => searchWithQualifiers(index, levelLookup, query),
             levelsFor: (concept, all) =>

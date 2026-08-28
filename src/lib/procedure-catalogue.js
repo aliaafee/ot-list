@@ -1,5 +1,9 @@
 import bundledCatalogue from "@/data/nspc-catalogue.json";
+import bundledRelease from "@/data/catalogue-release.json";
 import bundledLevels from "@/data/spinal-levels.json";
+
+// Written by scripts/procedure-codes.js when a catalogue version is published.
+export const CATALOGUE_RELEASE = bundledRelease.release;
 
 export const FACET_LABELS = {
     method: "Method",
