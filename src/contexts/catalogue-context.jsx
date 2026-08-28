@@ -2,12 +2,14 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 import { useAuth } from "@/contexts/auth-context";
 import {
+    CATALOGUE_RELEASE,
+    fetchBundledCatalogue,
+    fetchCatalogue,
+} from "@/lib/catalogue-source";
+import {
     buildLevelLookup,
     buildSearchIndex,
-    CATALOGUE_RELEASE,
-    fetchCatalogue,
     levelOptions,
-    searchCatalogue,
     searchWithQualifiers,
     sortLevelCodes,
 } from "@/lib/procedure-catalogue";
@@ -16,7 +18,7 @@ const CatalogueContext = createContext(null);
 
 export function CatalogueProvider({ children }) {
     const { isAuthed } = useAuth();
-    const [data, setData] = useState({ concepts: [], levels: [] });
+    const [data, setData] = useState(fetchBundledCatalogue());
     const [error, setError] = useState(null);
 
     useEffect(() => {
@@ -29,7 +31,7 @@ export function CatalogueProvider({ children }) {
         (async () => {
             try {
                 const fresh = await fetchCatalogue();
-                console.log("Fresh", fresh);
+
                 if (!cancelled) {
                     setData(fresh);
                     setError(null);
