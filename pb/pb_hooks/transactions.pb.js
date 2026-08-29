@@ -37,6 +37,12 @@ routerAdd(
             );
         }
 
+        // Handlers run in their own scope, so shared code is required here
+        // rather than defined alongside this file's other routes.
+        const { PROCEDURE_EXPAND, syncProcedureCodes } = require(
+            `${__hooks}/procedure-codes.js`,
+        );
+
         let createdPatient = null;
         let createdProcedure = null;
 
@@ -75,7 +81,13 @@ routerAdd(
                     txApp.findCollectionByNameOrId("procedures");
                 const procedureRecord = new Record(procedureCollection);
 
+                // The coded procedures are child records, not a field on the
+                // procedure, so they are set aside and written after the save
+                // that gives the procedure its id.
+                const procedureCodes = data.procedure.procedureCodes;
+
                 for (const key in data.procedure) {
+                    if (key === "procedureCodes") continue;
                     procedureRecord.set(key, data.procedure[key]);
                 }
                 procedureRecord.set("patient", createdPatient.id);
@@ -87,6 +99,13 @@ routerAdd(
                 console.log(
                     `[add-procedure-with-patient] Created procedure: ${procedureRecord.id}`,
                 );
+
+                if (procedureCodes !== undefined) {
+                    syncProcedureCodes(txApp, procedureRecord, procedureCodes);
+                    console.log(
+                        `[add-procedure-with-patient] Wrote ${procedureCodes.length} procedure code(s)`,
+                    );
+                }
             });
 
             // Fetch expanded procedure for response
@@ -94,11 +113,7 @@ routerAdd(
                 "procedures",
                 createdProcedure.id,
             );
-            $app.expandRecord(
-                expandedProcedure,
-                ["patient", "addedBy", "procedureDay", "creator", "updater"],
-                null,
-            );
+            $app.expandRecord(expandedProcedure, PROCEDURE_EXPAND, null);
 
             return e.json(200, {
                 success: true,
@@ -147,6 +162,12 @@ routerAdd(
             throw new BadRequestError("procedures array cannot be empty");
         }
 
+        // Handlers run in their own scope, so shared code is required here
+        // rather than defined alongside this file's other routes.
+        const { PROCEDURE_EXPAND, syncProcedureCodes } = require(
+            `${__hooks}/procedure-codes.js`,
+        );
+
         const updated = [];
 
         try {
@@ -162,22 +183,45 @@ routerAdd(
                     const record = txApp.findRecordById("procedures", id);
 
                     for (const key in changes) {
+                        if (key === "procedureCodes") continue;
                         record.set(key, changes[key]);
                     }
                     record.set("updater", authRecord.id);
 
                     txApp.save(record);
-                    updated.push({ id: record.id });
+
+                    // Only when the client actually sent a list. Reordering,
+                    // moving and removing all go through this endpoint with
+                    // just the fields they touch, and must leave the codes
+                    // alone rather than clearing them.
+                    if (changes.procedureCodes !== undefined) {
+                        syncProcedureCodes(
+                            txApp,
+                            record,
+                            changes.procedureCodes,
+                        );
+                    }
+
+                    updated.push(record.id);
                     console.log(
                         `[bulk-update-procedures] Updated procedure: ${record.id}`,
                     );
                 });
             });
 
+            // Read the saved rows back expanded, so the client replaces its
+            // optimistic copy with what was actually stored. The codes are
+            // child records, so an optimistic merge cannot know them.
+            const records = updated.map((id) => {
+                const record = $app.findRecordById("procedures", id);
+                $app.expandRecord(record, PROCEDURE_EXPAND, null);
+                return record;
+            });
+
             return e.json(200, {
                 success: true,
-                updatedCount: updated.length,
-                updated: updated,
+                updatedCount: records.length,
+                updated: records,
             });
         } catch (error) {
             console.error("[bulk-update-procedures] Transaction error:", error);

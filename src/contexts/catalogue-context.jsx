@@ -52,11 +52,16 @@ export function CatalogueProvider({ children }) {
         const index = buildSearchIndex(concepts);
         const levelLookup = buildLevelLookup(data.levels);
 
+        // Keyed by every concept, active or not: a procedure coded years ago
+        // still has to load into the editor after its concept was retired.
+        const byConceptId = new Map(concepts.map((c) => [c.conceptId, c]));
+
         return {
             concepts: concepts,
             levels: data.levels,
             release: CATALOGUE_RELEASE,
             error,
+            conceptById: (conceptId) => byConceptId.get(conceptId) ?? null,
             search: (query) => searchWithQualifiers(index, levelLookup, query),
             levelsFor: (concept, all) =>
                 levelOptions(levelLookup, concept, all),

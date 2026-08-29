@@ -35,6 +35,7 @@ import {
 import PatientSearchModal from "@/modals/patient-search-modal";
 import PatientInfo from "./patient-info";
 import { pb } from "@/lib/pb";
+import { toProcedureCodesPayload } from "@/lib/procedure-codes";
 import dayjs from "dayjs";
 // import IdCardScanModal from "@/modals/id-card-scan-modal";
 
@@ -194,7 +195,9 @@ function ProcedureAdder({
             duration: newProcedure.duration,
             operatingRoom: operatingRoom.id,
             procedure: newProcedure.procedure,
-            procedureCode: newProcedure.procedureCode,
+            procedureCodes: toProcedureCodesPayload(
+                newProcedure.procedureCodes,
+            ),
             procedureDay: otDay.id,
             remarks: newProcedure.remarks,
             removed: newProcedure.removed,

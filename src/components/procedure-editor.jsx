@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import Button from "@/components/button";
 import dayjs from "dayjs";
@@ -12,6 +12,12 @@ import { useProcedureList } from "@/contexts/procedure-list-context";
 import { ProcedureForm, validateProcedure } from "@/forms/procedure-form";
 import PatientInfo from "./patient-info";
 import { PacStatus } from "./pac-status";
+import { useCatalogue } from "@/contexts/catalogue-context";
+import {
+    fromProcedureCodeRecords,
+    procedureCodeRecordsOf,
+    toProcedureCodesPayload,
+} from "@/lib/procedure-codes";
 
 /**
  * ProcedureEditor - Form component for editing existing OT procedures
@@ -32,11 +38,15 @@ function ProcedureEditor({
     error,
 }) {
     const { otDay, updateProcedures } = useProcedureList();
+    const { concepts, conceptById } = useCatalogue();
 
     const [updatedProcedure, setUpdatedProcedure] = useState({
         diagnosis: procedure?.diagnosis || "",
         comorbids: procedure?.comorbids || "",
         procedure: procedure?.procedure || "",
+        // Null until the user edits the codes; what is stored is derived
+        // below and used in the meantime.
+        procedureCodes: null,
         addedDate: dayjs(procedure?.addedDate).format("YYYY-MM-DD") || "",
         addedBy: procedure?.addedBy || "",
         remarks: procedure?.remarks || "",
@@ -47,8 +57,29 @@ function ProcedureEditor({
     });
     const [updatedProcedureErrors, setUpdatedProcedureErrors] = useState({});
 
+    // A stored code names its concept by id, so it can only be turned back
+    // into a picker value once the catalogue is in memory. Resolving against
+    // an empty catalogue would leave every code blank, and saving that would
+    // delete them, so this stays null - which fails validation - until there
+    // is a catalogue to resolve against.
+    const storedCodes = useMemo(
+        () =>
+            concepts.length === 0
+                ? null
+                : fromProcedureCodeRecords(
+                      procedureCodeRecordsOf(procedure),
+                      conceptById,
+                  ),
+        [concepts, conceptById, procedure],
+    );
+
+    // What is stored, until the user edits and the form starts owning it.
+    const procedureCodes = updatedProcedure.procedureCodes ?? storedCodes;
+    const codesLoaded = procedureCodes !== null;
+    const formValue = { ...updatedProcedure, procedureCodes };
+
     const handleUpdateProcedure = () => {
-        const inputErrors = validateProcedure(updatedProcedure);
+        const inputErrors = validateProcedure(formValue);
 
         setUpdatedProcedureErrors(inputErrors);
 
@@ -66,6 +97,7 @@ function ProcedureEditor({
             diagnosis: updatedProcedure.diagnosis,
             duration: updatedProcedure.duration,
             procedure: updatedProcedure.procedure,
+            procedureCodes: toProcedureCodesPayload(procedureCodes),
             remarks: updatedProcedure.remarks,
             removed: updatedProcedure.removed,
             requirements: updatedProcedure.requirements,
@@ -119,8 +151,13 @@ function ProcedureEditor({
             )}
             <PacStatus procedureId={procedure?.id} className="p-2" />
             <div className="p-2">
+                {!codesLoaded && (
+                    <p className="p-2 text-sm text-gray-500">
+                        Loading procedure codes...
+                    </p>
+                )}
                 <ProcedureForm
-                    value={updatedProcedure}
+                    value={formValue}
                     onChange={(value) => setUpdatedProcedure(value)}
                     surgeons={
                         otDay?.expand?.otList?.expand?.department?.expand

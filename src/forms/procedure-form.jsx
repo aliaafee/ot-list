@@ -1,5 +1,6 @@
 import FormField from "@/components/form-field";
 import FormListField from "@/components/form-list-field";
+import { isFilledCode } from "@/lib/procedure-codes";
 
 export const initialProcedureValue = {
     diagnosis: "",
@@ -20,12 +21,18 @@ export const validateProcedure = (procedure) => {
     const requiredFields = [
         "diagnosis",
         "procedure",
-        "procedureCode",
+        "procedureCodes",
         "addedDate",
         "addedBy",
     ];
     requiredFields.forEach((field) => {
-        if (!procedure[field] || procedure[field].toString().trim() === "") {
+        const value = procedure[field];
+        // The code list arrives padded with blank rows the user never filled
+        // in, so a length check would pass on an empty picker.
+        const isEmpty = Array.isArray(value)
+            ? !value.some(isFilledCode)
+            : !value || value.toString().trim() === "";
+        if (isEmpty) {
             errorFields[field] = {
                 name: field,
                 message: "This field is required.",
