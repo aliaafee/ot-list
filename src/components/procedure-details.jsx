@@ -16,6 +16,8 @@ import {
 import { twMerge } from "tailwind-merge";
 
 import LabelValue from "./label-value";
+import LabelListValue from "./label-list-value";
+import { describeProcedureCodes } from "@/lib/procedure-codes";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { PacStatus } from "./pac-status";
@@ -55,6 +57,8 @@ function ProcedureDetails({
     const [confirmRemove, setConfirmRemove] = useState(false);
     const [editingPatient, setEditingPatient] = useState(false);
     const [copied, setCopied] = useState(false);
+
+    const procedureCodes = describeProcedureCodes(procedure);
 
     const handleCopyAdvice = () => {
         const adviceText = `${procedure?.procedure} for ${procedure?.diagnosis} on ${formateDateLong(procedure?.expand?.procedureDay?.date)} in ${procedure?.expand?.procedureDay?.expand?.otList?.name}`;
@@ -199,6 +203,15 @@ function ProcedureDetails({
                     className="md:col-span-2"
                     label="Procedure"
                     value={procedure.procedure}
+                />
+                <LabelListValue
+                    className="md:col-span-4"
+                    label={
+                        procedureCodes.length > 1
+                            ? "Procedure Codes"
+                            : "Procedure Code"
+                    }
+                    value={procedureCodes}
                 />
                 <LabelValue
                     className="md:col-span-4"
