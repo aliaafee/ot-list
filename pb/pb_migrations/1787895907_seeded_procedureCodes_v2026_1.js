@@ -8,8 +8,1995 @@
 // Each entry carries the values this release writes ("next") and the values the
 // record held in the previous release ("prev", null when this release adds it),
 // so the migration can be rolled back exactly.
+//
+// A concept's facets are relations, so they travel as facetValueIds and are
+// resolved to records here. Its synonyms are child rows, replaced as a set:
+// the catalogue always states a concept's whole synonym list.
 
 const CATALOGUE_RELEASE = "v2026.1";
+
+const FACET_VALUE_CHANGES = [
+  {
+    "key": "MTH-0001",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0001",
+      "facet": "method",
+      "term": "Anastomosis",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0002",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0002",
+      "facet": "method",
+      "term": "Angiography",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0003",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0003",
+      "facet": "method",
+      "term": "Biopsy",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0004",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0004",
+      "facet": "method",
+      "term": "Debridement",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0005",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0005",
+      "facet": "method",
+      "term": "Decompression",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0006",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0006",
+      "facet": "method",
+      "term": "Destruction",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0007",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0007",
+      "facet": "method",
+      "term": "Drainage",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0008",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0008",
+      "facet": "method",
+      "term": "Evacuation",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0009",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0009",
+      "facet": "method",
+      "term": "Excision",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0010",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0010",
+      "facet": "method",
+      "term": "Fenestration",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0011",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0011",
+      "facet": "method",
+      "term": "Fixation",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0012",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0012",
+      "facet": "method",
+      "term": "Fusion",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0013",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0013",
+      "facet": "method",
+      "term": "Incision",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0014",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0014",
+      "facet": "method",
+      "term": "Injection",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0015",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0015",
+      "facet": "method",
+      "term": "Insertion",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0016",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0016",
+      "facet": "method",
+      "term": "Occlusion",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0017",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0017",
+      "facet": "method",
+      "term": "Partial excision",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0018",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0018",
+      "facet": "method",
+      "term": "Puncture",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0019",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0019",
+      "facet": "method",
+      "term": "Reconstruction",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0020",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0020",
+      "facet": "method",
+      "term": "Reduction",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0021",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0021",
+      "facet": "method",
+      "term": "Release",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0022",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0022",
+      "facet": "method",
+      "term": "Removal",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0023",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0023",
+      "facet": "method",
+      "term": "Repair",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0024",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0024",
+      "facet": "method",
+      "term": "Revision",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MTH-0025",
+    "prev": null,
+    "next": {
+      "facetValueId": "MTH-0025",
+      "facet": "method",
+      "term": "Transposition",
+      "snomedAttribute": "Method",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0001",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0001",
+      "facet": "site",
+      "term": "Anterior cerebral artery",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0002",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0002",
+      "facet": "site",
+      "term": "Anterior communicating artery",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0003",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0003",
+      "facet": "site",
+      "term": "Anterior skull base",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0004",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0004",
+      "facet": "site",
+      "term": "Basilar artery",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0005",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0005",
+      "facet": "site",
+      "term": "Brain",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0006",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0006",
+      "facet": "site",
+      "term": "Cerebellopontine angle",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0007",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0007",
+      "facet": "site",
+      "term": "Cerebral artery",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0008",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0008",
+      "facet": "site",
+      "term": "Cerebral hemisphere",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0009",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0009",
+      "facet": "site",
+      "term": "Cerebral venous sinus",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0010",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0010",
+      "facet": "site",
+      "term": "Cervical vertebral column",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0011",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0011",
+      "facet": "site",
+      "term": "Cervicothoracic vertebral column",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0012",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0012",
+      "facet": "site",
+      "term": "Craniocervical junction",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0013",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0013",
+      "facet": "site",
+      "term": "Dura mater",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0014",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0014",
+      "facet": "site",
+      "term": "Extradural space",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0015",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0015",
+      "facet": "site",
+      "term": "Internal carotid artery",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0016",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0016",
+      "facet": "site",
+      "term": "Intervertebral disc",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0017",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0017",
+      "facet": "site",
+      "term": "Intervertebral foramen",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0018",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0018",
+      "facet": "site",
+      "term": "Lateral ventricle",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0019",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0019",
+      "facet": "site",
+      "term": "Lumbar subarachnoid space",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0020",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0020",
+      "facet": "site",
+      "term": "Lumbar vertebral column",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0021",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0021",
+      "facet": "site",
+      "term": "Median nerve",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0022",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0022",
+      "facet": "site",
+      "term": "Middle cerebral artery",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0023",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0023",
+      "facet": "site",
+      "term": "Peripheral nerve",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0024",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0024",
+      "facet": "site",
+      "term": "Pituitary fossa",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0025",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0025",
+      "facet": "site",
+      "term": "Posterior communicating artery",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0026",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0026",
+      "facet": "site",
+      "term": "Posterior cranial fossa",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0027",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0027",
+      "facet": "site",
+      "term": "Posterior inferior cerebellar artery",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0028",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0028",
+      "facet": "site",
+      "term": "Sacroiliac joint",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0029",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0029",
+      "facet": "site",
+      "term": "Scalp",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0030",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0030",
+      "facet": "site",
+      "term": "Skull",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0031",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0031",
+      "facet": "site",
+      "term": "Spinal cord",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0032",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0032",
+      "facet": "site",
+      "term": "Spinal epidural space",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0033",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0033",
+      "facet": "site",
+      "term": "Subdural space",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0034",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0034",
+      "facet": "site",
+      "term": "Third ventricle",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0035",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0035",
+      "facet": "site",
+      "term": "Thoracic vertebral column",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0036",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0036",
+      "facet": "site",
+      "term": "Thoracolumbar vertebral column",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0037",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0037",
+      "facet": "site",
+      "term": "Trachea",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0038",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0038",
+      "facet": "site",
+      "term": "Trigeminal nerve",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0039",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0039",
+      "facet": "site",
+      "term": "Ulnar nerve",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0040",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0040",
+      "facet": "site",
+      "term": "Vertebral artery",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0041",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0041",
+      "facet": "site",
+      "term": "Vertebral body",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "SIT-0042",
+    "prev": null,
+    "next": {
+      "facetValueId": "SIT-0042",
+      "facet": "site",
+      "term": "Zygapophyseal joint",
+      "snomedAttribute": "Procedure site - Direct",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0001",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0001",
+      "facet": "approach",
+      "term": "Anterior cervical",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0002",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0002",
+      "facet": "approach",
+      "term": "Bifrontal",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0003",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0003",
+      "facet": "approach",
+      "term": "Burr hole",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0004",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0004",
+      "facet": "approach",
+      "term": "Craniotomy",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0005",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0005",
+      "facet": "approach",
+      "term": "Decompressive craniectomy",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0006",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0006",
+      "facet": "approach",
+      "term": "Endoscopic transsphenoidal",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0007",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0007",
+      "facet": "approach",
+      "term": "Endoscopic transventricular",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0008",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0008",
+      "facet": "approach",
+      "term": "Endovascular",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0009",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0009",
+      "facet": "approach",
+      "term": "Far lateral",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0010",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0010",
+      "facet": "approach",
+      "term": "Full-endoscopic interlaminar",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0011",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0011",
+      "facet": "approach",
+      "term": "Full-endoscopic transforaminal",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0012",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0012",
+      "facet": "approach",
+      "term": "Interhemispheric",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0013",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0013",
+      "facet": "approach",
+      "term": "Open direct exposure",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0014",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0014",
+      "facet": "approach",
+      "term": "Percutaneous",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0015",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0015",
+      "facet": "approach",
+      "term": "Posterior midline",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0016",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0016",
+      "facet": "approach",
+      "term": "Posterolateral",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0017",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0017",
+      "facet": "approach",
+      "term": "Pterional",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0018",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0018",
+      "facet": "approach",
+      "term": "Retrosigmoid",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0019",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0019",
+      "facet": "approach",
+      "term": "Stereotactic",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0020",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0020",
+      "facet": "approach",
+      "term": "Subfrontal",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0021",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0021",
+      "facet": "approach",
+      "term": "Suboccipital midline",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0022",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0022",
+      "facet": "approach",
+      "term": "Transforaminal",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "APP-0023",
+    "prev": null,
+    "next": {
+      "facetValueId": "APP-0023",
+      "facet": "approach",
+      "term": "Twist drill craniostomy",
+      "snomedAttribute": "Surgical approach",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0001",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0001",
+      "facet": "device",
+      "term": "Anterior cervical plate",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0002",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0002",
+      "facet": "device",
+      "term": "Autologous bone flap",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0003",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0003",
+      "facet": "device",
+      "term": "Bone cement",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0004",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0004",
+      "facet": "device",
+      "term": "Cervicothoracic fixation system",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0005",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0005",
+      "facet": "device",
+      "term": "Cranioplasty implant",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0006",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0006",
+      "facet": "device",
+      "term": "Dural graft",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0007",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0007",
+      "facet": "device",
+      "term": "Endovascular coil",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0008",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0008",
+      "facet": "device",
+      "term": "External ventricular drain catheter",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0009",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0009",
+      "facet": "device",
+      "term": "Flow diverter stent",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0010",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0010",
+      "facet": "device",
+      "term": "Intervertebral cage",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0011",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0011",
+      "facet": "device",
+      "term": "Intracranial aneurysm clip",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0012",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0012",
+      "facet": "device",
+      "term": "Intracranial pressure monitor",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0013",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0013",
+      "facet": "device",
+      "term": "Intraluminal arterial stent",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0014",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0014",
+      "facet": "device",
+      "term": "Intrasaccular flow disruptor",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0015",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0015",
+      "facet": "device",
+      "term": "Intrathecal drug delivery pump",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0016",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0016",
+      "facet": "device",
+      "term": "Lateral mass screw system",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0017",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0017",
+      "facet": "device",
+      "term": "Liquid embolic agent",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0018",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0018",
+      "facet": "device",
+      "term": "Lumbar drain catheter",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0019",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0019",
+      "facet": "device",
+      "term": "Lumboperitoneal shunt system",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0020",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0020",
+      "facet": "device",
+      "term": "Occipitocervical fixation system",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0021",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0021",
+      "facet": "device",
+      "term": "Odontoid screw",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0022",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0022",
+      "facet": "device",
+      "term": "Ommaya reservoir",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0023",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0023",
+      "facet": "device",
+      "term": "Pedicle screw system",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0024",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0024",
+      "facet": "device",
+      "term": "Tracheostomy tube",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0025",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0025",
+      "facet": "device",
+      "term": "Ventriculoatrial shunt system",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "DEV-0026",
+    "prev": null,
+    "next": {
+      "facetValueId": "DEV-0026",
+      "facet": "device",
+      "term": "Ventriculoperitoneal shunt system",
+      "snomedAttribute": "Direct device",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0001",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0001",
+      "facet": "morphology",
+      "term": "Acute ischaemic stroke",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0002",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0002",
+      "facet": "morphology",
+      "term": "Acute subdural haematoma",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0003",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0003",
+      "facet": "morphology",
+      "term": "Arteriovenous malformation",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0004",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0004",
+      "facet": "morphology",
+      "term": "Carotid artery stenosis",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0005",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0005",
+      "facet": "morphology",
+      "term": "Cavernous malformation",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0006",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0006",
+      "facet": "morphology",
+      "term": "Cerebral abscess",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0007",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0007",
+      "facet": "morphology",
+      "term": "Cerebrospinal fluid leak",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0008",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0008",
+      "facet": "morphology",
+      "term": "Cervical spondylotic myelopathy",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0009",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0009",
+      "facet": "morphology",
+      "term": "Chronic subdural haematoma",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0010",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0010",
+      "facet": "morphology",
+      "term": "Craniosynostosis",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0011",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0011",
+      "facet": "morphology",
+      "term": "Depressed skull fracture",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0012",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0012",
+      "facet": "morphology",
+      "term": "Dural arteriovenous fistula",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0013",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0013",
+      "facet": "morphology",
+      "term": "Encephalocele",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0014",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0014",
+      "facet": "morphology",
+      "term": "Entrapment neuropathy",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0015",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0015",
+      "facet": "morphology",
+      "term": "Extradural haematoma",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0016",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0016",
+      "facet": "morphology",
+      "term": "Facet joint arthropathy",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0017",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0017",
+      "facet": "morphology",
+      "term": "Glioma",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0018",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0018",
+      "facet": "morphology",
+      "term": "Herniated intervertebral disc",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0019",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0019",
+      "facet": "morphology",
+      "term": "Hydrocephalus",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0020",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0020",
+      "facet": "morphology",
+      "term": "Idiopathic intracranial hypertension",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0021",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0021",
+      "facet": "morphology",
+      "term": "Intracerebral haematoma",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0022",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0022",
+      "facet": "morphology",
+      "term": "Intracranial arterial stenosis",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0023",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0023",
+      "facet": "morphology",
+      "term": "Intracranial metastasis",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0024",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0024",
+      "facet": "morphology",
+      "term": "Intradural extramedullary neoplasm",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0025",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0025",
+      "facet": "morphology",
+      "term": "Intramedullary neoplasm",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0026",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0026",
+      "facet": "morphology",
+      "term": "Intraventricular neoplasm",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0027",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0027",
+      "facet": "morphology",
+      "term": "Lumbar radiculopathy",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0028",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0028",
+      "facet": "morphology",
+      "term": "Malignant middle cerebral artery infarction",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0029",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0029",
+      "facet": "morphology",
+      "term": "Meningioma",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0030",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0030",
+      "facet": "morphology",
+      "term": "Metastatic spinal tumour",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0031",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0031",
+      "facet": "morphology",
+      "term": "Myelomeningocele",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0032",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0032",
+      "facet": "morphology",
+      "term": "Neoplasm",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0033",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0033",
+      "facet": "morphology",
+      "term": "Peripheral nerve sheath tumour",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0034",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0034",
+      "facet": "morphology",
+      "term": "Pituitary adenoma",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0035",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0035",
+      "facet": "morphology",
+      "term": "Saccular aneurysm",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0036",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0036",
+      "facet": "morphology",
+      "term": "Sacroiliac joint dysfunction",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0037",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0037",
+      "facet": "morphology",
+      "term": "Spasticity",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0038",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0038",
+      "facet": "morphology",
+      "term": "Spinal canal stenosis",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0039",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0039",
+      "facet": "morphology",
+      "term": "Spinal dermal sinus",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0040",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0040",
+      "facet": "morphology",
+      "term": "Spinal epidural abscess",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0041",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0041",
+      "facet": "morphology",
+      "term": "Spondylolisthesis",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0042",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0042",
+      "facet": "morphology",
+      "term": "Subdural empyema",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0043",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0043",
+      "facet": "morphology",
+      "term": "Surgical site infection",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0044",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0044",
+      "facet": "morphology",
+      "term": "Tethered cord",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0045",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0045",
+      "facet": "morphology",
+      "term": "Trigeminal neuralgia",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0046",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0046",
+      "facet": "morphology",
+      "term": "Vertebral fracture",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "MOR-0047",
+    "prev": null,
+    "next": {
+      "facetValueId": "MOR-0047",
+      "facet": "morphology",
+      "term": "Vestibular schwannoma",
+      "snomedAttribute": "Procedure morphology",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "INT-0001",
+    "prev": null,
+    "next": {
+      "facetValueId": "INT-0001",
+      "facet": "intent",
+      "term": "Diagnostic",
+      "snomedAttribute": "Has intent",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  },
+  {
+    "key": "INT-0002",
+    "prev": null,
+    "next": {
+      "facetValueId": "INT-0002",
+      "facet": "intent",
+      "term": "Therapeutic",
+      "snomedAttribute": "Has intent",
+      "active": true,
+      "effectiveFrom": "2026-08-07 00:00:00.000Z"
+    }
+  }
+];
 
 const LEVEL_CHANGES = [
   {
@@ -748,27 +2735,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00000",
-      "fsn": "Procedure not represented in the catalogue (procedure)",
-      "preferredTerm": "Uncoded procedure",
-      "subspecialty": "uncoded",
-      "facets": {
-        "method": null,
-        "procedureSite": null,
-        "surgicalApproach": null,
-        "device": null,
-        "morphology": null,
-        "intent": null
+      "fields": {
+        "conceptId": "NSX-00000",
+        "fsn": "Procedure not represented in the catalogue (procedure)",
+        "preferredTerm": "Uncoded procedure",
+        "subspecialty": "uncoded",
+        "lateralityApplicable": false,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": false,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "",
+        "procedureSite": "",
+        "surgicalApproach": "",
+        "device": "",
+        "morphology": "",
+        "defaultIntent": ""
+      },
       "synonyms": []
     }
   },
@@ -777,27 +2767,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00001",
-      "fsn": "Burr hole drainage of chronic subdural haematoma (procedure)",
-      "preferredTerm": "Burr hole drainage chronic SDH",
-      "subspecialty": "cranial-trauma",
-      "facets": {
-        "method": "Drainage",
-        "procedureSite": "Subdural space",
-        "surgicalApproach": "Burr hole",
-        "device": null,
-        "morphology": "Chronic subdural haematoma",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00001",
+        "fsn": "Burr hole drainage of chronic subdural haematoma (procedure)",
+        "preferredTerm": "Burr hole drainage chronic SDH",
+        "subspecialty": "cranial-trauma",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0007",
+        "procedureSite": "SIT-0033",
+        "surgicalApproach": "APP-0003",
+        "device": "",
+        "morphology": "MOR-0009",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "chronic SDH",
@@ -843,27 +2836,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00002",
-      "fsn": "Twist drill craniostomy and drainage of subdural collection (procedure)",
-      "preferredTerm": "Twist drill subdural drainage",
-      "subspecialty": "cranial-trauma",
-      "facets": {
-        "method": "Drainage",
-        "procedureSite": "Subdural space",
-        "surgicalApproach": "Twist drill craniostomy",
-        "device": null,
-        "morphology": "Chronic subdural haematoma",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00002",
+        "fsn": "Twist drill craniostomy and drainage of subdural collection (procedure)",
+        "preferredTerm": "Twist drill subdural drainage",
+        "subspecialty": "cranial-trauma",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0007",
+        "procedureSite": "SIT-0033",
+        "surgicalApproach": "APP-0023",
+        "device": "",
+        "morphology": "MOR-0009",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "twist drill",
@@ -885,27 +2881,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00003",
-      "fsn": "Craniotomy and evacuation of acute subdural haematoma (procedure)",
-      "preferredTerm": "Craniotomy acute SDH evacuation",
-      "subspecialty": "cranial-trauma",
-      "facets": {
-        "method": "Evacuation",
-        "procedureSite": "Subdural space",
-        "surgicalApproach": "Craniotomy",
-        "device": null,
-        "morphology": "Acute subdural haematoma",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00003",
+        "fsn": "Craniotomy and evacuation of acute subdural haematoma (procedure)",
+        "preferredTerm": "Craniotomy acute SDH evacuation",
+        "subspecialty": "cranial-trauma",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0008",
+        "procedureSite": "SIT-0033",
+        "surgicalApproach": "APP-0004",
+        "device": "",
+        "morphology": "MOR-0002",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "acute SDH",
@@ -933,27 +2932,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00004",
-      "fsn": "Craniotomy and evacuation of extradural haematoma (procedure)",
-      "preferredTerm": "Craniotomy EDH evacuation",
-      "subspecialty": "cranial-trauma",
-      "facets": {
-        "method": "Evacuation",
-        "procedureSite": "Extradural space",
-        "surgicalApproach": "Craniotomy",
-        "device": null,
-        "morphology": "Extradural haematoma",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00004",
+        "fsn": "Craniotomy and evacuation of extradural haematoma (procedure)",
+        "preferredTerm": "Craniotomy EDH evacuation",
+        "subspecialty": "cranial-trauma",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0008",
+        "procedureSite": "SIT-0014",
+        "surgicalApproach": "APP-0004",
+        "device": "",
+        "morphology": "MOR-0015",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "EDH",
@@ -981,27 +2983,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00005",
-      "fsn": "Craniotomy and evacuation of traumatic intracerebral haematoma (procedure)",
-      "preferredTerm": "Craniotomy ICH evacuation traumatic",
-      "subspecialty": "cranial-trauma",
-      "facets": {
-        "method": "Evacuation",
-        "procedureSite": "Cerebral hemisphere",
-        "surgicalApproach": "Craniotomy",
-        "device": null,
-        "morphology": "Intracerebral haematoma",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00005",
+        "fsn": "Craniotomy and evacuation of traumatic intracerebral haematoma (procedure)",
+        "preferredTerm": "Craniotomy ICH evacuation traumatic",
+        "subspecialty": "cranial-trauma",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0008",
+        "procedureSite": "SIT-0008",
+        "surgicalApproach": "APP-0004",
+        "device": "",
+        "morphology": "MOR-0021",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "traumatic ICH",
@@ -1023,27 +3028,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00006",
-      "fsn": "Unilateral decompressive craniectomy for trauma (procedure)",
-      "preferredTerm": "Decompressive craniectomy unilateral traumatic",
-      "subspecialty": "cranial-trauma",
-      "facets": {
-        "method": "Decompression",
-        "procedureSite": "Skull",
-        "surgicalApproach": "Decompressive craniectomy",
-        "device": null,
-        "morphology": null,
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00006",
+        "fsn": "Unilateral decompressive craniectomy for trauma (procedure)",
+        "preferredTerm": "Decompressive craniectomy unilateral traumatic",
+        "subspecialty": "cranial-trauma",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0005",
+        "procedureSite": "SIT-0030",
+        "surgicalApproach": "APP-0005",
+        "device": "",
+        "morphology": "",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "DC",
@@ -1083,27 +3091,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00007",
-      "fsn": "Bifrontal decompressive craniectomy (procedure)",
-      "preferredTerm": "Bifrontal decompressive craniectomy",
-      "subspecialty": "cranial-trauma",
-      "facets": {
-        "method": "Decompression",
-        "procedureSite": "Skull",
-        "surgicalApproach": "Bifrontal",
-        "device": null,
-        "morphology": null,
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00007",
+        "fsn": "Bifrontal decompressive craniectomy (procedure)",
+        "preferredTerm": "Bifrontal decompressive craniectomy",
+        "subspecialty": "cranial-trauma",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0005",
+        "procedureSite": "SIT-0030",
+        "surgicalApproach": "APP-0002",
+        "device": "",
+        "morphology": "",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "bifrontal DC",
@@ -1125,27 +3136,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00008",
-      "fsn": "Elevation of depressed skull fracture (procedure)",
-      "preferredTerm": "Elevation depressed skull fracture",
-      "subspecialty": "cranial-trauma",
-      "facets": {
-        "method": "Reduction",
-        "procedureSite": "Skull",
-        "surgicalApproach": "Open direct exposure",
-        "device": null,
-        "morphology": "Depressed skull fracture",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00008",
+        "fsn": "Elevation of depressed skull fracture (procedure)",
+        "preferredTerm": "Elevation depressed skull fracture",
+        "subspecialty": "cranial-trauma",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0020",
+        "procedureSite": "SIT-0030",
+        "surgicalApproach": "APP-0013",
+        "device": "",
+        "morphology": "MOR-0011",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "depressed fracture",
@@ -1179,27 +3193,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00009",
-      "fsn": "Repair of anterior skull base cerebrospinal fluid leak (procedure)",
-      "preferredTerm": "Anterior skull base CSF leak repair",
-      "subspecialty": "cranial-trauma",
-      "facets": {
-        "method": "Repair",
-        "procedureSite": "Anterior skull base",
-        "surgicalApproach": "Subfrontal",
-        "device": "Dural graft",
-        "morphology": "Cerebrospinal fluid leak",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00009",
+        "fsn": "Repair of anterior skull base cerebrospinal fluid leak (procedure)",
+        "preferredTerm": "Anterior skull base CSF leak repair",
+        "subspecialty": "cranial-trauma",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0023",
+        "procedureSite": "SIT-0003",
+        "surgicalApproach": "APP-0020",
+        "device": "DEV-0006",
+        "morphology": "MOR-0007",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "CSF leak repair",
@@ -1221,27 +3238,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00010",
-      "fsn": "Cranioplasty using autologous bone flap (procedure)",
-      "preferredTerm": "Cranioplasty autologous",
-      "subspecialty": "cranial-trauma",
-      "facets": {
-        "method": "Reconstruction",
-        "procedureSite": "Skull",
-        "surgicalApproach": "Open direct exposure",
-        "device": "Autologous bone flap",
-        "morphology": null,
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00010",
+        "fsn": "Cranioplasty using autologous bone flap (procedure)",
+        "preferredTerm": "Cranioplasty autologous",
+        "subspecialty": "cranial-trauma",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0019",
+        "procedureSite": "SIT-0030",
+        "surgicalApproach": "APP-0013",
+        "device": "DEV-0002",
+        "morphology": "",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "cranioplasty",
@@ -1263,27 +3283,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00011",
-      "fsn": "Cranioplasty using synthetic implant (procedure)",
-      "preferredTerm": "Cranioplasty synthetic",
-      "subspecialty": "cranial-trauma",
-      "facets": {
-        "method": "Reconstruction",
-        "procedureSite": "Skull",
-        "surgicalApproach": "Open direct exposure",
-        "device": "Cranioplasty implant",
-        "morphology": null,
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00011",
+        "fsn": "Cranioplasty using synthetic implant (procedure)",
+        "preferredTerm": "Cranioplasty synthetic",
+        "subspecialty": "cranial-trauma",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0019",
+        "procedureSite": "SIT-0030",
+        "surgicalApproach": "APP-0013",
+        "device": "DEV-0005",
+        "morphology": "",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "titanium cranioplasty",
@@ -1305,27 +3328,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00012",
-      "fsn": "Insertion of intracranial pressure monitor (procedure)",
-      "preferredTerm": "ICP monitor insertion",
-      "subspecialty": "cranial-trauma",
-      "facets": {
-        "method": "Insertion",
-        "procedureSite": "Brain",
-        "surgicalApproach": "Burr hole",
-        "device": "Intracranial pressure monitor",
-        "morphology": null,
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00012",
+        "fsn": "Insertion of intracranial pressure monitor (procedure)",
+        "preferredTerm": "ICP monitor insertion",
+        "subspecialty": "cranial-trauma",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0015",
+        "procedureSite": "SIT-0005",
+        "surgicalApproach": "APP-0003",
+        "device": "DEV-0012",
+        "morphology": "",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "ICP bolt",
@@ -1353,27 +3379,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00013",
-      "fsn": "Insertion of external ventricular drain (procedure)",
-      "preferredTerm": "External ventricular drain insertion",
-      "subspecialty": "cranial-csf",
-      "facets": {
-        "method": "Insertion",
-        "procedureSite": "Lateral ventricle",
-        "surgicalApproach": "Burr hole",
-        "device": "External ventricular drain catheter",
-        "morphology": "Hydrocephalus",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00013",
+        "fsn": "Insertion of external ventricular drain (procedure)",
+        "preferredTerm": "External ventricular drain insertion",
+        "subspecialty": "cranial-csf",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0015",
+        "procedureSite": "SIT-0018",
+        "surgicalApproach": "APP-0003",
+        "device": "DEV-0008",
+        "morphology": "MOR-0019",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "EVD",
@@ -1401,27 +3430,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00014",
-      "fsn": "Craniotomy and excision of supratentorial intra-axial tumour (procedure)",
-      "preferredTerm": "Craniotomy supratentorial tumour excision",
-      "subspecialty": "cranial-tumour",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Cerebral hemisphere",
-        "surgicalApproach": "Craniotomy",
-        "device": null,
-        "morphology": "Glioma",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00014",
+        "fsn": "Craniotomy and excision of supratentorial intra-axial tumour (procedure)",
+        "preferredTerm": "Craniotomy supratentorial tumour excision",
+        "subspecialty": "cranial-tumour",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0008",
+        "surgicalApproach": "APP-0004",
+        "device": "",
+        "morphology": "MOR-0017",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "glioma resection",
@@ -1449,27 +3481,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00015",
-      "fsn": "Craniotomy and partial excision of supratentorial intra-axial tumour (procedure)",
-      "preferredTerm": "Craniotomy supratentorial tumour debulking",
-      "subspecialty": "cranial-tumour",
-      "facets": {
-        "method": "Partial excision",
-        "procedureSite": "Cerebral hemisphere",
-        "surgicalApproach": "Craniotomy",
-        "device": null,
-        "morphology": "Glioma",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00015",
+        "fsn": "Craniotomy and partial excision of supratentorial intra-axial tumour (procedure)",
+        "preferredTerm": "Craniotomy supratentorial tumour debulking",
+        "subspecialty": "cranial-tumour",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0017",
+        "procedureSite": "SIT-0008",
+        "surgicalApproach": "APP-0004",
+        "device": "",
+        "morphology": "MOR-0017",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "debulking",
@@ -1491,27 +3526,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00016",
-      "fsn": "Craniotomy and excision of convexity meningioma (procedure)",
-      "preferredTerm": "Craniotomy convexity meningioma excision",
-      "subspecialty": "cranial-tumour",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Dura mater",
-        "surgicalApproach": "Craniotomy",
-        "device": null,
-        "morphology": "Meningioma",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00016",
+        "fsn": "Craniotomy and excision of convexity meningioma (procedure)",
+        "preferredTerm": "Craniotomy convexity meningioma excision",
+        "subspecialty": "cranial-tumour",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0013",
+        "surgicalApproach": "APP-0004",
+        "device": "",
+        "morphology": "MOR-0029",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "convexity meningioma",
@@ -1539,27 +3577,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00017",
-      "fsn": "Craniotomy and excision of skull base meningioma (procedure)",
-      "preferredTerm": "Craniotomy skull base meningioma excision",
-      "subspecialty": "cranial-tumour",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Anterior skull base",
-        "surgicalApproach": "Pterional",
-        "device": null,
-        "morphology": "Meningioma",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00017",
+        "fsn": "Craniotomy and excision of skull base meningioma (procedure)",
+        "preferredTerm": "Craniotomy skull base meningioma excision",
+        "subspecialty": "cranial-tumour",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0003",
+        "surgicalApproach": "APP-0017",
+        "device": "",
+        "morphology": "MOR-0029",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "sphenoid wing meningioma",
@@ -1581,27 +3622,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00018",
-      "fsn": "Retrosigmoid craniotomy and excision of cerebellopontine angle tumour (procedure)",
-      "preferredTerm": "Retrosigmoid CPA tumour excision",
-      "subspecialty": "cranial-tumour",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Cerebellopontine angle",
-        "surgicalApproach": "Retrosigmoid",
-        "device": null,
-        "morphology": "Vestibular schwannoma",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00018",
+        "fsn": "Retrosigmoid craniotomy and excision of cerebellopontine angle tumour (procedure)",
+        "preferredTerm": "Retrosigmoid CPA tumour excision",
+        "subspecialty": "cranial-tumour",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0006",
+        "surgicalApproach": "APP-0018",
+        "device": "",
+        "morphology": "MOR-0047",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "acoustic neuroma",
@@ -1629,27 +3673,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00019",
-      "fsn": "Suboccipital craniotomy and excision of posterior fossa tumour (procedure)",
-      "preferredTerm": "Suboccipital posterior fossa tumour excision",
-      "subspecialty": "cranial-tumour",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Posterior cranial fossa",
-        "surgicalApproach": "Suboccipital midline",
-        "device": null,
-        "morphology": "Neoplasm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00019",
+        "fsn": "Suboccipital craniotomy and excision of posterior fossa tumour (procedure)",
+        "preferredTerm": "Suboccipital posterior fossa tumour excision",
+        "subspecialty": "cranial-tumour",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0026",
+        "surgicalApproach": "APP-0021",
+        "device": "",
+        "morphology": "MOR-0032",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "posterior fossa tumour",
@@ -1671,27 +3718,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00020",
-      "fsn": "Endoscopic transsphenoidal excision of pituitary adenoma (procedure)",
-      "preferredTerm": "Endoscopic transsphenoidal pituitary excision",
-      "subspecialty": "cranial-tumour",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Pituitary fossa",
-        "surgicalApproach": "Endoscopic transsphenoidal",
-        "device": null,
-        "morphology": "Pituitary adenoma",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00020",
+        "fsn": "Endoscopic transsphenoidal excision of pituitary adenoma (procedure)",
+        "preferredTerm": "Endoscopic transsphenoidal pituitary excision",
+        "subspecialty": "cranial-tumour",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0024",
+        "surgicalApproach": "APP-0006",
+        "device": "",
+        "morphology": "MOR-0034",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "TSS",
@@ -1737,27 +3787,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00021",
-      "fsn": "Craniotomy and excision of intracranial metastasis (procedure)",
-      "preferredTerm": "Craniotomy metastasis excision",
-      "subspecialty": "cranial-tumour",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Cerebral hemisphere",
-        "surgicalApproach": "Craniotomy",
-        "device": null,
-        "morphology": "Intracranial metastasis",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00021",
+        "fsn": "Craniotomy and excision of intracranial metastasis (procedure)",
+        "preferredTerm": "Craniotomy metastasis excision",
+        "subspecialty": "cranial-tumour",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0008",
+        "surgicalApproach": "APP-0004",
+        "device": "",
+        "morphology": "MOR-0023",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "brain met excision",
@@ -1779,27 +3832,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00022",
-      "fsn": "Craniotomy and excision of intraventricular tumour (procedure)",
-      "preferredTerm": "Craniotomy intraventricular tumour excision",
-      "subspecialty": "cranial-tumour",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Lateral ventricle",
-        "surgicalApproach": "Interhemispheric",
-        "device": null,
-        "morphology": "Intraventricular neoplasm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00022",
+        "fsn": "Craniotomy and excision of intraventricular tumour (procedure)",
+        "preferredTerm": "Craniotomy intraventricular tumour excision",
+        "subspecialty": "cranial-tumour",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0018",
+        "surgicalApproach": "APP-0012",
+        "device": "",
+        "morphology": "MOR-0026",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "intraventricular tumour",
@@ -1815,27 +3871,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00023",
-      "fsn": "Stereotactic biopsy of intracranial lesion (procedure)",
-      "preferredTerm": "Stereotactic brain biopsy",
-      "subspecialty": "cranial-tumour",
-      "facets": {
-        "method": "Biopsy",
-        "procedureSite": "Brain",
-        "surgicalApproach": "Stereotactic",
-        "device": null,
-        "morphology": "Neoplasm",
-        "intent": "Diagnostic"
+      "fields": {
+        "conceptId": "NSX-00023",
+        "fsn": "Stereotactic biopsy of intracranial lesion (procedure)",
+        "preferredTerm": "Stereotactic brain biopsy",
+        "subspecialty": "cranial-tumour",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0003",
+        "procedureSite": "SIT-0005",
+        "surgicalApproach": "APP-0019",
+        "device": "",
+        "morphology": "MOR-0032",
+        "defaultIntent": "INT-0001"
+      },
       "synonyms": [
         {
           "term": "stereotactic biopsy",
@@ -1863,27 +3922,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00024",
-      "fsn": "Open biopsy of intracranial lesion (procedure)",
-      "preferredTerm": "Open brain biopsy",
-      "subspecialty": "cranial-tumour",
-      "facets": {
-        "method": "Biopsy",
-        "procedureSite": "Brain",
-        "surgicalApproach": "Craniotomy",
-        "device": null,
-        "morphology": "Neoplasm",
-        "intent": "Diagnostic"
+      "fields": {
+        "conceptId": "NSX-00024",
+        "fsn": "Open biopsy of intracranial lesion (procedure)",
+        "preferredTerm": "Open brain biopsy",
+        "subspecialty": "cranial-tumour",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0003",
+        "procedureSite": "SIT-0005",
+        "surgicalApproach": "APP-0004",
+        "device": "",
+        "morphology": "MOR-0032",
+        "defaultIntent": "INT-0001"
+      },
       "synonyms": [
         {
           "term": "open biopsy",
@@ -1899,27 +3961,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00025",
-      "fsn": "Awake craniotomy with cortical mapping and tumour resection (procedure)",
-      "preferredTerm": "Awake craniotomy tumour resection",
-      "subspecialty": "cranial-tumour",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Cerebral hemisphere",
-        "surgicalApproach": "Craniotomy",
-        "device": null,
-        "morphology": "Glioma",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00025",
+        "fsn": "Awake craniotomy with cortical mapping and tumour resection (procedure)",
+        "preferredTerm": "Awake craniotomy tumour resection",
+        "subspecialty": "cranial-tumour",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0008",
+        "surgicalApproach": "APP-0004",
+        "device": "",
+        "morphology": "MOR-0017",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "awake crani",
@@ -1941,27 +4006,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00026",
-      "fsn": "Craniotomy and clipping of intracranial aneurysm (procedure)",
-      "preferredTerm": "Craniotomy aneurysm clipping",
-      "subspecialty": "cranial-vascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Cerebral artery",
-        "surgicalApproach": "Pterional",
-        "device": "Intracranial aneurysm clip",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00026",
+        "fsn": "Craniotomy and clipping of intracranial aneurysm (procedure)",
+        "preferredTerm": "Craniotomy aneurysm clipping",
+        "subspecialty": "cranial-vascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0007",
+        "surgicalApproach": "APP-0017",
+        "device": "DEV-0011",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "aneurysm clipping",
@@ -1989,27 +4057,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00027",
-      "fsn": "Craniotomy and excision of cerebral arteriovenous malformation (procedure)",
-      "preferredTerm": "Craniotomy AVM excision",
-      "subspecialty": "cranial-vascular",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Cerebral hemisphere",
-        "surgicalApproach": "Craniotomy",
-        "device": null,
-        "morphology": "Arteriovenous malformation",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00027",
+        "fsn": "Craniotomy and excision of cerebral arteriovenous malformation (procedure)",
+        "preferredTerm": "Craniotomy AVM excision",
+        "subspecialty": "cranial-vascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0008",
+        "surgicalApproach": "APP-0004",
+        "device": "",
+        "morphology": "MOR-0003",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "AVM excision",
@@ -2031,27 +4102,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00028",
-      "fsn": "Craniotomy and excision of cerebral cavernous malformation (procedure)",
-      "preferredTerm": "Craniotomy cavernoma excision",
-      "subspecialty": "cranial-vascular",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Cerebral hemisphere",
-        "surgicalApproach": "Craniotomy",
-        "device": null,
-        "morphology": "Cavernous malformation",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00028",
+        "fsn": "Craniotomy and excision of cerebral cavernous malformation (procedure)",
+        "preferredTerm": "Craniotomy cavernoma excision",
+        "subspecialty": "cranial-vascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0008",
+        "surgicalApproach": "APP-0004",
+        "device": "",
+        "morphology": "MOR-0005",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "cavernoma",
@@ -2073,27 +4147,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00029",
-      "fsn": "Craniotomy and evacuation of spontaneous intracerebral haematoma (procedure)",
-      "preferredTerm": "Craniotomy spontaneous ICH evacuation",
-      "subspecialty": "cranial-vascular",
-      "facets": {
-        "method": "Evacuation",
-        "procedureSite": "Cerebral hemisphere",
-        "surgicalApproach": "Craniotomy",
-        "device": null,
-        "morphology": "Intracerebral haematoma",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00029",
+        "fsn": "Craniotomy and evacuation of spontaneous intracerebral haematoma (procedure)",
+        "preferredTerm": "Craniotomy spontaneous ICH evacuation",
+        "subspecialty": "cranial-vascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0008",
+        "procedureSite": "SIT-0008",
+        "surgicalApproach": "APP-0004",
+        "device": "",
+        "morphology": "MOR-0021",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "spontaneous ICH",
@@ -2115,27 +4192,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00030",
-      "fsn": "Decompressive craniectomy for malignant middle cerebral artery infarction (procedure)",
-      "preferredTerm": "Decompressive craniectomy malignant MCA",
-      "subspecialty": "cranial-vascular",
-      "facets": {
-        "method": "Decompression",
-        "procedureSite": "Skull",
-        "surgicalApproach": "Decompressive craniectomy",
-        "device": null,
-        "morphology": "Malignant middle cerebral artery infarction",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00030",
+        "fsn": "Decompressive craniectomy for malignant middle cerebral artery infarction (procedure)",
+        "preferredTerm": "Decompressive craniectomy malignant MCA",
+        "subspecialty": "cranial-vascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0005",
+        "procedureSite": "SIT-0030",
+        "surgicalApproach": "APP-0005",
+        "device": "",
+        "morphology": "MOR-0028",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "malignant MCA",
@@ -2157,27 +4237,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00031",
-      "fsn": "Superficial temporal artery to middle cerebral artery bypass (procedure)",
-      "preferredTerm": "STA-MCA bypass",
-      "subspecialty": "cranial-vascular",
-      "facets": {
-        "method": "Anastomosis",
-        "procedureSite": "Cerebral artery",
-        "surgicalApproach": "Craniotomy",
-        "device": null,
-        "morphology": null,
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00031",
+        "fsn": "Superficial temporal artery to middle cerebral artery bypass (procedure)",
+        "preferredTerm": "STA-MCA bypass",
+        "subspecialty": "cranial-vascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0001",
+        "procedureSite": "SIT-0007",
+        "surgicalApproach": "APP-0004",
+        "device": "",
+        "morphology": "",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "STA-MCA",
@@ -2205,27 +4288,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00032",
-      "fsn": "Insertion of ventriculoperitoneal shunt (procedure)",
-      "preferredTerm": "Ventriculoperitoneal shunt insertion",
-      "subspecialty": "cranial-csf",
-      "facets": {
-        "method": "Insertion",
-        "procedureSite": "Lateral ventricle",
-        "surgicalApproach": "Burr hole",
-        "device": "Ventriculoperitoneal shunt system",
-        "morphology": "Hydrocephalus",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00032",
+        "fsn": "Insertion of ventriculoperitoneal shunt (procedure)",
+        "preferredTerm": "Ventriculoperitoneal shunt insertion",
+        "subspecialty": "cranial-csf",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0015",
+        "procedureSite": "SIT-0018",
+        "surgicalApproach": "APP-0003",
+        "device": "DEV-0026",
+        "morphology": "MOR-0019",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "VP shunt",
@@ -2265,27 +4351,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00033",
-      "fsn": "Revision of ventriculoperitoneal shunt (procedure)",
-      "preferredTerm": "Ventriculoperitoneal shunt revision",
-      "subspecialty": "cranial-csf",
-      "facets": {
-        "method": "Revision",
-        "procedureSite": "Lateral ventricle",
-        "surgicalApproach": "Burr hole",
-        "device": "Ventriculoperitoneal shunt system",
-        "morphology": "Hydrocephalus",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00033",
+        "fsn": "Revision of ventriculoperitoneal shunt (procedure)",
+        "preferredTerm": "Ventriculoperitoneal shunt revision",
+        "subspecialty": "cranial-csf",
+        "lateralityApplicable": true,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": false,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0024",
+        "procedureSite": "SIT-0018",
+        "surgicalApproach": "APP-0003",
+        "device": "DEV-0026",
+        "morphology": "MOR-0019",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "shunt revision",
@@ -2307,27 +4396,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00034",
-      "fsn": "Removal of ventriculoperitoneal shunt (procedure)",
-      "preferredTerm": "Ventriculoperitoneal shunt removal",
-      "subspecialty": "cranial-csf",
-      "facets": {
-        "method": "Removal",
-        "procedureSite": "Lateral ventricle",
-        "surgicalApproach": "Burr hole",
-        "device": "Ventriculoperitoneal shunt system",
-        "morphology": null,
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00034",
+        "fsn": "Removal of ventriculoperitoneal shunt (procedure)",
+        "preferredTerm": "Ventriculoperitoneal shunt removal",
+        "subspecialty": "cranial-csf",
+        "lateralityApplicable": true,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": false,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0022",
+        "procedureSite": "SIT-0018",
+        "surgicalApproach": "APP-0003",
+        "device": "DEV-0026",
+        "morphology": "",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "shunt removal",
@@ -2349,27 +4441,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00035",
-      "fsn": "Insertion of ventriculoatrial shunt (procedure)",
-      "preferredTerm": "Ventriculoatrial shunt insertion",
-      "subspecialty": "cranial-csf",
-      "facets": {
-        "method": "Insertion",
-        "procedureSite": "Lateral ventricle",
-        "surgicalApproach": "Burr hole",
-        "device": "Ventriculoatrial shunt system",
-        "morphology": "Hydrocephalus",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00035",
+        "fsn": "Insertion of ventriculoatrial shunt (procedure)",
+        "preferredTerm": "Ventriculoatrial shunt insertion",
+        "subspecialty": "cranial-csf",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0015",
+        "procedureSite": "SIT-0018",
+        "surgicalApproach": "APP-0003",
+        "device": "DEV-0025",
+        "morphology": "MOR-0019",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "VA shunt",
@@ -2385,27 +4480,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00036",
-      "fsn": "Insertion of lumboperitoneal shunt (procedure)",
-      "preferredTerm": "Lumboperitoneal shunt insertion",
-      "subspecialty": "cranial-csf",
-      "facets": {
-        "method": "Insertion",
-        "procedureSite": "Lumbar subarachnoid space",
-        "surgicalApproach": "Percutaneous",
-        "device": "Lumboperitoneal shunt system",
-        "morphology": "Hydrocephalus",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00036",
+        "fsn": "Insertion of lumboperitoneal shunt (procedure)",
+        "preferredTerm": "Lumboperitoneal shunt insertion",
+        "subspecialty": "cranial-csf",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0015",
+        "procedureSite": "SIT-0019",
+        "surgicalApproach": "APP-0014",
+        "device": "DEV-0019",
+        "morphology": "MOR-0019",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "LP shunt",
@@ -2421,27 +4519,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00037",
-      "fsn": "Endoscopic third ventriculostomy (procedure)",
-      "preferredTerm": "Endoscopic third ventriculostomy",
-      "subspecialty": "cranial-csf",
-      "facets": {
-        "method": "Fenestration",
-        "procedureSite": "Third ventricle",
-        "surgicalApproach": "Endoscopic transventricular",
-        "device": null,
-        "morphology": "Hydrocephalus",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00037",
+        "fsn": "Endoscopic third ventriculostomy (procedure)",
+        "preferredTerm": "Endoscopic third ventriculostomy",
+        "subspecialty": "cranial-csf",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0010",
+        "procedureSite": "SIT-0034",
+        "surgicalApproach": "APP-0007",
+        "device": "",
+        "morphology": "MOR-0019",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "ETV",
@@ -2463,27 +4564,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00038",
-      "fsn": "Insertion of Ommaya reservoir (procedure)",
-      "preferredTerm": "Ommaya reservoir insertion",
-      "subspecialty": "cranial-csf",
-      "facets": {
-        "method": "Insertion",
-        "procedureSite": "Lateral ventricle",
-        "surgicalApproach": "Burr hole",
-        "device": "Ommaya reservoir",
-        "morphology": null,
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00038",
+        "fsn": "Insertion of Ommaya reservoir (procedure)",
+        "preferredTerm": "Ommaya reservoir insertion",
+        "subspecialty": "cranial-csf",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0015",
+        "procedureSite": "SIT-0018",
+        "surgicalApproach": "APP-0003",
+        "device": "DEV-0022",
+        "morphology": "",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "Ommaya",
@@ -2499,27 +4603,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00039",
-      "fsn": "Insertion of lumbar drain (procedure)",
-      "preferredTerm": "Lumbar drain insertion",
-      "subspecialty": "cranial-csf",
-      "facets": {
-        "method": "Insertion",
-        "procedureSite": "Lumbar subarachnoid space",
-        "surgicalApproach": "Percutaneous",
-        "device": "Lumbar drain catheter",
-        "morphology": null,
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00039",
+        "fsn": "Insertion of lumbar drain (procedure)",
+        "preferredTerm": "Lumbar drain insertion",
+        "subspecialty": "cranial-csf",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0015",
+        "procedureSite": "SIT-0019",
+        "surgicalApproach": "APP-0014",
+        "device": "DEV-0018",
+        "morphology": "",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "lumbar drain",
@@ -2541,27 +4648,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00040",
-      "fsn": "Craniotomy and evacuation of cerebral abscess (procedure)",
-      "preferredTerm": "Craniotomy cerebral abscess evacuation",
-      "subspecialty": "cranial-infection",
-      "facets": {
-        "method": "Evacuation",
-        "procedureSite": "Brain",
-        "surgicalApproach": "Craniotomy",
-        "device": null,
-        "morphology": "Cerebral abscess",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00040",
+        "fsn": "Craniotomy and evacuation of cerebral abscess (procedure)",
+        "preferredTerm": "Craniotomy cerebral abscess evacuation",
+        "subspecialty": "cranial-infection",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0008",
+        "procedureSite": "SIT-0005",
+        "surgicalApproach": "APP-0004",
+        "device": "",
+        "morphology": "MOR-0006",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "brain abscess crani",
@@ -2577,27 +4687,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00041",
-      "fsn": "Burr hole aspiration of cerebral abscess (procedure)",
-      "preferredTerm": "Burr hole cerebral abscess aspiration",
-      "subspecialty": "cranial-infection",
-      "facets": {
-        "method": "Drainage",
-        "procedureSite": "Brain",
-        "surgicalApproach": "Burr hole",
-        "device": null,
-        "morphology": "Cerebral abscess",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00041",
+        "fsn": "Burr hole aspiration of cerebral abscess (procedure)",
+        "preferredTerm": "Burr hole cerebral abscess aspiration",
+        "subspecialty": "cranial-infection",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0007",
+        "procedureSite": "SIT-0005",
+        "surgicalApproach": "APP-0003",
+        "device": "",
+        "morphology": "MOR-0006",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "abscess aspiration",
@@ -2619,27 +4732,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00042",
-      "fsn": "Craniotomy and evacuation of subdural empyema (procedure)",
-      "preferredTerm": "Craniotomy subdural empyema evacuation",
-      "subspecialty": "cranial-infection",
-      "facets": {
-        "method": "Evacuation",
-        "procedureSite": "Subdural space",
-        "surgicalApproach": "Craniotomy",
-        "device": null,
-        "morphology": "Subdural empyema",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00042",
+        "fsn": "Craniotomy and evacuation of subdural empyema (procedure)",
+        "preferredTerm": "Craniotomy subdural empyema evacuation",
+        "subspecialty": "cranial-infection",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0008",
+        "procedureSite": "SIT-0033",
+        "surgicalApproach": "APP-0004",
+        "device": "",
+        "morphology": "MOR-0042",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "subdural empyema",
@@ -2661,27 +4777,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00043",
-      "fsn": "Debridement of infected craniotomy wound (procedure)",
-      "preferredTerm": "Craniotomy wound debridement",
-      "subspecialty": "cranial-infection",
-      "facets": {
-        "method": "Debridement",
-        "procedureSite": "Scalp",
-        "surgicalApproach": "Open direct exposure",
-        "device": null,
-        "morphology": "Surgical site infection",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00043",
+        "fsn": "Debridement of infected craniotomy wound (procedure)",
+        "preferredTerm": "Craniotomy wound debridement",
+        "subspecialty": "cranial-infection",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0004",
+        "procedureSite": "SIT-0029",
+        "surgicalApproach": "APP-0013",
+        "device": "",
+        "morphology": "MOR-0043",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "wound washout",
@@ -2703,30 +4822,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00044",
-      "fsn": "Lumbar foraminotomy (procedure)",
-      "preferredTerm": "Lumbar foraminotomy",
-      "subspecialty": "spine-degenerative",
-      "facets": {
-        "method": "Decompression",
-        "procedureSite": "Lumbar vertebral column",
-        "surgicalApproach": "Transforaminal",
-        "device": null,
-        "morphology": "Spinal canal stenosis",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00044",
+        "fsn": "Lumbar foraminotomy (procedure)",
+        "preferredTerm": "Lumbar foraminotomy",
+        "subspecialty": "spine-degenerative",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+          "lumbar",
+          "lumbosacral"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "interspace",
-      "levelRegions": [
-        "lumbar",
-        "lumbosacral"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0005",
+        "procedureSite": "SIT-0020",
+        "surgicalApproach": "APP-0022",
+        "device": "",
+        "morphology": "MOR-0038",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "foraminotomy",
@@ -2742,30 +4864,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00045",
-      "fsn": "Posterior lumbar interbody fusion (procedure)",
-      "preferredTerm": "Posterior lumbar interbody fusion",
-      "subspecialty": "spine-degenerative",
-      "facets": {
-        "method": "Fusion",
-        "procedureSite": "Lumbar vertebral column",
-        "surgicalApproach": "Posterior midline",
-        "device": "Intervertebral cage",
-        "morphology": "Spondylolisthesis",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00045",
+        "fsn": "Posterior lumbar interbody fusion (procedure)",
+        "preferredTerm": "Posterior lumbar interbody fusion",
+        "subspecialty": "spine-degenerative",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+          "lumbar",
+          "lumbosacral"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "interspace",
-      "levelRegions": [
-        "lumbar",
-        "lumbosacral"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0012",
+        "procedureSite": "SIT-0020",
+        "surgicalApproach": "APP-0015",
+        "device": "DEV-0010",
+        "morphology": "MOR-0041",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "PLIF",
@@ -2781,30 +4906,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00046",
-      "fsn": "Transforaminal lumbar interbody fusion (procedure)",
-      "preferredTerm": "Transforaminal lumbar interbody fusion",
-      "subspecialty": "spine-degenerative",
-      "facets": {
-        "method": "Fusion",
-        "procedureSite": "Lumbar vertebral column",
-        "surgicalApproach": "Transforaminal",
-        "device": "Intervertebral cage",
-        "morphology": "Spondylolisthesis",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00046",
+        "fsn": "Transforaminal lumbar interbody fusion (procedure)",
+        "preferredTerm": "Transforaminal lumbar interbody fusion",
+        "subspecialty": "spine-degenerative",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+          "lumbar",
+          "lumbosacral"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "interspace",
-      "levelRegions": [
-        "lumbar",
-        "lumbosacral"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0012",
+        "procedureSite": "SIT-0020",
+        "surgicalApproach": "APP-0022",
+        "device": "DEV-0010",
+        "morphology": "MOR-0041",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "TLIF",
@@ -2820,30 +4948,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00047",
-      "fsn": "Posterolateral lumbar fusion with pedicle screw fixation (procedure)",
-      "preferredTerm": "Posterolateral lumbar fusion",
-      "subspecialty": "spine-degenerative",
-      "facets": {
-        "method": "Fusion",
-        "procedureSite": "Lumbar vertebral column",
-        "surgicalApproach": "Posterolateral",
-        "device": "Pedicle screw system",
-        "morphology": "Spondylolisthesis",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00047",
+        "fsn": "Posterolateral lumbar fusion with pedicle screw fixation (procedure)",
+        "preferredTerm": "Posterolateral lumbar fusion",
+        "subspecialty": "spine-degenerative",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "lumbar",
+          "sacral"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "lumbar",
-        "sacral"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0012",
+        "procedureSite": "SIT-0020",
+        "surgicalApproach": "APP-0016",
+        "device": "DEV-0023",
+        "morphology": "MOR-0041",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "PLF",
@@ -2883,29 +5014,32 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00048",
-      "fsn": "Anterior cervical corpectomy and fusion (procedure)",
-      "preferredTerm": "Anterior cervical corpectomy and fusion",
-      "subspecialty": "spine-degenerative",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Vertebral body",
-        "surgicalApproach": "Anterior cervical",
-        "device": "Anterior cervical plate",
-        "morphology": "Cervical spondylotic myelopathy",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00048",
+        "fsn": "Anterior cervical corpectomy and fusion (procedure)",
+        "preferredTerm": "Anterior cervical corpectomy and fusion",
+        "subspecialty": "spine-degenerative",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "cervical"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "cervical"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0041",
+        "surgicalApproach": "APP-0001",
+        "device": "DEV-0001",
+        "morphology": "MOR-0008",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "corpectomy",
@@ -2927,30 +5061,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00049",
-      "fsn": "Cervical laminectomy and decompression (procedure)",
-      "preferredTerm": "Cervical laminectomy",
-      "subspecialty": "spine-degenerative",
-      "facets": {
-        "method": "Decompression",
-        "procedureSite": "Cervical vertebral column",
-        "surgicalApproach": "Posterior midline",
-        "device": null,
-        "morphology": "Cervical spondylotic myelopathy",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00049",
+        "fsn": "Cervical laminectomy and decompression (procedure)",
+        "preferredTerm": "Cervical laminectomy",
+        "subspecialty": "spine-degenerative",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "craniocervical",
+          "cervical"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "craniocervical",
-        "cervical"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0005",
+        "procedureSite": "SIT-0010",
+        "surgicalApproach": "APP-0015",
+        "device": "",
+        "morphology": "MOR-0008",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "cervical laminectomy",
@@ -2972,29 +5109,32 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00050",
-      "fsn": "Cervical laminoplasty (procedure)",
-      "preferredTerm": "Cervical laminoplasty",
-      "subspecialty": "spine-degenerative",
-      "facets": {
-        "method": "Decompression",
-        "procedureSite": "Cervical vertebral column",
-        "surgicalApproach": "Posterior midline",
-        "device": null,
-        "morphology": "Cervical spondylotic myelopathy",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00050",
+        "fsn": "Cervical laminoplasty (procedure)",
+        "preferredTerm": "Cervical laminoplasty",
+        "subspecialty": "spine-degenerative",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "cervical"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "cervical"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0005",
+        "procedureSite": "SIT-0010",
+        "surgicalApproach": "APP-0015",
+        "device": "",
+        "morphology": "MOR-0008",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "laminoplasty",
@@ -3010,30 +5150,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00051",
-      "fsn": "Posterior cervical fusion with lateral mass screw fixation (procedure)",
-      "preferredTerm": "Posterior cervical fusion",
-      "subspecialty": "spine-degenerative",
-      "facets": {
-        "method": "Fusion",
-        "procedureSite": "Cervical vertebral column",
-        "surgicalApproach": "Posterior midline",
-        "device": "Lateral mass screw system",
-        "morphology": null,
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00051",
+        "fsn": "Posterior cervical fusion with lateral mass screw fixation (procedure)",
+        "preferredTerm": "Posterior cervical fusion",
+        "subspecialty": "spine-degenerative",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "craniocervical",
+          "cervical"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "craniocervical",
-        "cervical"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0012",
+        "procedureSite": "SIT-0010",
+        "surgicalApproach": "APP-0015",
+        "device": "DEV-0016",
+        "morphology": "",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "lateral mass fusion",
@@ -3067,30 +5210,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00052",
-      "fsn": "Thoracic discectomy (procedure)",
-      "preferredTerm": "Thoracic discectomy",
-      "subspecialty": "spine-degenerative",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Intervertebral disc",
-        "surgicalApproach": "Posterolateral",
-        "device": null,
-        "morphology": "Herniated intervertebral disc",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00052",
+        "fsn": "Thoracic discectomy (procedure)",
+        "preferredTerm": "Thoracic discectomy",
+        "subspecialty": "spine-degenerative",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+          "thoracic",
+          "thoracolumbar"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "interspace",
-      "levelRegions": [
-        "thoracic",
-        "thoracolumbar"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0016",
+        "surgicalApproach": "APP-0016",
+        "device": "",
+        "morphology": "MOR-0018",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "thoracic disc",
@@ -3118,30 +5264,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00053",
-      "fsn": "Posterior spinal instrumentation and fusion for vertebral fracture (procedure)",
-      "preferredTerm": "Posterior spinal fixation fracture",
-      "subspecialty": "spine-trauma",
-      "facets": {
-        "method": "Fixation",
-        "procedureSite": "Thoracic vertebral column",
-        "surgicalApproach": "Posterior midline",
-        "device": "Pedicle screw system",
-        "morphology": "Vertebral fracture",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00053",
+        "fsn": "Posterior spinal instrumentation and fusion for vertebral fracture (procedure)",
+        "preferredTerm": "Posterior spinal fixation fracture",
+        "subspecialty": "spine-trauma",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "thoracic",
+          "lumbar"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "thoracic",
-        "lumbar"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0011",
+        "procedureSite": "SIT-0035",
+        "surgicalApproach": "APP-0015",
+        "device": "DEV-0023",
+        "morphology": "MOR-0046",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "spinal fixation",
@@ -3169,29 +5318,32 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00054",
-      "fsn": "Odontoid screw fixation (procedure)",
-      "preferredTerm": "Odontoid screw fixation",
-      "subspecialty": "spine-trauma",
-      "facets": {
-        "method": "Fixation",
-        "procedureSite": "Craniocervical junction",
-        "surgicalApproach": "Anterior cervical",
-        "device": "Odontoid screw",
-        "morphology": "Vertebral fracture",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00054",
+        "fsn": "Odontoid screw fixation (procedure)",
+        "preferredTerm": "Odontoid screw fixation",
+        "subspecialty": "spine-trauma",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "craniocervical"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "craniocervical"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0011",
+        "procedureSite": "SIT-0012",
+        "surgicalApproach": "APP-0001",
+        "device": "DEV-0021",
+        "morphology": "MOR-0046",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "odontoid screw",
@@ -3213,30 +5365,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00055",
-      "fsn": "Occipitocervical fusion (procedure)",
-      "preferredTerm": "Occipitocervical fusion",
-      "subspecialty": "spine-trauma",
-      "facets": {
-        "method": "Fusion",
-        "procedureSite": "Craniocervical junction",
-        "surgicalApproach": "Posterior midline",
-        "device": "Occipitocervical fixation system",
-        "morphology": null,
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00055",
+        "fsn": "Occipitocervical fusion (procedure)",
+        "preferredTerm": "Occipitocervical fusion",
+        "subspecialty": "spine-trauma",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "craniocervical",
+          "cervical"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "craniocervical",
-        "cervical"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0012",
+        "procedureSite": "SIT-0012",
+        "surgicalApproach": "APP-0015",
+        "device": "DEV-0020",
+        "morphology": "",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "occipitocervical",
@@ -3258,30 +5413,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00056",
-      "fsn": "Percutaneous vertebroplasty (procedure)",
-      "preferredTerm": "Percutaneous vertebroplasty",
-      "subspecialty": "spine-trauma",
-      "facets": {
-        "method": "Insertion",
-        "procedureSite": "Vertebral body",
-        "surgicalApproach": "Percutaneous",
-        "device": "Bone cement",
-        "morphology": "Vertebral fracture",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00056",
+        "fsn": "Percutaneous vertebroplasty (procedure)",
+        "preferredTerm": "Percutaneous vertebroplasty",
+        "subspecialty": "spine-trauma",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "thoracic",
+          "lumbar"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "thoracic",
-        "lumbar"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0015",
+        "procedureSite": "SIT-0041",
+        "surgicalApproach": "APP-0014",
+        "device": "DEV-0003",
+        "morphology": "MOR-0046",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "vertebroplasty",
@@ -3309,31 +5467,34 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00057",
-      "fsn": "Excision of intradural extramedullary spinal tumour (procedure)",
-      "preferredTerm": "Intradural extramedullary spinal tumour excision",
-      "subspecialty": "spine-tumour",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Spinal cord",
-        "surgicalApproach": "Posterior midline",
-        "device": null,
-        "morphology": "Intradural extramedullary neoplasm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00057",
+        "fsn": "Excision of intradural extramedullary spinal tumour (procedure)",
+        "preferredTerm": "Intradural extramedullary spinal tumour excision",
+        "subspecialty": "spine-tumour",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "cervical",
+          "thoracic",
+          "lumbar"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "cervical",
-        "thoracic",
-        "lumbar"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0031",
+        "surgicalApproach": "APP-0015",
+        "device": "",
+        "morphology": "MOR-0024",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "IDEM",
@@ -3361,30 +5522,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00058",
-      "fsn": "Excision of intramedullary spinal cord tumour (procedure)",
-      "preferredTerm": "Intramedullary spinal cord tumour excision",
-      "subspecialty": "spine-tumour",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Spinal cord",
-        "surgicalApproach": "Posterior midline",
-        "device": null,
-        "morphology": "Intramedullary neoplasm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00058",
+        "fsn": "Excision of intramedullary spinal cord tumour (procedure)",
+        "preferredTerm": "Intramedullary spinal cord tumour excision",
+        "subspecialty": "spine-tumour",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "cervical",
+          "thoracic"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "cervical",
-        "thoracic"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0031",
+        "surgicalApproach": "APP-0015",
+        "device": "",
+        "morphology": "MOR-0025",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "IMSCT",
@@ -3406,31 +5570,34 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00059",
-      "fsn": "Laminectomy and decompression for metastatic spinal tumour (procedure)",
-      "preferredTerm": "Laminectomy metastatic spinal tumour",
-      "subspecialty": "spine-tumour",
-      "facets": {
-        "method": "Decompression",
-        "procedureSite": "Thoracic vertebral column",
-        "surgicalApproach": "Posterior midline",
-        "device": null,
-        "morphology": "Metastatic spinal tumour",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00059",
+        "fsn": "Laminectomy and decompression for metastatic spinal tumour (procedure)",
+        "preferredTerm": "Laminectomy metastatic spinal tumour",
+        "subspecialty": "spine-tumour",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "cervical",
+          "thoracic",
+          "lumbar"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "cervical",
-        "thoracic",
-        "lumbar"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0005",
+        "procedureSite": "SIT-0035",
+        "surgicalApproach": "APP-0015",
+        "device": "",
+        "morphology": "MOR-0030",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "spinal met decompression",
@@ -3458,32 +5625,35 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00060",
-      "fsn": "Biopsy of vertebral lesion (procedure)",
-      "preferredTerm": "Vertebral lesion biopsy",
-      "subspecialty": "spine-tumour",
-      "facets": {
-        "method": "Biopsy",
-        "procedureSite": "Vertebral body",
-        "surgicalApproach": "Percutaneous",
-        "device": null,
-        "morphology": "Neoplasm",
-        "intent": "Diagnostic"
+      "fields": {
+        "conceptId": "NSX-00060",
+        "fsn": "Biopsy of vertebral lesion (procedure)",
+        "preferredTerm": "Vertebral lesion biopsy",
+        "subspecialty": "spine-tumour",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "cervical",
+          "thoracic",
+          "lumbar",
+          "sacral"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "cervical",
-        "thoracic",
-        "lumbar",
-        "sacral"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0003",
+        "procedureSite": "SIT-0041",
+        "surgicalApproach": "APP-0014",
+        "device": "",
+        "morphology": "MOR-0032",
+        "defaultIntent": "INT-0001"
+      },
       "synonyms": [
         {
           "term": "vertebral biopsy",
@@ -3505,31 +5675,34 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00061",
-      "fsn": "Debridement and drainage of spinal epidural abscess (procedure)",
-      "preferredTerm": "Spinal epidural abscess drainage",
-      "subspecialty": "spine-infection",
-      "facets": {
-        "method": "Drainage",
-        "procedureSite": "Spinal epidural space",
-        "surgicalApproach": "Posterior midline",
-        "device": null,
-        "morphology": "Spinal epidural abscess",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00061",
+        "fsn": "Debridement and drainage of spinal epidural abscess (procedure)",
+        "preferredTerm": "Spinal epidural abscess drainage",
+        "subspecialty": "spine-infection",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "cervical",
+          "thoracic",
+          "lumbar"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "cervical",
-        "thoracic",
-        "lumbar"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0007",
+        "procedureSite": "SIT-0032",
+        "surgicalApproach": "APP-0015",
+        "device": "",
+        "morphology": "MOR-0040",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "SEA",
@@ -3551,30 +5724,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00062",
-      "fsn": "Repair of myelomeningocele (procedure)",
-      "preferredTerm": "Myelomeningocele repair",
-      "subspecialty": "paediatric",
-      "facets": {
-        "method": "Repair",
-        "procedureSite": "Spinal cord",
-        "surgicalApproach": "Posterior midline",
-        "device": null,
-        "morphology": "Myelomeningocele",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00062",
+        "fsn": "Repair of myelomeningocele (procedure)",
+        "preferredTerm": "Myelomeningocele repair",
+        "subspecialty": "paediatric",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "lumbar",
+          "sacral"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "lumbar",
-        "sacral"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0023",
+        "procedureSite": "SIT-0031",
+        "surgicalApproach": "APP-0015",
+        "device": "",
+        "morphology": "MOR-0031",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "MMC repair",
@@ -3596,27 +5772,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00063",
-      "fsn": "Repair of encephalocele (procedure)",
-      "preferredTerm": "Encephalocele repair",
-      "subspecialty": "paediatric",
-      "facets": {
-        "method": "Repair",
-        "procedureSite": "Skull",
-        "surgicalApproach": "Open direct exposure",
-        "device": null,
-        "morphology": "Encephalocele",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00063",
+        "fsn": "Repair of encephalocele (procedure)",
+        "preferredTerm": "Encephalocele repair",
+        "subspecialty": "paediatric",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0023",
+        "procedureSite": "SIT-0030",
+        "surgicalApproach": "APP-0013",
+        "device": "",
+        "morphology": "MOR-0013",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "encephalocele",
@@ -3632,30 +5811,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00064",
-      "fsn": "Untethering of spinal cord (procedure)",
-      "preferredTerm": "Spinal cord untethering",
-      "subspecialty": "paediatric",
-      "facets": {
-        "method": "Release",
-        "procedureSite": "Spinal cord",
-        "surgicalApproach": "Posterior midline",
-        "device": null,
-        "morphology": "Tethered cord",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00064",
+        "fsn": "Untethering of spinal cord (procedure)",
+        "preferredTerm": "Spinal cord untethering",
+        "subspecialty": "paediatric",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "lumbar",
+          "sacral"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "lumbar",
-        "sacral"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0021",
+        "procedureSite": "SIT-0031",
+        "surgicalApproach": "APP-0015",
+        "device": "",
+        "morphology": "MOR-0044",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "untethering",
@@ -3677,30 +5859,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00065",
-      "fsn": "Excision of spinal dermal sinus tract (procedure)",
-      "preferredTerm": "Spinal dermal sinus excision",
-      "subspecialty": "paediatric",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Spinal cord",
-        "surgicalApproach": "Posterior midline",
-        "device": null,
-        "morphology": "Spinal dermal sinus",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00065",
+        "fsn": "Excision of spinal dermal sinus tract (procedure)",
+        "preferredTerm": "Spinal dermal sinus excision",
+        "subspecialty": "paediatric",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "lumbar",
+          "sacral"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "lumbar",
-        "sacral"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0031",
+        "surgicalApproach": "APP-0015",
+        "device": "",
+        "morphology": "MOR-0039",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "dermal sinus",
@@ -3716,27 +5901,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00066",
-      "fsn": "Surgical correction of craniosynostosis (procedure)",
-      "preferredTerm": "Craniosynostosis correction",
-      "subspecialty": "paediatric",
-      "facets": {
-        "method": "Reconstruction",
-        "procedureSite": "Skull",
-        "surgicalApproach": "Open direct exposure",
-        "device": null,
-        "morphology": "Craniosynostosis",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00066",
+        "fsn": "Surgical correction of craniosynostosis (procedure)",
+        "preferredTerm": "Craniosynostosis correction",
+        "subspecialty": "paediatric",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0019",
+        "procedureSite": "SIT-0030",
+        "surgicalApproach": "APP-0013",
+        "device": "",
+        "morphology": "MOR-0010",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "craniosynostosis",
@@ -3758,27 +5946,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00067",
-      "fsn": "Carpal tunnel decompression (procedure)",
-      "preferredTerm": "Carpal tunnel decompression",
-      "subspecialty": "peripheral-nerve",
-      "facets": {
-        "method": "Decompression",
-        "procedureSite": "Median nerve",
-        "surgicalApproach": "Open direct exposure",
-        "device": null,
-        "morphology": "Entrapment neuropathy",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00067",
+        "fsn": "Carpal tunnel decompression (procedure)",
+        "preferredTerm": "Carpal tunnel decompression",
+        "subspecialty": "peripheral-nerve",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0005",
+        "procedureSite": "SIT-0021",
+        "surgicalApproach": "APP-0013",
+        "device": "",
+        "morphology": "MOR-0014",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "carpal tunnel",
@@ -3830,27 +6021,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00068",
-      "fsn": "Ulnar nerve decompression at elbow (procedure)",
-      "preferredTerm": "Ulnar nerve decompression",
-      "subspecialty": "peripheral-nerve",
-      "facets": {
-        "method": "Decompression",
-        "procedureSite": "Ulnar nerve",
-        "surgicalApproach": "Open direct exposure",
-        "device": null,
-        "morphology": "Entrapment neuropathy",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00068",
+        "fsn": "Ulnar nerve decompression at elbow (procedure)",
+        "preferredTerm": "Ulnar nerve decompression",
+        "subspecialty": "peripheral-nerve",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0005",
+        "procedureSite": "SIT-0039",
+        "surgicalApproach": "APP-0013",
+        "device": "",
+        "morphology": "MOR-0014",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "cubital tunnel",
@@ -3872,27 +6066,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00069",
-      "fsn": "Anterior transposition of ulnar nerve (procedure)",
-      "preferredTerm": "Ulnar nerve transposition",
-      "subspecialty": "peripheral-nerve",
-      "facets": {
-        "method": "Transposition",
-        "procedureSite": "Ulnar nerve",
-        "surgicalApproach": "Open direct exposure",
-        "device": null,
-        "morphology": "Entrapment neuropathy",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00069",
+        "fsn": "Anterior transposition of ulnar nerve (procedure)",
+        "preferredTerm": "Ulnar nerve transposition",
+        "subspecialty": "peripheral-nerve",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0025",
+        "procedureSite": "SIT-0039",
+        "surgicalApproach": "APP-0013",
+        "device": "",
+        "morphology": "MOR-0014",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "ulnar transposition",
@@ -3908,27 +6105,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00070",
-      "fsn": "Excision of peripheral nerve sheath tumour (procedure)",
-      "preferredTerm": "Peripheral nerve sheath tumour excision",
-      "subspecialty": "peripheral-nerve",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Peripheral nerve",
-        "surgicalApproach": "Open direct exposure",
-        "device": null,
-        "morphology": "Peripheral nerve sheath tumour",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00070",
+        "fsn": "Excision of peripheral nerve sheath tumour (procedure)",
+        "preferredTerm": "Peripheral nerve sheath tumour excision",
+        "subspecialty": "peripheral-nerve",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0023",
+        "surgicalApproach": "APP-0013",
+        "device": "",
+        "morphology": "MOR-0033",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "schwannoma peripheral",
@@ -3962,27 +6162,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00071",
-      "fsn": "Biopsy of peripheral nerve (procedure)",
-      "preferredTerm": "Peripheral nerve biopsy",
-      "subspecialty": "peripheral-nerve",
-      "facets": {
-        "method": "Biopsy",
-        "procedureSite": "Peripheral nerve",
-        "surgicalApproach": "Open direct exposure",
-        "device": null,
-        "morphology": null,
-        "intent": "Diagnostic"
+      "fields": {
+        "conceptId": "NSX-00071",
+        "fsn": "Biopsy of peripheral nerve (procedure)",
+        "preferredTerm": "Peripheral nerve biopsy",
+        "subspecialty": "peripheral-nerve",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0003",
+        "procedureSite": "SIT-0023",
+        "surgicalApproach": "APP-0013",
+        "device": "",
+        "morphology": "",
+        "defaultIntent": "INT-0001"
+      },
       "synonyms": [
         {
           "term": "nerve biopsy",
@@ -4004,27 +6207,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00072",
-      "fsn": "Microvascular decompression for trigeminal neuralgia (procedure)",
-      "preferredTerm": "Microvascular decompression trigeminal",
-      "subspecialty": "peripheral-nerve",
-      "facets": {
-        "method": "Decompression",
-        "procedureSite": "Trigeminal nerve",
-        "surgicalApproach": "Retrosigmoid",
-        "device": null,
-        "morphology": "Trigeminal neuralgia",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00072",
+        "fsn": "Microvascular decompression for trigeminal neuralgia (procedure)",
+        "preferredTerm": "Microvascular decompression trigeminal",
+        "subspecialty": "peripheral-nerve",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0005",
+        "procedureSite": "SIT-0038",
+        "surgicalApproach": "APP-0018",
+        "device": "",
+        "morphology": "MOR-0045",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "MVD",
@@ -4046,27 +6252,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00073",
-      "fsn": "Percutaneous rhizotomy of trigeminal nerve (procedure)",
-      "preferredTerm": "Percutaneous trigeminal rhizotomy",
-      "subspecialty": "peripheral-nerve",
-      "facets": {
-        "method": "Destruction",
-        "procedureSite": "Trigeminal nerve",
-        "surgicalApproach": "Percutaneous",
-        "device": null,
-        "morphology": "Trigeminal neuralgia",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00073",
+        "fsn": "Percutaneous rhizotomy of trigeminal nerve (procedure)",
+        "preferredTerm": "Percutaneous trigeminal rhizotomy",
+        "subspecialty": "peripheral-nerve",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0006",
+        "procedureSite": "SIT-0038",
+        "surgicalApproach": "APP-0014",
+        "device": "",
+        "morphology": "MOR-0045",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "rhizotomy",
@@ -4094,27 +6303,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00074",
-      "fsn": "Craniotomy and clipping of anterior communicating artery aneurysm (procedure)",
-      "preferredTerm": "Craniotomy ACoA aneurysm clipping",
-      "subspecialty": "cranial-vascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Anterior communicating artery",
-        "surgicalApproach": "Pterional",
-        "device": "Intracranial aneurysm clip",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00074",
+        "fsn": "Craniotomy and clipping of anterior communicating artery aneurysm (procedure)",
+        "preferredTerm": "Craniotomy ACoA aneurysm clipping",
+        "subspecialty": "cranial-vascular",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0002",
+        "surgicalApproach": "APP-0017",
+        "device": "DEV-0011",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "ACoA aneurysm",
@@ -4142,27 +6354,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00075",
-      "fsn": "Craniotomy and clipping of posterior communicating artery aneurysm (procedure)",
-      "preferredTerm": "Craniotomy PCoA aneurysm clipping",
-      "subspecialty": "cranial-vascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Posterior communicating artery",
-        "surgicalApproach": "Pterional",
-        "device": "Intracranial aneurysm clip",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00075",
+        "fsn": "Craniotomy and clipping of posterior communicating artery aneurysm (procedure)",
+        "preferredTerm": "Craniotomy PCoA aneurysm clipping",
+        "subspecialty": "cranial-vascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0025",
+        "surgicalApproach": "APP-0017",
+        "device": "DEV-0011",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "PCoA aneurysm",
@@ -4190,27 +6405,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00076",
-      "fsn": "Craniotomy and clipping of internal carotid artery aneurysm (procedure)",
-      "preferredTerm": "Craniotomy ICA aneurysm clipping",
-      "subspecialty": "cranial-vascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Internal carotid artery",
-        "surgicalApproach": "Pterional",
-        "device": "Intracranial aneurysm clip",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00076",
+        "fsn": "Craniotomy and clipping of internal carotid artery aneurysm (procedure)",
+        "preferredTerm": "Craniotomy ICA aneurysm clipping",
+        "subspecialty": "cranial-vascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0015",
+        "surgicalApproach": "APP-0017",
+        "device": "DEV-0011",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "ICA aneurysm",
@@ -4238,27 +6456,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00077",
-      "fsn": "Craniotomy and clipping of middle cerebral artery aneurysm (procedure)",
-      "preferredTerm": "Craniotomy MCA aneurysm clipping",
-      "subspecialty": "cranial-vascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Middle cerebral artery",
-        "surgicalApproach": "Pterional",
-        "device": "Intracranial aneurysm clip",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00077",
+        "fsn": "Craniotomy and clipping of middle cerebral artery aneurysm (procedure)",
+        "preferredTerm": "Craniotomy MCA aneurysm clipping",
+        "subspecialty": "cranial-vascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0022",
+        "surgicalApproach": "APP-0017",
+        "device": "DEV-0011",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "MCA aneurysm",
@@ -4286,27 +6507,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00078",
-      "fsn": "Craniotomy and clipping of anterior cerebral artery aneurysm (procedure)",
-      "preferredTerm": "Craniotomy ACA aneurysm clipping",
-      "subspecialty": "cranial-vascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Anterior cerebral artery",
-        "surgicalApproach": "Craniotomy",
-        "device": "Intracranial aneurysm clip",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00078",
+        "fsn": "Craniotomy and clipping of anterior cerebral artery aneurysm (procedure)",
+        "preferredTerm": "Craniotomy ACA aneurysm clipping",
+        "subspecialty": "cranial-vascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0001",
+        "surgicalApproach": "APP-0004",
+        "device": "DEV-0011",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "ACA aneurysm",
@@ -4334,27 +6558,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00079",
-      "fsn": "Craniotomy and clipping of basilar artery aneurysm (procedure)",
-      "preferredTerm": "Craniotomy basilar tip aneurysm clipping",
-      "subspecialty": "cranial-vascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Basilar artery",
-        "surgicalApproach": "Craniotomy",
-        "device": "Intracranial aneurysm clip",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00079",
+        "fsn": "Craniotomy and clipping of basilar artery aneurysm (procedure)",
+        "preferredTerm": "Craniotomy basilar tip aneurysm clipping",
+        "subspecialty": "cranial-vascular",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0004",
+        "surgicalApproach": "APP-0004",
+        "device": "DEV-0011",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "basilar tip aneurysm",
@@ -4382,27 +6609,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00080",
-      "fsn": "Craniotomy and clipping of posterior inferior cerebellar artery aneurysm (procedure)",
-      "preferredTerm": "Craniotomy PICA aneurysm clipping",
-      "subspecialty": "cranial-vascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Posterior inferior cerebellar artery",
-        "surgicalApproach": "Far lateral",
-        "device": "Intracranial aneurysm clip",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00080",
+        "fsn": "Craniotomy and clipping of posterior inferior cerebellar artery aneurysm (procedure)",
+        "preferredTerm": "Craniotomy PICA aneurysm clipping",
+        "subspecialty": "cranial-vascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0027",
+        "surgicalApproach": "APP-0009",
+        "device": "DEV-0011",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "PICA aneurysm",
@@ -4424,27 +6654,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00081",
-      "fsn": "Craniotomy and clipping of vertebral artery aneurysm (procedure)",
-      "preferredTerm": "Craniotomy vertebral artery aneurysm clipping",
-      "subspecialty": "cranial-vascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Vertebral artery",
-        "surgicalApproach": "Far lateral",
-        "device": "Intracranial aneurysm clip",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00081",
+        "fsn": "Craniotomy and clipping of vertebral artery aneurysm (procedure)",
+        "preferredTerm": "Craniotomy vertebral artery aneurysm clipping",
+        "subspecialty": "cranial-vascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0040",
+        "surgicalApproach": "APP-0009",
+        "device": "DEV-0011",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "VA aneurysm",
@@ -4466,30 +6699,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00082",
-      "fsn": "Lumbar microdiscectomy (procedure)",
-      "preferredTerm": "Lumbar microdiscectomy",
-      "subspecialty": "spine-degenerative",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Intervertebral disc",
-        "surgicalApproach": "Posterior midline",
-        "device": null,
-        "morphology": "Herniated intervertebral disc",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00082",
+        "fsn": "Lumbar microdiscectomy (procedure)",
+        "preferredTerm": "Lumbar microdiscectomy",
+        "subspecialty": "spine-degenerative",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+          "lumbar",
+          "lumbosacral"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "interspace",
-      "levelRegions": [
-        "lumbar",
-        "lumbosacral"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0016",
+        "surgicalApproach": "APP-0015",
+        "device": "",
+        "morphology": "MOR-0018",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "microdisc",
@@ -4547,30 +6783,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00083",
-      "fsn": "Lumbar laminectomy and decompression (procedure)",
-      "preferredTerm": "Lumbar laminectomy",
-      "subspecialty": "spine-degenerative",
-      "facets": {
-        "method": "Decompression",
-        "procedureSite": "Lumbar vertebral column",
-        "surgicalApproach": "Posterior midline",
-        "device": null,
-        "morphology": "Spinal canal stenosis",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00083",
+        "fsn": "Lumbar laminectomy and decompression (procedure)",
+        "preferredTerm": "Lumbar laminectomy",
+        "subspecialty": "spine-degenerative",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "lumbar",
+          "sacral"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "lumbar",
-        "sacral"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0005",
+        "procedureSite": "SIT-0020",
+        "surgicalApproach": "APP-0015",
+        "device": "",
+        "morphology": "MOR-0038",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "lumbar laminectomy",
@@ -4622,30 +6861,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00084",
-      "fsn": "Anterior cervical discectomy and fusion (procedure)",
-      "preferredTerm": "Anterior cervical discectomy and fusion",
-      "subspecialty": "spine-degenerative",
-      "facets": {
-        "method": "Fusion",
-        "procedureSite": "Intervertebral disc",
-        "surgicalApproach": "Anterior cervical",
-        "device": "Intervertebral cage",
-        "morphology": "Herniated intervertebral disc",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00084",
+        "fsn": "Anterior cervical discectomy and fusion (procedure)",
+        "preferredTerm": "Anterior cervical discectomy and fusion",
+        "subspecialty": "spine-degenerative",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+          "cervical",
+          "cervicothoracic"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "interspace",
-      "levelRegions": [
-        "cervical",
-        "cervicothoracic"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0012",
+        "procedureSite": "SIT-0016",
+        "surgicalApproach": "APP-0001",
+        "device": "DEV-0010",
+        "morphology": "MOR-0018",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "ACDF",
@@ -4685,29 +6927,32 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00085",
-      "fsn": "Posterolateral thoracic fusion with pedicle screw fixation (procedure)",
-      "preferredTerm": "Posterolateral thoracic fusion",
-      "subspecialty": "spine-degenerative",
-      "facets": {
-        "method": "Fusion",
-        "procedureSite": "Thoracic vertebral column",
-        "surgicalApproach": "Posterolateral",
-        "device": "Pedicle screw system",
-        "morphology": null,
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00085",
+        "fsn": "Posterolateral thoracic fusion with pedicle screw fixation (procedure)",
+        "preferredTerm": "Posterolateral thoracic fusion",
+        "subspecialty": "spine-degenerative",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "thoracic"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "thoracic"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0012",
+        "procedureSite": "SIT-0035",
+        "surgicalApproach": "APP-0016",
+        "device": "DEV-0023",
+        "morphology": "",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "dorsal fusion",
@@ -4741,30 +6986,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00086",
-      "fsn": "Posterolateral thoracolumbar fusion with pedicle screw fixation (procedure)",
-      "preferredTerm": "Posterolateral thoracolumbar fusion",
-      "subspecialty": "spine-degenerative",
-      "facets": {
-        "method": "Fusion",
-        "procedureSite": "Thoracolumbar vertebral column",
-        "surgicalApproach": "Posterolateral",
-        "device": "Pedicle screw system",
-        "morphology": null,
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00086",
+        "fsn": "Posterolateral thoracolumbar fusion with pedicle screw fixation (procedure)",
+        "preferredTerm": "Posterolateral thoracolumbar fusion",
+        "subspecialty": "spine-degenerative",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "thoracic",
+          "lumbar"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "thoracic",
-        "lumbar"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0012",
+        "procedureSite": "SIT-0036",
+        "surgicalApproach": "APP-0016",
+        "device": "DEV-0023",
+        "morphology": "",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "dorsolumbar fusion",
@@ -4804,31 +7052,34 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00087",
-      "fsn": "Posterior cervicothoracic fusion with instrumented fixation (procedure)",
-      "preferredTerm": "Posterior cervicothoracic fusion",
-      "subspecialty": "spine-degenerative",
-      "facets": {
-        "method": "Fusion",
-        "procedureSite": "Cervicothoracic vertebral column",
-        "surgicalApproach": "Posterior midline",
-        "device": "Cervicothoracic fixation system",
-        "morphology": null,
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00087",
+        "fsn": "Posterior cervicothoracic fusion with instrumented fixation (procedure)",
+        "preferredTerm": "Posterior cervicothoracic fusion",
+        "subspecialty": "spine-degenerative",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "craniocervical",
+          "cervical",
+          "thoracic"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "craniocervical",
-        "cervical",
-        "thoracic"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0012",
+        "procedureSite": "SIT-0011",
+        "surgicalApproach": "APP-0015",
+        "device": "DEV-0004",
+        "morphology": "",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "cervicodorsal fusion",
@@ -4862,27 +7113,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00088",
-      "fsn": "Decompressive craniectomy and evacuation of spontaneous intracerebral haematoma (procedure)",
-      "preferredTerm": "Decompressive craniectomy spontaneous ICH evacuation",
-      "subspecialty": "cranial-vascular",
-      "facets": {
-        "method": "Evacuation",
-        "procedureSite": "Cerebral hemisphere",
-        "surgicalApproach": "Decompressive craniectomy",
-        "device": null,
-        "morphology": "Intracerebral haematoma",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00088",
+        "fsn": "Decompressive craniectomy and evacuation of spontaneous intracerebral haematoma (procedure)",
+        "preferredTerm": "Decompressive craniectomy spontaneous ICH evacuation",
+        "subspecialty": "cranial-vascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0008",
+        "procedureSite": "SIT-0008",
+        "surgicalApproach": "APP-0005",
+        "device": "",
+        "morphology": "MOR-0021",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "DC ICH evacuation",
@@ -4910,27 +7164,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00089",
-      "fsn": "Diagnostic cerebral digital subtraction angiography (procedure)",
-      "preferredTerm": "Diagnostic cerebral DSA",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Angiography",
-        "procedureSite": "Cerebral artery",
-        "surgicalApproach": "Endovascular",
-        "device": null,
-        "morphology": null,
-        "intent": "Diagnostic"
+      "fields": {
+        "conceptId": "NSX-00089",
+        "fsn": "Diagnostic cerebral digital subtraction angiography (procedure)",
+        "preferredTerm": "Diagnostic cerebral DSA",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": false,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": false,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0002",
+        "procedureSite": "SIT-0007",
+        "surgicalApproach": "APP-0008",
+        "device": "",
+        "morphology": "",
+        "defaultIntent": "INT-0001"
+      },
       "synonyms": [
         {
           "term": "DSA",
@@ -4970,27 +7227,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00090",
-      "fsn": "Endovascular coil occlusion of intracranial aneurysm (procedure)",
-      "preferredTerm": "Aneurysm coiling",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Cerebral artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Endovascular coil",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00090",
+        "fsn": "Endovascular coil occlusion of intracranial aneurysm (procedure)",
+        "preferredTerm": "Aneurysm coiling",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0007",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0007",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "coiling",
@@ -5012,27 +7272,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00091",
-      "fsn": "Flow diverter stent placement for intracranial aneurysm (procedure)",
-      "preferredTerm": "Flow diverter placement",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Insertion",
-        "procedureSite": "Cerebral artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Flow diverter stent",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00091",
+        "fsn": "Flow diverter stent placement for intracranial aneurysm (procedure)",
+        "preferredTerm": "Flow diverter placement",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0015",
+        "procedureSite": "SIT-0007",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0009",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": []
     }
   },
@@ -5041,27 +7304,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00092",
-      "fsn": "Embolisation of cerebral arteriovenous malformation (procedure)",
-      "preferredTerm": "AVM embolisation",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Cerebral artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Liquid embolic agent",
-        "morphology": "Arteriovenous malformation",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00092",
+        "fsn": "Embolisation of cerebral arteriovenous malformation (procedure)",
+        "preferredTerm": "AVM embolisation",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0007",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0017",
+        "morphology": "MOR-0003",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": []
     }
   },
@@ -5070,27 +7336,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00093",
-      "fsn": "Embolisation of dural arteriovenous fistula (procedure)",
-      "preferredTerm": "Dural AVF embolisation",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Cerebral artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Liquid embolic agent",
-        "morphology": "Dural arteriovenous fistula",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00093",
+        "fsn": "Embolisation of dural arteriovenous fistula (procedure)",
+        "preferredTerm": "Dural AVF embolisation",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0007",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0017",
+        "morphology": "MOR-0012",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": []
     }
   },
@@ -5099,27 +7368,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00094",
-      "fsn": "Stent placement in extracranial carotid artery (procedure)",
-      "preferredTerm": "Carotid artery stenting",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Insertion",
-        "procedureSite": "Internal carotid artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Intraluminal arterial stent",
-        "morphology": "Carotid artery stenosis",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00094",
+        "fsn": "Stent placement in extracranial carotid artery (procedure)",
+        "preferredTerm": "Carotid artery stenting",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0015",
+        "procedureSite": "SIT-0015",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0013",
+        "morphology": "MOR-0004",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "ICA stenting",
@@ -5141,27 +7413,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00095",
-      "fsn": "Cerebral venous sinus stenting with venous manometry (procedure)",
-      "preferredTerm": "Venous sinus stenting",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Insertion",
-        "procedureSite": "Cerebral venous sinus",
-        "surgicalApproach": "Endovascular",
-        "device": "Intraluminal arterial stent",
-        "morphology": "Idiopathic intracranial hypertension",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00095",
+        "fsn": "Cerebral venous sinus stenting with venous manometry (procedure)",
+        "preferredTerm": "Venous sinus stenting",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0015",
+        "procedureSite": "SIT-0009",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0013",
+        "morphology": "MOR-0020",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": []
     }
   },
@@ -5170,27 +7445,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00096",
-      "fsn": "Mechanical thrombectomy for acute ischaemic stroke (procedure)",
-      "preferredTerm": "Mechanical thrombectomy",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Removal",
-        "procedureSite": "Cerebral artery",
-        "surgicalApproach": "Endovascular",
-        "device": null,
-        "morphology": "Acute ischaemic stroke",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00096",
+        "fsn": "Mechanical thrombectomy for acute ischaemic stroke (procedure)",
+        "preferredTerm": "Mechanical thrombectomy",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": false,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0022",
+        "procedureSite": "SIT-0007",
+        "surgicalApproach": "APP-0008",
+        "device": "",
+        "morphology": "MOR-0001",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": []
     }
   },
@@ -5199,32 +7477,35 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00097",
-      "fsn": "Transforaminal epidural steroid injection (procedure)",
-      "preferredTerm": "Transforaminal epidural steroid injection",
-      "subspecialty": "pain",
-      "facets": {
-        "method": "Injection",
-        "procedureSite": "Intervertebral foramen",
-        "surgicalApproach": "Transforaminal",
-        "device": null,
-        "morphology": "Lumbar radiculopathy",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00097",
+        "fsn": "Transforaminal epidural steroid injection (procedure)",
+        "preferredTerm": "Transforaminal epidural steroid injection",
+        "subspecialty": "pain",
+        "lateralityApplicable": true,
+        "revisionApplicable": false,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+          "cervical",
+          "thoracic",
+          "lumbar",
+          "lumbosacral"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": false,
-      "levelApplicable": true,
-      "levelKind": "interspace",
-      "levelRegions": [
-        "cervical",
-        "thoracic",
-        "lumbar",
-        "lumbosacral"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0014",
+        "procedureSite": "SIT-0017",
+        "surgicalApproach": "APP-0022",
+        "device": "",
+        "morphology": "MOR-0027",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "TFESI",
@@ -5252,32 +7533,35 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00098",
-      "fsn": "Interlaminar epidural steroid injection (procedure)",
-      "preferredTerm": "Interlaminar epidural steroid injection",
-      "subspecialty": "pain",
-      "facets": {
-        "method": "Injection",
-        "procedureSite": "Spinal epidural space",
-        "surgicalApproach": "Percutaneous",
-        "device": null,
-        "morphology": "Lumbar radiculopathy",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00098",
+        "fsn": "Interlaminar epidural steroid injection (procedure)",
+        "preferredTerm": "Interlaminar epidural steroid injection",
+        "subspecialty": "pain",
+        "lateralityApplicable": false,
+        "revisionApplicable": false,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+          "cervical",
+          "thoracic",
+          "lumbar",
+          "lumbosacral"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": false,
-      "levelApplicable": true,
-      "levelKind": "interspace",
-      "levelRegions": [
-        "cervical",
-        "thoracic",
-        "lumbar",
-        "lumbosacral"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0014",
+        "procedureSite": "SIT-0032",
+        "surgicalApproach": "APP-0014",
+        "device": "",
+        "morphology": "MOR-0027",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "epidural steroid injection",
@@ -5305,27 +7589,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00099",
-      "fsn": "Caudal epidural steroid injection (procedure)",
-      "preferredTerm": "Caudal epidural steroid injection",
-      "subspecialty": "pain",
-      "facets": {
-        "method": "Injection",
-        "procedureSite": "Spinal epidural space",
-        "surgicalApproach": "Percutaneous",
-        "device": null,
-        "morphology": "Lumbar radiculopathy",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00099",
+        "fsn": "Caudal epidural steroid injection (procedure)",
+        "preferredTerm": "Caudal epidural steroid injection",
+        "subspecialty": "pain",
+        "lateralityApplicable": false,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": false,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0014",
+        "procedureSite": "SIT-0032",
+        "surgicalApproach": "APP-0014",
+        "device": "",
+        "morphology": "MOR-0027",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": []
     }
   },
@@ -5334,32 +7621,35 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00100",
-      "fsn": "Zygapophyseal joint medial branch block (procedure)",
-      "preferredTerm": "Facet joint block",
-      "subspecialty": "pain",
-      "facets": {
-        "method": "Injection",
-        "procedureSite": "Zygapophyseal joint",
-        "surgicalApproach": "Percutaneous",
-        "device": null,
-        "morphology": "Facet joint arthropathy",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00100",
+        "fsn": "Zygapophyseal joint medial branch block (procedure)",
+        "preferredTerm": "Facet joint block",
+        "subspecialty": "pain",
+        "lateralityApplicable": true,
+        "revisionApplicable": false,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+          "cervical",
+          "thoracic",
+          "lumbar",
+          "lumbosacral"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": false,
-      "levelApplicable": true,
-      "levelKind": "interspace",
-      "levelRegions": [
-        "cervical",
-        "thoracic",
-        "lumbar",
-        "lumbosacral"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0014",
+        "procedureSite": "SIT-0042",
+        "surgicalApproach": "APP-0014",
+        "device": "",
+        "morphology": "MOR-0016",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "facet block",
@@ -5387,27 +7677,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00101",
-      "fsn": "Sacroiliac joint injection (procedure)",
-      "preferredTerm": "Sacroiliac joint injection",
-      "subspecialty": "pain",
-      "facets": {
-        "method": "Injection",
-        "procedureSite": "Sacroiliac joint",
-        "surgicalApproach": "Percutaneous",
-        "device": null,
-        "morphology": "Sacroiliac joint dysfunction",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00101",
+        "fsn": "Sacroiliac joint injection (procedure)",
+        "preferredTerm": "Sacroiliac joint injection",
+        "subspecialty": "pain",
+        "lateralityApplicable": true,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": false,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0014",
+        "procedureSite": "SIT-0028",
+        "surgicalApproach": "APP-0014",
+        "device": "",
+        "morphology": "MOR-0036",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "SIJ block",
@@ -5429,27 +7722,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00102",
-      "fsn": "Erector spinae plane block (procedure)",
-      "preferredTerm": "Erector spinae plane block",
-      "subspecialty": "pain",
-      "facets": {
-        "method": "Injection",
-        "procedureSite": "Spinal epidural space",
-        "surgicalApproach": "Percutaneous",
-        "device": null,
-        "morphology": null,
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00102",
+        "fsn": "Erector spinae plane block (procedure)",
+        "preferredTerm": "Erector spinae plane block",
+        "subspecialty": "pain",
+        "lateralityApplicable": true,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": false,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0014",
+        "procedureSite": "SIT-0032",
+        "surgicalApproach": "APP-0014",
+        "device": "",
+        "morphology": "",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": []
     }
   },
@@ -5458,27 +7754,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00103",
-      "fsn": "Peripheral nerve steroid injection (procedure)",
-      "preferredTerm": "Peripheral nerve steroid injection",
-      "subspecialty": "pain",
-      "facets": {
-        "method": "Injection",
-        "procedureSite": "Peripheral nerve",
-        "surgicalApproach": "Percutaneous",
-        "device": null,
-        "morphology": "Entrapment neuropathy",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00103",
+        "fsn": "Peripheral nerve steroid injection (procedure)",
+        "preferredTerm": "Peripheral nerve steroid injection",
+        "subspecialty": "pain",
+        "lateralityApplicable": true,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": false,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0014",
+        "procedureSite": "SIT-0023",
+        "surgicalApproach": "APP-0014",
+        "device": "",
+        "morphology": "MOR-0014",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": []
     }
   },
@@ -5487,30 +7786,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00104",
-      "fsn": "Full-endoscopic transforaminal lumbar discectomy (procedure)",
-      "preferredTerm": "Endoscopic transforaminal lumbar discectomy",
-      "subspecialty": "spine-degenerative",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Intervertebral disc",
-        "surgicalApproach": "Full-endoscopic transforaminal",
-        "device": null,
-        "morphology": "Herniated intervertebral disc",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00104",
+        "fsn": "Full-endoscopic transforaminal lumbar discectomy (procedure)",
+        "preferredTerm": "Endoscopic transforaminal lumbar discectomy",
+        "subspecialty": "spine-degenerative",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+          "lumbar",
+          "lumbosacral"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "interspace",
-      "levelRegions": [
-        "lumbar",
-        "lumbosacral"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0016",
+        "surgicalApproach": "APP-0011",
+        "device": "",
+        "morphology": "MOR-0018",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "endoscopic discectomy",
@@ -5532,30 +7834,33 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00105",
-      "fsn": "Full-endoscopic interlaminar lumbar discectomy (procedure)",
-      "preferredTerm": "Endoscopic interlaminar lumbar discectomy",
-      "subspecialty": "spine-degenerative",
-      "facets": {
-        "method": "Excision",
-        "procedureSite": "Intervertebral disc",
-        "surgicalApproach": "Full-endoscopic interlaminar",
-        "device": null,
-        "morphology": "Herniated intervertebral disc",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00105",
+        "fsn": "Full-endoscopic interlaminar lumbar discectomy (procedure)",
+        "preferredTerm": "Endoscopic interlaminar lumbar discectomy",
+        "subspecialty": "spine-degenerative",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "interspace",
+        "levelRegions": [
+          "lumbar",
+          "lumbosacral"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "interspace",
-      "levelRegions": [
-        "lumbar",
-        "lumbosacral"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0009",
+        "procedureSite": "SIT-0016",
+        "surgicalApproach": "APP-0010",
+        "device": "",
+        "morphology": "MOR-0018",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "IELD",
@@ -5571,27 +7876,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00106",
-      "fsn": "Lumbar puncture with measurement of opening pressure (procedure)",
-      "preferredTerm": "Lumbar puncture with manometry",
-      "subspecialty": "cranial-csf",
-      "facets": {
-        "method": "Puncture",
-        "procedureSite": "Lumbar subarachnoid space",
-        "surgicalApproach": "Percutaneous",
-        "device": null,
-        "morphology": "Hydrocephalus",
-        "intent": "Diagnostic"
+      "fields": {
+        "conceptId": "NSX-00106",
+        "fsn": "Lumbar puncture with measurement of opening pressure (procedure)",
+        "preferredTerm": "Lumbar puncture with manometry",
+        "subspecialty": "cranial-csf",
+        "lateralityApplicable": false,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": false,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0018",
+        "procedureSite": "SIT-0019",
+        "surgicalApproach": "APP-0014",
+        "device": "",
+        "morphology": "MOR-0019",
+        "defaultIntent": "INT-0001"
+      },
       "synonyms": [
         {
           "term": "LP",
@@ -5619,27 +7927,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00107",
-      "fsn": "Insertion of intrathecal baclofen infusion pump (procedure)",
-      "preferredTerm": "Intrathecal baclofen pump insertion",
-      "subspecialty": "pain",
-      "facets": {
-        "method": "Insertion",
-        "procedureSite": "Lumbar subarachnoid space",
-        "surgicalApproach": "Open direct exposure",
-        "device": "Intrathecal drug delivery pump",
-        "morphology": "Spasticity",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00107",
+        "fsn": "Insertion of intrathecal baclofen infusion pump (procedure)",
+        "preferredTerm": "Intrathecal baclofen pump insertion",
+        "subspecialty": "pain",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0015",
+        "procedureSite": "SIT-0019",
+        "surgicalApproach": "APP-0013",
+        "device": "DEV-0015",
+        "morphology": "MOR-0037",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": []
     }
   },
@@ -5648,27 +7959,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00108",
-      "fsn": "Refill of intrathecal baclofen infusion pump (procedure)",
-      "preferredTerm": "Intrathecal baclofen pump refill",
-      "subspecialty": "pain",
-      "facets": {
-        "method": "Injection",
-        "procedureSite": "Lumbar subarachnoid space",
-        "surgicalApproach": "Percutaneous",
-        "device": "Intrathecal drug delivery pump",
-        "morphology": "Spasticity",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00108",
+        "fsn": "Refill of intrathecal baclofen infusion pump (procedure)",
+        "preferredTerm": "Intrathecal baclofen pump refill",
+        "subspecialty": "pain",
+        "lateralityApplicable": false,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": false,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0014",
+        "procedureSite": "SIT-0019",
+        "surgicalApproach": "APP-0014",
+        "device": "DEV-0015",
+        "morphology": "MOR-0037",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": []
     }
   },
@@ -5677,27 +7991,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00109",
-      "fsn": "Tracheostomy (procedure)",
-      "preferredTerm": "Tracheostomy",
-      "subspecialty": "cranial-trauma",
-      "facets": {
-        "method": "Incision",
-        "procedureSite": "Trachea",
-        "surgicalApproach": "Open direct exposure",
-        "device": "Tracheostomy tube",
-        "morphology": null,
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00109",
+        "fsn": "Tracheostomy (procedure)",
+        "preferredTerm": "Tracheostomy",
+        "subspecialty": "cranial-trauma",
+        "lateralityApplicable": false,
+        "revisionApplicable": false,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": false,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0013",
+        "procedureSite": "SIT-0037",
+        "surgicalApproach": "APP-0013",
+        "device": "DEV-0024",
+        "morphology": "",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "trachy",
@@ -5713,27 +8030,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00110",
-      "fsn": "Stent placement in intracranial artery (procedure)",
-      "preferredTerm": "Intracranial arterial stenting",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Insertion",
-        "procedureSite": "Cerebral artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Intraluminal arterial stent",
-        "morphology": "Intracranial arterial stenosis",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00110",
+        "fsn": "Stent placement in intracranial artery (procedure)",
+        "preferredTerm": "Intracranial arterial stenting",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0015",
+        "procedureSite": "SIT-0007",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0013",
+        "morphology": "MOR-0022",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "MCA stenting",
@@ -5755,27 +8075,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00111",
-      "fsn": "Endovascular coil occlusion of anterior communicating artery aneurysm (procedure)",
-      "preferredTerm": "ACoA aneurysm coiling",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Anterior communicating artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Endovascular coil",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00111",
+        "fsn": "Endovascular coil occlusion of anterior communicating artery aneurysm (procedure)",
+        "preferredTerm": "ACoA aneurysm coiling",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0002",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0007",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "ACoA coiling",
@@ -5803,27 +8126,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00112",
-      "fsn": "Endovascular coil occlusion of posterior communicating artery aneurysm (procedure)",
-      "preferredTerm": "PCoA aneurysm coiling",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Posterior communicating artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Endovascular coil",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00112",
+        "fsn": "Endovascular coil occlusion of posterior communicating artery aneurysm (procedure)",
+        "preferredTerm": "PCoA aneurysm coiling",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0025",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0007",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "PCoA coiling",
@@ -5851,27 +8177,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00113",
-      "fsn": "Endovascular coil occlusion of internal carotid artery aneurysm (procedure)",
-      "preferredTerm": "ICA aneurysm coiling",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Internal carotid artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Endovascular coil",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00113",
+        "fsn": "Endovascular coil occlusion of internal carotid artery aneurysm (procedure)",
+        "preferredTerm": "ICA aneurysm coiling",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0015",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0007",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "ICA coiling",
@@ -5899,27 +8228,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00114",
-      "fsn": "Endovascular coil occlusion of middle cerebral artery aneurysm (procedure)",
-      "preferredTerm": "MCA aneurysm coiling",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Middle cerebral artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Endovascular coil",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00114",
+        "fsn": "Endovascular coil occlusion of middle cerebral artery aneurysm (procedure)",
+        "preferredTerm": "MCA aneurysm coiling",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0022",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0007",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "MCA coiling",
@@ -5947,27 +8279,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00115",
-      "fsn": "Endovascular coil occlusion of anterior cerebral artery aneurysm (procedure)",
-      "preferredTerm": "ACA aneurysm coiling",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Anterior cerebral artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Endovascular coil",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00115",
+        "fsn": "Endovascular coil occlusion of anterior cerebral artery aneurysm (procedure)",
+        "preferredTerm": "ACA aneurysm coiling",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0001",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0007",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "ACA coiling",
@@ -5995,27 +8330,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00116",
-      "fsn": "Endovascular coil occlusion of basilar artery aneurysm (procedure)",
-      "preferredTerm": "basilar aneurysm coiling",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Basilar artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Endovascular coil",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00116",
+        "fsn": "Endovascular coil occlusion of basilar artery aneurysm (procedure)",
+        "preferredTerm": "basilar aneurysm coiling",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0004",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0007",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "basilar coiling",
@@ -6043,27 +8381,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00117",
-      "fsn": "Endovascular coil occlusion of posterior inferior cerebellar artery aneurysm (procedure)",
-      "preferredTerm": "PICA aneurysm coiling",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Posterior inferior cerebellar artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Endovascular coil",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00117",
+        "fsn": "Endovascular coil occlusion of posterior inferior cerebellar artery aneurysm (procedure)",
+        "preferredTerm": "PICA aneurysm coiling",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0027",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0007",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "PICA coiling",
@@ -6091,27 +8432,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00118",
-      "fsn": "Endovascular coil occlusion of vertebral artery aneurysm (procedure)",
-      "preferredTerm": "VA aneurysm coiling",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Vertebral artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Endovascular coil",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00118",
+        "fsn": "Endovascular coil occlusion of vertebral artery aneurysm (procedure)",
+        "preferredTerm": "VA aneurysm coiling",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0040",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0007",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "VA coiling",
@@ -6139,27 +8483,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00119",
-      "fsn": "Intrasaccular flow disruptor placement in intracranial aneurysm (procedure)",
-      "preferredTerm": "Aneurysm intrasaccular device",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Cerebral artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Intrasaccular flow disruptor",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00119",
+        "fsn": "Intrasaccular flow disruptor placement in intracranial aneurysm (procedure)",
+        "preferredTerm": "Aneurysm intrasaccular device",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0007",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0014",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "intrasaccular device",
@@ -6193,27 +8540,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00120",
-      "fsn": "Intrasaccular flow disruptor placement in anterior communicating artery aneurysm (procedure)",
-      "preferredTerm": "ACoA aneurysm intrasaccular device",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Anterior communicating artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Intrasaccular flow disruptor",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00120",
+        "fsn": "Intrasaccular flow disruptor placement in anterior communicating artery aneurysm (procedure)",
+        "preferredTerm": "ACoA aneurysm intrasaccular device",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0002",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0014",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "ACoA intrasaccular",
@@ -6241,27 +8591,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00121",
-      "fsn": "Intrasaccular flow disruptor placement in posterior communicating artery aneurysm (procedure)",
-      "preferredTerm": "PCoA aneurysm intrasaccular device",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Posterior communicating artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Intrasaccular flow disruptor",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00121",
+        "fsn": "Intrasaccular flow disruptor placement in posterior communicating artery aneurysm (procedure)",
+        "preferredTerm": "PCoA aneurysm intrasaccular device",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0025",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0014",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "PCoA intrasaccular",
@@ -6289,27 +8642,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00122",
-      "fsn": "Intrasaccular flow disruptor placement in internal carotid artery aneurysm (procedure)",
-      "preferredTerm": "ICA aneurysm intrasaccular device",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Internal carotid artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Intrasaccular flow disruptor",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00122",
+        "fsn": "Intrasaccular flow disruptor placement in internal carotid artery aneurysm (procedure)",
+        "preferredTerm": "ICA aneurysm intrasaccular device",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0015",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0014",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "ICA intrasaccular",
@@ -6337,27 +8693,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00123",
-      "fsn": "Intrasaccular flow disruptor placement in middle cerebral artery aneurysm (procedure)",
-      "preferredTerm": "MCA aneurysm intrasaccular device",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Middle cerebral artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Intrasaccular flow disruptor",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00123",
+        "fsn": "Intrasaccular flow disruptor placement in middle cerebral artery aneurysm (procedure)",
+        "preferredTerm": "MCA aneurysm intrasaccular device",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0022",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0014",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "MCA intrasaccular",
@@ -6385,27 +8744,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00124",
-      "fsn": "Intrasaccular flow disruptor placement in anterior cerebral artery aneurysm (procedure)",
-      "preferredTerm": "ACA aneurysm intrasaccular device",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Anterior cerebral artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Intrasaccular flow disruptor",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00124",
+        "fsn": "Intrasaccular flow disruptor placement in anterior cerebral artery aneurysm (procedure)",
+        "preferredTerm": "ACA aneurysm intrasaccular device",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0001",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0014",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "ACA intrasaccular",
@@ -6433,27 +8795,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00125",
-      "fsn": "Intrasaccular flow disruptor placement in basilar artery aneurysm (procedure)",
-      "preferredTerm": "basilar aneurysm intrasaccular device",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Basilar artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Intrasaccular flow disruptor",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00125",
+        "fsn": "Intrasaccular flow disruptor placement in basilar artery aneurysm (procedure)",
+        "preferredTerm": "basilar aneurysm intrasaccular device",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0004",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0014",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "basilar intrasaccular",
@@ -6481,27 +8846,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00126",
-      "fsn": "Intrasaccular flow disruptor placement in posterior inferior cerebellar artery aneurysm (procedure)",
-      "preferredTerm": "PICA aneurysm intrasaccular device",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Posterior inferior cerebellar artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Intrasaccular flow disruptor",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00126",
+        "fsn": "Intrasaccular flow disruptor placement in posterior inferior cerebellar artery aneurysm (procedure)",
+        "preferredTerm": "PICA aneurysm intrasaccular device",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0027",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0014",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "PICA intrasaccular",
@@ -6529,27 +8897,30 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00127",
-      "fsn": "Intrasaccular flow disruptor placement in vertebral artery aneurysm (procedure)",
-      "preferredTerm": "VA aneurysm intrasaccular device",
-      "subspecialty": "endovascular",
-      "facets": {
-        "method": "Occlusion",
-        "procedureSite": "Vertebral artery",
-        "surgicalApproach": "Endovascular",
-        "device": "Intrasaccular flow disruptor",
-        "morphology": "Saccular aneurysm",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00127",
+        "fsn": "Intrasaccular flow disruptor placement in vertebral artery aneurysm (procedure)",
+        "preferredTerm": "VA aneurysm intrasaccular device",
+        "subspecialty": "endovascular",
+        "lateralityApplicable": true,
+        "revisionApplicable": true,
+        "levelApplicable": false,
+        "levelKind": "",
+        "levelRegions": [],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-07 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": true,
-      "revisionApplicable": true,
-      "levelApplicable": false,
-      "levelKind": "",
-      "levelRegions": [],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-07 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0016",
+        "procedureSite": "SIT-0040",
+        "surgicalApproach": "APP-0008",
+        "device": "DEV-0014",
+        "morphology": "MOR-0035",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "VA intrasaccular",
@@ -6577,29 +8948,32 @@ const CONCEPT_CHANGES = [
     "prev": null,
     "next": {
       "conceptId": "NSX-00128",
-      "fsn": "Thoracic laminectomy and decompression (procedure)",
-      "preferredTerm": "Thoracic laminectomy",
-      "subspecialty": "spine-degenerative",
-      "facets": {
-        "method": "Decompression",
-        "procedureSite": "Thoracic vertebral column",
-        "surgicalApproach": "Posterior midline",
-        "device": null,
-        "morphology": "Spinal canal stenosis",
-        "intent": "Therapeutic"
+      "fields": {
+        "conceptId": "NSX-00128",
+        "fsn": "Thoracic laminectomy and decompression (procedure)",
+        "preferredTerm": "Thoracic laminectomy",
+        "subspecialty": "spine-degenerative",
+        "lateralityApplicable": false,
+        "revisionApplicable": true,
+        "levelApplicable": true,
+        "levelKind": "vertebra",
+        "levelRegions": [
+          "thoracic"
+        ],
+        "active": true,
+        "inactivationReason": "",
+        "replacedBy": "",
+        "effectiveFrom": "2026-08-12 00:00:00.000Z",
+        "catalogueRelease": "v2026.1"
       },
-      "lateralityApplicable": false,
-      "revisionApplicable": true,
-      "levelApplicable": true,
-      "levelKind": "vertebra",
-      "levelRegions": [
-        "thoracic"
-      ],
-      "active": true,
-      "inactivationReason": "",
-      "replacedBy": "",
-      "effectiveFrom": "2026-08-12 00:00:00.000Z",
-      "catalogueRelease": "v2026.1",
+      "facets": {
+        "method": "MTH-0005",
+        "procedureSite": "SIT-0035",
+        "surgicalApproach": "APP-0015",
+        "device": "",
+        "morphology": "MOR-0038",
+        "defaultIntent": "INT-0002"
+      },
       "synonyms": [
         {
           "term": "thoracic laminectomy",
@@ -6667,22 +9041,117 @@ function applyChanges(app, collectionName, keyField, changes, direction) {
   }
 }
 
+/** The facet value record a facetValueId names. */
+function facetRecordId(app, facetValueId) {
+  if (!facetValueId) {
+    return "";
+  }
+  try {
+    return app.findFirstRecordByData(
+      "procedureFacetValues",
+      "facetValueId",
+      facetValueId,
+    ).id;
+  } catch (err) {
+    throw new Error("Unknown facet value: " + facetValueId);
+  }
+}
+
+function applyConcepts(app, changes, direction) {
+  const collection = app.findCollectionByNameOrId("procedureConcepts");
+  const synonymCollection = app.findCollectionByNameOrId(
+    "procedureConceptSynonyms",
+  );
+
+  for (const change of changes) {
+    const values = direction === "up" ? change.next : change.prev;
+
+    let record = null;
+    try {
+      record = app.findFirstRecordByData(
+        "procedureConcepts",
+        "conceptId",
+        change.key,
+      );
+    } catch (err) {
+      record = null;
+    }
+
+    if (values === null) {
+      // This release introduced the concept; its synonyms cascade with it.
+      if (record !== null) {
+        app.delete(record);
+      }
+      continue;
+    }
+
+    if (record === null) {
+      record = new Record(collection);
+    }
+    for (const field in values.fields) {
+      record.set(field, values.fields[field]);
+    }
+    for (const field in values.facets) {
+      record.set(field, facetRecordId(app, values.facets[field]));
+    }
+    app.save(record);
+
+    const existing = app.findRecordsByFilter(
+      "procedureConceptSynonyms",
+      "concept = {:concept}",
+      "",
+      0,
+      0,
+      { concept: record.id },
+    );
+    for (const synonym of existing) {
+      app.delete(synonym);
+    }
+    for (const synonym of values.synonyms) {
+      const row = new Record(synonymCollection);
+      row.set("concept", record.id);
+      for (const field in synonym) {
+        row.set(field, synonym[field]);
+      }
+      app.save(row);
+    }
+  }
+}
+
 migrate(
   (app) => {
+    // Facet values first: the concepts point at them.
+    applyChanges(
+      app,
+      "procedureFacetValues",
+      "facetValueId",
+      FACET_VALUE_CHANGES,
+      "up",
+    );
     applyChanges(app, "spinalLevels", "spinalLevelId", LEVEL_CHANGES, "up");
-    applyChanges(app, "procedureConcepts", "conceptId", CONCEPT_CHANGES, "up");
+    applyConcepts(app, CONCEPT_CHANGES, "up");
     console.log(
       "seeded procedure codes " +
         CATALOGUE_RELEASE +
         ": " +
         CONCEPT_CHANGES.length +
         " concept(s), " +
+        FACET_VALUE_CHANGES.length +
+        " facet value(s), " +
         LEVEL_CHANGES.length +
         " spinal level(s)",
     );
   },
   (app) => {
-    applyChanges(app, "procedureConcepts", "conceptId", CONCEPT_CHANGES, "down");
+    // Concepts first: they are what points at the facet values.
+    applyConcepts(app, CONCEPT_CHANGES, "down");
     applyChanges(app, "spinalLevels", "spinalLevelId", LEVEL_CHANGES, "down");
+    applyChanges(
+      app,
+      "procedureFacetValues",
+      "facetValueId",
+      FACET_VALUE_CHANGES,
+      "down",
+    );
   },
 );

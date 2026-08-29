@@ -40,6 +40,17 @@ export function fetchBundledCatalogue() {
     };
 }
 
+// The facet relations and the synonym rows, flattened by toConcept below.
+const CONCEPT_EXPAND = [
+    "method",
+    "procedureSite",
+    "surgicalApproach",
+    "device",
+    "morphology",
+    "defaultIntent",
+    "procedureConceptSynonyms_via_concept",
+].join(",");
+
 const CACHE_KEY = "ot-list.catalogue";
 
 // Bump when the cached record shape changes, to drop entries written by an
@@ -60,6 +71,36 @@ function orNull(value) {
 }
 
 /**
+ * The concept's facet relations, flattened back to display terms.
+ *
+ * Facets are stored relationally so a term is defined once and can be mapped
+ * to SNOMED once. Everything above this file wants the terms, so the shape it
+ * gets is the same as the bundled snapshot's.
+ */
+function toFacets(record) {
+    const term = (field) => record.expand?.[field]?.term ?? null;
+    return {
+        method: term("method"),
+        procedureSite: term("procedureSite"),
+        surgicalApproach: term("surgicalApproach"),
+        device: term("device"),
+        morphology: term("morphology"),
+        intent: term("defaultIntent"),
+    };
+}
+
+function toSynonyms(record) {
+    return (record.expand?.procedureConceptSynonyms_via_concept ?? []).map(
+        (synonym) => ({
+            term: synonym.term,
+            language: synonym.language,
+            isAbbreviation: synonym.isAbbreviation === true,
+            active: synonym.active === true,
+        }),
+    );
+}
+
+/**
  * Projects a procedureConcepts record onto the shape of the bundled json, so
  * cached, fetched and bundled concepts are interchangeable everywhere else.
  */
@@ -69,7 +110,7 @@ function toConcept(record) {
         fsn: record.fsn,
         preferredTerm: record.preferredTerm,
         subspecialty: record.subspecialty ?? "",
-        facets: record.facets ?? {},
+        facets: toFacets(record),
         lateralityApplicable: record.lateralityApplicable === true,
         revisionApplicable: record.revisionApplicable === true,
         levelApplicable: record.levelApplicable === true,
@@ -80,7 +121,7 @@ function toConcept(record) {
         replacedBy: orNull(record.replacedBy),
         effectiveFrom: toDay(record.effectiveFrom),
         catalogueRelease: record.catalogueRelease ?? "",
-        synonyms: record.synonyms ?? [],
+        synonyms: toSynonyms(record),
     };
 }
 
@@ -113,20 +154,27 @@ async function fingerprintCollection(name) {
     };
 }
 
+/**
+ * Fingerprints every collection a concept is assembled from, not just the
+ * concepts themselves: a reworded facet term or an added synonym changes what
+ * the catalogue reads like without touching any concept row's `updated`.
+ */
 async function fingerprintCatalogue() {
-    const [concepts, levels] = await Promise.all([
+    const [concepts, levels, facets, synonyms] = await Promise.all([
         fingerprintCollection("procedureConcepts"),
         fingerprintCollection("spinalLevels"),
+        fingerprintCollection("procedureFacetValues"),
+        fingerprintCollection("procedureConceptSynonyms"),
     ]);
-    return { concepts, levels };
+    return { concepts, levels, facets, synonyms };
 }
 
 function sameFingerprint(a, b) {
-    return (
-        a?.concepts?.count === b?.concepts?.count &&
-        a?.concepts?.updated === b?.concepts?.updated &&
-        a?.levels?.count === b?.levels?.count &&
-        a?.levels?.updated === b?.levels?.updated
+    const parts = ["concepts", "levels", "facets", "synonyms"];
+    return parts.every(
+        (part) =>
+            a?.[part]?.count === b?.[part]?.count &&
+            a?.[part]?.updated === b?.[part]?.updated,
     );
 }
 
@@ -193,7 +241,10 @@ export function clearCatalogueCache() {
 
 async function fetchFromServer() {
     const [concepts, levels] = await Promise.all([
-        pb.collection("procedureConcepts").getFullList({ sort: "conceptId" }),
+        pb.collection("procedureConcepts").getFullList({
+            sort: "conceptId",
+            expand: CONCEPT_EXPAND,
+        }),
         pb.collection("spinalLevels").getFullList({ sort: "spinalLevelId" }),
     ]);
     return {

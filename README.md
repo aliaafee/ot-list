@@ -11,9 +11,10 @@
 ## Procedure codes
 
 Procedure codes are versioned catalogue releases. Each release is a folder under
-`specs/procedure_codes` (`v2026.1`, `v2026.2`, ...) holding two files:
+`specs/procedure_codes` (`v2026.1`, `v2026.2`, ...) holding three files:
 
 -   `nspc-catalogue.json` — the procedure concepts
+-   `facet-values.json` — the controlled vocabulary the concepts' facets are drawn from
 -   `spinal-levels.json` — the vertebrae and interspaces concepts can be qualified with
 
 A release is a **complete copy** of the previous one plus that release's changes.
@@ -31,6 +32,47 @@ Changes are only ever additive:
     name the new code in the old code's `replacedBy`.
 -   **Every code you touch is stamped** with `"catalogueRelease": "<version>"`, so
     the database says which release last changed each code.
+-   **Facet values are retired, not deleted**, for the same reason concepts are:
+    a concept points at one by id.
+
+### How a concept is stored
+
+A concept's facets are not text on the concept. Each one points at a row in
+`procedureFacetValues`, so a term like `Drainage` is defined once and shared by
+every concept that uses it — which means it can be mapped to SNOMED CT once,
+rather than per concept. `facet-values.json` is that vocabulary:
+
+```json
+{
+    "facetValueId": "MTH-0007",
+    "facet": "method",
+    "term": "Drainage",
+    "snomedAttribute": "Method",
+    "active": true,
+    "effectiveFrom": "2026-08-07"
+}
+```
+
+The catalogue names facets by **term**, and publish resolves each to its facet
+value. A term that is not in the vocabulary is an error, which is what keeps
+the facets a controlled vocabulary instead of free text — so **add the term to
+`facet-values.json` first**, with the next id for its facet.
+
+The six facets map to the concept's relations as `method`, `procedureSite`,
+`surgicalApproach`, `device`, `morphology` and `defaultIntent` (the concept's
+default intent, which a coded procedure may override).
+
+Synonyms are stored the same way — one `procedureConceptSynonyms` row each,
+rather than a json array — because search reads across them. They cascade with
+their concept.
+
+Both are flattened back on read, so the client sees a concept with a plain
+`facets` object and `synonyms` array whether it came from the database, the
+cache, or the bundled snapshot.
+
+`facetValueId` and `conceptId` are permanent: ids live in the spec files and
+are assigned once, so appending a term never renumbers an existing one and a
+SNOMED mapping made against it stays attached.
 
 ### Adding a new version
 
@@ -42,7 +84,9 @@ Changes are only ever additive:
 
 2. **Edit the json files** in `specs/procedure_codes/v2026.2` — append new codes,
    retire codes with `active: false` plus `inactivationReason` and `replacedBy`,
-   and set `catalogueRelease` to `v2026.2` on everything you changed.
+   and set `catalogueRelease` to `v2026.2` on everything you changed. If a code
+   needs a facet term the catalogue has not used before, add it to
+   `facet-values.json` first with the next id for its facet.
 
 3. **Check what the release will do** before writing anything:
 
@@ -69,15 +113,23 @@ Changes are only ever additive:
 ### What publish does
 
 It first validates the release against its predecessor, and refuses to write
-anything if a code was deleted, a retired code was reactivated, a `replacedBy`
-points nowhere or loops, or ids are duplicated. When it passes, it writes:
+anything if a code or facet value was deleted, a retired code was reactivated, a
+`replacedBy` points nowhere or loops, ids are duplicated, or a concept names a
+facet term the vocabulary does not have. When it passes, it writes:
 
 -   `pb/pb_migrations/<timestamp>_seeded_procedureCodes_v2026_2.js` — a migration
-    that seeds **only the changed records**. Each entry also carries the record's
-    previous values, so `pocketbase migrate down` restores the earlier release
-    exactly.
+    that seeds **only the changed records**: changed facet values first, then
+    levels, then concepts, since a concept points at its facet values. Each entry
+    also carries the record's previous values, so `pocketbase migrate down`
+    restores the earlier release exactly.
 -   `src/data/nspc-catalogue.json`, `src/data/spinal-levels.json` and
     `src/data/catalogue-release.json` — the copies the client bundles at build time.
+    The bundled catalogue keeps facets as terms, so it needs no vocabulary of its
+    own.
+
+Inside the migration, facets travel as `facetValueId`s and are resolved to
+records when it runs. A concept's synonyms are replaced as a set, because the
+catalogue always states a concept's whole synonym list.
 
 To see every version and whether it has been published:
 
@@ -88,6 +140,11 @@ npm run codes -- list
 Once a version is published its migration exists and `publish` will refuse to run
 again. To regenerate it (only ever before the migration has reached a real
 database), delete the migration file and publish again.
+
+A regenerated migration gets a fresh timestamp, which puts it last. If any later
+migration depends on the seeded catalogue — the one that moves legacy procedure
+text onto the uncoded concept does — rename the regenerated file back to its
+original timestamp, or it will run after the migration that needs it.
 
 ## Deploy
 

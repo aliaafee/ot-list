@@ -37,7 +37,31 @@ const dataDir = join(projectRoot, "src", "data");
 
 const CATALOGUE_FILE = "nspc-catalogue.json";
 const LEVELS_FILE = "spinal-levels.json";
+const FACETS_FILE = "facet-values.json";
 const RELEASE_FILE = "catalogue-release.json";
+
+// A concept's facets are relations to the shared vocabulary, so the catalogue
+// names a term and the vocabulary file says which facet value that is. The
+// key is the concept's relation field; the value is the facet the term must
+// be drawn from.
+const CONCEPT_FACETS = {
+    method: "method",
+    procedureSite: "site",
+    surgicalApproach: "approach",
+    device: "device",
+    morphology: "morphology",
+    defaultIntent: "intent",
+};
+
+// Which key in the catalogue json each relation reads its term from.
+const FACET_SOURCE_KEYS = {
+    method: "method",
+    procedureSite: "procedureSite",
+    surgicalApproach: "surgicalApproach",
+    device: "device",
+    morphology: "morphology",
+    defaultIntent: "intent",
+};
 
 // The fields written to PocketBase, in collection order. Anything else in the
 // json files is spec-only and never reaches the database.
@@ -46,7 +70,6 @@ const CONCEPT_FIELDS = {
     fsn: "text",
     preferredTerm: "text",
     subspecialty: "text",
-    facets: "json",
     lateralityApplicable: "bool",
     revisionApplicable: "bool",
     levelApplicable: "bool",
@@ -57,7 +80,22 @@ const CONCEPT_FIELDS = {
     replacedBy: "text",
     effectiveFrom: "date",
     catalogueRelease: "text",
-    synonyms: "json",
+};
+
+const FACET_VALUE_FIELDS = {
+    facetValueId: "text",
+    facet: "text",
+    term: "text",
+    snomedAttribute: "text",
+    active: "bool",
+    effectiveFrom: "date",
+};
+
+const SYNONYM_FIELDS = {
+    term: "text",
+    language: "text",
+    isAbbreviation: "bool",
+    active: "bool",
 };
 
 const LEVEL_FIELDS = {
@@ -126,7 +164,21 @@ function readVersion(version) {
             join(dir, LEVELS_FILE),
             `${version}/${LEVELS_FILE}`,
         ),
+        facetValues: readJsonArray(
+            join(dir, FACETS_FILE),
+            `${version}/${FACETS_FILE}`,
+        ),
     };
+}
+
+/** Looks a facet term up by the facet it belongs to: index[facet][term]. */
+function buildFacetIndex(facetValues) {
+    const index = {};
+    for (const value of facetValues) {
+        index[value.facet] ??= {};
+        index[value.facet][value.term] = value.facetValueId;
+    }
+    return index;
 }
 
 /** PocketBase date fields want a full timestamp; the spec files carry dates. */
@@ -158,6 +210,32 @@ function normalizeRecord(raw, fields, label) {
         }
     }
     return out;
+}
+
+/**
+ * A concept as the migration will write it: the scalar columns, the facet
+ * relations as vocabulary ids, and the synonyms that become child rows.
+ *
+ * Facets are resolved here rather than in the migration so an unknown term is
+ * caught while publishing, when it can still be fixed, instead of failing
+ * against a database.
+ */
+function normalizeConcept(raw, facetIndex) {
+    const facets = {};
+    for (const [field, facet] of Object.entries(CONCEPT_FACETS)) {
+        const term = raw.facets?.[FACET_SOURCE_KEYS[field]];
+        facets[field] = term ? (facetIndex[facet]?.[term] ?? null) : "";
+    }
+
+    return {
+        // Lifted out of `fields` so the diff can key on it.
+        conceptId: raw.conceptId,
+        fields: normalizeRecord(raw, CONCEPT_FIELDS, raw.conceptId),
+        facets,
+        synonyms: (raw.synonyms ?? []).map((synonym) =>
+            normalizeRecord(synonym, SYNONYM_FIELDS, raw.conceptId),
+        ),
+    };
 }
 
 /** Key-sorted stringify, so a reordered json file does not read as a change. */
@@ -204,6 +282,68 @@ function diffRecords(previous, current, keyField) {
 function validate(version, previous, current, options) {
     const errors = [];
     const warnings = [];
+
+    // The facet vocabulary, first: a concept's facets are checked against it.
+    const facetValueIds = new Set();
+    const knownFacets = new Set(Object.values(CONCEPT_FACETS));
+    for (const value of current.facetValues) {
+        const id = value.facetValueId;
+        if (!id) {
+            errors.push("a facet value is missing facetValueId");
+            continue;
+        }
+        if (facetValueIds.has(id)) {
+            errors.push(`duplicate facetValueId ${id}`);
+        }
+        facetValueIds.add(id);
+
+        if (!value.term) errors.push(`${id}: missing term`);
+        if (!knownFacets.has(value.facet)) {
+            errors.push(
+                `${id}: facet "${value.facet}" is not one of ${[...knownFacets].join(", ")}`,
+            );
+        }
+    }
+
+    const facetIndex = buildFacetIndex(current.facetValues);
+    const seenTerms = new Set();
+    for (const value of current.facetValues) {
+        const key = `${value.facet}:${value.term}`;
+        if (seenTerms.has(key)) {
+            errors.push(
+                `facet ${value.facet} lists the term "${value.term}" twice`,
+            );
+        }
+        seenTerms.add(key);
+    }
+
+    // A facet value is referenced by id, so dropping one orphans every concept
+    // pointing at it. Retire with active=false instead, as with concepts.
+    for (const value of previous.facetValues ?? []) {
+        if (!facetValueIds.has(value.facetValueId)) {
+            errors.push(
+                `${value.facetValueId} is missing from ${version}; retire facet values with active=false instead of deleting them`,
+            );
+        }
+    }
+
+    // Every facet term a concept names has to exist in the vocabulary - this
+    // is what makes the facets a controlled vocabulary rather than free text.
+    for (const concept of current.concepts) {
+        for (const [field, facet] of Object.entries(CONCEPT_FACETS)) {
+            const term = concept.facets?.[FACET_SOURCE_KEYS[field]];
+            if (term && !facetIndex[facet]?.[term]) {
+                errors.push(
+                    `${concept.conceptId}: ${field} "${term}" is not in the ${facet} vocabulary`,
+                );
+            }
+        }
+        for (const synonym of concept.synonyms ?? []) {
+            if (!synonym.term) {
+                errors.push(`${concept.conceptId}: a synonym has no term`);
+            }
+        }
+    }
 
     const conceptIds = new Set();
     for (const concept of current.concepts) {
@@ -339,7 +479,12 @@ function nextMigrationTimestamp() {
     return Math.max(Math.floor(Date.now() / 1000), latest + 1);
 }
 
-function renderMigration(version, conceptChanges, levelChanges) {
+function renderMigration(
+    version,
+    conceptChanges,
+    levelChanges,
+    facetValueChanges,
+) {
     return `/// <reference path="../pb_data/types.d.ts" />
 
 // Seeds the ${version} procedure code catalogue.
@@ -350,8 +495,14 @@ function renderMigration(version, conceptChanges, levelChanges) {
 // Each entry carries the values this release writes ("next") and the values the
 // record held in the previous release ("prev", null when this release adds it),
 // so the migration can be rolled back exactly.
+//
+// A concept's facets are relations, so they travel as facetValueIds and are
+// resolved to records here. Its synonyms are child rows, replaced as a set:
+// the catalogue always states a concept's whole synonym list.
 
 const CATALOGUE_RELEASE = "${version}";
+
+const FACET_VALUE_CHANGES = ${JSON.stringify(facetValueChanges, null, 2)};
 
 const LEVEL_CHANGES = ${JSON.stringify(levelChanges, null, 2)};
 
@@ -388,23 +539,118 @@ function applyChanges(app, collectionName, keyField, changes, direction) {
   }
 }
 
+/** The facet value record a facetValueId names. */
+function facetRecordId(app, facetValueId) {
+  if (!facetValueId) {
+    return "";
+  }
+  try {
+    return app.findFirstRecordByData(
+      "procedureFacetValues",
+      "facetValueId",
+      facetValueId,
+    ).id;
+  } catch (err) {
+    throw new Error("Unknown facet value: " + facetValueId);
+  }
+}
+
+function applyConcepts(app, changes, direction) {
+  const collection = app.findCollectionByNameOrId("procedureConcepts");
+  const synonymCollection = app.findCollectionByNameOrId(
+    "procedureConceptSynonyms",
+  );
+
+  for (const change of changes) {
+    const values = direction === "up" ? change.next : change.prev;
+
+    let record = null;
+    try {
+      record = app.findFirstRecordByData(
+        "procedureConcepts",
+        "conceptId",
+        change.key,
+      );
+    } catch (err) {
+      record = null;
+    }
+
+    if (values === null) {
+      // This release introduced the concept; its synonyms cascade with it.
+      if (record !== null) {
+        app.delete(record);
+      }
+      continue;
+    }
+
+    if (record === null) {
+      record = new Record(collection);
+    }
+    for (const field in values.fields) {
+      record.set(field, values.fields[field]);
+    }
+    for (const field in values.facets) {
+      record.set(field, facetRecordId(app, values.facets[field]));
+    }
+    app.save(record);
+
+    const existing = app.findRecordsByFilter(
+      "procedureConceptSynonyms",
+      "concept = {:concept}",
+      "",
+      0,
+      0,
+      { concept: record.id },
+    );
+    for (const synonym of existing) {
+      app.delete(synonym);
+    }
+    for (const synonym of values.synonyms) {
+      const row = new Record(synonymCollection);
+      row.set("concept", record.id);
+      for (const field in synonym) {
+        row.set(field, synonym[field]);
+      }
+      app.save(row);
+    }
+  }
+}
+
 migrate(
   (app) => {
+    // Facet values first: the concepts point at them.
+    applyChanges(
+      app,
+      "procedureFacetValues",
+      "facetValueId",
+      FACET_VALUE_CHANGES,
+      "up",
+    );
     applyChanges(app, "spinalLevels", "spinalLevelId", LEVEL_CHANGES, "up");
-    applyChanges(app, "procedureConcepts", "conceptId", CONCEPT_CHANGES, "up");
+    applyConcepts(app, CONCEPT_CHANGES, "up");
     console.log(
       "seeded procedure codes " +
         CATALOGUE_RELEASE +
         ": " +
         CONCEPT_CHANGES.length +
         " concept(s), " +
+        FACET_VALUE_CHANGES.length +
+        " facet value(s), " +
         LEVEL_CHANGES.length +
         " spinal level(s)",
     );
   },
   (app) => {
-    applyChanges(app, "procedureConcepts", "conceptId", CONCEPT_CHANGES, "down");
+    // Concepts first: they are what points at the facet values.
+    applyConcepts(app, CONCEPT_CHANGES, "down");
     applyChanges(app, "spinalLevels", "spinalLevelId", LEVEL_CHANGES, "down");
+    applyChanges(
+      app,
+      "procedureFacetValues",
+      "facetValueId",
+      FACET_VALUE_CHANGES,
+      "down",
+    );
   },
 );
 `;
@@ -453,7 +699,7 @@ function commandNew(version, from) {
     }
 
     mkdirSync(target, { recursive: true });
-    for (const file of [CATALOGUE_FILE, LEVELS_FILE]) {
+    for (const file of [CATALOGUE_FILE, LEVELS_FILE, FACETS_FILE]) {
         if (source) {
             copyFileSync(join(specsDir, source, file), join(target, file));
         } else {
@@ -473,6 +719,10 @@ function commandNew(version, from) {
     console.log(
         "     - append new codes, never repurpose a released conceptId",
     );
+    console.log(
+        "     - add any new facet term to facet-values.json first, with the",
+    );
+    console.log("       next id for its facet; a term not listed there fails");
     console.log(
         "     - retire codes with active=false plus inactivationReason,",
     );
@@ -495,7 +745,7 @@ function commandPublish(version, options) {
     const previousVersion = index > 0 ? versions[index - 1] : null;
     const previous = previousVersion
         ? readVersion(previousVersion)
-        : { concepts: [], levels: [] };
+        : { concepts: [], levels: [], facetValues: [] };
     const current = readVersion(target);
 
     console.log(
@@ -512,13 +762,21 @@ function commandPublish(version, options) {
         fail(`${target} failed validation; nothing was written`);
     }
 
+    const previousFacets = buildFacetIndex(previous.facetValues ?? []);
+    const currentFacets = buildFacetIndex(current.facetValues);
+
+    const facetValueChanges = diffRecords(
+        (previous.facetValues ?? []).map((f) =>
+            normalizeRecord(f, FACET_VALUE_FIELDS, f.facetValueId),
+        ),
+        current.facetValues.map((f) =>
+            normalizeRecord(f, FACET_VALUE_FIELDS, f.facetValueId),
+        ),
+        "facetValueId",
+    );
     const conceptChanges = diffRecords(
-        previous.concepts.map((c) =>
-            normalizeRecord(c, CONCEPT_FIELDS, c.conceptId),
-        ),
-        current.concepts.map((c) =>
-            normalizeRecord(c, CONCEPT_FIELDS, c.conceptId),
-        ),
+        previous.concepts.map((c) => normalizeConcept(c, previousFacets)),
+        current.concepts.map((c) => normalizeConcept(c, currentFacets)),
         "conceptId",
     );
     const levelChanges = diffRecords(
@@ -534,7 +792,7 @@ function commandPublish(version, options) {
     // Every changed code must name the release that changed it, so the
     // catalogueRelease column stays a usable audit trail.
     const unstamped = conceptChanges
-        .filter((change) => change.next.catalogueRelease !== target)
+        .filter((change) => change.next.fields.catalogueRelease !== target)
         .map((change) => change.key);
     if (unstamped.length > 0) {
         if (options.stamp) {
@@ -554,14 +812,19 @@ function commandPublish(version, options) {
 
     const added = conceptChanges.filter((c) => c.prev === null).length;
     const retired = conceptChanges.filter(
-        (c) => c.prev !== null && c.prev.active && !c.next.active,
+        (c) => c.prev !== null && c.prev.fields.active && !c.next.fields.active,
     ).length;
     console.log(
         `  concepts: ${conceptChanges.length} changed (${added} new, ${retired} retired)`,
     );
+    console.log(`  facet values: ${facetValueChanges.length} changed`);
     console.log(`  spinal levels: ${levelChanges.length} changed`);
 
-    if (conceptChanges.length === 0 && levelChanges.length === 0) {
+    if (
+        conceptChanges.length === 0 &&
+        levelChanges.length === 0 &&
+        facetValueChanges.length === 0
+    ) {
         console.log(
             "Nothing changed since the previous release; nothing to publish.",
         );
@@ -590,7 +853,12 @@ function commandPublish(version, options) {
 
     writeFileSync(
         join(migrationsDir, migrationName),
-        renderMigration(target, conceptChanges, levelChanges),
+        renderMigration(
+            target,
+            conceptChanges,
+            levelChanges,
+            facetValueChanges,
+        ),
     );
     console.log(`  wrote pb/pb_migrations/${migrationName}`);
 
