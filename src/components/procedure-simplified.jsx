@@ -2,6 +2,7 @@ import { twMerge } from "tailwind-merge";
 
 import { age } from "@/utils/dates";
 import LabelValue from "./label-value";
+import { describeProcedureCodesSimplified } from "@/lib/procedure-codes";
 import { PacStatusSmall } from "./pac-status";
 
 /**
@@ -59,8 +60,10 @@ function ProcedureSimplifiedView({
             />
             <LabelValue
                 className="col-span-3"
-                // label="Procedure"
-                value={procedure.procedure}
+                // label="Procedure Codes"
+                // One line per row, so staged or multiple codes read as a
+                // single procedure: "ACDF (Left, C5-C6) + Burr hole drainage".
+                value={describeProcedureCodesSimplified(procedure).join(" + ")}
             />
             <div className="col-span-2">
                 <PacStatusSmall status={procedure?.pacStatus} />

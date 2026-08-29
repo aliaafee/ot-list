@@ -206,11 +206,7 @@ function ProcedureDetails({
                 />
                 <LabelListValue
                     className="md:col-span-4"
-                    label={
-                        procedureCodes.length > 1
-                            ? "Procedure Codes"
-                            : "Procedure Code"
-                    }
+                    label="Procedure"
                     value={procedureCodes}
                 />
                 <LabelValue

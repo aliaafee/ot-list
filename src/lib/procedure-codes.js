@@ -114,7 +114,7 @@ function labelOf(options, value) {
  * concept. It falls back to the free text of an uncoded entry, then to the
  * expanded concept, so a row written before that stamping still reads.
  */
-export function describeProcedureCode(record) {
+export function describeProcedureCode(record, simplified = false) {
     const term =
         record?.displayTerm ||
         record?.freeText ||
@@ -128,14 +128,17 @@ export function describeProcedureCode(record) {
     for (const level of record?.expand?.spinalLevels ?? []) {
         qualifiers.push(level.code);
     }
-    if (record?.revisionStatus) {
-        qualifiers.push(labelOf(REVISION_OPTIONS, record.revisionStatus));
-    }
-    if (record?.priority) {
-        qualifiers.push(labelOf(PRIORITY_OPTIONS, record.priority));
-    }
-    if (record?.stagedSequence) {
-        qualifiers.push(`Stage ${record.stagedSequence}`);
+
+    if (!simplified) {
+        if (record?.revisionStatus) {
+            qualifiers.push(labelOf(REVISION_OPTIONS, record.revisionStatus));
+        }
+        if (record?.priority) {
+            qualifiers.push(labelOf(PRIORITY_OPTIONS, record.priority));
+        }
+        if (record?.stagedSequence) {
+            qualifiers.push(`Stage ${record.stagedSequence}`);
+        }
     }
 
     return qualifiers.length ? `${term} (${qualifiers.join(", ")})` : term;
@@ -146,4 +149,11 @@ export function describeProcedureCodes(procedure) {
     return [...procedureCodeRecordsOf(procedure)]
         .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
         .map(describeProcedureCode);
+}
+
+/** Every stored code on a procedure, as display lines. */
+export function describeProcedureCodesSimplified(procedure) {
+    return [...procedureCodeRecordsOf(procedure)]
+        .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+        .map((p) => describeProcedureCode(p, true));
 }

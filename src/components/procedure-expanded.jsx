@@ -7,6 +7,7 @@ import { age } from "@/utils/dates";
 import LabelValue from "./label-value";
 import { PacStatusSmall } from "./pac-status";
 import ProcedureComments from "./procedure-comments";
+import { describeProcedureCodesSimplified } from "@/lib/procedure-codes";
 
 /**
  * ProcedureExpandedView - Display expanded procedure item with full patient details
@@ -73,7 +74,9 @@ function ProcedureExpandedView({
                 <LabelValue
                     className="col-span-3"
                     // label="Procedure"
-                    value={procedure.procedure}
+                    value={describeProcedureCodesSimplified(procedure).join(
+                        " + ",
+                    )}
                 />
                 <div className="col-span-2">
                     <PacStatusSmall status={procedure?.pacStatus} />

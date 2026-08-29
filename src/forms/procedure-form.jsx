@@ -84,7 +84,7 @@ export function ProcedureForm({
             />
             <FormListField
                 type="procedure-code"
-                label="Procedure Code"
+                label="Procedure"
                 name="procedureCodes"
                 value={value.procedureCodes}
                 onChange={handleChange}
