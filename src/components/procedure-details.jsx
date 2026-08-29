@@ -61,7 +61,7 @@ function ProcedureDetails({
     const procedureCodes = describeProcedureCodes(procedure);
 
     const handleCopyAdvice = () => {
-        const adviceText = `${procedure?.procedure} for ${procedure?.diagnosis} on ${formateDateLong(procedure?.expand?.procedureDay?.date)} in ${procedure?.expand?.procedureDay?.expand?.otList?.name}`;
+        const adviceText = `${procedureCodes.join(" + ")} for ${procedure?.diagnosis} on ${formateDateLong(procedure?.expand?.procedureDay?.date)} in ${procedure?.expand?.procedureDay?.expand?.otList?.name}`;
         // Copy to clipboard
         navigator.clipboard
             .writeText(adviceText)
@@ -195,14 +195,9 @@ function ProcedureDetails({
             <PacStatus procedureId={procedure?.id} className="p-2" />
             <div className=" p-2 grid grid-cols-1 md:grid-cols-4 gap-2">
                 <LabelValue
-                    className="md:col-span-2"
+                    className="md:col-span-4"
                     label="Diagnosis"
                     value={procedure.diagnosis}
-                />
-                <LabelValue
-                    className="md:col-span-2"
-                    label="Procedure"
-                    value={procedure.procedure}
                 />
                 <LabelListValue
                     className="md:col-span-4"
@@ -261,7 +256,7 @@ function ProcedureDetails({
                     <p className="mb-2">
                         {procedure?.expand?.patient?.nid}{" "}
                         {procedure?.expand?.patient?.name} planned for{" "}
-                        {procedure.procedure} on{" "}
+                        {procedureCodes.join(" + ")} on{" "}
                         {dayjs(procedure?.expand?.procedureDay.date).format(
                             "DD MMM YYYY",
                         )}

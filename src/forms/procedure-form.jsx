@@ -5,7 +5,6 @@ import { isFilledCode } from "@/lib/procedure-codes";
 export const initialProcedureValue = {
     diagnosis: "",
     comorbids: "",
-    procedure: "",
     procedureCodes: [],
     addedDate: "",
     addedBy: "",
@@ -20,7 +19,6 @@ export const validateProcedure = (procedure) => {
     const errorFields = {};
     const requiredFields = [
         "diagnosis",
-        "procedure",
         "procedureCodes",
         "addedDate",
         "addedBy",
@@ -69,18 +67,9 @@ export function ProcedureForm({
                 name="diagnosis"
                 value={value.diagnosis}
                 onChange={handleChange}
-                className="md:col-span-2"
+                className="md:col-span-4"
                 error={"diagnosis" in errorFields}
                 errorMessage={errorFields["diagnosis"]?.message}
-            />
-            <FormField
-                label="Procedure"
-                name="procedure"
-                value={value.procedure}
-                onChange={handleChange}
-                className="md:col-span-2"
-                error={"procedure" in errorFields}
-                errorMessage={errorFields["procedure"]?.message}
             />
             <FormListField
                 type="procedure-code"

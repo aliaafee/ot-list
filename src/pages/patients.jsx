@@ -13,6 +13,7 @@ import {
 import BodyLayout from "@/components/body-layout";
 import { ToolBar, ToolBarButtonLabel, ToolBarLink } from "@/components/toolbar";
 import { pb } from "@/lib/pb";
+import { describeProcedureCodes } from "@/lib/procedure-codes";
 import { age } from "@/utils/dates";
 import dayjs from "dayjs";
 import { useAuth } from "@/contexts/auth-context";
@@ -90,7 +91,7 @@ function Patients({}) {
                     patientId: patient.id,
                 }),
                 sort: "-created",
-                expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom",
+                expand: "procedureDay,procedureDay.otList,addedBy,operatingRoom,procedureCodes_via_procedure.concept,procedureCodes_via_procedure.spinalLevels",
             });
 
             setPatientProcedures(result.items);
@@ -425,9 +426,7 @@ function Patients({}) {
                                                                                 <span className="font-medium">
                                                                                     Procedure:
                                                                                 </span>{" "}
-                                                                                {
-                                                                                    proc.procedure
-                                                                                }
+                                                                                {describeProcedureCodes(proc).join(" + ")}
                                                                             </div>
                                                                             {proc.comorbids && (
                                                                                 <div className="mt-1">

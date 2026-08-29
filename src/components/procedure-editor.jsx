@@ -42,8 +42,7 @@ function ProcedureEditor({
 
     const [updatedProcedure, setUpdatedProcedure] = useState({
         diagnosis: procedure?.diagnosis || "",
-        comorbids: procedure?.comorbids || "",
-        procedure: procedure?.procedure || "",
+        comorbids: procedure?.comorbids || "",
         // Null until the user edits the codes; what is stored is derived
         // below and used in the meantime.
         procedureCodes: null,
@@ -95,8 +94,7 @@ function ProcedureEditor({
             bed: updatedProcedure.bed,
             comorbids: updatedProcedure.comorbids,
             diagnosis: updatedProcedure.diagnosis,
-            duration: updatedProcedure.duration,
-            procedure: updatedProcedure.procedure,
+            duration: updatedProcedure.duration,
             procedureCodes: toProcedureCodesPayload(procedureCodes),
             remarks: updatedProcedure.remarks,
             removed: updatedProcedure.removed,

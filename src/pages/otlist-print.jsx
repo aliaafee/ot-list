@@ -1,6 +1,7 @@
 import { LoadingSpinnerFull } from "@/components/loading-spinner";
 import Button from "@/components/button";
 import { useProcedureList } from "@/contexts/procedure-list-context";
+import { describeProcedureCodes } from "@/lib/procedure-codes";
 import { age } from "@/utils/dates";
 import dayjs from "dayjs";
 import { useEffect, useMemo } from "react";
@@ -138,7 +139,7 @@ function SubOtListPrint({ procedures, operatingRoom, excluded, onToggle }) {
                             {item.diagnosis}
                         </td>
                         <td className="border border-black p-1 align-text-top">
-                            {item.procedure}
+                            {describeProcedureCodes(item).join(" + ")}
                         </td>
                         <td className="border border-black p-1 align-text-top">
                             Neurosurgery Team

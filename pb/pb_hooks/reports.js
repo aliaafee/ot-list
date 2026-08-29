@@ -115,6 +115,8 @@ const findProceduresByOtDayAndRoom = (otDayId, roomId) => {
 };
 
 const getOtListHTMLReport = (otDayId) => {
+    const { describeProcedureCodes } = require(`${__hooks}/procedure-codes.js`);
+
     const otDayRecord = $app.findRecordById("otDays", otDayId);
 
     const otDay = otDayRecord.publicExport();
@@ -157,7 +159,7 @@ const getOtListHTMLReport = (otDayId) => {
                     patient.name,
                     `${age(patient.dateOfBirth)} / ${sexShort(patient.sex)}`,
                     procedure.diagnosis,
-                    procedure.procedure,
+                    describeProcedureCodes($app, procedureRecord),
                     `${department.name} Team`,
                     procedure.comorbids,
                     procedure.requirements,

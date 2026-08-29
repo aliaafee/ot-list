@@ -115,8 +115,56 @@ function syncProcedureCodes(txApp, procedureRecord, codes) {
     });
 }
 
+/**
+ * A procedure's codes as one line, for the generated report.
+ *
+ * Mirrors describeProcedureCode in src/lib/procedure-codes.js - the report and
+ * the screen have to name a procedure the same way. Kept deliberately narrow:
+ * the report shows the term with its laterality and levels, which is what the
+ * printed list needs to identify the operation.
+ */
+function describeProcedureCodes(app, procedureRecord) {
+    const LATERALITY = {
+        left: "Left",
+        right: "Right",
+        bilateral: "Bilateral",
+        "not-applicable": "Not applicable",
+    };
+
+    const codes = app.findRecordsByFilter(
+        "procedureCodes",
+        "procedure = {:procedure}",
+        "position",
+        0,
+        0,
+        { procedure: procedureRecord.id },
+    );
+
+    const lines = codes.map((code) => {
+        const term = code.getString("displayTerm") || code.getString("freeText");
+
+        const qualifiers = [];
+        const laterality = code.getString("laterality");
+        if (laterality) {
+            qualifiers.push(LATERALITY[laterality] || laterality);
+        }
+
+        app.expandRecord(code, ["spinalLevels"], null);
+        (code.expandedAll("spinalLevels") || []).forEach((level) => {
+            qualifiers.push(level.getString("code"));
+        });
+
+        return qualifiers.length
+            ? `${term} (${qualifiers.join(", ")})`
+            : term;
+    });
+
+    return lines.join(" + ");
+}
+
 module.exports = {
     PROCEDURE_EXPAND,
     UNCODED_CONCEPT_ID,
+    describeProcedureCodes,
     syncProcedureCodes,
 };

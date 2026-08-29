@@ -5,6 +5,7 @@ import { CalendarArrowDownIcon } from "lucide-react";
 import ModalWindow from "./modal-window";
 import FormField from "@/components/form-field";
 import { useProcedureList } from "@/contexts/procedure-list-context";
+import { describeProcedureCodes } from "@/lib/procedure-codes";
 import { useSearchParams } from "react-router";
 
 /**
@@ -118,7 +119,7 @@ function MoveProcedureModal({
         >
             <p className="mb-2">
                 {itemToMove.expand.patient.nid} {itemToMove.expand.patient.name}{" "}
-                planned for {itemToMove.procedure} on{" "}
+                planned for {describeProcedureCodes(itemToMove).join(" + ")} on{" "}
                 {dayjs(itemToMove.expand.procedureDay.date).format(
                     "DD MMM YYYY"
                 )}

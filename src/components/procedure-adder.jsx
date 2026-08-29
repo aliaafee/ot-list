@@ -193,8 +193,7 @@ function ProcedureAdder({
             comorbids: newProcedure.comorbids,
             diagnosis: newProcedure.diagnosis,
             duration: newProcedure.duration,
-            operatingRoom: operatingRoom.id,
-            procedure: newProcedure.procedure,
+            operatingRoom: operatingRoom.id,
             procedureCodes: toProcedureCodesPayload(
                 newProcedure.procedureCodes,
             ),

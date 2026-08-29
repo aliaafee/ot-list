@@ -11,6 +11,7 @@ import {
 import BodyLayout from "@/components/body-layout";
 import { ToolBar, ToolBarButtonLabel, ToolBarLink } from "@/components/toolbar";
 import { pb } from "@/lib/pb";
+import { describeProcedureCodes } from "@/lib/procedure-codes";
 import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
 
@@ -44,7 +45,7 @@ function AllProcedures() {
         try {
             const options = {
                 sort: "procedureDay.date",
-                expand: "patient,addedBy,procedureDay,procedureDay.otList,operatingRoom",
+                expand: "patient,addedBy,procedureDay,procedureDay.otList,operatingRoom,procedureCodes_via_procedure.concept,procedureCodes_via_procedure.spinalLevels",
             };
 
             const filters = [];
@@ -284,7 +285,7 @@ function AllProcedures() {
                                             {proc.diagnosis}
                                         </td>
                                         <td className="px-3 py-2 text-sm">
-                                            {proc.procedure}
+                                            {describeProcedureCodes(proc).join(" + ")}
                                         </td>
                                         <td className="px-3 py-2 text-sm">
                                             {
