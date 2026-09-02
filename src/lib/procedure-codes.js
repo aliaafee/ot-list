@@ -113,6 +113,10 @@ function labelOf(options, value) {
  * the way it was recorded even after a later catalogue release rewords the
  * concept. It falls back to the free text of an uncoded entry, then to the
  * expanded concept, so a row written before that stamping still reads.
+ *
+ * The spinal level list is read the same way: `spinalLevelsSnapshot` is the
+ * rendered list frozen at coding time; the expanded relation is the fallback
+ * for rows written before that column existed.
  */
 export function describeProcedureCode(record, simplified = false) {
     const term =
@@ -125,8 +129,14 @@ export function describeProcedureCode(record, simplified = false) {
     if (record?.laterality) {
         qualifiers.push(labelOf(LATERALITY_OPTIONS, record.laterality));
     }
-    for (const level of record?.expand?.spinalLevels ?? []) {
-        qualifiers.push(level.code);
+    if (record?.spinalLevelsSnapshot) {
+        for (const code of record.spinalLevelsSnapshot.split(", ")) {
+            if (code) qualifiers.push(code);
+        }
+    } else {
+        for (const level of record?.expand?.spinalLevels ?? []) {
+            qualifiers.push(level.code);
+        }
     }
 
     if (!simplified) {

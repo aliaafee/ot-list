@@ -71,7 +71,7 @@ function syncProcedureCodes(txApp, procedureRecord, codes) {
         // A level code is only unique within a kind, so the concept says
         // which kind of level it takes.
         const levelKind = concept.getString("levelKind");
-        const levelIds = (code.spinalLevels || []).map((levelCode) => {
+        const levels = (code.spinalLevels || []).map((levelCode) => {
             let level;
             try {
                 level = txApp.findFirstRecordByFilter(
@@ -84,8 +84,18 @@ function syncProcedureCodes(txApp, procedureRecord, codes) {
                     `Unknown ${levelKind || "spinal"} level: ${levelCode}`,
                 );
             }
-            return level.id;
+            return level;
         });
+        const levelIds = levels.map((level) => level.id);
+
+        // The rendered level list, frozen at coding time (spec section 6), so
+        // an old note keeps its level text if the level vocabulary is later
+        // revised. Ordered cranio-caudally by ordinal, canonical spelling.
+        const spinalLevelsSnapshot = levels
+            .slice()
+            .sort((a, b) => a.getInt("ordinal") - b.getInt("ordinal"))
+            .map((level) => level.getString("code"))
+            .join(", ");
 
         const isUncoded = code.conceptId === UNCODED_CONCEPT_ID;
 
@@ -105,6 +115,7 @@ function syncProcedureCodes(txApp, procedureRecord, codes) {
             record.set("stagedSequence", code.stagedSequence);
         }
         record.set("spinalLevels", levelIds);
+        record.set("spinalLevelsSnapshot", spinalLevelsSnapshot);
         record.set("catalogueRelease", concept.getString("catalogueRelease"));
         record.set(
             "displayTerm",
@@ -149,10 +160,19 @@ function describeProcedureCodes(app, procedureRecord) {
             qualifiers.push(LATERALITY[laterality] || laterality);
         }
 
-        app.expandRecord(code, ["spinalLevels"], null);
-        (code.expandedAll("spinalLevels") || []).forEach((level) => {
-            qualifiers.push(level.getString("code"));
-        });
+        // Prefer the snapshot taken at coding time; fall back to the live
+        // relation for rows written before the column existed.
+        const levelSnapshot = code.getString("spinalLevelsSnapshot");
+        if (levelSnapshot) {
+            levelSnapshot.split(", ").forEach((levelCode) => {
+                if (levelCode) qualifiers.push(levelCode);
+            });
+        } else {
+            app.expandRecord(code, ["spinalLevels"], null);
+            (code.expandedAll("spinalLevels") || []).forEach((level) => {
+                qualifiers.push(level.getString("code"));
+            });
+        }
 
         return qualifiers.length
             ? `${term} (${qualifiers.join(", ")})`

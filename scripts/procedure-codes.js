@@ -484,6 +484,7 @@ function renderMigration(
     conceptChanges,
     levelChanges,
     facetValueChanges,
+    effectiveFrom,
 ) {
     return `/// <reference path="../pb_data/types.d.ts" />
 
@@ -499,8 +500,21 @@ function renderMigration(
 // A concept's facets are relations, so they travel as facetValueIds and are
 // resolved to records here. Its synonyms are child rows, replaced as a set:
 // the catalogue always states a concept's whole synonym list.
+//
+// Alongside the in-place upsert into the current-state tables, every change is
+// appended to catalogueRevisions as an open revision (effectiveTo = ""), and
+// the revision it supersedes is closed at this release's effectiveFrom - the
+// RF2-shaped history in coding system spec section 6. The current-state row's
+// own effectiveTo is stamped when the row goes inactive.
 
 const CATALOGUE_RELEASE = "${version}";
+const RELEASE_EFFECTIVE_FROM = "${effectiveFrom}";
+
+// catalogueRevisions.entity for the collections seeded through applyChanges.
+const REVISION_ENTITY = {
+  procedureFacetValues: "facetValue",
+  spinalLevels: "spinalLevel",
+};
 
 const FACET_VALUE_CHANGES = ${JSON.stringify(facetValueChanges, null, 2)};
 
@@ -508,8 +522,97 @@ const LEVEL_CHANGES = ${JSON.stringify(levelChanges, null, 2)};
 
 const CONCEPT_CHANGES = ${JSON.stringify(conceptChanges, null, 2)};
 
+/**
+ * Appends one open revision for a record and closes the one it supersedes.
+ * prevActive is null when this release introduces the record.
+ */
+function recordRevision(app, entity, businessId, snapshot, isActive, prevActive) {
+  const revisions = app.findCollectionByNameOrId("catalogueRevisions");
+
+  // Close the currently-open revision (the newest one, if its effectiveTo is
+  // still empty). Checked in JS rather than filtered on an empty date column.
+  let prior = [];
+  try {
+    prior = app.findRecordsByFilter(
+      "catalogueRevisions",
+      "entity = {:entity} && businessId = {:businessId}",
+      "-effectiveFrom",
+      1,
+      0,
+      { entity: entity, businessId: businessId },
+    );
+  } catch (err) {
+    prior = [];
+  }
+  for (const row of prior) {
+    if (!row.getString("effectiveTo")) {
+      row.set("effectiveTo", RELEASE_EFFECTIVE_FROM);
+      app.save(row);
+    }
+  }
+
+  let changeType = "update";
+  if (prevActive === null || prevActive === undefined) {
+    changeType = "add";
+  } else if (prevActive && !isActive) {
+    changeType = "retire";
+  } else if (!prevActive && isActive) {
+    changeType = "reactivate";
+  }
+
+  const row = new Record(revisions);
+  row.set("entity", entity);
+  row.set("businessId", businessId);
+  row.set("release", CATALOGUE_RELEASE);
+  row.set("effectiveFrom", RELEASE_EFFECTIVE_FROM);
+  row.set("effectiveTo", "");
+  row.set("active", isActive);
+  row.set("changeType", changeType);
+  row.set("snapshot", snapshot);
+  app.save(row);
+}
+
+/** Rolls back recordRevision: drop this release's row, re-open the prior one. */
+function unrecordRevision(app, entity, businessId) {
+  let mine = [];
+  try {
+    mine = app.findRecordsByFilter(
+      "catalogueRevisions",
+      "entity = {:entity} && businessId = {:businessId} && release = {:release}",
+      "",
+      0,
+      0,
+      { entity: entity, businessId: businessId, release: CATALOGUE_RELEASE },
+    );
+  } catch (err) {
+    mine = [];
+  }
+  for (const row of mine) {
+    app.delete(row);
+  }
+
+  let prior = [];
+  try {
+    prior = app.findRecordsByFilter(
+      "catalogueRevisions",
+      "entity = {:entity} && businessId = {:businessId}",
+      "-effectiveFrom",
+      1,
+      0,
+      { entity: entity, businessId: businessId },
+    );
+  } catch (err) {
+    prior = [];
+  }
+  for (const row of prior) {
+    row.set("effectiveTo", "");
+    app.save(row);
+  }
+}
+
 function applyChanges(app, collectionName, keyField, changes, direction) {
   const collection = app.findCollectionByNameOrId(collectionName);
+  const entity = REVISION_ENTITY[collectionName];
 
   for (const change of changes) {
     const values = direction === "up" ? change.next : change.prev;
@@ -526,6 +629,7 @@ function applyChanges(app, collectionName, keyField, changes, direction) {
       if (record !== null) {
         app.delete(record);
       }
+      unrecordRevision(app, entity, change.key);
       continue;
     }
 
@@ -535,7 +639,24 @@ function applyChanges(app, collectionName, keyField, changes, direction) {
     for (const field in values) {
       record.set(field, values[field]);
     }
+    record.set(
+      "effectiveTo",
+      values.active === true ? "" : RELEASE_EFFECTIVE_FROM,
+    );
     app.save(record);
+
+    if (direction === "up") {
+      recordRevision(
+        app,
+        entity,
+        change.key,
+        values,
+        values.active === true,
+        change.prev === null ? null : change.prev.active === true,
+      );
+    } else {
+      unrecordRevision(app, entity, change.key);
+    }
   }
 }
 
@@ -580,6 +701,7 @@ function applyConcepts(app, changes, direction) {
       if (record !== null) {
         app.delete(record);
       }
+      unrecordRevision(app, "concept", change.key);
       continue;
     }
 
@@ -592,6 +714,10 @@ function applyConcepts(app, changes, direction) {
     for (const field in values.facets) {
       record.set(field, facetRecordId(app, values.facets[field]));
     }
+    record.set(
+      "effectiveTo",
+      values.fields.active === true ? "" : RELEASE_EFFECTIVE_FROM,
+    );
     app.save(record);
 
     const existing = app.findRecordsByFilter(
@@ -612,6 +738,19 @@ function applyConcepts(app, changes, direction) {
         row.set(field, synonym[field]);
       }
       app.save(row);
+    }
+
+    if (direction === "up") {
+      recordRevision(
+        app,
+        "concept",
+        change.key,
+        values,
+        values.fields.active === true,
+        change.prev === null ? null : change.prev.fields.active === true,
+      );
+    } else {
+      unrecordRevision(app, "concept", change.key);
     }
   }
 }
@@ -841,6 +980,10 @@ function commandPublish(version, options) {
 
     const migrationName = `${nextMigrationTimestamp()}_seeded_procedureCodes_${migrationSlug(target)}.js`;
 
+    // The release date, stamped identically onto the generated migration (as
+    // every revision's effectiveFrom) and the bundled release manifest.
+    const publishedAt = new Date().toISOString().slice(0, 10);
+
     if (options.dryRun) {
         console.log("");
         console.log("Dry run, nothing written. Would have written:");
@@ -858,6 +1001,7 @@ function commandPublish(version, options) {
             conceptChanges,
             levelChanges,
             facetValueChanges,
+            publishedAt,
         ),
     );
     console.log(`  wrote pb/pb_migrations/${migrationName}`);
@@ -869,7 +1013,7 @@ function commandPublish(version, options) {
     }
     const release = {
         release: target,
-        publishedAt: new Date().toISOString().slice(0, 10),
+        publishedAt: publishedAt,
         concepts: current.concepts.length,
         spinalLevels: current.levels.length,
     };

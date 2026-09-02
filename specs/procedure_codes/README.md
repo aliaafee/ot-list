@@ -37,6 +37,11 @@ Created by the migrations in [`pb/pb_migrations/`](../../pb/pb_migrations/):
 | `procedureConceptSynonyms` | `pbc_3001000003` | same file | Per-concept search synonyms (department jargon, abbreviations, level shorthands). Cascade-deleted with the concept. |
 | `spinalLevels` | `pbc_2604117395` | [`1787734431_created_spinalLevels.js`](../../pb/pb_migrations/1787734431_created_spinalLevels.js) | The spinal-level vocabulary — 27 vertebrae + 25 interspaces, `ordinal`-ordered. |
 | `procedureCodes` | `pbc_3317842065` | [`1787734432_created_procedureCodes.js`](../../pb/pb_migrations/1787734432_created_procedureCodes.js) | The encounter-level join: one row per coded procedure on a `procedures` record, carrying the post-coordination fields. |
+| `catalogueRevisions` | `pbc_4100000001` | [`1788307202_created_catalogueRevisions.js`](../../pb/pb_migrations/1788307202_created_catalogueRevisions.js) | Append-only row-level history of the four catalogue tables (§2.1). One row per (record, release-that-changed-it). |
+
+The four catalogue tables (`procedureFacetValues`, `procedureConcepts`,
+`procedureConceptSynonyms`, `spinalLevels`) each also carry `effectiveFrom`,
+`effectiveTo` and `active` — see §2.1.
 
 ### `procedureConcepts` fields
 
@@ -46,7 +51,8 @@ Created by the migrations in [`pb/pb_migrations/`](../../pb/pb_migrations/):
 `lateralityApplicable`, `revisionApplicable`, `levelApplicable` (bool);
 `levelKind` (`interspace` | `vertebra`); `levelRegions` (json array of region names);
 `active`, `inactivationReason`, `replacedBy` (plain conceptId string — resolved by
-business id, not record id); `effectiveFrom`, `catalogueRelease`.
+business id, not record id); `effectiveFrom`, `effectiveTo` (empty = current row),
+`catalogueRelease`.
 
 ### `procedureCodes` fields
 
@@ -56,17 +62,58 @@ business id, not record id); `effectiveFrom`, `catalogueRelease`.
 `revisionStatus` (`primary`/`revision`), `priority` (`elective`/`urgent`/`emergency`),
 `stagedSequence` (int), `intentOverride` (text),
 `spinalLevels` (relation → `spinalLevels`, `maxSelect: 52`),
+`spinalLevelsSnapshot` (text, rendered level list frozen at write time — see §2.1),
 `catalogueRelease` (text, stamped at write time),
 `displayTerm` (text, stamped at write time — see §6).
+
+### `catalogueRevisions` fields
+
+`entity` (`concept` | `facetValue` | `spinalLevel` — synonyms ride inside the
+concept snapshot), `businessId` (`conceptId` / `facetValueId` / `spinalLevelId`),
+`release`, `effectiveFrom`, `effectiveTo` (empty = still current),
+`active`, `changeType` (`add` | `update` | `retire` | `reactivate`),
+`snapshot` (json — the full record as that release wrote it; for a concept, its
+scalar fields, facets as `facetValueId`s, and whole synonym list).
 
 ### Access rules
 
 - `procedureFacetValues`, `procedureConcepts`, `procedureConceptSynonyms`,
-  `spinalLevels`: **read** for any signed-in user; **no** create/update/delete
-  rules — the seed migration is the only writer.
+  `spinalLevels`, `catalogueRevisions`: **read** for any signed-in user; **no**
+  create/update/delete rules — the seed migrations are the only writer.
 - `procedureCodes`: read for any signed-in user; create/update require role
   `doctor` or `admin`; delete requires `admin`. In practice all writes go
   through the transaction hooks (§5), not direct collection calls.
+
+---
+
+## 2.1 Versioning (spec §6)
+
+The catalogue is versioned two ways at once:
+
+- **Current-state tables** (`procedureConcepts` etc.) hold **one row per business
+  id**, upserted in place by each release's seed migration. This is what the
+  client picker reads (fast, no date logic). `effectiveTo` is stamped when a row
+  goes inactive; the live row is the one with `effectiveTo` empty.
+- **`catalogueRevisions`** is the **append-only, RF2-shaped log**. Each seed
+  migration, alongside the upsert, appends one *open* revision
+  (`effectiveTo` empty) per changed record and closes the revision it supersedes
+  at the new release's `effectiveFrom`. Rows are never updated except to stamp
+  `effectiveTo`, and never deleted except when a release is rolled back.
+
+**Point-in-time catalogue** ("what did concept X look like as of date D"):
+per `businessId`, the `catalogueRevisions` row whose
+`[effectiveFrom, effectiveTo)` contains D — its `snapshot` is the full record.
+
+**Point-in-time procedure rendering** is handled without querying history at
+all: every `procedureCodes` row snapshots `displayTerm` (the concept's preferred
+term at coding time, or the free text for an uncoded row),
+`spinalLevelsSnapshot` (the rendered level list), and `catalogueRelease`. So an
+operative note's text is stable across later catalogue revisions. The structured
+`spinalLevels` relation is kept alongside for editing.
+
+The first release (`v2026.1`) was seeded before `catalogueRevisions` existed;
+[`1788307205_backfill_catalogueRevisions_v2026_1.js`](../../pb/pb_migrations/1788307205_backfill_catalogueRevisions_v2026_1.js)
+writes its initial `add` revisions.
 
 ---
 
@@ -113,7 +160,10 @@ npm run codes -- publish [v2026.2] [--dry-run] [--stamp]
    that seeds **only what changed** — each entry carries `prev` (null when
    added) and `next`, so the migration rolls back exactly. Facets travel as
    `facetValueId`s and are resolved to records inside the migration; synonyms
-   are replaced as a whole set per concept.
+   are replaced as a whole set per concept. Alongside the in-place upsert it
+   appends the `catalogueRevisions` rows and stamps `effectiveTo` on
+   now-inactive current-state rows (§2.1); the release date it uses for
+   `effectiveFrom` is the same one written to `catalogue-release.json`.
 3. **Copies** `nspc-catalogue.json` + `spinal-levels.json` into
    [`src/data/`](../../src/data/) and writes `catalogue-release.json`, so a
    rebuilt client bundles the same catalogue.
@@ -130,6 +180,11 @@ Then: `npm run build`, and restart PocketBase to apply the migration.
 | `1787895907_seeded_procedureCodes_v2026_1.js` | Generated seed for v2026.1 (do not hand-edit). |
 | `1788005752_updated_procedures.js` | `procedures.procedure` (legacy free-text field) made optional. |
 | `1788009377_moved_procedureText_to_procedureCodes.js` | Backfills every procedure that has legacy free text but no codes with one uncoded `procedureCodes` row (`concept = NSX-00000`, `freeText`/`displayTerm` = the old text). Idempotent; leaves already-coded procedures alone. Down-migration removes only rows still matching the copied text. |
+| `1788307201_added_effectiveTo_to_catalogue_tables.js` | Adds `effectiveTo` (date) to the four catalogue tables (§2.1). |
+| `1788307202_created_catalogueRevisions.js` | Creates the append-only `catalogueRevisions` history table (§2.1). |
+| `1788307203_added_spinalLevelsSnapshot_to_procedureCodes.js` | Adds `spinalLevelsSnapshot` (text) to `procedureCodes`. |
+| `1788307204_backfill_spinalLevelsSnapshot.js` | Backfills `spinalLevelsSnapshot` on existing `procedureCodes` rows from their `spinalLevels` relation, ordinal-ordered. |
+| `1788307205_backfill_catalogueRevisions_v2026_1.js` | Writes the initial `add` revision for every v2026.1 catalogue record. Idempotent. |
 
 ---
 
@@ -234,7 +289,7 @@ no UI yet.
 | `isFilledCode(entry)` | — | True if the entry has a concept or non-blank free text. `FormListField` pads the list with blank rows; these must not reach the server. |
 | `toProcedureCodesPayload(entries)` | picker → API | Drops blank rows, flattens `postCoordination`, sets `position` from index. Concepts/levels travel as **catalogue ids** (`NSX-00001`, `C5-C6`), which is all the client has. |
 | `fromProcedureCodeRecords(records, conceptById)` | stored → picker | Inverse of the above. Resolves `concept` by id against the loaded catalogue; sorts by `position`; rebuilds `postCoordination` (omitting falsy values, treating `stagedSequence === 0` as unset). |
-| `describeProcedureCode(record, simplified?)` | stored → one line | `displayTerm || freeText || expand.concept.preferredTerm`, then qualifiers in parens: laterality label + level codes always; revision + priority + `Stage n` only when not `simplified`. |
+| `describeProcedureCode(record, simplified?)` | stored → one line | `displayTerm || freeText || expand.concept.preferredTerm`, then qualifiers in parens: laterality label + level codes always; revision + priority + `Stage n` only when not `simplified`. Level codes come from `spinalLevelsSnapshot` when set, falling back to `expand.spinalLevels` for pre-snapshot rows. |
 | `describeProcedureCodes` / `…Simplified(procedure)` | — | All codes on an expanded procedure as an array of lines. |
 
 Read-only views join lines with `" + "`:
@@ -276,15 +331,19 @@ the procedure fields and written after the procedure has an id).
 2. Resolves `code.conceptId` → concept record; an unknown id is a
    `BadRequestError`, not a dropped code.
 3. Resolves each `code.spinalLevels` code → level record, filtering by
-   `kind = concept.levelKind` (a level code is only unique within a kind).
-4. Stamps `catalogueRelease` and `displayTerm` from the concept **as it reads
-   today** (`preferredTerm`, or the free text for the `NSX-00000` sentinel), so
-   an old procedure keeps printing the way it was coded after a later release
-   rewords or retires the concept.
+   `kind = concept.levelKind` (a level code is only unique within a kind), and
+   builds `spinalLevelsSnapshot` — the resolved codes, ordinal-ordered, joined
+   with `", "`.
+4. Stamps `catalogueRelease`, `displayTerm` and `spinalLevelsSnapshot` from the
+   concept and levels **as they read today** (`displayTerm` = `preferredTerm`,
+   or the free text for the `NSX-00000` sentinel), so an old procedure keeps
+   printing the way it was coded after a later release rewords or retires the
+   concept or a level.
 
 The same file also exports `describeProcedureCodes(app, procedureRecord)` — a
 deliberately narrow mirror of the client `describeProcedureCode` (term +
-laterality + levels) used by the generated report, joined with `" + "`.
+laterality + levels) used by the generated report, joined with `" + "`. It reads
+`spinalLevelsSnapshot` when present, falling back to the `spinalLevels` relation.
 
 ---
 
@@ -356,8 +415,13 @@ target of the `1788009377` backfill migration.
   forbidden — inactivate and mint a new id, set `replacedBy` on the old one.
 - **Nothing is deleted from a release** — concepts, levels and facet values are
   retired with `active: false`. The publisher enforces this.
-- **`catalogueRelease` and `displayTerm` on `procedureCodes` are snapshots** —
-  do not "fix" them to follow the live concept.
+- **`catalogueRelease`, `displayTerm` and `spinalLevelsSnapshot` on
+  `procedureCodes` are snapshots** — do not "fix" them to follow the live
+  concept or level vocabulary.
+- **`catalogueRevisions` is append-only.** A migration only ever inserts rows or
+  stamps `effectiveTo`; it never edits `snapshot`. The current-state tables are
+  a projection of "the revision whose `effectiveTo` is empty" — keep the two in
+  step (the generated seed migration does both).
 - **Sort levels by `ordinal`, not code.**
 - **The literal search query wins**; qualifier stripping is a zero-results
   fallback only.
@@ -388,4 +452,5 @@ target of the `1788009377` backfill migration.
 | [`src/forms/procedure-form.jsx`](../../src/forms/procedure-form.jsx) | Uses the field, validates `procedureCodes` |
 | [`pb/pb_hooks/procedure-codes.js`](../../pb/pb_hooks/procedure-codes.js) | `syncProcedureCodes`, report rendering, `PROCEDURE_EXPAND` |
 | [`pb/pb_hooks/transactions.pb.js`](../../pb/pb_hooks/transactions.pb.js) | Calls `syncProcedureCodes` on add / bulk update |
-| [`pb/pb_migrations/1787734430…`](../../pb/pb_migrations/) … `1788009377…` | Schema + seed + backfill |
+| [`pb/pb_migrations/1787734430…`](../../pb/pb_migrations/) … `1788009377…` | Catalogue + `procedureCodes` schema, v2026.1 seed, free-text backfill |
+| [`pb/pb_migrations/1788307201…`](../../pb/pb_migrations/) … `1788307205…` | `effectiveTo`, `catalogueRevisions`, `spinalLevelsSnapshot`, and their backfills (§2.1) |
