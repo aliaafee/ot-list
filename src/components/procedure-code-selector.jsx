@@ -3,7 +3,12 @@ import { twMerge } from "tailwind-merge";
 
 import { useCatalogue } from "@/contexts/catalogue-context";
 import SearchBox from "@/components/search-box";
-import { ChevronRightIcon, TriangleAlertIcon } from "lucide-react";
+import ProcedureCodeBrowserModal from "@/modals/procedure-code-browser-modal";
+import {
+    ChevronRightIcon,
+    LibraryBigIcon,
+    TriangleAlertIcon,
+} from "lucide-react";
 import {
     FACET_LABELS,
     LATERALITY_OPTIONS,
@@ -289,6 +294,7 @@ export default function ProcedureCodeSelector({
     const [open, setOpen] = useState(false);
     const [highlight, setHighlight] = useState(-1);
     const [codeDetails, setCodeDetails] = useState(false);
+    const [browsing, setBrowsing] = useState(false);
 
     const baseId = useId();
     const listboxId = `${baseId}-listbox`;
@@ -543,6 +549,26 @@ export default function ProcedureCodeSelector({
                                 ))}
                             </div>
                         )}
+                        {/* Sits below the results and stays pinned while they
+                            scroll: search is for when you know the name, this
+                            is for when you don't. */}
+                        <button
+                            type="button"
+                            // Keep focus in the input so the click-outside
+                            // handler doesn't race the modal open.
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={() => {
+                                setOpen(false);
+                                setBrowsing(true);
+                            }}
+                            className="sticky bottom-0 w-full flex items-center gap-1.5 border-t border-gray-100 bg-white px-2 py-1.5 text-xs text-blue-600 hover:bg-blue-50 cursor-pointer"
+                        >
+                            <LibraryBigIcon
+                                className="h-3 w-3 shrink-0"
+                                aria-hidden="true"
+                            />
+                            Browse the full catalogue
+                        </button>
                     </div>
                 )}
             </SearchBox>
@@ -710,6 +736,16 @@ export default function ProcedureCodeSelector({
                 <p id={errorId} className="text-xs text-red-500">
                     {errorMessage}
                 </p>
+            )}
+            {browsing && (
+                <ProcedureCodeBrowserModal
+                    initialConceptId={value?.concept?.conceptId ?? null}
+                    onCancel={() => setBrowsing(false)}
+                    onSelect={(concept) => {
+                        setBrowsing(false);
+                        handleSelect(concept);
+                    }}
+                />
             )}
         </div>
     );
