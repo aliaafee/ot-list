@@ -34,6 +34,17 @@ const FACETS = [
 ];
 const facetParam = (key) => `f_${key}`;
 
+// Current PAC status lives directly on `procedures.pacStatus` (kept in step with
+// the procedurePacStatuses timeline by the add-pac-status hook), so it filters
+// as a plain field. "none" matches procedures with no PAC status recorded yet.
+const PAC_STATUS_OPTIONS = [
+    { value: "referred", label: "Referred" },
+    { value: "inReview", label: "In Review" },
+    { value: "cleared", label: "Cleared" },
+    { value: "unfit", label: "Unfit" },
+    { value: "none", label: "No PAC status" },
+];
+
 const Tools = () => (
     <ToolBar>
         <ToolBarLink title="Home" to="/">
@@ -62,6 +73,7 @@ function AllProcedures() {
     const showUpcoming = searchParams.get("upcoming") === "true";
     const showRemoved = searchParams.get("showRemoved") === "true";
     const uncodedOnly = searchParams.get("uncoded") === "true";
+    const pacStatus = searchParams.get("pac") || "";
 
     // The selected facet term per facet, from the URL. `facetKey` is a stable
     // string of them, so the fetch effect re-runs when any changes without
@@ -101,6 +113,7 @@ function AllProcedures() {
         includeRemoved = false,
         facets = {},
         onlyUncoded = false,
+        pac = "",
     ) => {
         setLoading(true);
         setError(null);
@@ -151,6 +164,13 @@ function AllProcedures() {
                 );
             }
 
+            // Current PAC status. "none" is procedures with none recorded yet.
+            if (pac === "none") {
+                filters.push(`pacStatus = ""`);
+            } else if (pac) {
+                filters.push(pb.filter(`pacStatus = {:pac}`, { pac }));
+            }
+
             if (filters.length > 0) {
                 options.filter = filters.join(" && ");
             }
@@ -183,10 +203,19 @@ function AllProcedures() {
             showRemoved,
             facetFilters,
             uncodedOnly,
+            pacStatus,
         );
         // facetKey stands in for facetFilters, which is a fresh object each render
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [page, trimmedSearch, showUpcoming, showRemoved, facetKey, uncodedOnly]);
+    }, [
+        page,
+        trimmedSearch,
+        showUpcoming,
+        showRemoved,
+        facetKey,
+        uncodedOnly,
+        pacStatus,
+    ]);
 
     const handleSearch = () => {
         const params = new URLSearchParams(searchParams);
@@ -206,20 +235,25 @@ function AllProcedures() {
         setSearchParams(params);
     };
 
-    const setFacet = (key, value) => {
+    const setParam = (name, value) => {
         const params = new URLSearchParams(searchParams);
-        if (value) params.set(facetParam(key), value);
-        else params.delete(facetParam(key));
+        if (value) params.set(name, value);
+        else params.delete(name);
         params.set("page", "1");
         setSearchParams(params);
     };
 
-    const clearFacets = () => {
+    const setFacet = (key, value) => setParam(facetParam(key), value);
+
+    const clearFilters = () => {
         const params = new URLSearchParams(searchParams);
         for (const { key } of FACETS) params.delete(facetParam(key));
+        params.delete("pac");
         params.set("page", "1");
         setSearchParams(params);
     };
+
+    const hasFilters = hasFacetFilters || pacStatus !== "";
 
     return (
         <BodyLayout header={<Tools />}>
@@ -335,8 +369,25 @@ function AllProcedures() {
                 </label>
             </div>
 
-            {/* Procedure concept facet filters */}
+            {/* PAC status and procedure concept facet filters */}
             <div className="mb-4 flex flex-wrap items-center gap-2">
+                <select
+                    value={pacStatus}
+                    onChange={(e) => setParam("pac", e.target.value)}
+                    className={twMerge(
+                        "px-2 py-1 border rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500",
+                        pacStatus
+                            ? "border-blue-400 text-blue-700"
+                            : "border-gray-300 text-gray-700",
+                    )}
+                >
+                    <option value="">PAC status: any</option>
+                    {PAC_STATUS_OPTIONS.map(({ value, label }) => (
+                        <option key={value} value={value}>
+                            {label}
+                        </option>
+                    ))}
+                </select>
                 {FACETS.map(({ key }) => (
                     <select
                         key={key}
@@ -357,10 +408,10 @@ function AllProcedures() {
                         ))}
                     </select>
                 ))}
-                {hasFacetFilters && (
+                {hasFilters && (
                     <button
                         type="button"
-                        onClick={clearFacets}
+                        onClick={clearFilters}
                         className="text-sm text-blue-600 hover:underline cursor-pointer"
                     >
                         Clear filters
