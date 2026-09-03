@@ -51,6 +51,7 @@ function ProcedureDetails({
     setEditing,
     onRemove,
     recordError,
+    readOnly = false,
 }) {
     const { isBusy, reloadProcedure } = useProcedureList();
 
@@ -76,112 +77,125 @@ function ProcedureDetails({
 
     return (
         <div className="bg-gray-100">
-            <ToolBar
-                className={twMerge("col-span-4 bg-gray-200 transition-colors")}
-            >
-                {!procedure.removed && (
-                    <>
-                        <ToolBarButton
-                            title="Move Up"
-                            disabled={isBusy()}
-                            onClick={() => onMoveUp(procedure)}
-                        >
-                            <MoveUpIcon className="" width={16} height={16} />
-                        </ToolBarButton>
-                        <ToolBarButton
-                            title="Move Down"
-                            disabled={isBusy()}
-                            onClick={() => onMoveDown(procedure)}
-                        >
-                            <MoveDownIcon className="" width={16} height={16} />
-                        </ToolBarButton>
-                    </>
-                )}
-                <ToolBarButton
-                    title="Edit OT Procedure"
-                    disabled={isBusy()}
-                    onClick={() => setEditing(true)}
+            {!readOnly && (
+                <ToolBar
+                    className={twMerge(
+                        "col-span-4 bg-gray-200 transition-colors",
+                    )}
                 >
-                    <EditIcon className="" width={16} height={16} />
-                    <ToolBarButtonLabel className="hidden sm:inline">
-                        Edit
-                    </ToolBarButtonLabel>
-                </ToolBarButton>
-                <ToolBarButton
-                    title="Move OT Procedure"
-                    disabled={isBusy()}
-                    onClick={() => onMoveDate(procedure)}
-                >
-                    <CalendarArrowDownIcon width={16} height={16} />
-                    <ToolBarButtonLabel className="hidden sm:inline">
-                        Move
-                    </ToolBarButtonLabel>
-                </ToolBarButton>
-                <ToolBarButton
-                    title="Copy Advice"
-                    disabled={isBusy()}
-                    onClick={handleCopyAdvice}
-                >
-                    <CopyCheckIcon
-                        width={16}
-                        height={16}
-                        className={copied ? "text-green-500" : "hidden"}
-                    />
-
-                    <CopyIcon
-                        width={16}
-                        height={16}
-                        className={copied ? "hidden" : "inline"}
-                    />
-
-                    <ToolBarButtonLabel className="hidden sm:inline">
-                        Copy
-                    </ToolBarButtonLabel>
-                </ToolBarButton>
-                {!procedure.removed ? (
+                    {!procedure.removed && (
+                        <>
+                            <ToolBarButton
+                                title="Move Up"
+                                disabled={isBusy()}
+                                onClick={() => onMoveUp(procedure)}
+                            >
+                                <MoveUpIcon
+                                    className=""
+                                    width={16}
+                                    height={16}
+                                />
+                            </ToolBarButton>
+                            <ToolBarButton
+                                title="Move Down"
+                                disabled={isBusy()}
+                                onClick={() => onMoveDown(procedure)}
+                            >
+                                <MoveDownIcon
+                                    className=""
+                                    width={16}
+                                    height={16}
+                                />
+                            </ToolBarButton>
+                        </>
+                    )}
                     <ToolBarButton
-                        title="Remove OT Procedure"
+                        title="Edit OT Procedure"
                         disabled={isBusy()}
-                        onClick={() => setConfirmRemove(true)}
+                        onClick={() => setEditing(true)}
                     >
-                        <TrashIcon
-                            className="text-red-400"
-                            width={16}
-                            height={16}
-                        />
+                        <EditIcon className="" width={16} height={16} />
                         <ToolBarButtonLabel className="hidden sm:inline">
-                            Remove
+                            Edit
                         </ToolBarButtonLabel>
                     </ToolBarButton>
-                ) : (
                     <ToolBarButton
-                        title="Restore OT Procedure"
+                        title="Move OT Procedure"
                         disabled={isBusy()}
-                        onClick={() => onRestore(procedure)}
+                        onClick={() => onMoveDate(procedure)}
                     >
-                        <UndoDotIcon width={16} height={16} />
-                        <ToolBarButtonLabel>Restore</ToolBarButtonLabel>
+                        <CalendarArrowDownIcon width={16} height={16} />
+                        <ToolBarButtonLabel className="hidden sm:inline">
+                            Move
+                        </ToolBarButtonLabel>
                     </ToolBarButton>
-                )}
-                <ToolBarButton
-                    title="Edit Patient Info"
-                    disabled={isBusy()}
-                    onClick={() => setEditingPatient(true)}
-                >
-                    <UserPenIcon className="" width={16} height={16} />
-                    <ToolBarButtonLabel className="hidden sm:inline">
-                        Edit Patient
-                    </ToolBarButtonLabel>
-                </ToolBarButton>
-                <div className="grow"></div>
-                <ToolBarButton
-                    title="close"
-                    disabled={false}
-                    onClick={() => onSelected(null)}
-                >
-                    <XIcon className="" width={16} height={16} />
-                </ToolBarButton>
-            </ToolBar>
+                    <ToolBarButton
+                        title="Copy Advice"
+                        disabled={isBusy()}
+                        onClick={handleCopyAdvice}
+                    >
+                        <CopyCheckIcon
+                            width={16}
+                            height={16}
+                            className={copied ? "text-green-500" : "hidden"}
+                        />
+
+                        <CopyIcon
+                            width={16}
+                            height={16}
+                            className={copied ? "hidden" : "inline"}
+                        />
+
+                        <ToolBarButtonLabel className="hidden sm:inline">
+                            Copy
+                        </ToolBarButtonLabel>
+                    </ToolBarButton>
+                    {!procedure.removed ? (
+                        <ToolBarButton
+                            title="Remove OT Procedure"
+                            disabled={isBusy()}
+                            onClick={() => setConfirmRemove(true)}
+                        >
+                            <TrashIcon
+                                className="text-red-400"
+                                width={16}
+                                height={16}
+                            />
+                            <ToolBarButtonLabel className="hidden sm:inline">
+                                Remove
+                            </ToolBarButtonLabel>
+                        </ToolBarButton>
+                    ) : (
+                        <ToolBarButton
+                            title="Restore OT Procedure"
+                            disabled={isBusy()}
+                            onClick={() => onRestore(procedure)}
+                        >
+                            <UndoDotIcon width={16} height={16} />
+                            <ToolBarButtonLabel>Restore</ToolBarButtonLabel>
+                        </ToolBarButton>
+                    )}
+                    <ToolBarButton
+                        title="Edit Patient Info"
+                        disabled={isBusy()}
+                        onClick={() => setEditingPatient(true)}
+                    >
+                        <UserPenIcon className="" width={16} height={16} />
+                        <ToolBarButtonLabel className="hidden sm:inline">
+                            Edit Patient
+                        </ToolBarButtonLabel>
+                    </ToolBarButton>
+                    <div className="grow"></div>
+                    <ToolBarButton
+                        title="close"
+                        disabled={false}
+                        onClick={() => onSelected(null)}
+                    >
+                        <XIcon className="" width={16} height={16} />
+                    </ToolBarButton>
+                </ToolBar>
+            )}
+
             {!!recordError && (
                 <div className="bg-red-400/20 rounded-md m-2 p-2 text-sm">
                     {recordError?.message}
