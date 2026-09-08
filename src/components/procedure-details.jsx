@@ -20,7 +20,7 @@ import LabelListValue from "./label-list-value";
 import { describeProcedureCodes } from "@/lib/procedure-codes";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
-import { PacStatus } from "./pac-status";
+import { PacStatus, PacStatusSmall } from "./pac-status";
 import ModalWindow from "@/modals/modal-window";
 import EditPatientModal from "@/modals/edit-patient-modal";
 
@@ -51,6 +51,7 @@ function ProcedureDetails({
     setEditing,
     onRemove,
     recordError,
+    className,
     readOnly = false,
 }) {
     const { isBusy, reloadProcedure } = useProcedureList();
@@ -76,7 +77,7 @@ function ProcedureDetails({
     };
 
     return (
-        <div className="bg-gray-100">
+        <div className={className}>
             {!readOnly && (
                 <ToolBar
                     className={twMerge(
@@ -206,7 +207,15 @@ function ProcedureDetails({
                     Removed
                 </div>
             )}
-            <PacStatus procedureId={procedure?.id} className="p-2" />
+            {!readOnly ? (
+                <PacStatus procedureId={procedure?.id} className="p-2" />
+            ) : (
+                <div className="px-2 pt-2">
+                    <span>PAC Status </span>
+                    <PacStatusSmall status={procedure?.pacStatus} />
+                </div>
+            )}
+
             <div className=" p-2 grid grid-cols-1 md:grid-cols-4 gap-2">
                 <LabelValue
                     className="md:col-span-4"

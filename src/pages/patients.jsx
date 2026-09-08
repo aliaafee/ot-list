@@ -7,22 +7,15 @@ import {
     SearchIcon,
     XIcon,
     ChevronDownIcon,
-    ExternalLinkIcon,
 } from "lucide-react";
 import BodyLayout from "@/components/body-layout";
 import { ToolBar, ToolBarButtonLabel, ToolBarLink } from "@/components/toolbar";
 import { pb } from "@/lib/pb";
 import { age } from "@/utils/dates";
 import { twMerge } from "tailwind-merge";
-import ProcedureDetails from "@/components/procedure-details";
+import PatientProcedures from "@/components/patient-procedures";
 
 const PAGE_SIZE = 50;
-const PROC_PAGE_SIZE = 25;
-
-// Everything ProcedureDetails needs to render a procedure read-only. Shared so
-// the initial load and any refresh stay in step.
-const PROCEDURE_EXPAND =
-    "procedureDay,procedureDay.otList,addedBy,operatingRoom,procedureCodes_via_procedure.concept,procedureCodes_via_procedure.spinalLevels";
 
 const Tools = () => (
     <ToolBar>
@@ -51,11 +44,6 @@ function Patients() {
     const [totalPages, setTotalPages] = useState(1);
 
     const [expandedPatientId, setExpandedPatientId] = useState(null);
-    const [patientProcedures, setPatientProcedures] = useState([]);
-    const [loadingProcedures, setLoadingProcedures] = useState(false);
-    const [loadingMoreProcedures, setLoadingMoreProcedures] = useState(false);
-    const [procPage, setProcPage] = useState(1);
-    const [procTotalPages, setProcTotalPages] = useState(1);
 
     // URL is the source of truth. The input reflects `searchQuery` immediately;
     // the fetch waits for `debouncedSearch` so typing doesn't fire a request
@@ -70,7 +58,6 @@ function Patients() {
         setError(null);
         // A new list makes any open expansion stale.
         setExpandedPatientId(null);
-        setPatientProcedures([]);
 
         try {
             const options = {
@@ -127,51 +114,10 @@ function Patients() {
         setSearchParams(params);
     };
 
-    const loadPatientProcedures = async (patientId, pageNumber) => {
-        if (pageNumber === 1) {
-            setExpandedPatientId(patientId);
-            setPatientProcedures([]);
-            setLoadingProcedures(true);
-        } else {
-            setLoadingMoreProcedures(true);
-        }
-
-        try {
-            const result = await pb
-                .collection("procedures")
-                .getList(pageNumber, PROC_PAGE_SIZE, {
-                    filter: pb.filter("patient = {:patientId}", { patientId }),
-                    sort: "-created",
-                    expand: PROCEDURE_EXPAND,
-                    requestKey: "patient-procedures",
-                });
-
-            setPatientProcedures((prev) =>
-                pageNumber === 1 ? result.items : [...prev, ...result.items],
-            );
-            setProcPage(result.page);
-            setProcTotalPages(result.totalPages);
-            setLoadingProcedures(false);
-            setLoadingMoreProcedures(false);
-        } catch (err) {
-            // A newer expansion cancelled this one; it now owns the flags.
-            if (err?.isAbort) return;
-            console.error("Error fetching procedures:", err);
-            if (pageNumber === 1) setPatientProcedures([]);
-            setLoadingProcedures(false);
-            setLoadingMoreProcedures(false);
-        }
-    };
-
     const handleTogglePatient = (patient) => {
-        if (expandedPatientId === patient.id) {
-            setExpandedPatientId(null);
-            setPatientProcedures([]);
-            setProcPage(1);
-            setProcTotalPages(1);
-        } else {
-            loadPatientProcedures(patient.id, 1);
-        }
+        setExpandedPatientId((current) =>
+            current === patient.id ? null : patient.id,
+        );
     };
 
     return (
@@ -321,90 +267,13 @@ function Patients() {
                                                 <tr>
                                                     <td
                                                         colSpan={7}
-                                                        className="px-3 py-3 bg-blue-50"
+                                                        className="px-3 py-3"
                                                     >
-                                                        <div className="pl-8">
-                                                            <h3 className="text-sm font-semibold mb-2">
-                                                                Procedures
-                                                            </h3>
-                                                            {loadingProcedures ? (
-                                                                <div className="text-sm text-gray-500">
-                                                                    Loading
-                                                                    procedures...
-                                                                </div>
-                                                            ) : patientProcedures.length ===
-                                                              0 ? (
-                                                                <div className="text-sm text-gray-500">
-                                                                    No procedures
-                                                                    found for
-                                                                    this patient.
-                                                                </div>
-                                                            ) : (
-                                                                <div className="space-y-2">
-                                                                    {patientProcedures.map(
-                                                                        (
-                                                                            proc,
-                                                                        ) => (
-                                                                            <div
-                                                                                key={
-                                                                                    proc.id
-                                                                                }
-                                                                                className="border border-gray-200 rounded-md p-2 bg-white text-sm relative"
-                                                                            >
-                                                                                <ToolBar className="col-span-4 bg-gray-200 transition-colors">
-                                                                                    <ToolBarLink
-                                                                                        title="Go to procedure"
-                                                                                        to={
-                                                                                            proc?.removed
-                                                                                                ? `/lists/${proc.procedureDay}?procedureId=${proc.id}&scrollTo=${proc.id}&showRemoved=true`
-                                                                                                : `/lists/${proc.procedureDay}?procedureId=${proc.id}&scrollTo=${proc.id}`
-                                                                                        }
-                                                                                    >
-                                                                                        <ExternalLinkIcon
-                                                                                            width={
-                                                                                                16
-                                                                                            }
-                                                                                            height={
-                                                                                                16
-                                                                                            }
-                                                                                        />
-                                                                                    </ToolBarLink>
-                                                                                </ToolBar>
-                                                                                <ProcedureDetails
-                                                                                    procedure={
-                                                                                        proc
-                                                                                    }
-                                                                                    readOnly={
-                                                                                        true
-                                                                                    }
-                                                                                />
-                                                                            </div>
-                                                                        ),
-                                                                    )}
-                                                                    {procPage <
-                                                                        procTotalPages && (
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={() =>
-                                                                                loadPatientProcedures(
-                                                                                    patient.id,
-                                                                                    procPage +
-                                                                                        1,
-                                                                                )
-                                                                            }
-                                                                            disabled={
-                                                                                loadingMoreProcedures
-                                                                            }
-                                                                            className="text-sm text-blue-600 hover:underline cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                                                                        >
-                                                                            {loadingMoreProcedures
-                                                                                ? "Loading..."
-                                                                                : `Load more (${procPage} of ${procTotalPages})`}
-                                                                        </button>
-                                                                    )}
-                                                                </div>
-                                                            )}
-                                                        </div>
+                                                        <PatientProcedures
+                                                            patientId={
+                                                                patient.id
+                                                            }
+                                                        />
                                                     </td>
                                                 </tr>
                                             )}
