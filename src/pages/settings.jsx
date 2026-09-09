@@ -13,12 +13,15 @@ function Settings({}) {
     const [departments, setDepartments] = useState([]);
     const [operatingRooms, setOperatingRooms] = useState([]);
 
-    const { user } = useAuth();
+    const { isAdmin } = useAuth();
 
     const fetchData = async () => {
         const gotDepartments = await pb.collection("departments").getFullList();
         setDepartments(
-            gotDepartments.map((dept) => ({ label: dept.name, value: dept.id }))
+            gotDepartments.map((dept) => ({
+                label: dept.name,
+                value: dept.id,
+            })),
         );
 
         const gotOperatingRooms = await pb
@@ -28,7 +31,7 @@ function Settings({}) {
             gotOperatingRooms.map((room) => ({
                 label: room.name,
                 value: room.id,
-            }))
+            })),
         );
     };
 
@@ -46,10 +49,14 @@ function Settings({}) {
     );
 
     const accordionItems = [
-        ...(user?.role === "admin" ? [{
-            title: "Users",
-            content: <EditUser />,
-        }] : []),
+        ...(!!isAdmin
+            ? [
+                  {
+                      title: "Users",
+                      content: <EditUser />,
+                  },
+              ]
+            : []),
         {
             title: "Departments",
             content: (
@@ -61,7 +68,7 @@ function Settings({}) {
                         { field: "hospital", label: "Hospital" },
                     ]}
                     afterSave={fetchData}
-                    readOnly={!(user?.role === "admin")}
+                    readOnly={!isAdmin}
                 />
             ),
         },
@@ -84,7 +91,7 @@ function Settings({}) {
                         },
                     ]}
                     afterSave={fetchData}
-                    readOnly={!(user?.role === "admin")}
+                    readOnly={!isAdmin}
                 />
             ),
         },
@@ -126,6 +133,7 @@ function Settings({}) {
                             ],
                         },
                     ]}
+                    readOnly={!isAdmin}
                 />
             ),
         },
@@ -155,6 +163,7 @@ function Settings({}) {
                             ],
                         },
                     ]}
+                    readOnly={!isAdmin}
                 />
             ),
         },

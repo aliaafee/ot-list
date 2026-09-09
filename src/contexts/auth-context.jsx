@@ -3,6 +3,10 @@ import { pb } from "@/lib/pb";
 
 const AuthContext = createContext(null);
 
+// Roles allowed to change data. Receptionists get a read-only UI. This is a
+// visual aid only -- the backend rules are what actually enforce access.
+const EDIT_ROLES = ["admin", "doctor"];
+
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(pb.authStore.record);
     const [loading, setLoading] = useState(true);
@@ -35,6 +39,8 @@ export function AuthProvider({ children }) {
         () => ({
             user,
             isAuthed: !!user,
+            isAdmin: user?.role === "admin",
+            canEdit: EDIT_ROLES.includes(user?.role),
 
             login: async (email, password) => {
                 setLoading(true);

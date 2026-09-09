@@ -25,6 +25,7 @@ import DisableOtDayModal from "@/modals/disable-ot-day-modal";
 import BodyLayout from "./body-layout";
 import { api } from "@/lib/api";
 import { formatDate, formateDateLong } from "@/utils/dates";
+import { useAuth } from "@/contexts/auth-context";
 
 const TableHeader = ({ className }) => (
     <div className={twMerge("flex text-sm select-none", className)}>
@@ -65,6 +66,8 @@ function ProcedureListEditor({
     className,
     handleShowDaysList,
 }) {
+    const { canEdit } = useAuth();
+
     const {
         proceduresList,
         otDay,
@@ -168,6 +171,7 @@ function ProcedureListEditor({
             </ToolBarButton>
             <div className="grow"></div>
             {otDay &&
+                !!canEdit &&
                 (!otDay?.disabled ? (
                     <ToolBarButton
                         title="Disable"

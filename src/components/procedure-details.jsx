@@ -21,6 +21,7 @@ import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
 import { PacStatus } from "./pac-status";
 import ModalWindow from "@/modals/modal-window";
 import EditPatientModal from "@/modals/edit-patient-modal";
+import { useAuth } from "@/contexts/auth-context";
 
 /**
  * ProcedureDetails - Detailed view of a procedure with action toolbar
@@ -50,6 +51,7 @@ function ProcedureDetails({
     onRemove,
     recordError,
 }) {
+    const { canEdit } = useAuth();
     const { isBusy, reloadProcedure } = useProcedureList();
 
     const [confirmRemove, setConfirmRemove] = useState(false);
@@ -75,7 +77,7 @@ function ProcedureDetails({
             <ToolBar
                 className={twMerge("col-span-4 bg-gray-200 transition-colors")}
             >
-                {!procedure.removed && (
+                {!!canEdit && !procedure.removed && (
                     <>
                         <ToolBarButton
                             title="Move Up"
@@ -93,26 +95,30 @@ function ProcedureDetails({
                         </ToolBarButton>
                     </>
                 )}
-                <ToolBarButton
-                    title="Edit OT Procedure"
-                    disabled={isBusy()}
-                    onClick={() => setEditing(true)}
-                >
-                    <EditIcon className="" width={16} height={16} />
-                    <ToolBarButtonLabel className="hidden sm:inline">
-                        Edit
-                    </ToolBarButtonLabel>
-                </ToolBarButton>
-                <ToolBarButton
-                    title="Move OT Procedure"
-                    disabled={isBusy()}
-                    onClick={() => onMoveDate(procedure)}
-                >
-                    <CalendarArrowDownIcon width={16} height={16} />
-                    <ToolBarButtonLabel className="hidden sm:inline">
-                        Move
-                    </ToolBarButtonLabel>
-                </ToolBarButton>
+                {!!canEdit && (
+                    <ToolBarButton
+                        title="Edit OT Procedure"
+                        disabled={isBusy()}
+                        onClick={() => setEditing(true)}
+                    >
+                        <EditIcon className="" width={16} height={16} />
+                        <ToolBarButtonLabel className="hidden sm:inline">
+                            Edit
+                        </ToolBarButtonLabel>
+                    </ToolBarButton>
+                )}
+                {!!canEdit && (
+                    <ToolBarButton
+                        title="Move OT Procedure"
+                        disabled={isBusy()}
+                        onClick={() => onMoveDate(procedure)}
+                    >
+                        <CalendarArrowDownIcon width={16} height={16} />
+                        <ToolBarButtonLabel className="hidden sm:inline">
+                            Move
+                        </ToolBarButtonLabel>
+                    </ToolBarButton>
+                )}
                 <ToolBarButton
                     title="Copy Advice"
                     disabled={isBusy()}
@@ -134,41 +140,44 @@ function ProcedureDetails({
                         Copy
                     </ToolBarButtonLabel>
                 </ToolBarButton>
-                {!procedure.removed ? (
+                {!!canEdit &&
+                    (!procedure.removed ? (
+                        <ToolBarButton
+                            title="Remove OT Procedure"
+                            disabled={isBusy()}
+                            onClick={() => setConfirmRemove(true)}
+                        >
+                            <TrashIcon
+                                className="text-red-400"
+                                width={16}
+                                height={16}
+                            />
+                            <ToolBarButtonLabel className="hidden sm:inline">
+                                Remove
+                            </ToolBarButtonLabel>
+                        </ToolBarButton>
+                    ) : (
+                        <ToolBarButton
+                            title="Restore OT Procedure"
+                            disabled={isBusy()}
+                            onClick={() => onRestore(procedure)}
+                        >
+                            <UndoDotIcon width={16} height={16} />
+                            <ToolBarButtonLabel>Restore</ToolBarButtonLabel>
+                        </ToolBarButton>
+                    ))}
+                {!!canEdit && (
                     <ToolBarButton
-                        title="Remove OT Procedure"
+                        title="Edit Patient Info"
                         disabled={isBusy()}
-                        onClick={() => setConfirmRemove(true)}
+                        onClick={() => setEditingPatient(true)}
                     >
-                        <TrashIcon
-                            className="text-red-400"
-                            width={16}
-                            height={16}
-                        />
+                        <UserPenIcon className="" width={16} height={16} />
                         <ToolBarButtonLabel className="hidden sm:inline">
-                            Remove
+                            Edit Patient
                         </ToolBarButtonLabel>
                     </ToolBarButton>
-                ) : (
-                    <ToolBarButton
-                        title="Restore OT Procedure"
-                        disabled={isBusy()}
-                        onClick={() => onRestore(procedure)}
-                    >
-                        <UndoDotIcon width={16} height={16} />
-                        <ToolBarButtonLabel>Restore</ToolBarButtonLabel>
-                    </ToolBarButton>
                 )}
-                <ToolBarButton
-                    title="Edit Patient Info"
-                    disabled={isBusy()}
-                    onClick={() => setEditingPatient(true)}
-                >
-                    <UserPenIcon className="" width={16} height={16} />
-                    <ToolBarButtonLabel className="hidden sm:inline">
-                        Edit Patient
-                    </ToolBarButtonLabel>
-                </ToolBarButton>
                 <div className="grow"></div>
                 <ToolBarButton
                     title="close"
