@@ -49,7 +49,7 @@ function Settings({}) {
     );
 
     const accordionItems = [
-        ...(!!isAdmin
+        ...(isAdmin
             ? [
                   {
                       title: "Users",
