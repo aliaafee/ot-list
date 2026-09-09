@@ -19,6 +19,7 @@ import { FACET_LABELS } from "@/lib/procedure-catalogue";
 import { useCatalogue } from "@/contexts/catalogue-context";
 import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
+import LabelValue from "@/components/label-value";
 
 // A concept facet, its relation field on `procedureConcepts`, and the URL param
 // its filter value is kept in. Filtering a procedure means "at least one of its
@@ -494,7 +495,12 @@ function AllProcedures() {
                                             ).format("DD MMM YYYY")}
                                         </td>
                                         <td className="px-3 py-2 text-sm">
-                                            {proc.expand?.patient?.nid}
+                                            <LabelValue
+                                                value={
+                                                    proc.expand?.patient?.nid
+                                                }
+                                                copyButton={true}
+                                            />
                                         </td>
                                         <td className="px-3 py-2 text-sm">
                                             {proc.expand?.patient?.name}
@@ -503,7 +509,9 @@ function AllProcedures() {
                                             {proc.diagnosis}
                                         </td>
                                         <td className="px-3 py-2 text-sm">
-                                            {describeProcedureCodes(proc).join(" + ")}
+                                            {describeProcedureCodes(proc).join(
+                                                " + ",
+                                            )}
                                         </td>
                                         <td className="px-3 py-2 text-sm">
                                             {

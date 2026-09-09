@@ -14,6 +14,7 @@ import { pb } from "@/lib/pb";
 import { age } from "@/utils/dates";
 import { twMerge } from "tailwind-merge";
 import PatientProcedures from "@/components/patient-procedures";
+import LabelValue from "@/components/label-value";
 
 const PAGE_SIZE = 50;
 
@@ -243,10 +244,18 @@ function Patients() {
                                                     )}
                                                 </td>
                                                 <td className="px-3 py-2 text-sm">
-                                                    {patient.nid}
+                                                    <LabelValue
+                                                        value={patient.nid}
+                                                        copyButton={true}
+                                                    />
                                                 </td>
                                                 <td className="px-3 py-2 text-sm">
-                                                    {patient.hospitalId}
+                                                    <LabelValue
+                                                        value={
+                                                            patient.hospitalId
+                                                        }
+                                                        copyButton={true}
+                                                    />
                                                 </td>
                                                 <td className="px-3 py-2 text-sm">
                                                     {patient.name}
