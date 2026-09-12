@@ -34,7 +34,7 @@ function ProcedureItem({
     const recordError = getProcedureError(procedure);
     const [editing, setEditing] = useState(false);
 
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
 
     const selectedProcedureId = searchParams.get("procedureId");
 

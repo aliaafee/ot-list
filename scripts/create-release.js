@@ -1,5 +1,4 @@
 import { readFileSync, createWriteStream, mkdirSync, existsSync } from "fs";
-import { createRequire } from "module";
 import archiver from "archiver";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";

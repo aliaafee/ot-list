@@ -11,24 +11,23 @@ export function patientInfoFromHINAIHeader(text) {
     // Validate format - check for required patterns
     if (lines.length < 2) {
         throw new Error(
-            "Invalid format: Expected at least 2 lines of patient information"
+            "Invalid format: Expected at least 2 lines of patient information",
         );
     }
 
     const firstLine = lines[0];
-    const secondLine = lines[1];
 
     // Check if first line has basic structure (name in parentheses and hospital ID)
     if (!firstLine.match(/\([^)]+\)/)) {
         throw new Error(
-            "Invalid format: First line must contain patient information in parentheses"
+            "Invalid format: First line must contain patient information in parentheses",
         );
     }
 
     // Check if first line has "IGMH" Hospital ID
     if (!firstLine.match(/\s+IGMH\d{10}\s*$/i)) {
         throw new Error(
-            "Invalid format: First line must contain IGMH Hospital ID at the end"
+            "Invalid format: First line must contain IGMH Hospital ID at the end",
         );
     }
 
@@ -43,7 +42,7 @@ export function patientInfoFromHINAIHeader(text) {
             const fullMatch = nameMatch[0].trim();
             const nameWithoutTitle = fullMatch.replace(
                 /^(Mr|Mrs|Ms|Miss)\s+/i,
-                ""
+                "",
             );
             patientData.name = nameWithoutTitle.trim();
         }
@@ -94,7 +93,7 @@ export function patientInfoFromHINAIHeader(text) {
         // Extract Address - looking for "Address : ISLAND, Atoll, Atoll, COUNTRY"
         // Address appears between "Address :" and the next field (usually "Blood group")
         const addressMatch = secondLine.match(
-            /Address\s*:\s*([^,]+(?:,\s*[^,]+)*?)(?:\s*,\s*Blood\s+group|$)/i
+            /Address\s*:\s*([^,]+(?:,\s*[^,]+)*?)(?:\s*,\s*Blood\s+group|$)/i,
         );
         if (addressMatch) {
             patientData.address = addressMatch[1].trim();
@@ -117,7 +116,7 @@ export function bedInfoFromHINAIHeader(text) {
         // "BED NO :ICU & CCU/ICCU/ ICU12" -> ICCU12
         // "BED NO :NORMAL/DHARUMAVANTHA 17/ 17-08" -> 17-08
         const bedMatch = firstLine.match(
-            /BED\s+NO\s*:[^\/]*\/[^\/]*\/\s*([^\s\t]+)/i
+            /BED\s+NO\s*:[^\/]*\/[^\/]*\/\s*([^\s\t]+)/i,
         );
         if (bedMatch) {
             // Extract the bed number which is after the second slash
@@ -125,7 +124,7 @@ export function bedInfoFromHINAIHeader(text) {
 
             // For patterns like "ICU12", check if location contains room identifier
             const locationMatch = firstLine.match(
-                /BED\s+NO\s*:[^\/]*\/([^\/]+)\/\s*([^\s\t]+)/i
+                /BED\s+NO\s*:[^\/]*\/([^\/]+)\/\s*([^\s\t]+)/i,
             );
             if (locationMatch) {
                 const location = locationMatch[1].trim();
@@ -173,7 +172,7 @@ export function patientInfoFromVinavi(text) {
 
     if (lines.length < 6) {
         throw new Error(
-            "Invalid format: Expected at least 6 lines of patient information"
+            "Invalid format: Expected at least 6 lines of patient information",
         );
     }
 

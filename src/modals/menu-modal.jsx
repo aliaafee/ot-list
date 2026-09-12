@@ -1,4 +1,3 @@
-import { useAuth } from "@/contexts/auth-context";
 import { twMerge } from "tailwind-merge";
 import ModalContainer from "./modal-container";
 import { Link } from "react-router";

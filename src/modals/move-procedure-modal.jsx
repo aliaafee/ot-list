@@ -28,11 +28,11 @@ function MoveProcedureModal({
 
     const [newOtDayId, setNewOtDayId] = useState(itemToMove?.procedureDay);
     const [newOperatingRoomId, setNewOperatingRoomId] = useState(
-        operatingRoom?.id
+        operatingRoom?.id,
     );
     const [moving, setMoving] = useState(false);
     const [error, setError] = useState("");
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
 
     const selectedProcedureId = searchParams.get("procedureId");
 
@@ -42,11 +42,11 @@ function MoveProcedureModal({
 
         const newOtDay =
             otDay.expand.otList.expand.upcomingOtDays_via_otList.find(
-                (d) => d.id === newOtDayId
+                (d) => d.id === newOtDayId,
             );
 
         const newOperatingRoom = otDay.expand.otList.expand.operatingRooms.find(
-            (room) => room.id === newOperatingRoomId
+            (room) => room.id === newOperatingRoomId,
         );
 
         if (
@@ -61,7 +61,7 @@ function MoveProcedureModal({
         try {
             const moveListData = await getProcedures(
                 newOtDay.id,
-                newOperatingRoom.id
+                newOperatingRoom.id,
             );
             console.log("moveList", moveListData);
             if (moveListData && moveListData.length > 0) {
@@ -121,7 +121,7 @@ function MoveProcedureModal({
                 {itemToMove.expand.patient.nid} {itemToMove.expand.patient.name}{" "}
                 planned for {describeProcedureCodes(itemToMove).join(" + ")} on{" "}
                 {dayjs(itemToMove.expand.procedureDay.date).format(
-                    "DD MMM YYYY"
+                    "DD MMM YYYY",
                 )}
             </p>
             <p className="mb-2">
@@ -143,7 +143,7 @@ function MoveProcedureModal({
                             <option key={day.id} value={day.id}>
                                 {dayjs(day.date).format("ddd, DD MMM YYYY")}
                             </option>
-                        )
+                        ),
                     )}
                 </FormField>
                 <FormField
@@ -159,7 +159,7 @@ function MoveProcedureModal({
                             <option key={room.id} value={room.id}>
                                 {room.name}
                             </option>
-                        )
+                        ),
                     )}
                 </FormField>
             </form>

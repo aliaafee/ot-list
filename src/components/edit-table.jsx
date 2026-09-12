@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { pb } from "@/lib/pb";
 import TableCell from "./edit-table-cell";
 import { EditIcon, PlusIcon, SaveIcon, XIcon } from "lucide-react";
@@ -48,8 +48,8 @@ export default function EditTable({
         } else {
             setData((prevData) =>
                 prevData.map((row) =>
-                    row.id === id ? { ...row, [name]: value } : row
-                )
+                    row.id === id ? { ...row, [name]: value } : row,
+                ),
             );
         }
     };
@@ -113,7 +113,7 @@ export default function EditTable({
         <div
             className={twMerge(
                 "border border-gray-300 rounded-md overflow-x-auto relative",
-                loading ? "pointer-events-none" : ""
+                loading ? "pointer-events-none" : "",
             )}
         >
             {loading && (

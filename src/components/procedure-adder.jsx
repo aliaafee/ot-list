@@ -174,7 +174,8 @@ function ProcedureAdder({
             comorbids: newProcedure.comorbids,
             diagnosis: newProcedure.diagnosis,
             duration: newProcedure.duration,
-            operatingRoom: operatingRoom.id,
+            operatingRoom: operatingRoom.id,
+
             procedureCodes: toProcedureCodesPayload(
                 newProcedure.procedureCodes,
             ),
@@ -262,11 +263,7 @@ function ProcedureAdder({
 
             setAdding(true);
             // Add procedure
-            const resultError = await addProcedure(
-                patientData,
-                procedure,
-                otDay,
-            );
+            const resultError = await addProcedure(patientData, procedure);
             setAdding(false);
 
             if (resultError) {

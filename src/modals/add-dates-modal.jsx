@@ -40,7 +40,6 @@ export default function AddDatesModal({
     const [createdDates, setCreatedDates] = useState([]);
     const [error, setError] = useState("");
     const [selectedOtList, setSelectedOtList] = useState("");
-    const { user } = useAuth();
 
     useEffect(() => {
         setSelectedOtList(initialOtList ? initialOtList : "");

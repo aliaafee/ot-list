@@ -35,9 +35,7 @@ export function ProcedureListProvider({ children }) {
     const [updateError, setUpdateError] = useState(null);
     const [error, setError] = useState("");
     const [subscribed, setSubscribed] = useState(false);
-    const [tempId, setTempId] = useState(1000);
     const [toasts, setToasts] = useState([]);
-    const { user } = useAuth();
 
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -48,11 +46,6 @@ export function ProcedureListProvider({ children }) {
 
     const removeToast = (id) => {
         setToasts((prev) => prev.filter((toast) => toast.id !== id));
-    };
-
-    const getTempId = () => {
-        setTempId(tempId + 1);
-        return tempId;
     };
 
     const getProcedures = async (procedureDayId, operatingRoomId) => {
@@ -253,7 +246,7 @@ export function ProcedureListProvider({ children }) {
         setSearchParams(params);
     };
 
-    const addProcedure = async (patient, procedure, otDay) => {
+    const addProcedure = async (patient, procedure) => {
         try {
             const newProcedure = await api.addProcedureWithPatient(
                 patient,
@@ -529,6 +522,9 @@ export function ProcedureListProvider({ children }) {
 
 export function useProcedureList() {
     const ctx = useContext(ProcedureListContext);
-    if (!ctx) throw new Error("useAuth must be used within <AuthProvider>");
+    if (!ctx)
+        throw new Error(
+            "useProcedureList must be used within <ProcedureListProvider>",
+        );
     return ctx;
 }

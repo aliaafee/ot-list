@@ -25,7 +25,6 @@ export default function EditPatientModal({ patient, onCancel, onSuccess }) {
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [updateError, setUpdateError] = useState(null);
-    const { user } = useAuth();
 
     const handleSave = async () => {
         setUpdateError(null);

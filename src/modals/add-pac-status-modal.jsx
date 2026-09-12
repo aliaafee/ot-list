@@ -21,7 +21,6 @@ function AddPacStatusModal({
     const [selectedStatus, setSelectedStatus] = useState("");
     const [adding, setAdding] = useState(false);
     const [error, setError] = useState("");
-    const { user } = useAuth();
 
     const statusOptions = [
         {

@@ -52,51 +52,6 @@ const sexShort = (sex) => {
     return sex ? sex[0].toUpperCase() : "-";
 };
 
-// Manual base64 encoding for PocketBase/Goja environment
-const base64Encode = (str) => {
-    const base64chars =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    const bytes = [];
-
-    // Convert string to UTF-8 bytes
-    for (let i = 0; i < str.length; i++) {
-        const c = str.charCodeAt(i);
-        if (c < 128) {
-            bytes.push(c);
-        } else if (c < 2048) {
-            bytes.push(192 | (c >> 6));
-            bytes.push(128 | (c & 63));
-        } else if (c < 65536) {
-            bytes.push(224 | (c >> 12));
-            bytes.push(128 | ((c >> 6) & 63));
-            bytes.push(128 | (c & 63));
-        } else {
-            bytes.push(240 | (c >> 18));
-            bytes.push(128 | ((c >> 12) & 63));
-            bytes.push(128 | ((c >> 6) & 63));
-            bytes.push(128 | (c & 63));
-        }
-    }
-
-    // Encode bytes to base64
-    let result = "";
-    for (let i = 0; i < bytes.length; i += 3) {
-        const byte1 = bytes[i];
-        const byte2 = i + 1 < bytes.length ? bytes[i + 1] : 0;
-        const byte3 = i + 2 < bytes.length ? bytes[i + 2] : 0;
-
-        result += base64chars[byte1 >> 2];
-        result += base64chars[((byte1 & 3) << 4) | (byte2 >> 4)];
-        result +=
-            i + 1 < bytes.length
-                ? base64chars[((byte2 & 15) << 2) | (byte3 >> 6)]
-                : "=";
-        result += i + 2 < bytes.length ? base64chars[byte3 & 63] : "=";
-    }
-
-    return result;
-};
-
 const findProceduresByOtDayAndRoom = (otDayId, roomId) => {
     let records = arrayOf(new Record());
 
