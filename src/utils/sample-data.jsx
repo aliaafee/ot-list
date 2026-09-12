@@ -92,20 +92,6 @@ export function GenerateProdecureFormData(surgeons) {
                 "Carpal Tunnel Syndrome",
             ][Math.floor(Math.random() * 10)]
         }`, // Random realistic surgical diagnosis
-        procedure: `${
-            [
-                "Laparoscopic Appendectomy",
-                "Open Cholecystectomy",
-                "Hernia Repair",
-                "Internal Fixation of Fracture",
-                "Gallbladder Removal",
-                "Cataract Extraction",
-                "Tonsillectomy",
-                "Chest Tube Insertion",
-                "Ureteroscopy and Stone Removal",
-                "Carpal Tunnel Release",
-            ][Math.floor(Math.random() * 10)]
-        }`, // Random realistic procedure name
         comorbids: ["", "Hypertension", "DM, DLP", "DM"][
             Math.floor(Math.random() * 3)
         ],

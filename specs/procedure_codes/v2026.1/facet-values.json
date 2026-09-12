@@ -1,0 +1,1322 @@
+[
+    {
+        "facetValueId": "MTH-0001",
+        "facet": "method",
+        "term": "Anastomosis",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0002",
+        "facet": "method",
+        "term": "Angiography",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0003",
+        "facet": "method",
+        "term": "Biopsy",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0004",
+        "facet": "method",
+        "term": "Debridement",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0005",
+        "facet": "method",
+        "term": "Decompression",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0006",
+        "facet": "method",
+        "term": "Destruction",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0007",
+        "facet": "method",
+        "term": "Drainage",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0008",
+        "facet": "method",
+        "term": "Evacuation",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0009",
+        "facet": "method",
+        "term": "Excision",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0010",
+        "facet": "method",
+        "term": "Fenestration",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0011",
+        "facet": "method",
+        "term": "Fixation",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0012",
+        "facet": "method",
+        "term": "Fusion",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0013",
+        "facet": "method",
+        "term": "Incision",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0014",
+        "facet": "method",
+        "term": "Injection",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0015",
+        "facet": "method",
+        "term": "Insertion",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0016",
+        "facet": "method",
+        "term": "Occlusion",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0017",
+        "facet": "method",
+        "term": "Partial excision",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0018",
+        "facet": "method",
+        "term": "Puncture",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0019",
+        "facet": "method",
+        "term": "Reconstruction",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0020",
+        "facet": "method",
+        "term": "Reduction",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0021",
+        "facet": "method",
+        "term": "Release",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0022",
+        "facet": "method",
+        "term": "Removal",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0023",
+        "facet": "method",
+        "term": "Repair",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0024",
+        "facet": "method",
+        "term": "Revision",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MTH-0025",
+        "facet": "method",
+        "term": "Transposition",
+        "snomedAttribute": "Method",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0001",
+        "facet": "site",
+        "term": "Anterior cerebral artery",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0002",
+        "facet": "site",
+        "term": "Anterior communicating artery",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0003",
+        "facet": "site",
+        "term": "Anterior skull base",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0004",
+        "facet": "site",
+        "term": "Basilar artery",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0005",
+        "facet": "site",
+        "term": "Brain",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0006",
+        "facet": "site",
+        "term": "Cerebellopontine angle",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0007",
+        "facet": "site",
+        "term": "Cerebral artery",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0008",
+        "facet": "site",
+        "term": "Cerebral hemisphere",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0009",
+        "facet": "site",
+        "term": "Cerebral venous sinus",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0010",
+        "facet": "site",
+        "term": "Cervical vertebral column",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0011",
+        "facet": "site",
+        "term": "Cervicothoracic vertebral column",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0012",
+        "facet": "site",
+        "term": "Craniocervical junction",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0013",
+        "facet": "site",
+        "term": "Dura mater",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0014",
+        "facet": "site",
+        "term": "Extradural space",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0015",
+        "facet": "site",
+        "term": "Internal carotid artery",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0016",
+        "facet": "site",
+        "term": "Intervertebral disc",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0017",
+        "facet": "site",
+        "term": "Intervertebral foramen",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0018",
+        "facet": "site",
+        "term": "Lateral ventricle",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0019",
+        "facet": "site",
+        "term": "Lumbar subarachnoid space",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0020",
+        "facet": "site",
+        "term": "Lumbar vertebral column",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0021",
+        "facet": "site",
+        "term": "Median nerve",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0022",
+        "facet": "site",
+        "term": "Middle cerebral artery",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0023",
+        "facet": "site",
+        "term": "Peripheral nerve",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0024",
+        "facet": "site",
+        "term": "Pituitary fossa",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0025",
+        "facet": "site",
+        "term": "Posterior communicating artery",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0026",
+        "facet": "site",
+        "term": "Posterior cranial fossa",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0027",
+        "facet": "site",
+        "term": "Posterior inferior cerebellar artery",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0028",
+        "facet": "site",
+        "term": "Sacroiliac joint",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0029",
+        "facet": "site",
+        "term": "Scalp",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0030",
+        "facet": "site",
+        "term": "Skull",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0031",
+        "facet": "site",
+        "term": "Spinal cord",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0032",
+        "facet": "site",
+        "term": "Spinal epidural space",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0033",
+        "facet": "site",
+        "term": "Subdural space",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0034",
+        "facet": "site",
+        "term": "Third ventricle",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0035",
+        "facet": "site",
+        "term": "Thoracic vertebral column",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0036",
+        "facet": "site",
+        "term": "Thoracolumbar vertebral column",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0037",
+        "facet": "site",
+        "term": "Trachea",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0038",
+        "facet": "site",
+        "term": "Trigeminal nerve",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0039",
+        "facet": "site",
+        "term": "Ulnar nerve",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0040",
+        "facet": "site",
+        "term": "Vertebral artery",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0041",
+        "facet": "site",
+        "term": "Vertebral body",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "SIT-0042",
+        "facet": "site",
+        "term": "Zygapophyseal joint",
+        "snomedAttribute": "Procedure site - Direct",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0001",
+        "facet": "approach",
+        "term": "Anterior cervical",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0002",
+        "facet": "approach",
+        "term": "Bifrontal",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0003",
+        "facet": "approach",
+        "term": "Burr hole",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0004",
+        "facet": "approach",
+        "term": "Craniotomy",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0005",
+        "facet": "approach",
+        "term": "Decompressive craniectomy",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0006",
+        "facet": "approach",
+        "term": "Endoscopic transsphenoidal",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0007",
+        "facet": "approach",
+        "term": "Endoscopic transventricular",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0008",
+        "facet": "approach",
+        "term": "Endovascular",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0009",
+        "facet": "approach",
+        "term": "Far lateral",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0010",
+        "facet": "approach",
+        "term": "Full-endoscopic interlaminar",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0011",
+        "facet": "approach",
+        "term": "Full-endoscopic transforaminal",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0012",
+        "facet": "approach",
+        "term": "Interhemispheric",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0013",
+        "facet": "approach",
+        "term": "Open direct exposure",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0014",
+        "facet": "approach",
+        "term": "Percutaneous",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0015",
+        "facet": "approach",
+        "term": "Posterior midline",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0016",
+        "facet": "approach",
+        "term": "Posterolateral",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0017",
+        "facet": "approach",
+        "term": "Pterional",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0018",
+        "facet": "approach",
+        "term": "Retrosigmoid",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0019",
+        "facet": "approach",
+        "term": "Stereotactic",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0020",
+        "facet": "approach",
+        "term": "Subfrontal",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0021",
+        "facet": "approach",
+        "term": "Suboccipital midline",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0022",
+        "facet": "approach",
+        "term": "Transforaminal",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "APP-0023",
+        "facet": "approach",
+        "term": "Twist drill craniostomy",
+        "snomedAttribute": "Surgical approach",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0001",
+        "facet": "device",
+        "term": "Anterior cervical plate",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0002",
+        "facet": "device",
+        "term": "Autologous bone flap",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0003",
+        "facet": "device",
+        "term": "Bone cement",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0004",
+        "facet": "device",
+        "term": "Cervicothoracic fixation system",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0005",
+        "facet": "device",
+        "term": "Cranioplasty implant",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0006",
+        "facet": "device",
+        "term": "Dural graft",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0007",
+        "facet": "device",
+        "term": "Endovascular coil",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0008",
+        "facet": "device",
+        "term": "External ventricular drain catheter",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0009",
+        "facet": "device",
+        "term": "Flow diverter stent",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0010",
+        "facet": "device",
+        "term": "Intervertebral cage",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0011",
+        "facet": "device",
+        "term": "Intracranial aneurysm clip",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0012",
+        "facet": "device",
+        "term": "Intracranial pressure monitor",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0013",
+        "facet": "device",
+        "term": "Intraluminal arterial stent",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0014",
+        "facet": "device",
+        "term": "Intrasaccular flow disruptor",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0015",
+        "facet": "device",
+        "term": "Intrathecal drug delivery pump",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0016",
+        "facet": "device",
+        "term": "Lateral mass screw system",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0017",
+        "facet": "device",
+        "term": "Liquid embolic agent",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0018",
+        "facet": "device",
+        "term": "Lumbar drain catheter",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0019",
+        "facet": "device",
+        "term": "Lumboperitoneal shunt system",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0020",
+        "facet": "device",
+        "term": "Occipitocervical fixation system",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0021",
+        "facet": "device",
+        "term": "Odontoid screw",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0022",
+        "facet": "device",
+        "term": "Ommaya reservoir",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0023",
+        "facet": "device",
+        "term": "Pedicle screw system",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0024",
+        "facet": "device",
+        "term": "Tracheostomy tube",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0025",
+        "facet": "device",
+        "term": "Ventriculoatrial shunt system",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "DEV-0026",
+        "facet": "device",
+        "term": "Ventriculoperitoneal shunt system",
+        "snomedAttribute": "Direct device",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0001",
+        "facet": "morphology",
+        "term": "Acute ischaemic stroke",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0002",
+        "facet": "morphology",
+        "term": "Acute subdural haematoma",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0003",
+        "facet": "morphology",
+        "term": "Arteriovenous malformation",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0004",
+        "facet": "morphology",
+        "term": "Carotid artery stenosis",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0005",
+        "facet": "morphology",
+        "term": "Cavernous malformation",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0006",
+        "facet": "morphology",
+        "term": "Cerebral abscess",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0007",
+        "facet": "morphology",
+        "term": "Cerebrospinal fluid leak",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0008",
+        "facet": "morphology",
+        "term": "Cervical spondylotic myelopathy",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0009",
+        "facet": "morphology",
+        "term": "Chronic subdural haematoma",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0010",
+        "facet": "morphology",
+        "term": "Craniosynostosis",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0011",
+        "facet": "morphology",
+        "term": "Depressed skull fracture",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0012",
+        "facet": "morphology",
+        "term": "Dural arteriovenous fistula",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0013",
+        "facet": "morphology",
+        "term": "Encephalocele",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0014",
+        "facet": "morphology",
+        "term": "Entrapment neuropathy",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0015",
+        "facet": "morphology",
+        "term": "Extradural haematoma",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0016",
+        "facet": "morphology",
+        "term": "Facet joint arthropathy",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0017",
+        "facet": "morphology",
+        "term": "Glioma",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0018",
+        "facet": "morphology",
+        "term": "Herniated intervertebral disc",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0019",
+        "facet": "morphology",
+        "term": "Hydrocephalus",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0020",
+        "facet": "morphology",
+        "term": "Idiopathic intracranial hypertension",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0021",
+        "facet": "morphology",
+        "term": "Intracerebral haematoma",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0022",
+        "facet": "morphology",
+        "term": "Intracranial arterial stenosis",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0023",
+        "facet": "morphology",
+        "term": "Intracranial metastasis",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0024",
+        "facet": "morphology",
+        "term": "Intradural extramedullary neoplasm",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0025",
+        "facet": "morphology",
+        "term": "Intramedullary neoplasm",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0026",
+        "facet": "morphology",
+        "term": "Intraventricular neoplasm",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0027",
+        "facet": "morphology",
+        "term": "Lumbar radiculopathy",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0028",
+        "facet": "morphology",
+        "term": "Malignant middle cerebral artery infarction",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0029",
+        "facet": "morphology",
+        "term": "Meningioma",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0030",
+        "facet": "morphology",
+        "term": "Metastatic spinal tumour",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0031",
+        "facet": "morphology",
+        "term": "Myelomeningocele",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0032",
+        "facet": "morphology",
+        "term": "Neoplasm",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0033",
+        "facet": "morphology",
+        "term": "Peripheral nerve sheath tumour",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0034",
+        "facet": "morphology",
+        "term": "Pituitary adenoma",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0035",
+        "facet": "morphology",
+        "term": "Saccular aneurysm",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0036",
+        "facet": "morphology",
+        "term": "Sacroiliac joint dysfunction",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0037",
+        "facet": "morphology",
+        "term": "Spasticity",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0038",
+        "facet": "morphology",
+        "term": "Spinal canal stenosis",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0039",
+        "facet": "morphology",
+        "term": "Spinal dermal sinus",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0040",
+        "facet": "morphology",
+        "term": "Spinal epidural abscess",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0041",
+        "facet": "morphology",
+        "term": "Spondylolisthesis",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0042",
+        "facet": "morphology",
+        "term": "Subdural empyema",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0043",
+        "facet": "morphology",
+        "term": "Surgical site infection",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0044",
+        "facet": "morphology",
+        "term": "Tethered cord",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0045",
+        "facet": "morphology",
+        "term": "Trigeminal neuralgia",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0046",
+        "facet": "morphology",
+        "term": "Vertebral fracture",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "MOR-0047",
+        "facet": "morphology",
+        "term": "Vestibular schwannoma",
+        "snomedAttribute": "Procedure morphology",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "INT-0001",
+        "facet": "intent",
+        "term": "Diagnostic",
+        "snomedAttribute": "Has intent",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    },
+    {
+        "facetValueId": "INT-0002",
+        "facet": "intent",
+        "term": "Therapeutic",
+        "snomedAttribute": "Has intent",
+        "active": true,
+        "effectiveFrom": "2026-08-07"
+    }
+]

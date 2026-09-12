@@ -16,9 +16,11 @@ import {
 import { twMerge } from "tailwind-merge";
 
 import LabelValue from "./label-value";
+import LabelListValue from "./label-list-value";
+import { describeProcedureCodes } from "@/lib/procedure-codes";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
-import { PacStatus } from "./pac-status";
+import { PacStatus, PacStatusSmall } from "./pac-status";
 import ModalWindow from "@/modals/modal-window";
 import EditPatientModal from "@/modals/edit-patient-modal";
 import { useAuth } from "@/contexts/auth-context";
@@ -50,6 +52,8 @@ function ProcedureDetails({
     setEditing,
     onRemove,
     recordError,
+    className,
+    readOnly = false,
 }) {
     const { canEdit } = useAuth();
     const { isBusy, reloadProcedure } = useProcedureList();
@@ -58,8 +62,10 @@ function ProcedureDetails({
     const [editingPatient, setEditingPatient] = useState(false);
     const [copied, setCopied] = useState(false);
 
+    const procedureCodes = describeProcedureCodes(procedure);
+
     const handleCopyAdvice = () => {
-        const adviceText = `${procedure?.procedure} for ${procedure?.diagnosis} on ${formateDateLong(procedure?.expand?.procedureDay?.date)} in ${procedure?.expand?.procedureDay?.expand?.otList?.name}`;
+        const adviceText = `${procedureCodes.join(" + ")} for ${procedure?.diagnosis} on ${formateDateLong(procedure?.expand?.procedureDay?.date)} in ${procedure?.expand?.procedureDay?.expand?.otList?.name}`;
         // Copy to clipboard
         navigator.clipboard
             .writeText(adviceText)
@@ -73,120 +79,133 @@ function ProcedureDetails({
     };
 
     return (
-        <div className="bg-gray-100">
-            <ToolBar
-                className={twMerge("col-span-4 bg-gray-200 transition-colors")}
-            >
-                {!!canEdit && !procedure.removed && (
-                    <>
-                        <ToolBarButton
-                            title="Move Up"
-                            disabled={isBusy()}
-                            onClick={() => onMoveUp(procedure)}
-                        >
-                            <MoveUpIcon className="" width={16} height={16} />
-                        </ToolBarButton>
-                        <ToolBarButton
-                            title="Move Down"
-                            disabled={isBusy()}
-                            onClick={() => onMoveDown(procedure)}
-                        >
-                            <MoveDownIcon className="" width={16} height={16} />
-                        </ToolBarButton>
-                    </>
-                )}
-                {!!canEdit && (
-                    <ToolBarButton
-                        title="Edit OT Procedure"
-                        disabled={isBusy()}
-                        onClick={() => setEditing(true)}
-                    >
-                        <EditIcon className="" width={16} height={16} />
-                        <ToolBarButtonLabel className="hidden sm:inline">
-                            Edit
-                        </ToolBarButtonLabel>
-                    </ToolBarButton>
-                )}
-                {!!canEdit && (
-                    <ToolBarButton
-                        title="Move OT Procedure"
-                        disabled={isBusy()}
-                        onClick={() => onMoveDate(procedure)}
-                    >
-                        <CalendarArrowDownIcon width={16} height={16} />
-                        <ToolBarButtonLabel className="hidden sm:inline">
-                            Move
-                        </ToolBarButtonLabel>
-                    </ToolBarButton>
-                )}
-                <ToolBarButton
-                    title="Copy Advice"
-                    disabled={isBusy()}
-                    onClick={handleCopyAdvice}
+        <div className={className}>
+            {!readOnly && (
+                <ToolBar
+                    className={twMerge(
+                        "col-span-4 bg-gray-200 transition-colors",
+                    )}
                 >
-                    <CopyCheckIcon
-                        width={16}
-                        height={16}
-                        className={copied ? "text-green-500" : "hidden"}
-                    />
-
-                    <CopyIcon
-                        width={16}
-                        height={16}
-                        className={copied ? "hidden" : "inline"}
-                    />
-
-                    <ToolBarButtonLabel className="hidden sm:inline">
-                        Copy
-                    </ToolBarButtonLabel>
-                </ToolBarButton>
-                {!!canEdit &&
-                    (!procedure.removed ? (
+                    {!!canEdit && !procedure.removed && (
+                        <>
+                            <ToolBarButton
+                                title="Move Up"
+                                disabled={isBusy()}
+                                onClick={() => onMoveUp(procedure)}
+                            >
+                                <MoveUpIcon
+                                    className=""
+                                    width={16}
+                                    height={16}
+                                />
+                            </ToolBarButton>
+                            <ToolBarButton
+                                title="Move Down"
+                                disabled={isBusy()}
+                                onClick={() => onMoveDown(procedure)}
+                            >
+                                <MoveDownIcon
+                                    className=""
+                                    width={16}
+                                    height={16}
+                                />
+                            </ToolBarButton>
+                        </>
+                    )}
+                    {!!canEdit && (
                         <ToolBarButton
-                            title="Remove OT Procedure"
+                            title="Edit OT Procedure"
                             disabled={isBusy()}
-                            onClick={() => setConfirmRemove(true)}
+                            onClick={() => setEditing(true)}
                         >
-                            <TrashIcon
-                                className="text-red-400"
-                                width={16}
-                                height={16}
-                            />
+                            <EditIcon className="" width={16} height={16} />
                             <ToolBarButtonLabel className="hidden sm:inline">
-                                Remove
+                                Edit
                             </ToolBarButtonLabel>
                         </ToolBarButton>
-                    ) : (
+                    )}
+                    {!!canEdit && (
                         <ToolBarButton
-                            title="Restore OT Procedure"
+                            title="Move OT Procedure"
                             disabled={isBusy()}
-                            onClick={() => onRestore(procedure)}
+                            onClick={() => onMoveDate(procedure)}
                         >
-                            <UndoDotIcon width={16} height={16} />
-                            <ToolBarButtonLabel>Restore</ToolBarButtonLabel>
+                            <CalendarArrowDownIcon width={16} height={16} />
+                            <ToolBarButtonLabel className="hidden sm:inline">
+                                Move
+                            </ToolBarButtonLabel>
                         </ToolBarButton>
-                    ))}
-                {!!canEdit && (
+                    )}
                     <ToolBarButton
-                        title="Edit Patient Info"
+                        title="Copy Advice"
                         disabled={isBusy()}
-                        onClick={() => setEditingPatient(true)}
+                        onClick={handleCopyAdvice}
                     >
-                        <UserPenIcon className="" width={16} height={16} />
+                        <CopyCheckIcon
+                            width={16}
+                            height={16}
+                            className={copied ? "text-green-500" : "hidden"}
+                        />
+
+                        <CopyIcon
+                            width={16}
+                            height={16}
+                            className={copied ? "hidden" : "inline"}
+                        />
+
                         <ToolBarButtonLabel className="hidden sm:inline">
-                            Edit Patient
+                            Copy
                         </ToolBarButtonLabel>
                     </ToolBarButton>
-                )}
-                <div className="grow"></div>
-                <ToolBarButton
-                    title="close"
-                    disabled={false}
-                    onClick={() => onSelected(null)}
-                >
-                    <XIcon className="" width={16} height={16} />
-                </ToolBarButton>
-            </ToolBar>
+                    {!!canEdit &&
+                        (!procedure.removed ? (
+                            <ToolBarButton
+                                title="Remove OT Procedure"
+                                disabled={isBusy()}
+                                onClick={() => setConfirmRemove(true)}
+                            >
+                                <TrashIcon
+                                    className="text-red-400"
+                                    width={16}
+                                    height={16}
+                                />
+                                <ToolBarButtonLabel className="hidden sm:inline">
+                                    Remove
+                                </ToolBarButtonLabel>
+                            </ToolBarButton>
+                        ) : (
+                            <ToolBarButton
+                                title="Restore OT Procedure"
+                                disabled={isBusy()}
+                                onClick={() => onRestore(procedure)}
+                            >
+                                <UndoDotIcon width={16} height={16} />
+                                <ToolBarButtonLabel>Restore</ToolBarButtonLabel>
+                            </ToolBarButton>
+                        ))}
+                    {!!canEdit && (
+                        <ToolBarButton
+                            title="Edit Patient Info"
+                            disabled={isBusy()}
+                            onClick={() => setEditingPatient(true)}
+                        >
+                            <UserPenIcon className="" width={16} height={16} />
+                            <ToolBarButtonLabel className="hidden sm:inline">
+                                Edit Patient
+                            </ToolBarButtonLabel>
+                        </ToolBarButton>
+                    )}
+                    <div className="grow"></div>
+                    <ToolBarButton
+                        title="close"
+                        disabled={false}
+                        onClick={() => onSelected(null)}
+                    >
+                        <XIcon className="" width={16} height={16} />
+                    </ToolBarButton>
+                </ToolBar>
+            )}
+
             {!!recordError && (
                 <div className="bg-red-400/20 rounded-md m-2 p-2 text-sm">
                     {recordError?.message}
@@ -197,17 +216,25 @@ function ProcedureDetails({
                     Removed
                 </div>
             )}
-            <PacStatus procedureId={procedure?.id} className="p-2" />
+            {!readOnly ? (
+                <PacStatus procedureId={procedure?.id} className="p-2" />
+            ) : (
+                <div className="px-2 pt-2">
+                    <span>PAC Status </span>
+                    <PacStatusSmall status={procedure?.pacStatus} />
+                </div>
+            )}
+
             <div className=" p-2 grid grid-cols-1 md:grid-cols-4 gap-2">
                 <LabelValue
-                    className="md:col-span-2"
+                    className="md:col-span-4"
                     label="Diagnosis"
                     value={procedure.diagnosis}
                 />
-                <LabelValue
-                    className="md:col-span-2"
+                <LabelListValue
+                    className="md:col-span-4"
                     label="Procedure"
-                    value={procedure.procedure}
+                    value={procedureCodes}
                 />
                 <LabelValue
                     className="md:col-span-4"
@@ -261,7 +288,7 @@ function ProcedureDetails({
                     <p className="mb-2">
                         {procedure?.expand?.patient?.nid}{" "}
                         {procedure?.expand?.patient?.name} planned for{" "}
-                        {procedure.procedure} on{" "}
+                        {procedureCodes.join(" + ")} on{" "}
                         {dayjs(procedure?.expand?.procedureDay.date).format(
                             "DD MMM YYYY",
                         )}

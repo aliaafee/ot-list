@@ -33,7 +33,7 @@ function LabelValue({
             });
     };
     return (
-        <div className={twMerge("flex flex-col", className)}>
+        <div className={twMerge("flex flex-col min-w-0", className)}>
             {label ? (
                 <span className=" text-gray-700 text-xs select-none">
                     {label}
@@ -43,22 +43,26 @@ function LabelValue({
             )}
             <span
                 className={twMerge(
-                    "flex items-start flex-wrap overflow-clip text-ellipsis",
+                    "flex items-center min-w-0",
                     label ? "p-1" : "",
                 )}
             >
+                {/* min-w-0 lets this shrink past its content instead of
+                    widening the row; text wraps at spaces and a token too long
+                    to fit breaks rather than overflowing. The button next to it
+                    never shrinks. */}
                 <span
                     className={twMerge(
-                        "text-gray-900 overflow-clip text-ellipsis",
+                        "text-gray-900 min-w-0 overflow-hidden text-ellipsis",
                     )}
                 >
                     <span className="select-all">{value ? value : blank}</span>
                 </span>
-                {copyButton && (
+                {!!value && copyButton && (
                     <button
                         className={twMerge(
                             "cursor-pointer text-gray-500 hover:text-blue-500",
-                            "p-1.5",
+                            "shrink-0 p-1.5",
                             copied && "text-green-500 hover:text-green-500",
                         )}
                         onClick={handleCopyValue}

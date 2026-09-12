@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
-
 import FormField from "@/components/form-field";
+import FormListField from "@/components/form-list-field";
+import { isFilledCode } from "@/lib/procedure-codes";
 
 export const initialProcedureValue = {
     diagnosis: "",
     comorbids: "",
-    procedure: "",
+    procedureCodes: [],
     addedDate: "",
     addedBy: "",
     remarks: "",
@@ -19,12 +19,18 @@ export const validateProcedure = (procedure) => {
     const errorFields = {};
     const requiredFields = [
         "diagnosis",
-        "procedure",
+        "procedureCodes",
         "addedDate",
         "addedBy",
     ];
     requiredFields.forEach((field) => {
-        if (!procedure[field] || procedure[field].toString().trim() === "") {
+        const value = procedure[field];
+        // The code list arrives padded with blank rows the user never filled
+        // in, so a length check would pass on an empty picker.
+        const isEmpty = Array.isArray(value)
+            ? !value.some(isFilledCode)
+            : !value || value.toString().trim() === "";
+        if (isEmpty) {
             errorFields[field] = {
                 name: field,
                 message: "This field is required.",
@@ -61,18 +67,19 @@ export function ProcedureForm({
                 name="diagnosis"
                 value={value.diagnosis}
                 onChange={handleChange}
-                className="md:col-span-2"
+                className="md:col-span-4"
                 error={"diagnosis" in errorFields}
                 errorMessage={errorFields["diagnosis"]?.message}
             />
-            <FormField
+            <FormListField
+                type="procedure-code"
                 label="Procedure"
-                name="procedure"
-                value={value.procedure}
+                name="procedureCodes"
+                value={value.procedureCodes}
                 onChange={handleChange}
-                className="md:col-span-2"
-                error={"procedure" in errorFields}
-                errorMessage={errorFields["procedure"]?.message}
+                className="md:col-span-4"
+                error={"procedureCodes" in errorFields}
+                errorMessage={errorFields["procedureCodes"]?.message}
             />
             <FormField
                 label="Comorbidities"

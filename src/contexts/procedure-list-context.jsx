@@ -18,7 +18,7 @@ const ProcedureListContext = createContext(null);
 
 const proceduresCollectionOptions = {
     sort: "+order",
-    expand: "patient,addedBy,procedureDay.otList,procedureDay, updater, creator",
+    expand: "patient,addedBy,procedureDay.otList,procedureDay, updater, creator,procedureCodes_via_procedure.concept,procedureCodes_via_procedure.spinalLevels",
 };
 
 const otDayCollectionOptions = {

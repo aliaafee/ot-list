@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useSearchParams } from "react-router";
 import {
     ChevronLeft,
@@ -11,8 +11,49 @@ import {
 import BodyLayout from "@/components/body-layout";
 import { ToolBar, ToolBarButtonLabel, ToolBarLink } from "@/components/toolbar";
 import { pb } from "@/lib/pb";
+import {
+    describeProcedureCodes,
+    UNCODED_CONCEPT_ID,
+} from "@/lib/procedure-codes";
+import { FACET_LABELS } from "@/lib/procedure-catalogue";
+import { useCatalogue } from "@/contexts/catalogue-context";
 import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
+import LabelValue from "@/components/label-value";
+
+// A concept facet, its relation field on `procedureConcepts`, and the URL param
+// its filter value is kept in. Filtering a procedure means "at least one of its
+// procedure codes has a concept with this facet term" - hence the `?=` operator
+// across the has-many `procedureCodes_via_procedure` back-relation.
+const FACETS = [
+    { key: "method", field: "method" },
+    { key: "procedureSite", field: "procedureSite" },
+    { key: "surgicalApproach", field: "surgicalApproach" },
+    { key: "device", field: "device" },
+    { key: "morphology", field: "morphology" },
+    { key: "intent", field: "defaultIntent" },
+];
+const facetParam = (key) => `f_${key}`;
+
+// Current PAC status lives directly on `procedures.pacStatus` (kept in step with
+// the procedurePacStatuses timeline by the add-pac-status hook), so it filters
+// as a plain field. "none" matches procedures with no PAC status recorded yet.
+const PAC_STATUS_OPTIONS = [
+    { value: "referred", label: "Referred" },
+    { value: "inReview", label: "In Review" },
+    { value: "cleared", label: "Cleared" },
+    { value: "unfit", label: "Unfit" },
+    { value: "none", label: "No PAC status" },
+];
+
+const Tools = () => (
+    <ToolBar>
+        <ToolBarLink title="Home" to="/">
+            <ChevronLeft width={16} height={16} />
+            <ToolBarButtonLabel>Home</ToolBarButtonLabel>
+        </ToolBarLink>
+    </ToolBar>
+);
 
 function AllProcedures() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -22,21 +63,58 @@ function AllProcedures() {
     const [totalPages, setTotalPages] = useState(1);
     const pageSize = 50;
 
+    const { concepts } = useCatalogue();
+
     // Get page and search from URL, with defaults
     const page = parseInt(searchParams.get("page") || "1", 10);
+    // What the input shows, as typed; the trimmed form is what actually gets
+    // searched, so " nid " and "nid" don't run as different queries.
     const searchQuery = searchParams.get("search") || "";
+    const trimmedSearch = searchQuery.trim();
     const showUpcoming = searchParams.get("upcoming") === "true";
     const showRemoved = searchParams.get("showRemoved") === "true";
+    const uncodedOnly = searchParams.get("uncoded") === "true";
+    const pacStatus = searchParams.get("pac") || "";
 
-    useEffect(() => {
-        fetchProcedures(page, searchQuery, showUpcoming, showRemoved);
-    }, [page, searchQuery, showUpcoming, showRemoved]);
+    // The selected facet term per facet, from the URL. `facetKey` is a stable
+    // string of them, so the fetch effect re-runs when any changes without
+    // taking a fresh object as a dependency.
+    const facetFilters = FACETS.reduce((acc, { key }) => {
+        acc[key] = searchParams.get(facetParam(key)) || "";
+        return acc;
+    }, {});
+    const facetKey = FACETS.map(({ key }) => facetFilters[key]).join("|");
+    const hasFacetFilters = facetKey.replace(/\|/g, "") !== "";
+
+    // The terms actually in use for each facet, so a filter never offers a
+    // value that would match nothing.
+    const facetOptions = useMemo(() => {
+        const sets = Object.fromEntries(
+            FACETS.map(({ key }) => [key, new Set()]),
+        );
+        for (const concept of concepts) {
+            if (!concept.active) continue;
+            for (const { key } of FACETS) {
+                const term = concept.facets?.[key];
+                if (term) sets[key].add(term);
+            }
+        }
+        return Object.fromEntries(
+            Object.entries(sets).map(([key, set]) => [
+                key,
+                [...set].sort((a, b) => a.localeCompare(b)),
+            ]),
+        );
+    }, [concepts]);
 
     const fetchProcedures = async (
         pageNumber,
         query = "",
         upcoming = false,
         includeRemoved = false,
+        facets = {},
+        onlyUncoded = false,
+        pac = "",
     ) => {
         setLoading(true);
         setError(null);
@@ -44,14 +122,15 @@ function AllProcedures() {
         try {
             const options = {
                 sort: "procedureDay.date",
-                expand: "patient,addedBy,procedureDay,procedureDay.otList,operatingRoom",
+                expand: "patient,addedBy,procedureDay,procedureDay.otList,operatingRoom,procedureCodes_via_procedure.concept,procedureCodes_via_procedure.spinalLevels",
             };
 
             const filters = [];
 
-            if (query.trim()) {
+            const term = query.trim();
+            if (term) {
                 filters.push(
-                    `(patient.nid ~ "${query}" || patient.hospitalId ~ "${query}" || patient.name ~ "${query}" || diagnosis ~ "${query}" || procedure ~ "${query}")`,
+                    `(patient.nid ~ "${term}" || patient.hospitalId ~ "${term}" || patient.name ~ "${term}" || diagnosis ~ "${term}" || procedure ~ "${term}")`,
                 );
             }
 
@@ -62,6 +141,35 @@ function AllProcedures() {
 
             if (!includeRemoved) {
                 filters.push(`removed = false`);
+            }
+
+            for (const { key, field } of FACETS) {
+                const term = facets[key];
+                if (!term) continue;
+                filters.push(
+                    pb.filter(
+                        `procedureCodes_via_procedure.concept.${field}.term ?= {:term}`,
+                        { term },
+                    ),
+                );
+            }
+
+            // Procedures still carrying the uncoded sentinel - the coverage gap
+            // the catalogue custodian works through (spec section 8).
+            if (onlyUncoded) {
+                filters.push(
+                    pb.filter(
+                        `procedureCodes_via_procedure.concept.conceptId ?= {:uncoded}`,
+                        { uncoded: UNCODED_CONCEPT_ID },
+                    ),
+                );
+            }
+
+            // Current PAC status. "none" is procedures with none recorded yet.
+            if (pac === "none") {
+                filters.push(`pacStatus = ""`);
+            } else if (pac) {
+                filters.push(pb.filter(`pacStatus = {:pac}`, { pac }));
             }
 
             if (filters.length > 0) {
@@ -84,27 +192,69 @@ function AllProcedures() {
         }
     };
 
+    useEffect(() => {
+        // A data-fetching effect: fetchProcedures owns the loading/error state
+        // for the request it runs. That is the intended shape, not a cascading
+        // render to design away.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        fetchProcedures(
+            page,
+            trimmedSearch,
+            showUpcoming,
+            showRemoved,
+            facetFilters,
+            uncodedOnly,
+            pacStatus,
+        );
+        // facetKey stands in for facetFilters, which is a fresh object each render
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+        page,
+        trimmedSearch,
+        showUpcoming,
+        showRemoved,
+        facetKey,
+        uncodedOnly,
+        pacStatus,
+    ]);
+
     const handleSearch = () => {
-        const params = new URLSearchParams();
+        const params = new URLSearchParams(searchParams);
         if (searchQuery.trim()) {
             params.set("search", searchQuery.trim());
+        } else {
+            params.delete("search");
         }
         params.set("page", "1");
         setSearchParams(params);
     };
 
     const handleClearSearch = () => {
-        setSearchParams({});
+        const params = new URLSearchParams(searchParams);
+        params.delete("search");
+        params.set("page", "1");
+        setSearchParams(params);
     };
 
-    const Tools = () => (
-        <ToolBar>
-            <ToolBarLink title="Home" to="/">
-                <ChevronLeft width={16} height={16} />
-                <ToolBarButtonLabel>Home</ToolBarButtonLabel>
-            </ToolBarLink>
-        </ToolBar>
-    );
+    const setParam = (name, value) => {
+        const params = new URLSearchParams(searchParams);
+        if (value) params.set(name, value);
+        else params.delete(name);
+        params.set("page", "1");
+        setSearchParams(params);
+    };
+
+    const setFacet = (key, value) => setParam(facetParam(key), value);
+
+    const clearFilters = () => {
+        const params = new URLSearchParams(searchParams);
+        for (const { key } of FACETS) params.delete(facetParam(key));
+        params.delete("pac");
+        params.set("page", "1");
+        setSearchParams(params);
+    };
+
+    const hasFilters = hasFacetFilters || pacStatus !== "";
 
     return (
         <BodyLayout header={<Tools />}>
@@ -198,6 +348,76 @@ function AllProcedures() {
                         Show removed
                     </span>
                 </label>
+                <label className="flex items-center cursor-pointer">
+                    <input
+                        type="checkbox"
+                        checked={uncodedOnly}
+                        onChange={(e) => {
+                            const params = new URLSearchParams(searchParams);
+                            if (e.target.checked) {
+                                params.set("uncoded", "true");
+                            } else {
+                                params.delete("uncoded");
+                            }
+                            params.set("page", "1");
+                            setSearchParams(params);
+                        }}
+                        className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700">
+                        Uncoded only
+                    </span>
+                </label>
+            </div>
+
+            {/* PAC status and procedure concept facet filters */}
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+                <select
+                    value={pacStatus}
+                    onChange={(e) => setParam("pac", e.target.value)}
+                    className={twMerge(
+                        "px-2 py-1 border rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500",
+                        pacStatus
+                            ? "border-blue-400 text-blue-700"
+                            : "border-gray-300 text-gray-700",
+                    )}
+                >
+                    <option value="">PAC status: any</option>
+                    {PAC_STATUS_OPTIONS.map(({ value, label }) => (
+                        <option key={value} value={value}>
+                            {label}
+                        </option>
+                    ))}
+                </select>
+                {FACETS.map(({ key }) => (
+                    <select
+                        key={key}
+                        value={facetFilters[key]}
+                        onChange={(e) => setFacet(key, e.target.value)}
+                        className={twMerge(
+                            "px-2 py-1 border rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500",
+                            facetFilters[key]
+                                ? "border-blue-400 text-blue-700"
+                                : "border-gray-300 text-gray-700",
+                        )}
+                    >
+                        <option value="">{FACET_LABELS[key]}: any</option>
+                        {facetOptions[key].map((term) => (
+                            <option key={term} value={term}>
+                                {term}
+                            </option>
+                        ))}
+                    </select>
+                ))}
+                {hasFilters && (
+                    <button
+                        type="button"
+                        onClick={clearFilters}
+                        className="text-sm text-blue-600 hover:underline cursor-pointer"
+                    >
+                        Clear filters
+                    </button>
+                )}
             </div>
 
             {error && (
@@ -275,7 +495,12 @@ function AllProcedures() {
                                             ).format("DD MMM YYYY")}
                                         </td>
                                         <td className="px-3 py-2 text-sm">
-                                            {proc.expand?.patient?.nid}
+                                            <LabelValue
+                                                value={
+                                                    proc.expand?.patient?.nid
+                                                }
+                                                copyButton={true}
+                                            />
                                         </td>
                                         <td className="px-3 py-2 text-sm">
                                             {proc.expand?.patient?.name}
@@ -284,7 +509,9 @@ function AllProcedures() {
                                             {proc.diagnosis}
                                         </td>
                                         <td className="px-3 py-2 text-sm">
-                                            {proc.procedure}
+                                            {describeProcedureCodes(proc).join(
+                                                " + ",
+                                            )}
                                         </td>
                                         <td className="px-3 py-2 text-sm">
                                             {

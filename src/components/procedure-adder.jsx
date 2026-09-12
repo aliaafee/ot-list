@@ -35,6 +35,7 @@ import {
 import PatientSearchModal from "@/modals/patient-search-modal";
 import PatientInfo from "./patient-info";
 import { pb } from "@/lib/pb";
+import { toProcedureCodesPayload } from "@/lib/procedure-codes";
 import dayjs from "dayjs";
 // import IdCardScanModal from "@/modals/id-card-scan-modal";
 
@@ -150,6 +151,8 @@ function ProcedureAdder({
     };
 
     const handleAddProcedure = async () => {
+        console.log(newProcedure);
+
         // Clear previous errors
         setAddError(null);
         setDuplicatePatients([]);
@@ -190,8 +193,10 @@ function ProcedureAdder({
             comorbids: newProcedure.comorbids,
             diagnosis: newProcedure.diagnosis,
             duration: newProcedure.duration,
-            operatingRoom: operatingRoom.id,
-            procedure: newProcedure.procedure,
+            operatingRoom: operatingRoom.id,
+            procedureCodes: toProcedureCodesPayload(
+                newProcedure.procedureCodes,
+            ),
             procedureDay: otDay.id,
             remarks: newProcedure.remarks,
             removed: newProcedure.removed,
@@ -271,6 +276,8 @@ function ProcedureAdder({
             // Create procedure with calculated order
             const nextOrder = calculateNextOrder();
             const procedure = buildProcedure(nextOrder);
+
+            console.log(procedure);
 
             setAdding(true);
             // Add procedure
