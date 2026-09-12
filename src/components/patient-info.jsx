@@ -38,7 +38,7 @@ function PatientInfo({ patient, className = "", showAddress = false }) {
             />
             <LabelValue
                 label="Age"
-                value={!!patient?.dateOfBirth ? age(patient?.dateOfBirth) : ""}
+                value={patient?.dateOfBirth ? age(patient?.dateOfBirth) : ""}
             />
             <LabelValue label="Sex" value={patient?.sex} />
             {showAddress && (

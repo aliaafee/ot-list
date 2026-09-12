@@ -47,7 +47,7 @@ function ProcedureSimplifiedView({
             <LabelValue
                 // label="Age/Sex"
                 value={`${
-                    !!procedure?.expand?.patient?.dateOfBirth
+                    procedure?.expand?.patient?.dateOfBirth
                         ? age(procedure?.expand?.patient?.dateOfBirth)
                         : "-"
                 } / ${procedure?.expand?.patient?.sex[0]?.toUpperCase() || "-"}`}

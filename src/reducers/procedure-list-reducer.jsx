@@ -119,7 +119,7 @@ function ProcedureListReducer(state, action) {
             return {
                 ...state,
                 updating: state.updating.filter(
-                    (item) => !!!action.payload.includes(item)
+                    (item) => !action.payload.includes(item)
                 ),
             };
         case "ADD_FAILED":
@@ -131,7 +131,7 @@ function ProcedureListReducer(state, action) {
             return {
                 ...state,
                 update_failed: state.update_failed.filter(
-                    (item) => !!!action.payload.includes(item.id)
+                    (item) => !action.payload.includes(item.id)
                 ),
             };
         default:

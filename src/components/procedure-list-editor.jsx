@@ -149,7 +149,7 @@ function ProcedureListEditor({
             </ToolBarButton>
             <ToolBarLink
                 title="Print OT List"
-                disabled={!!otDay ? otDay?.disabled : true}
+                disabled={otDay ? otDay?.disabled : true}
                 to="print"
                 target={"_blank"}
             >
@@ -159,7 +159,7 @@ function ProcedureListEditor({
             <ToolBarButton
                 title="Download (.html)"
                 disabled={
-                    !downloading ? (!!otDay ? otDay?.disabled : true) : true
+                    !downloading ? (otDay ? otDay?.disabled : true) : true
                 }
                 onClick={handleDownloadList}
                 className={twMerge(downloading ? "animate-pulse" : "")}
@@ -252,7 +252,7 @@ function ProcedureListEditor({
         );
     }
 
-    if (!!!otDay) {
+    if (!otDay) {
         return (
             <BodyLayout className={className} header={procedureToolBar}>
                 <></>

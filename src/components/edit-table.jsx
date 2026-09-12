@@ -131,7 +131,7 @@ export default function EditTable({
                                 {col.label}
                             </th>
                         ))}
-                        {!!!readOnly && <th className="w-14"></th>}
+                        {!readOnly && <th className="w-14"></th>}
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
@@ -172,7 +172,7 @@ export default function EditTable({
                                     error={errorData[row.id]?.[col.field]}
                                 />
                             ))}
-                            {!!!readOnly && (
+                            {!readOnly && (
                                 <td className="flex items-center justify-end">
                                     {editingRow === row.id ? (
                                         <>
@@ -244,7 +244,7 @@ export default function EditTable({
                             </td>
                         </tr>
                     )}
-                    {!!!readOnly && !newRow && (
+                    {!readOnly && !newRow && (
                         <tr>
                             <td></td>
                             <td colSpan={columns.length}></td>

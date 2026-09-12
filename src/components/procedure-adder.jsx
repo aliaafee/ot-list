@@ -378,7 +378,7 @@ function ProcedureAdder({
                     </ToolBarButton> */}
                 </ToolBar>
 
-                {!!selectedPatient ? (
+                {selectedPatient ? (
                     <PatientInfo
                         patient={newPatient}
                         showAddress={true}

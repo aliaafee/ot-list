@@ -52,7 +52,7 @@ function SubOtListPrint({ procedures, operatingRoom, excluded, onToggle }) {
         [procedures, operatingRoom],
     );
 
-    if (!!!operatingRoom) {
+    if (!operatingRoom) {
         return <></>;
     }
 
@@ -130,7 +130,7 @@ function SubOtListPrint({ procedures, operatingRoom, excluded, onToggle }) {
                         </td>
                         <td className="border border-black p-1 text-center align-text-top">
                             {`${
-                                !!item?.expand?.patient?.dateOfBirth
+                                item?.expand?.patient?.dateOfBirth
                                     ? age(item?.expand?.patient?.dateOfBirth)
                                     : "-"
                             } / ${item?.expand?.patient?.sex[0]?.toUpperCase() || "-"}`}
