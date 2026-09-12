@@ -9,7 +9,11 @@ const readonly = (names) =>
     Object.fromEntries(names.map((name) => [name, "readonly"]));
 
 export default defineConfig([
-    globalIgnores(["dist", "releases", "pb/pb_data"]),
+    // pb_migrations is append-only history: each file records a schema change
+    // that has already been applied, and PocketBase generates most of them.
+    // Editing one to satisfy a linter risks changing what a past migration
+    // did, so they are left alone.
+    globalIgnores(["dist", "releases", "pb/pb_data", "pb/pb_migrations"]),
     {
         // Baseline for everything we lint. Globals are left to the per-runtime
         // blocks below, since this repo spans three different runtimes.
@@ -24,7 +28,17 @@ export default defineConfig([
             },
         },
         rules: {
-            "no-unused-vars": ["error", { varsIgnorePattern: "^[A-Z_]" }],
+            // An unused catch binding is normal here: plenty of places only
+            // care that an operation failed, not why. Unused arguments opt out
+            // by name, so a callback can still document its full signature.
+            "no-unused-vars": [
+                "error",
+                {
+                    varsIgnorePattern: "^[A-Z_]",
+                    argsIgnorePattern: "^_",
+                    caughtErrors: "none",
+                },
+            ],
         },
     },
     {
@@ -39,9 +53,9 @@ export default defineConfig([
         },
     },
     {
-        // Hooks and migrations run inside PocketBase's own Go-hosted JS
-        // runtime: no browser, no Node, but a large set of PocketBase globals
-        // plus a CommonJS-style require(). Plain scripts, not ES modules.
+        // Hooks run inside PocketBase's own Go-hosted JS runtime: no browser,
+        // no Node, but a large set of PocketBase globals plus a CommonJS-style
+        // require(). Plain scripts, not ES modules.
         files: ["pb/**/*.js"],
         languageOptions: {
             sourceType: "script",

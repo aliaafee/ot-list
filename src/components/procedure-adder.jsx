@@ -29,7 +29,6 @@ import { useProcedureList } from "@/contexts/procedure-list-context";
 import { GenerateProdecureFormData } from "@/utils/sample-data";
 import {
     bedInfoFromHINAIHeader,
-    patientInfoFromHINAIHeader,
     patientInfoFromText,
 } from "@/utils/text-parsers";
 import PatientSearchModal from "@/modals/patient-search-modal";
@@ -37,7 +36,6 @@ import PatientInfo from "./patient-info";
 import { pb } from "@/lib/pb";
 import { toProcedureCodesPayload } from "@/lib/procedure-codes";
 import dayjs from "dayjs";
-// import IdCardScanModal from "@/modals/id-card-scan-modal";
 
 /**
  * ProcedureAdder - Form component for adding new OT procedures with patient information
@@ -64,7 +62,6 @@ function ProcedureAdder({
     const [newProcedureErrors, setNewProcedureErrors] = useState({});
     const [addError, setAddError] = useState(null);
     const [showPatientSearch, setShowPatientSearch] = useState(false);
-    const [showIdCardScan, setShowIdCardScan] = useState(false);
     const [checking, setChecking] = useState(false);
     const [adding, setAdding] = useState(false);
     const [duplicatePatients, setDuplicatePatients] = useState([]);
@@ -105,22 +102,6 @@ function ProcedureAdder({
                     "Failed to paste patient information. Please check the clipboard format.",
             });
         }
-    };
-
-    const handleScanPatient = async () => {
-        setShowIdCardScan(true);
-    };
-
-    const handleIdCardScanned = (patientInfo) => {
-        // Merge scanned info with existing patient data
-        setNewPatient({
-            ...newPatient,
-            ...patientInfo,
-        });
-        setShowIdCardScan(false);
-        setSelectedPatient(null);
-        setAddError(null);
-        setDuplicatePatients([]);
     };
 
     const handleFindPatient = async () => {
@@ -456,13 +437,6 @@ function ProcedureAdder({
                     }
                 />
             )}
-
-            {/* {showIdCardScan && (
-                <IdCardScanModal
-                    onComplete={handleIdCardScanned}
-                    onCancel={() => setShowIdCardScan(false)}
-                />
-            )} */}
         </div>
     );
 }

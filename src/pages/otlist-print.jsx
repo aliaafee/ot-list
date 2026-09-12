@@ -97,7 +97,7 @@ function SubOtListPrint({ procedures, operatingRoom, excluded, onToggle }) {
                     </td>
                 </tr>
             ) : (
-                proceduresByRoom.map((item, index) => (
+                proceduresByRoom.map((item) => (
                     <tr
                         key={item.id}
                         className={twMerge(

@@ -21,12 +21,12 @@ import ProcedureSimplifiedView from "./procedure-simplified";
 function ProcedureItem({
     procedure,
     className,
-    onMoveUp = (item) => {},
-    onMoveDown = (item) => {},
-    onRemove = (item) => {},
-    onRestore = (item) => {},
-    onMoveDate = (item) => {},
-    onSelected = (id, scrollTo = false) => {},
+    onMoveUp = (_item) => {},
+    onMoveDown = (_item) => {},
+    onRemove = (_item) => {},
+    onRestore = (_item) => {},
+    onMoveDate = (_item) => {},
+    onSelected = (id, _scrollTo = false) => {},
 }) {
     const { isUpdating, getProcedureError, discardProcedureUpdate } =
         useProcedureList();

@@ -13,10 +13,10 @@ function ProcedureListReducer(state, action) {
                 ...state,
                 procedures: action.payload,
             };
-        case "ADD_PROCEDURE":
+        case "ADD_PROCEDURE": {
             // Check if procedure with same id already exists
             const existingProcedure = state.procedures.find(
-                (p) => p.id === action.payload.id
+                (p) => p.id === action.payload.id,
             );
             if (existingProcedure) {
                 // Update existing procedure instead of adding
@@ -25,7 +25,7 @@ function ProcedureListReducer(state, action) {
                     procedures: state.procedures.map((p) =>
                         p.id === action.payload.id
                             ? { ...p, ...action.payload }
-                            : p
+                            : p,
                     ),
                 };
             }
@@ -34,16 +34,17 @@ function ProcedureListReducer(state, action) {
                 ...state,
                 procedures: [...state.procedures, action.payload],
             };
+        }
         case "REMOVE_PROCEDURE":
             return {
                 ...state,
                 procedures: state.procedures.filter(
-                    (item) => item.id !== action.payload.id
+                    (item) => item.id !== action.payload.id,
                 ),
             };
-        case "UPDATE_ID":
+        case "UPDATE_ID": {
             const procedure = state.procedures.find(
-                (p) => p.id === action.payload.id
+                (p) => p.id === action.payload.id,
             );
             if (procedure === undefined) {
                 return state;
@@ -52,7 +53,7 @@ function ProcedureListReducer(state, action) {
                 ...state,
                 procedures: [
                     ...state.procedures.filter(
-                        (p) => p.id !== action.payload.id
+                        (p) => p.id !== action.payload.id,
                     ),
                     {
                         ...procedure,
@@ -72,9 +73,10 @@ function ProcedureListReducer(state, action) {
                         ? action.payload.newId
                         : state.selected,
             };
-        case "UPDATE_PROCEDURE":
+        }
+        case "UPDATE_PROCEDURE": {
             const originalProcedure = state.procedures.find(
-                (p) => p.id === action.payload.id
+                (p) => p.id === action.payload.id,
             );
             if (originalProcedure === undefined) {
                 return {
@@ -86,7 +88,7 @@ function ProcedureListReducer(state, action) {
                 ...state,
                 procedures: [
                     ...state.procedures.filter(
-                        (p) => p.id !== action.payload.id
+                        (p) => p.id !== action.payload.id,
                     ),
                     {
                         ...originalProcedure,
@@ -94,6 +96,7 @@ function ProcedureListReducer(state, action) {
                     },
                 ],
             };
+        }
         case "UPDATE_PATIENT_IN_PROCEDURES":
             return {
                 ...state,
@@ -119,7 +122,7 @@ function ProcedureListReducer(state, action) {
             return {
                 ...state,
                 updating: state.updating.filter(
-                    (item) => !action.payload.includes(item)
+                    (item) => !action.payload.includes(item),
                 ),
             };
         case "ADD_FAILED":
@@ -131,7 +134,7 @@ function ProcedureListReducer(state, action) {
             return {
                 ...state,
                 update_failed: state.update_failed.filter(
-                    (item) => !action.payload.includes(item.id)
+                    (item) => !action.payload.includes(item.id),
                 ),
             };
         default:

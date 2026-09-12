@@ -81,7 +81,7 @@ function ProcedureListEditor({
     const [searchParams, setSearchParams] = useSearchParams();
     const [downloading, setDownloading] = useState(false);
 
-    const rowNav = useTreeKeyboardNav();
+    const { ref: rowRef, onKeyDown: rowKeyDown } = useTreeKeyboardNav();
 
     const showRemoved = searchParams.get("showRemoved") === "true";
 
@@ -281,7 +281,7 @@ function ProcedureListEditor({
             {/* Arrow keys move between procedure rows, which are spread
                 across the operating room sublists, so the handler has to sit
                 on the one element that contains all of them */}
-            <ul ref={rowNav.ref} onKeyDown={rowNav.onKeyDown}>
+            <ul ref={rowRef} onKeyDown={rowKeyDown}>
                 {otDay.expand.otList.expand.operatingRooms.map(
                     (operatingRoom, index) => (
                         <li key={index}>

@@ -138,7 +138,7 @@ const ToolBarPill = ({
     items = [{ value: "a", label: "A", color: "" }],
     value = "",
     disabled = false,
-    setValue = (value) => {},
+    setValue = (_value) => {},
     onClick = () => {},
 }) => {
     return (

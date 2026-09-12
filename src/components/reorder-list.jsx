@@ -97,10 +97,17 @@ export default function ReorderList({
             aria-label="Reorder list"
             className="grid p-0 m-0 list-none"
         >
+            {/* The ref callback below runs at commit, not during render, so
+                collecting the row elements here is safe. The rule sees the
+                write inside a function defined in render and cannot tell the
+                difference. */}
+            {/* eslint-disable-next-line react-hooks/refs */}
             {ordered.map((item) => (
                 <li
                     key={item.id}
-                    ref={(el) => (itemRefs.current[item.id] = el)}
+                    ref={(el) => {
+                        itemRefs.current[item.id] = el;
+                    }}
                     onDragOver={handleDragOver}
                     onDrop={(e) => handleDrop(e, item.id)}
                     onDragEnd={handleDragEnd}

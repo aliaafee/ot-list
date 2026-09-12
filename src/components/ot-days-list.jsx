@@ -9,7 +9,7 @@ import OtListMarker from "./ot-list-marker";
 function OtDaysList({
     otDays = [],
     selectedDayId = null,
-    onSelectDay = (otDay) => {},
+    onSelectDay = (_otDay) => {},
     selectedOtList = null,
     loadMorePages = () => {},
     loadMorePagesDisabled = false,
@@ -42,7 +42,7 @@ function OtDaysList({
         return groupDaysByMonth(daysByList);
     }, [otDays, selectedOtList]);
 
-    const treeNav = useTreeKeyboardNav();
+    const { ref: treeRef, onKeyDown: treeKeyDown } = useTreeKeyboardNav();
 
     if (otDays.length === 0) {
         return <div className="p-1 pl-4">No days found.</div>;
@@ -50,8 +50,8 @@ function OtDaysList({
 
     return (
         <ul
-            ref={treeNav.ref}
-            onKeyDown={treeNav.onKeyDown}
+            ref={treeRef}
+            onKeyDown={treeKeyDown}
             className="flex flex-col overflow-y-auto overscroll-contain grow"
         >
             {Object.keys(daysByMonth).map((month, index) => (

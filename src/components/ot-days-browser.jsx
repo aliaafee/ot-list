@@ -415,12 +415,12 @@ function OtDaysBrowser({
 
     // Arrow keys are handled on the container rather than on each row,
     // because moving between rows means crossing component boundaries.
-    const treeNav = useTreeKeyboardNav();
+    const { ref: treeRef, onKeyDown: treeKeyDown } = useTreeKeyboardNav();
 
     return (
         <ul
-            ref={treeNav.ref}
-            onKeyDown={treeNav.onKeyDown}
+            ref={treeRef}
+            onKeyDown={treeKeyDown}
             className="flex flex-col overflow-y-auto overscroll-contain grow"
         >
             {loadingYears ? (

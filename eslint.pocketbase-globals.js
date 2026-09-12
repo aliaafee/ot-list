@@ -1,5 +1,5 @@
 /**
- * PocketBase JSVM globals, for linting `pb/pb_hooks` and `pb/pb_migrations`.
+ * PocketBase JSVM globals, for linting `pb/pb_hooks`.
  *
  * These are provided by the PocketBase Go runtime, not by Node or the browser,
  * so ESLint reports every one of them as `no-undef` unless they are declared

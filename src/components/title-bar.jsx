@@ -4,7 +4,7 @@ import ModalWindow from "@/modals/modal-window";
 import UserModal from "@/modals/user-modal";
 import { UserColours } from "@/utils/colours";
 import { Menu, SettingsIcon, UserIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "react-router";
 import { twMerge } from "tailwind-merge";
 import Logo from "./logo";
@@ -32,19 +32,14 @@ function TitleBar() {
     const { user } = useAuth();
     const [showDetails, setShowDetails] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
-    const [section, setSection] = useState("otlists");
     const location = useLocation();
 
-    useEffect(() => {
-        const currentSection = Sections.find((sec) =>
-            location.pathname.startsWith(`/${sec.name}`),
-        );
-        if (currentSection) {
-            setSection(currentSection.name);
-        } else {
-            setSection("");
-        }
-    }, [location]);
+    // Which nav item is highlighted follows straight from the URL, so derive
+    // it while rendering. Holding it in state and syncing it from an effect
+    // painted one frame with the previous section still highlighted.
+    const section =
+        Sections.find((sec) => location.pathname.startsWith(`/${sec.name}`))
+            ?.name ?? "";
 
     return (
         <>
