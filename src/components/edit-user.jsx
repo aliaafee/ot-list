@@ -17,23 +17,12 @@ function EditUser() {
     const [showEmailChangeModal, setShowEmailChangeModal] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
     const [changingEmailUser, setChangingEmailUser] = useState(null);
-    const [listLoading, setListLoading] = useState(false);
+    const [listLoading, setListLoading] = useState(true);
     const [userLoading, setUserLoading] = useState(false);
     const [userErrors, setUserErrors] = useState({});
+    const [refreshKey, setRefreshKey] = useState(0);
 
     const { user } = useAuth();
-
-    const fetchUsers = async () => {
-        setListLoading(true);
-        try {
-            const gotUsers = await pb.collection("users").getFullList();
-            setUsers(gotUsers);
-        } catch (err) {
-            console.error("Error fetching users:", err);
-        } finally {
-            setListLoading(false);
-        }
-    };
 
     const handleSaveUser = async (formData) => {
         setUserLoading(true);
@@ -41,7 +30,8 @@ function EditUser() {
         try {
             await pb.collection("users").create(formData);
             setShowUserModal(false);
-            fetchUsers();
+            setListLoading(true);
+            setRefreshKey((k) => k + 1);
         } catch (err) {
             console.error("Error creating user:", err);
             if (err.response?.data) {
@@ -59,7 +49,8 @@ function EditUser() {
             await pb.collection("users").update(userId, formData);
             setShowEditModal(false);
             setEditingUser(null);
-            fetchUsers();
+            setListLoading(true);
+            setRefreshKey((k) => k + 1);
         } catch (err) {
             console.error("Error updating user:", err);
             if (err.response?.data) {
@@ -90,9 +81,24 @@ function EditUser() {
         }
     };
 
+    // Loads users on mount, and again whenever a handler bumps refreshKey.
     useEffect(() => {
-        fetchUsers();
-    }, []);
+        let ignore = false;
+        const loadUsers = async () => {
+            try {
+                const gotUsers = await pb.collection("users").getFullList();
+                if (!ignore) setUsers(gotUsers);
+            } catch (err) {
+                console.error("Error fetching users:", err);
+            } finally {
+                if (!ignore) setListLoading(false);
+            }
+        };
+        loadUsers();
+        return () => {
+            ignore = true;
+        };
+    }, [refreshKey]);
 
     return (
         <div>

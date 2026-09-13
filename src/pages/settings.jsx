@@ -12,32 +12,45 @@ import Accordion from "@/components/accordion";
 function Settings({}) {
     const [departments, setDepartments] = useState([]);
     const [operatingRooms, setOperatingRooms] = useState([]);
+    const [refreshKey, setRefreshKey] = useState(0);
 
     const { isAdmin } = useAuth();
 
-    const fetchData = async () => {
-        const gotDepartments = await pb.collection("departments").getFullList();
-        setDepartments(
-            gotDepartments.map((dept) => ({
-                label: dept.name,
-                value: dept.id,
-            })),
-        );
+    const refreshData = () => setRefreshKey((k) => k + 1);
 
-        const gotOperatingRooms = await pb
-            .collection("operatingRooms")
-            .getFullList();
-        setOperatingRooms(
-            gotOperatingRooms.map((room) => ({
-                label: room.name,
-                value: room.id,
-            })),
-        );
-    };
-
+    // Loads the lookup lists on mount, and again after any table saves.
     useEffect(() => {
-        fetchData();
-    }, []);
+        let ignore = false;
+        const loadData = async () => {
+            const gotDepartments = await pb
+                .collection("departments")
+                .getFullList();
+            if (!ignore) {
+                setDepartments(
+                    gotDepartments.map((dept) => ({
+                        label: dept.name,
+                        value: dept.id,
+                    })),
+                );
+            }
+
+            const gotOperatingRooms = await pb
+                .collection("operatingRooms")
+                .getFullList();
+            if (!ignore) {
+                setOperatingRooms(
+                    gotOperatingRooms.map((room) => ({
+                        label: room.name,
+                        value: room.id,
+                    })),
+                );
+            }
+        };
+        loadData();
+        return () => {
+            ignore = true;
+        };
+    }, [refreshKey]);
 
     const Tools = () => (
         <ToolBar>
@@ -67,7 +80,7 @@ function Settings({}) {
                         { field: "description", label: "Description" },
                         { field: "hospital", label: "Hospital" },
                     ]}
-                    afterSave={fetchData}
+                    afterSave={refreshData}
                     readOnly={!isAdmin}
                 />
             ),
@@ -90,7 +103,7 @@ function Settings({}) {
                             ],
                         },
                     ]}
-                    afterSave={fetchData}
+                    afterSave={refreshData}
                     readOnly={!isAdmin}
                 />
             ),

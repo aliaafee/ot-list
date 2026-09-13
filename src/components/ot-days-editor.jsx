@@ -119,11 +119,9 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
     };
 
     useEffect(() => {
-        if (!selectedDepartmentId) {
-            setOtLists([]);
-            dispatchOtDaysList({ type: "SET_LIST", payload: [] });
-            return;
-        }
+        // Clearing on deselect is handled by the department select itself,
+        // which is the only thing that can unset the department.
+        if (!selectedDepartmentId) return;
 
         // Guards every state update below, so that a request still in flight
         // when the department changes cannot overwrite the newer department.
@@ -250,6 +248,13 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                         const deptId = e.target.value || null;
                         setSelectedDepartmentId(deptId);
                         setSelectedOtList(null);
+                        if (!deptId) {
+                            setOtLists([]);
+                            dispatchOtDaysList({
+                                type: "SET_LIST",
+                                payload: [],
+                            });
+                        }
                     }}
                     value={selectedDepartmentId || ""}
                     className="grow p-1"

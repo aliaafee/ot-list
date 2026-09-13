@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router";
 import { twMerge } from "tailwind-merge";
 
@@ -234,12 +234,13 @@ function OtDaysBrowser({
     onChangeMonth = () => {},
     selectedOtList,
 }) {
-    const [loadingYears, setLoadingYears] = useState(false);
+    const [loadingYears, setLoadingYears] = useState(true);
     const [years, setYears] = useState([]);
-    const [loadingMonths, setLoadingMonths] = useState(false);
+    const [loadingMonths, setLoadingMonths] = useState(Boolean(year));
     const [months, setMonths] = useState([]);
     const [loadingDays, setLoadingDays] = useState(false);
     const [days, setDays] = useState([]);
+    const [refreshKey, setRefreshKey] = useState(0);
 
     const navigate = useNavigate();
 
@@ -259,55 +260,67 @@ function OtDaysBrowser({
         navigate(`/lists/${day.id}`);
     };
 
-    // A realtime refresh must not flip the loading flags, because those flags
-    // are what drive the scroll-into-view effects above. Hence the silent mode.
-    const fetchYears = useCallback(async ({ silent = false } = {}) => {
-        if (!silent) setLoadingYears(true);
-        try {
-            const result = await pb.collection("otDayYears").getFullList({
-                sort: "year",
-            });
-            setYears(result);
-        } catch (error) {
-            console.error("Error fetching OT day years:", error);
-        } finally {
-            if (!silent) setLoadingYears(false);
+    // Drop the lists the moment the browser moves to another year or month,
+    // so no stale rows are on screen while the new ones load.
+    const [prevYear, setPrevYear] = useState(year);
+    const [prevMonth, setPrevMonth] = useState(month);
+    if (prevYear !== year || prevMonth !== month) {
+        setPrevYear(year);
+        setPrevMonth(month);
+        setDays([]);
+        if (prevYear !== year) {
+            setMonths([]);
+            setLoadingMonths(Boolean(year));
         }
-    }, []);
+    }
 
-    // Takes the year as an argument rather than closing over it, so that the
-    // callback stays stable and the subscription below is registered only once.
-    const fetchMonths = useCallback(
-        async (targetYear, { silent = false } = {}) => {
-            if (!targetYear) return;
-            if (!silent) setLoadingMonths(true);
+    // The year and month lists reload whenever refreshKey is bumped, which is
+    // how a realtime change asks for them to be refetched. A refresh leaves the
+    // loading flags alone, because those flags drive the scroll-into-view
+    // effects above; only a new year turns loadingMonths back on, in render.
+    useEffect(() => {
+        let ignore = false;
+        const loadYears = async () => {
+            try {
+                const result = await pb.collection("otDayYears").getFullList({
+                    sort: "year",
+                });
+                if (!ignore) setYears(result);
+            } catch (error) {
+                console.error("Error fetching OT day years:", error);
+            } finally {
+                if (!ignore) setLoadingYears(false);
+            }
+        };
+        loadYears();
+        return () => {
+            ignore = true;
+        };
+    }, [refreshKey]);
+
+    useEffect(() => {
+        if (!year) return;
+        let ignore = false;
+        const loadMonths = async () => {
             try {
                 const result = await pb.collection("otDayMonths").getFullList({
-                    filter: pb.filter("year = {:year}", { year: targetYear }),
+                    filter: pb.filter("year = {:year}", { year }),
                     sort: "month",
                 });
-                setMonths(result);
+                if (!ignore) setMonths(result);
             } catch (error) {
                 console.error("Error fetching OT day months:", error);
             } finally {
-                if (!silent) setLoadingMonths(false);
+                if (!ignore) setLoadingMonths(false);
             }
-        },
-        [],
-    );
+        };
+        loadMonths();
+        return () => {
+            ignore = true;
+        };
+    }, [year, refreshKey]);
 
     useEffect(() => {
-        fetchYears();
-    }, [fetchYears]);
-
-    useEffect(() => {
-        setMonths([]);
-        setDays([]);
-        fetchMonths(year);
-    }, [fetchMonths, year]);
-
-    useEffect(() => {
-        setDays([]);
         const fetchDays = async () => {
             if (year && month) {
                 setLoadingDays(true);
@@ -387,8 +400,7 @@ function OtDaysBrowser({
                     months.some((m) => m.month === recordMonth));
 
             if (deleted || !knownBranch) {
-                fetchYears({ silent: true });
-                if (year) fetchMonths(year, { silent: true });
+                setRefreshKey((k) => k + 1);
             }
         };
 
@@ -411,7 +423,7 @@ function OtDaysBrowser({
             cancelled = true;
             if (unsubscribe) unsubscribe();
         };
-    }, [fetchYears, fetchMonths]);
+    }, []);
 
     // Arrow keys are handled on the container rather than on each row,
     // because moving between rows means crossing component boundaries.

@@ -1,5 +1,5 @@
 import { useParams } from "react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import SidebarLayout from "@/components/sidebar-layout";
 import OtDaysEditor from "@/components/ot-days-editor";
@@ -7,13 +7,16 @@ import ProcedureListEditor from "@/components/procedure-list-editor";
 
 function OperatingLists() {
     const { otDayId } = useParams();
-    const [showDaysList, setShowDaysList] = useState(false);
+    const [showDaysList, setShowDaysList] = useState(!otDayId);
 
-    useEffect(() => {
+    // Reopen the sidebar whenever the route drops back to no selected day.
+    const [prevOtDayId, setPrevOtDayId] = useState(otDayId);
+    if (prevOtDayId !== otDayId) {
+        setPrevOtDayId(otDayId);
         if (!otDayId) {
             setShowDaysList(true);
         }
-    }, [otDayId]);
+    }
 
     return (
         <SidebarLayout

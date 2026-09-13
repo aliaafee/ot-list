@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { pb } from "@/lib/pb";
 import TableCell from "./edit-table-cell";
 import { EditIcon, PlusIcon, SaveIcon, XIcon } from "lucide-react";
@@ -27,7 +27,7 @@ export default function EditTable({
     const [errorData, setErrorData] = useState({});
 
     // Fetch data from the PocketBase collection
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         setLoading(true);
         try {
             const records = await pb.collection(collectionName).getFullList();
@@ -38,7 +38,7 @@ export default function EditTable({
         } finally {
             setLoading(false);
         }
-    };
+    }, [collectionName]);
 
     // Handle input changes for editing or adding
     const handleInputChange = (e, id) => {
@@ -107,7 +107,7 @@ export default function EditTable({
     // Fetch data on component mount
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     return (
         <div
