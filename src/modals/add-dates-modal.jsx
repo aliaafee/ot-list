@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 dayjs.extend(isSameOrBefore);
@@ -39,11 +39,9 @@ export default function AddDatesModal({
     const [errorDates, setErrorDates] = useState([]);
     const [createdDates, setCreatedDates] = useState([]);
     const [error, setError] = useState("");
-    const [selectedOtList, setSelectedOtList] = useState("");
-
-    useEffect(() => {
-        setSelectedOtList(initialOtList ? initialOtList : "");
-    }, []);
+    const [selectedOtList, setSelectedOtList] = useState(
+        initialOtList ? initialOtList : "",
+    );
 
     function getDaysInRange(startDate, endDate, days = []) {
         const dates = [];

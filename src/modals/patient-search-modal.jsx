@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SearchIcon } from "lucide-react";
 import { pb } from "@/lib/pb";
 import Button from "@/components/button";
@@ -21,16 +21,12 @@ function PatientSearchModal({
 }) {
     const [searchQuery, setSearchQuery] = useState("");
     const [patients, setPatients] = useState(initialPatients);
-    const [selectedPatient, setSelectedPatient] = useState(null);
+    // Pre-select the first of any patients handed in (e.g. duplicates).
+    const [selectedPatient, setSelectedPatient] = useState(
+        initialPatients.length > 0 ? initialPatients[0] : null,
+    );
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-
-    useEffect(() => {
-        // If initial patients are provided, select the first one by default
-        if (initialPatients.length > 0) {
-            setSelectedPatient(initialPatients[0]);
-        }
-    }, [initialPatients]);
 
     const handleSearch = async () => {
         if (!searchQuery.trim()) {

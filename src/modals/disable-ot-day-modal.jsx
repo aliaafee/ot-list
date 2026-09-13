@@ -4,7 +4,7 @@ import { CalendarCheckIcon, CalendarOffIcon } from "lucide-react";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import ModalWindow from "./modal-window";
 import FormField from "@/components/form-field";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 /**
  * DisableOtDayModal - Modal for disabling/enabling an OT day with remarks
@@ -13,14 +13,10 @@ import { useEffect, useState } from "react";
  */
 function DisableOtDayModal({ onCancel = () => {}, onSuccess = () => {} }) {
     const { otDay, updateOtDay } = useProcedureList();
-    const [displayedOtDay, setDisplayedOtDay] = useState(null);
+    const [displayedOtDay] = useState(otDay);
     const [updating, setUpdating] = useState(false);
     const [error, setError] = useState("");
     const [remarks, setRemarks] = useState("");
-
-    useEffect(() => {
-        setDisplayedOtDay(otDay);
-    }, []);
 
     const handleDisableOtDay = async () => {
         try {
