@@ -174,21 +174,21 @@ function PatientSearchModal({
                                                 className="cursor-pointer"
                                             />
                                         </td>
-                                        <td className="px-3 py-2 text-sm overflow-ellipsis">
+                                        <td className="px-3 py-2 text-sm text-ellipsis">
                                             {patient.nid}
                                         </td>
-                                        <td className="px-3 py-2 text-sm  hidden md:table-cell  overflow-ellipsis">
+                                        <td className="px-3 py-2 text-sm  hidden md:table-cell  text-ellipsis">
                                             {patient.hospitalId}
                                         </td>
-                                        <td className="px-3 py-2 text-sm  overflow-ellipsis">
+                                        <td className="px-3 py-2 text-sm  text-ellipsis">
                                             {patient.name}
                                         </td>
-                                        <td className="px-3 py-2 text-sm  overflow-ellipsis">
+                                        <td className="px-3 py-2 text-sm  text-ellipsis">
                                             {age(patient.dateOfBirth)} /{" "}
                                             {patient.sex?.[0]?.toUpperCase() ||
                                                 ""}
                                         </td>
-                                        <td className="px-3 py-2 text-sm  hidden md:table-cell overflow-ellipsis">
+                                        <td className="px-3 py-2 text-sm  hidden md:table-cell text-ellipsis">
                                             {patient.phone}
                                         </td>
                                     </tr>
