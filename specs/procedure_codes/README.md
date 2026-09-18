@@ -136,7 +136,7 @@ changes**. Nothing is ever deleted: retired concepts stay in the file with
 publisher resolves a concept's facet *terms* to facet-value *ids*, and its rows
 are seeded into `procedureFacetValues`.
 
-Current release: **v2026.1** — 129 concepts, 52 spinal levels, 165 facet values.
+Current release: **v2026.2** — 132 concepts, 52 spinal levels, 165 facet values.
 
 ### Version manager — `npm run codes`
 
@@ -185,6 +185,7 @@ Then: `npm run build`, and restart PocketBase to apply the migration.
 | `1788307203_added_spinalLevelsSnapshot_to_procedureCodes.js` | Adds `spinalLevelsSnapshot` (text) to `procedureCodes`. |
 | `1788307204_backfill_spinalLevelsSnapshot.js` | Backfills `spinalLevelsSnapshot` on existing `procedureCodes` rows from their `spinalLevels` relation, ordinal-ordered. |
 | `1788307205_backfill_catalogueRevisions_v2026_1.js` | Writes the initial `add` revision for every v2026.1 catalogue record. Idempotent. |
+| `1789702231_seeded_procedureCodes_v2026_2.js` | Generated seed for v2026.2 — adds the three percutaneous pedicle screw fixation codes (do not hand-edit). |
 
 ---
 
@@ -440,7 +441,7 @@ target of the `1788009377` backfill migration.
 | Path | Role |
 |---|---|
 | [`specs/procedure_codes/neurosurgery-coding-system-spec.md`](./neurosurgery-coding-system-spec.md) | The full NSPC design specification (the *why*) |
-| [`specs/procedure_codes/v2026.1/`](./v2026.1/) | The v2026.1 release source (concepts, levels, facet values) |
+| [`specs/procedure_codes/v2026.1/`](./v2026.1/) · [`v2026.2/`](./v2026.2/) | The release sources (concepts, levels, facet values), one folder per release |
 | [`scripts/procedure-codes.js`](../../scripts/procedure-codes.js) | Release manager (`npm run codes`) |
 | [`src/data/nspc-catalogue.json`](../../src/data/nspc-catalogue.json) · [`spinal-levels.json`](../../src/data/spinal-levels.json) · [`catalogue-release.json`](../../src/data/catalogue-release.json) | Bundled fallback copy, written by publish |
 | [`src/contexts/catalogue-context.jsx`](../../src/contexts/catalogue-context.jsx) | `CatalogueProvider` / `useCatalogue` |
