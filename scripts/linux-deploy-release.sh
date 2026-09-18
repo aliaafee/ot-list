@@ -8,6 +8,10 @@ PB_DIR="$ROOT_DIR/pb"
 PB_USER="pocketbase"
 SERVICE_NAME="otlist"
 
+# Where the script fetches its own updates from
+REPO_RAW_URL="https://raw.githubusercontent.com/aliaafee/ot-list"
+SCRIPT_REPO_PATH="scripts/linux-deploy-release.sh"
+
 # Function to display usage
 usage() {
     echo "Usage: $0 {install|update|uninstall} [OPTIONS]"
@@ -21,6 +25,18 @@ usage() {
     echo "  --version VERSION   Specify release version to install (default: $DEFAULT_VERSION)"
     echo "  --from-source       Build and install from Git repository instead of downloading release"
     echo "  --branch BRANCH     Specify branch to build from when using --from-source (default: main)"
+    echo "  --no-self-update    Do not check the repository for a newer copy of this script"
+    echo "  --self-update       Take a newer copy without asking (for unattended runs)"
+    echo ""
+    echo "Self-update:"
+    echo "  Every run first compares this file with $SCRIPT_REPO_PATH in the"
+    echo "  repository. If they differ it says so and asks whether to replace this"
+    echo "  file and re-run with the same arguments; answering no, or anything other"
+    echo "  than y, carries on with the copy on disk. Nothing is replaced without an"
+    echo "  answer: a non-interactive run keeps the current script unless"
+    echo "  --self-update is given. The check itself is skipped when the download"
+    echo "  fails, when this file is not writable, when the script is piped in rather"
+    echo "  than run from a file, or with --no-self-update (OTLIST_SKIP_SELF_UPDATE=1)."
     echo ""
     echo "Examples:"
     echo "  $0 install --version 0.0.2              # Install from release v0.0.2"
@@ -35,6 +51,129 @@ usage() {
     echo "  $0 install 0.0.2    # Still works - installs version 0.0.2"
     echo "  $0 update 0.0.3     # Still works - updates to version 0.0.3"
     exit 1
+}
+
+# Function to check the repository for a newer copy of this script
+#
+# A server keeps whatever copy of this script it was installed with, so a
+# deployment months later can run steps the repository has since changed. This
+# says so before any work starts and offers to hand over to the new script -
+# nothing is replaced unless the answer is yes, because running code that was
+# fetched seconds ago, as root, should be a decision rather than a side effect.
+#
+# Every failure path here is non-fatal: an unreachable network, an unwritable
+# script or a garbled download all fall through to running the copy already on
+# disk, because refusing to deploy is worse than deploying from a known script.
+self_update() {
+    # The restarted run must not check again, or the script would loop.
+    if [ "${OTLIST_SKIP_SELF_UPDATE:-0}" = "1" ]; then
+        return 0
+    fi
+
+    local script_path=""
+    script_path="$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null)" || true
+    if [ -z "$script_path" ] || [ ! -f "$script_path" ]; then
+        echo "[*] Skipping self-update: not running from a file on disk"
+        return 0
+    fi
+
+    # Follow --branch, so deploying from a branch also takes that branch's
+    # script rather than main's.
+    local branch="main"
+    local previous=""
+    local argument
+    for argument in "$@"; do
+        if [ "$previous" = "--branch" ]; then
+            branch="$argument"
+        fi
+        previous="$argument"
+    done
+
+    local url="$REPO_RAW_URL/$branch/$SCRIPT_REPO_PATH"
+    local tmpfile=""
+    tmpfile="$(mktemp)" || return 0
+
+    echo "[*] Checking for a newer deploy script ($branch)..."
+    if ! curl -fsSL "$url" -o "$tmpfile"; then
+        echo "    Could not download $url"
+        echo "    Continuing with the copy already on disk"
+        rm -f "$tmpfile"
+        return 0
+    fi
+
+    # A proxy error page or a half-written file would be a worse script than
+    # the one already here, so take it only if it reads like this script and
+    # parses as bash.
+    if [ ! -s "$tmpfile" ] || ! head -n 1 "$tmpfile" | grep -q "^#!/bin/bash"; then
+        echo "    Downloaded file is not a shell script, ignoring it"
+        rm -f "$tmpfile"
+        return 0
+    fi
+    if ! bash -n "$tmpfile" 2>/dev/null; then
+        echo "    Downloaded script has syntax errors, ignoring it"
+        rm -f "$tmpfile"
+        return 0
+    fi
+
+    if cmp -s "$tmpfile" "$script_path"; then
+        echo "    Already the current version"
+        rm -f "$tmpfile"
+        return 0
+    fi
+
+    # From here the two copies differ, so say what was found before asking.
+    local changed=""
+    if command -v diff >/dev/null 2>&1; then
+        changed="$(diff "$script_path" "$tmpfile" | grep -c "^[<>]" || true)"
+    fi
+
+    echo ""
+    echo "================================================================"
+    echo " A newer deploy script is available"
+    echo ""
+    echo "   this copy: $script_path"
+    echo "   repository: $url"
+    if [ -n "$changed" ] && [ "$changed" != "0" ]; then
+        echo "   difference: $changed line(s)"
+    fi
+    echo "================================================================"
+    echo ""
+
+    if [ ! -w "$script_path" ]; then
+        echo "[*] $script_path is not writable, so it cannot be replaced"
+        echo "    Continuing with the copy already on disk"
+        rm -f "$tmpfile"
+        return 0
+    fi
+
+    local answer="n"
+    if [ "${OTLIST_ALWAYS_SELF_UPDATE:-0}" = "1" ]; then
+        answer="y"
+        echo "[*] --self-update was given, taking the newer script"
+    elif [ -t 0 ]; then
+        read -r -p "Replace this script with the newer one and re-run? (y/N): " answer
+    else
+        echo "[*] Not running interactively, so there is nothing to answer"
+        echo "    Continuing with the copy already on disk"
+        echo "    Pass --self-update to take the newer script automatically"
+    fi
+
+    if [[ ! "$answer" =~ ^[Yy]$ ]]; then
+        echo "[*] Keeping the current script"
+        echo ""
+        rm -f "$tmpfile"
+        return 0
+    fi
+
+    echo "[*] Replacing this script and restarting..."
+    # Copy the contents rather than moving the file over it: this keeps the
+    # inode, owner and mode. Bash reads a script as it runs, so rewriting it
+    # mid-run is only safe because this whole function is already parsed and
+    # the exec below leaves nothing further to read.
+    cat "$tmpfile" > "$script_path"
+    rm -f "$tmpfile"
+    export OTLIST_SKIP_SELF_UPDATE=1
+    exec bash "$script_path" "$@"
 }
 
 # Function to detect an existing installation
@@ -673,9 +812,33 @@ uninstall() {
 }
 
 # Main script logic
+
+# The self-update flags are handled here rather than by the per-command
+# parsers, so they can be given anywhere and never reach them as an unknown
+# option.
+SELF_UPDATE_ARGS=()
+for argument in "$@"; do
+    case "$argument" in
+        --no-self-update)
+            OTLIST_SKIP_SELF_UPDATE=1
+            ;;
+        --self-update)
+            OTLIST_ALWAYS_SELF_UPDATE=1
+            ;;
+        *)
+            SELF_UPDATE_ARGS+=("$argument")
+            ;;
+    esac
+done
+set -- ${SELF_UPDATE_ARGS[@]+"${SELF_UPDATE_ARGS[@]}"}
+export OTLIST_SKIP_SELF_UPDATE="${OTLIST_SKIP_SELF_UPDATE:-0}"
+export OTLIST_ALWAYS_SELF_UPDATE="${OTLIST_ALWAYS_SELF_UPDATE:-0}"
+
 if [ $# -eq 0 ]; then
     usage
 fi
+
+self_update "$@"
 
 COMMAND=$1
 shift  # Remove first argument
