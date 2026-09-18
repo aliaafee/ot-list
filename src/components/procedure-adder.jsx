@@ -4,7 +4,6 @@ import {
     ClipboardPasteIcon,
     SearchIcon,
     UserPlusIcon,
-    CameraIcon,
 } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
@@ -27,6 +26,7 @@ import {
 } from "@/forms/patient-form";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import { useCatalogue } from "@/contexts/catalogue-context";
+import { useAuth } from "@/contexts/auth-context";
 import { GenerateProdecureFormData } from "@/utils/sample-data";
 import {
     bedInfoFromHINAIHeader,
@@ -54,6 +54,7 @@ function ProcedureAdder({
 }) {
     const { otDay, addProcedure, isBusy } = useProcedureList();
     const catalogue = useCatalogue();
+    const { isAdmin } = useAuth();
     const [newPatient, setNewPatient] = useState(initialPatientValue);
     const [newPatientErrors, setNewPatientErrors] = useState({});
     const [selectedPatient, setSelectedPatient] = useState(null);
@@ -404,14 +405,16 @@ function ProcedureAdder({
                               ? "Adding..."
                               : "Save"}
                     </Button>
-                    <Button
-                        variant="secondary"
-                        onClick={handleSampleData}
-                        className="mt-3 sm:ml-3 sm:mt-0 w-full sm:w-auto"
-                        disabled={isBusy() || checking}
-                    >
-                        Generate Sample
-                    </Button>
+                    {isAdmin && (
+                        <Button
+                            variant="secondary"
+                            onClick={handleSampleData}
+                            className="mt-3 sm:ml-3 sm:mt-0 w-full sm:w-auto"
+                            disabled={isBusy() || checking}
+                        >
+                            Generate Sample
+                        </Button>
+                    )}
                     <Button
                         variant="secondary"
                         onClick={handleCancel}
