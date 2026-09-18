@@ -4,20 +4,22 @@ import ModalWindow from "./modal-window";
 import { PatientForm, validatePatient } from "@/forms/patient-form";
 import { pb } from "@/lib/pb";
 import dayjs from "dayjs";
-import { useAuth } from "@/contexts/auth-context";
 
 /**
  * EditPatientModal - Modal for editing patient information
  * @param {Object} patient - Patient object to edit
  * @param {Function} onCancel - Callback when modal is cancelled
- * @param {Function} onSuccess - Callback when patient is successfully updated
+ * @param {Function} onSuccess - Callback with the updated patient record
  */
 export default function EditPatientModal({ patient, onCancel, onSuccess }) {
     const [editedPatient, setEditedPatient] = useState({
         nid: patient?.nid || "",
         hospitalId: patient?.hospitalId || "",
         name: patient?.name || "",
-        dateOfBirth: dayjs(patient?.dateOfBirth).format("YYYY-MM-DD") || "",
+        // dayjs("") formats to "Invalid Date", so only format a real value.
+        dateOfBirth: patient?.dateOfBirth
+            ? dayjs(patient.dateOfBirth).format("YYYY-MM-DD")
+            : "",
         sex: patient?.sex || "",
         phone: patient?.phone || "",
         address: patient?.address || "",
@@ -38,8 +40,10 @@ export default function EditPatientModal({ patient, onCancel, onSuccess }) {
 
         setLoading(true);
         try {
-            await pb.collection("patients").update(patient.id, editedPatient);
-            onSuccess?.();
+            const updated = await pb
+                .collection("patients")
+                .update(patient.id, editedPatient);
+            onSuccess?.(updated);
         } catch (error) {
             console.error("Failed to update patient:", error);
             setUpdateError(error);

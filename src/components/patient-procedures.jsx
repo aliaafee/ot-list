@@ -69,7 +69,7 @@ function PatientProcedures({ patientId }) {
     }, [patientId]);
 
     return (
-        <div className="pl-8">
+        <div className="p-2 pl-8">
             <h3 className="text-sm font-semibold mb-2">Procedures</h3>
             {loading ? (
                 <div className="text-sm text-gray-500">

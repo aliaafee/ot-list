@@ -7,14 +7,22 @@ import {
     SearchIcon,
     XIcon,
     ChevronDownIcon,
+    UserPenIcon,
 } from "lucide-react";
 import BodyLayout from "@/components/body-layout";
-import { ToolBar, ToolBarButtonLabel, ToolBarLink } from "@/components/toolbar";
+import {
+    ToolBar,
+    ToolBarButton,
+    ToolBarButtonLabel,
+    ToolBarLink,
+} from "@/components/toolbar";
 import { pb } from "@/lib/pb";
 import { age } from "@/utils/dates";
 import { twMerge } from "tailwind-merge";
 import PatientProcedures from "@/components/patient-procedures";
 import LabelValue from "@/components/label-value";
+import { useAuth } from "@/contexts/auth-context";
+import EditPatientModal from "@/modals/edit-patient-modal";
 
 const PAGE_SIZE = 50;
 
@@ -38,6 +46,7 @@ function useDebouncedValue(value, delay = 300) {
 }
 
 function Patients() {
+    const { canEdit } = useAuth();
     const [searchParams, setSearchParams] = useSearchParams();
     const [patients, setPatients] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -45,6 +54,7 @@ function Patients() {
     const [totalPages, setTotalPages] = useState(1);
 
     const [expandedPatientId, setExpandedPatientId] = useState(null);
+    const [editingPatient, setEditingPatient] = useState(null);
 
     // URL is the source of truth. The input reflects `searchQuery` immediately;
     // the fetch waits for `debouncedSearch` so typing doesn't fire a request
@@ -59,6 +69,7 @@ function Patients() {
         setError(null);
         // A new list makes any open expansion stale.
         setExpandedPatientId(null);
+        setEditingPatient(null);
 
         try {
             const options = {
@@ -261,9 +272,18 @@ function Patients() {
                                                     {patient.name}
                                                 </td>
                                                 <td className="px-3 py-2 text-sm">
-                                                    {age(patient.dateOfBirth)} /{" "}
-                                                    {patient.sex?.[0]?.toUpperCase() ||
-                                                        ""}
+                                                    <LabelValue
+                                                        value={`${
+                                                            patient.dateOfBirth
+                                                                ? age(
+                                                                      patient.dateOfBirth,
+                                                                  )
+                                                                : "-"
+                                                        }/${
+                                                            patient.sex?.[0]?.toUpperCase() ||
+                                                            ""
+                                                        }`}
+                                                    />
                                                 </td>
                                                 <td className="px-3 py-2 text-sm">
                                                     {patient.phone}
@@ -274,10 +294,34 @@ function Patients() {
                                             </tr>
                                             {expanded && (
                                                 <tr>
-                                                    <td
-                                                        colSpan={7}
-                                                        className="px-3 py-3"
-                                                    >
+                                                    <td colSpan={7}>
+                                                        <ToolBar className="bg-gray-200">
+                                                            <div className="grow"></div>
+                                                            {!!canEdit && (
+                                                                <ToolBarButton
+                                                                    title="Edit Patient Info"
+                                                                    onClick={() =>
+                                                                        setEditingPatient(
+                                                                            patient,
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    <UserPenIcon
+                                                                        className=""
+                                                                        width={
+                                                                            16
+                                                                        }
+                                                                        height={
+                                                                            16
+                                                                        }
+                                                                    />
+                                                                    <ToolBarButtonLabel className="hidden sm:inline">
+                                                                        Edit
+                                                                        Patient
+                                                                    </ToolBarButtonLabel>
+                                                                </ToolBarButton>
+                                                            )}
+                                                        </ToolBar>
                                                         <PatientProcedures
                                                             patientId={
                                                                 patient.id
@@ -334,6 +378,21 @@ function Patients() {
                         </div>
                     )}
                 </>
+            )}
+            {editingPatient && (
+                <EditPatientModal
+                    patient={editingPatient}
+                    onCancel={() => setEditingPatient(null)}
+                    onSuccess={(updated) => {
+                        setEditingPatient(null);
+                        // Patch the row in place so the open expansion survives.
+                        setPatients((current) =>
+                            current.map((p) =>
+                                p.id === updated.id ? updated : p,
+                            ),
+                        );
+                    }}
+                />
             )}
         </BodyLayout>
     );
