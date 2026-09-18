@@ -10,12 +10,18 @@ import Settings from "./pages/settings";
 import Patients from "./pages/patients";
 import AllProcedures from "./pages/all-procedures";
 import NotFound from "./pages/not-found";
+import AdminBackups from "./pages/admin-backups";
 
 export default function App() {
     return (
         <Routes>
             {/* Public */}
             <Route path="/login" element={<Login />} />
+
+            {/* Superuser only, with its own login: deliberately outside the
+                app session, so backups can still be reached when nobody can
+                sign in to OT List itself. */}
+            <Route path="/admin/backups" element={<AdminBackups />} />
 
             {/* Protected */}
             <Route element={<ProtectedRoute />}>
