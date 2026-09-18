@@ -75,18 +75,13 @@ function SuperuserLogin() {
     return (
         <ModalContainer className={"sm:max-w-xs"}>
             <form onSubmit={onSubmit}>
-                <div className="bg-gray-300 px-4 pt-4 pb-4 sm:p-6 sm:pb-4 flex items-center justify-center">
+                <div className="bg-gray-300 px-4 pt-4 pb-4 sm:p-6 sm:pb-4 flex items-center justify-center gap-2">
                     <Logo />
+                    <div className="font-mono rounded-md px-1 bg-amber-400 shadow">
+                        admin
+                    </div>
                 </div>
                 <div className="p-4 flex flex-col gap-4">
-                    <div className="text-sm font-semibold text-gray-900">
-                        Database backups
-                    </div>
-                    <div className="text-xs text-gray-600">
-                        Sign in with a PocketBase superuser account - the same
-                        credentials as the admin panel. An OT List login will
-                        not work here.
-                    </div>
                     <FormField
                         label={"Superuser email"}
                         name={"email"}
@@ -108,6 +103,9 @@ function SuperuserLogin() {
                             {err}
                         </div>
                     )}
+                </div>
+                <div className="px-4 pb-2 text-xs text-gray-400 text-center">
+                    v{import.meta.env.PACKAGE_VERSION}
                 </div>
                 {!!backendUrl && (
                     <div className="px-4 pb-2 text-xs text-gray-600 text-center">
@@ -204,8 +202,11 @@ function RestoreBackupModal({ backupKey, onRestore, onCancel, busy }) {
             <p className="text-sm text-gray-600">
                 This replaces the live database with the contents of{" "}
                 <span className="font-mono">{backupKey}</span> and restarts the
-                server. <span className="font-semibold">Every record added
-                or changed since that backup was taken is lost.</span>
+                server.{" "}
+                <span className="font-semibold">
+                    Every record added or changed since that backup was taken is
+                    lost.
+                </span>
             </p>
             <div className="mt-3">
                 <FormField
@@ -237,7 +238,10 @@ function BackupManager() {
 
     const fail = (message, e) => {
         console.error(message, e);
-        setError({ message: e?.response?.message || message, data: e?.response });
+        setError({
+            message: e?.response?.message || message,
+            data: e?.response,
+        });
     };
 
     // Every reload of the list goes through refreshKey, so an action only has
@@ -275,9 +279,7 @@ function BackupManager() {
         setBusy(key);
         try {
             const token = await pbAdmin.files.getToken();
-            window.location.assign(
-                pbAdmin.backups.getDownloadURL(token, key),
-            );
+            window.location.assign(pbAdmin.backups.getDownloadURL(token, key));
         } catch (e) {
             fail("Could not start the download", e);
         } finally {
@@ -448,7 +450,9 @@ function BackupManager() {
                                     <Button
                                         size="sm"
                                         variant="secondary"
-                                        onClick={() => handleDownload(backup.key)}
+                                        onClick={() =>
+                                            handleDownload(backup.key)
+                                        }
                                         disabled={!!busy}
                                         loading={busy === backup.key}
                                         className="gap-1"
@@ -499,9 +503,9 @@ function BackupManager() {
                         onCancel={() => setDeleting("")}
                     >
                         <p className="text-sm text-gray-600">
-                            <span className="font-mono">{deleting}</span> is removed
-                            from the server for good. The live database is not
-                            touched.
+                            <span className="font-mono">{deleting}</span> is
+                            removed from the server for good. The live database
+                            is not touched.
                         </p>
                     </ModalWindow>
                 )}
