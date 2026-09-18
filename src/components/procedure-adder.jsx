@@ -26,6 +26,7 @@ import {
     validatePatient,
 } from "@/forms/patient-form";
 import { useProcedureList } from "@/contexts/procedure-list-context";
+import { useCatalogue } from "@/contexts/catalogue-context";
 import { GenerateProdecureFormData } from "@/utils/sample-data";
 import {
     bedInfoFromHINAIHeader,
@@ -52,6 +53,7 @@ function ProcedureAdder({
     onAfterSave,
 }) {
     const { otDay, addProcedure, isBusy } = useProcedureList();
+    const catalogue = useCatalogue();
     const [newPatient, setNewPatient] = useState(initialPatientValue);
     const [newPatientErrors, setNewPatientErrors] = useState({});
     const [selectedPatient, setSelectedPatient] = useState(null);
@@ -70,6 +72,7 @@ function ProcedureAdder({
         const sampleData = GenerateProdecureFormData(
             otDay.expand.otList.expand.department.expand
                 .activeSurgeons_via_department,
+            catalogue,
         );
         if (!selectedPatient) {
             setNewPatient(sampleData);
