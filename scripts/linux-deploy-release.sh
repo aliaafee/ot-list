@@ -37,6 +37,35 @@ usage() {
     exit 1
 }
 
+# Function to detect an existing installation
+is_installed() {
+    # Existing systemd unit
+    if [ -f "/etc/systemd/system/$SERVICE_NAME.service" ]; then
+        INSTALL_EVIDENCE="systemd service file /etc/systemd/system/$SERVICE_NAME.service"
+        return 0
+    fi
+
+    # Existing PocketBase binary
+    if [ -f "$PB_DIR/pocketbase" ]; then
+        INSTALL_EVIDENCE="PocketBase binary $PB_DIR/pocketbase"
+        return 0
+    fi
+
+    # Existing database
+    if [ -d "$PB_DIR/pb_data" ]; then
+        INSTALL_EVIDENCE="PocketBase data directory $PB_DIR/pb_data"
+        return 0
+    fi
+
+    # Non-empty install directory
+    if [ -d "$ROOT_DIR" ] && [ -n "$(ls -A "$ROOT_DIR" 2>/dev/null)" ]; then
+        INSTALL_EVIDENCE="non-empty install directory $ROOT_DIR"
+        return 0
+    fi
+
+    return 1
+}
+
 # Function to build from source
 build_from_source() {
     local BRANCH="${1:-main}"
@@ -240,6 +269,19 @@ install() {
     # Check if running as root or with sudo
     if [ "$EUID" -ne 0 ]; then 
         echo "Please run as root or with sudo"
+        exit 1
+    fi
+
+    # Abort if OT List is already installed
+    INSTALL_EVIDENCE=""
+    if is_installed; then
+        echo "Error: OT List appears to be already installed"
+        echo "       Found: $INSTALL_EVIDENCE"
+        echo ""
+        echo "Nothing was changed. If you want to:"
+        echo "  - move to a different version, run: $0 update --version <VERSION>"
+        echo "  - rebuild from source,          run: $0 update --from-source"
+        echo "  - start over from scratch,      run: $0 uninstall  (then install again)"
         exit 1
     fi
 
