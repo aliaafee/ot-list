@@ -236,7 +236,8 @@ once the user is authed.
   synonym substring (5), FSN substring (6), all-tokens-somewhere for
   multi-word queries (7). Ties break alphabetically. Limit 20.
 - **`extractLevelFromQuery`** — recognises a spinal level written the way
-  surgeons type it: an interspace (`c5-c6`, `l4/5`) or a bare vertebra
+  surgeons type it: an interspace (`c5-c6`, `l4/5`, or compact `l45`,
+  `t1011`, and `l51` for L5-S1 — the only compact junction) or a bare vertebra
   (`C5`, `T12`, `occiput`). Returns the matched level plus the remaining text.
 - **`extractLateralityFromQuery`** — a leading `left`/`right`/`bilateral`
   (and `lt`/`rt`/`bilat`/`b/l`, optional `-sided`).

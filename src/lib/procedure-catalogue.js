@@ -107,13 +107,54 @@ export function searchCatalogue(index, query) {
     return results;
 }
 
-// Matches a level written the way surgeons type it, so "c5-c6 acdf" and
-// "l4/5 microdisc" both work. Only consulted when the query as typed
+// Matches a level written the way surgeons type it, so "c5-c6 acdf",
+// "l4/5 microdisc" and "l45 microdisc" all work. Only consulted when the query as typed
 // finds nothing, so this can never shadow an ordinary search.
 const INTERSPACE_QUERY =
     /\b([cCtTlLsS]\d{1,2})\s*[-–/]\s*([cCtTlLsS]?\d{1,2})\b/;
 const VERTEBRA_QUERY =
     /\b([cC][1-7]|[tT](?:1[0-2]|[1-9])|[lL][1-5]|[sS][12]|occiput)\b/;
+// The compact shorthand "l45" (= L4-L5) or "t1011" (= T10-T11): one region
+// letter followed by two adjacent level numbers run together. "l51" is the
+// one junction written this way (= L5-S1).
+const COMPACT_INTERSPACE_QUERY = /\b([cCtTlLsS])(\d{2,4})\b/g;
+
+/**
+ * Splits the digits of a compact interspace into two adjacent levels, so
+ * "45" -> [4, 5] and "1011" -> [10, 11]. Null when no split is adjacent,
+ * which keeps "l47" from reading as a level.
+ */
+function splitCompactInterspace(digits) {
+    for (let i = 1; i < digits.length; i++) {
+        const from = digits.slice(0, i);
+        const to = digits.slice(i);
+        if (to.startsWith("0")) continue;
+        if (Number(to) === Number(from) + 1) return [from, to];
+    }
+    return null;
+}
+
+function findCompactInterspace(query) {
+    for (const match of query.matchAll(COMPACT_INTERSPACE_QUERY)) {
+        const [matched, region, digits] = match;
+        // "L51" is the lumbosacral junction; no other junction has a
+        // compact form.
+        if (matched.toUpperCase() === "L51") {
+            return { matched, interspace: "L5-S1" };
+        }
+        // "T12" is the vertebra, not T1-T2.
+        if (VERTEBRA_QUERY.test(matched)) continue;
+        const split = splitCompactInterspace(digits);
+        if (split) {
+            const letter = region.toUpperCase();
+            return {
+                matched,
+                interspace: `${letter}${split[0]}-${letter}${split[1]}`,
+            };
+        }
+    }
+    return null;
+}
 
 export function extractLevelFromQuery(query) {
     const interspace = query.match(INTERSPACE_QUERY);
@@ -123,6 +164,13 @@ export function extractLevelFromQuery(query) {
         return {
             rest: query.replace(matched, " ").trim(),
             interspace: `${from.toUpperCase()}-${to.toUpperCase()}`,
+        };
+    }
+    const compact = findCompactInterspace(query);
+    if (compact) {
+        return {
+            rest: query.replace(compact.matched, " ").trim(),
+            interspace: compact.interspace,
         };
     }
     const vertebra = query.match(VERTEBRA_QUERY);
