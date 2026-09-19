@@ -116,7 +116,7 @@ export function bedInfoFromHINAIHeader(text) {
         // "BED NO :ICU & CCU/ICCU/ ICU12" -> ICCU12
         // "BED NO :NORMAL/DHARUMAVANTHA 17/ 17-08" -> 17-08
         const bedMatch = firstLine.match(
-            /BED\s+NO\s*:[^\/]*\/[^\/]*\/\s*([^\s\t]+)/i,
+            /BED\s+NO\s*:[^/]*\/[^/]*\/\s*([^\s\t]+)/i,
         );
         if (bedMatch) {
             // Extract the bed number which is after the second slash
@@ -124,7 +124,7 @@ export function bedInfoFromHINAIHeader(text) {
 
             // For patterns like "ICU12", check if location contains room identifier
             const locationMatch = firstLine.match(
-                /BED\s+NO\s*:[^\/]*\/([^\/]+)\/\s*([^\s\t]+)/i,
+                /BED\s+NO\s*:[^/]*\/([^/]+)\/\s*([^\s\t]+)/i,
             );
             if (locationMatch) {
                 const location = locationMatch[1].trim();
