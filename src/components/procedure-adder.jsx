@@ -33,6 +33,7 @@ import {
     patientInfoFromText,
 } from "@/utils/text-parsers";
 import PatientSearchModal from "@/modals/patient-search-modal";
+import PastePatientPreviewModal from "@/modals/paste-patient-preview-modal";
 import PatientInfo from "./patient-info";
 import { pb } from "@/lib/pb";
 import { toProcedureCodesPayload } from "@/lib/procedure-codes";
@@ -68,6 +69,7 @@ function ProcedureAdder({
     const [checking, setChecking] = useState(false);
     const [adding, setAdding] = useState(false);
     const [duplicatePatients, setDuplicatePatients] = useState([]);
+    const [pastedInfo, setPastedInfo] = useState(null);
 
     const handleSampleData = () => {
         const sampleData = GenerateProdecureFormData(
@@ -84,23 +86,21 @@ function ProcedureAdder({
     const handlePastePatient = async () => {
         try {
             const text = await navigator.clipboard.readText();
+            const patient = patientInfoFromText(text);
+            const bed = bedInfoFromHINAIHeader(text);
 
-            setNewPatient({
-                ...initialPatientValue,
-                ...patientInfoFromText(text),
-            });
+            if (Object.keys(patient).length === 0 && !bed) {
+                setPastedInfo(null);
+                setAddError({
+                    message:
+                        "No patient information found on the clipboard. Please check the clipboard format.",
+                });
+                return;
+            }
 
-            const bedNumber = bedInfoFromHINAIHeader(text);
-
-            setNewProcedure((prev) => ({
-                ...prev,
-                bed: bedNumber,
-            }));
-
-            // Clear any previous error
+            // Hold the parsed info for preview until the user applies it
+            setPastedInfo({ patient, bed });
             setAddError(null);
-            setSelectedPatient(null);
-            setDuplicatePatients([]);
         } catch (err) {
             console.error("Failed to paste patient information:", err);
             // Show error to user
@@ -109,6 +109,22 @@ function ProcedureAdder({
                     "Failed to paste patient information. Please check the clipboard format.",
             });
         }
+    };
+
+    const handleApplyPaste = () => {
+        setNewPatient({
+            ...initialPatientValue,
+            ...pastedInfo.patient,
+        });
+
+        setNewProcedure((prev) => ({
+            ...prev,
+            bed: pastedInfo.bed,
+        }));
+
+        setPastedInfo(null);
+        setSelectedPatient(null);
+        setDuplicatePatients([]);
     };
 
     const handleFindPatient = async () => {
@@ -441,6 +457,15 @@ function ProcedureAdder({
                             ? "A patient with the same NID or Hospital ID already exists. Select one below or search for another patient."
                             : null
                     }
+                />
+            )}
+            {pastedInfo && (
+                <PastePatientPreviewModal
+                    patient={pastedInfo.patient}
+                    bed={pastedInfo.bed}
+                    note="Applying replaces the patient details and bed currently in the form."
+                    onApply={handleApplyPaste}
+                    onDiscard={() => setPastedInfo(null)}
                 />
             )}
         </div>

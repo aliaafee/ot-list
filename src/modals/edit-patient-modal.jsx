@@ -11,6 +11,7 @@ import {
     ToolBarTitle,
 } from "@/components/toolbar";
 import { patientInfoFromText } from "@/utils/text-parsers";
+import PastePatientPreviewModal from "./paste-patient-preview-modal";
 
 /**
  * EditPatientModal - Modal for editing patient information
@@ -35,16 +36,23 @@ export default function EditPatientModal({ patient, onCancel, onSuccess }) {
     const [loading, setLoading] = useState(false);
     const [updateError, setUpdateError] = useState(null);
     const [pasteError, setPasteError] = useState(null);
+    const [pastedPatient, setPastedPatient] = useState(null);
 
     const handlePastePatient = async () => {
         try {
             const text = await navigator.clipboard.readText();
+            const parsed = patientInfoFromText(text);
 
-            // Only overwrite fields the clipboard actually provided
-            setEditedPatient((prev) => ({
-                ...prev,
-                ...patientInfoFromText(text),
-            }));
+            if (Object.keys(parsed).length === 0) {
+                setPastedPatient(null);
+                setPasteError(
+                    "No patient information found on the clipboard. Please check the clipboard format.",
+                );
+                return;
+            }
+
+            // Hold the parsed info for preview until the user applies it
+            setPastedPatient(parsed);
 
             // Clear any previous error
             setPasteError(null);
@@ -56,6 +64,12 @@ export default function EditPatientModal({ patient, onCancel, onSuccess }) {
                 "Failed to paste patient information. Please check the clipboard format.",
             );
         }
+    };
+
+    const handleApplyPaste = () => {
+        // Only overwrite fields the clipboard actually provided
+        setEditedPatient((prev) => ({ ...prev, ...pastedPatient }));
+        setPastedPatient(null);
     };
 
     const handleSave = async () => {
@@ -83,54 +97,65 @@ export default function EditPatientModal({ patient, onCancel, onSuccess }) {
     };
 
     return (
-        <ModalWindow
-            title="Edit Patient Information"
-            icon={<UserPenIcon width={24} height={24} />}
-            iconColor="bg-blue-100 text-blue-600"
-            okColor="bg-blue-600 hover:bg-blue-500"
-            okLabel="Save"
-            cancelLabel="Cancel"
-            onOk={handleSave}
-            onCancel={onCancel}
-            loading={loading}
-            large={true}
-        >
-            <div className="mt-2">
-                {updateError && (
-                    <div className="bg-red-400/20 rounded-md mb-2 p-2 text-sm">
-                        Failed to update patient:{" "}
-                        {updateError?.message || "Unknown error"}
-                    </div>
-                )}
-                {pasteError && (
-                    <div className="bg-red-400/20 rounded-md mb-2 p-2 text-sm">
-                        {pasteError}
-                    </div>
-                )}
-                <ToolBar className="w-full flex-wrap sm:flex-nowrap">
-                    <div className="grow"></div>
+        <>
+            <ModalWindow
+                title="Edit Patient Information"
+                icon={<UserPenIcon width={24} height={24} />}
+                iconColor="bg-blue-100 text-blue-600"
+                okColor="bg-blue-600 hover:bg-blue-500"
+                okLabel="Save"
+                cancelLabel="Cancel"
+                onOk={handleSave}
+                onCancel={onCancel}
+                loading={loading}
+                large={true}
+            >
+                <div className="mt-2">
+                    {updateError && (
+                        <div className="bg-red-400/20 rounded-md mb-2 p-2 text-sm">
+                            Failed to update patient:{" "}
+                            {updateError?.message || "Unknown error"}
+                        </div>
+                    )}
+                    {pasteError && (
+                        <div className="bg-red-400/20 rounded-md mb-2 p-2 text-sm">
+                            {pasteError}
+                        </div>
+                    )}
+                    <ToolBar className="w-full flex-wrap sm:flex-nowrap">
+                        <div className="grow"></div>
 
-                    <ToolBarButton
-                        title="Paste Patient Details from Clipboard"
-                        onClick={handlePastePatient}
-                    >
-                        <ClipboardPasteIcon
-                            className=""
-                            width={16}
-                            height={16}
-                        />
-                        <ToolBarButtonLabel>Paste</ToolBarButtonLabel>
-                    </ToolBarButton>
-                </ToolBar>
-                <PatientForm
-                    value={editedPatient}
-                    onChange={setEditedPatient}
-                    errorFields={{
-                        ...errors,
-                        ...updateError?.response?.data,
-                    }}
+                        <ToolBarButton
+                            title="Paste Patient Details from Clipboard"
+                            onClick={handlePastePatient}
+                        >
+                            <ClipboardPasteIcon
+                                className=""
+                                width={16}
+                                height={16}
+                            />
+                            <ToolBarButtonLabel>Paste</ToolBarButtonLabel>
+                        </ToolBarButton>
+                    </ToolBar>
+                    <PatientForm
+                        value={editedPatient}
+                        onChange={setEditedPatient}
+                        errorFields={{
+                            ...errors,
+                            ...updateError?.response?.data,
+                        }}
+                    />
+                </div>
+            </ModalWindow>
+            {/* Rendered as a sibling: nesting it inside the transformed modal
+            container would trap its fixed overlay within the parent */}
+            {pastedPatient && (
+                <PastePatientPreviewModal
+                    patient={pastedPatient}
+                    onApply={handleApplyPaste}
+                    onDiscard={() => setPastedPatient(null)}
                 />
-            </div>
-        </ModalWindow>
+            )}
+        </>
     );
 }
