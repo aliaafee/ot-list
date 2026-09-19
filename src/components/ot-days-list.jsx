@@ -92,8 +92,7 @@ function OtDaysList({
                                                 "DD MMMM",
                                             )}
                                         </span>
-
-                                        <span className="overflow-clip whitespace-nowrap">
+                                        <span>
                                             <OtListMarker
                                                 otList={otDay?.expand?.otList}
                                             />
