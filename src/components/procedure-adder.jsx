@@ -85,7 +85,10 @@ function ProcedureAdder({
         try {
             const text = await navigator.clipboard.readText();
 
-            setNewPatient(patientInfoFromText(text));
+            setNewPatient({
+                ...initialPatientValue,
+                ...patientInfoFromText(text),
+            });
 
             const bedNumber = bedInfoFromHINAIHeader(text);
 

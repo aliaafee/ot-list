@@ -228,16 +228,21 @@ export function patientInfoFromText(text) {
     // - No parentheses with structured info
     // - Typically 7-8+ lines
 
-    const lines = text.split("\n");
-
     // Check for "IGMH" hospital ID presence
     const hasHospitalId = text.match(/IGMH\d{10}/i);
 
-    if (hasHospitalId) {
-        // HINAI format
-        return patientInfoFromHINAIHeader(text);
-    } else {
-        // Vinavi format
-        return patientInfoFromVinavi(text);
-    }
+    const patientData = hasHospitalId
+        ? patientInfoFromHINAIHeader(text) // HINAI format
+        : patientInfoFromVinavi(text); // Vinavi format
+
+    // Drop fields that were not found so callers can merge the result
+    // without overwriting existing values with blanks
+    return Object.fromEntries(
+        Object.entries(patientData).filter(
+            ([, value]) =>
+                value !== undefined &&
+                value !== null &&
+                String(value).trim() !== "",
+        ),
+    );
 }

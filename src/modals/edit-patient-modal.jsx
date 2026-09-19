@@ -1,9 +1,16 @@
 import { useState } from "react";
-import { UserPenIcon } from "lucide-react";
+import { ClipboardPasteIcon, UserPenIcon } from "lucide-react";
 import ModalWindow from "./modal-window";
 import { PatientForm, validatePatient } from "@/forms/patient-form";
 import { pb } from "@/lib/pb";
 import dayjs from "dayjs";
+import {
+    ToolBar,
+    ToolBarButton,
+    ToolBarButtonLabel,
+    ToolBarTitle,
+} from "@/components/toolbar";
+import { patientInfoFromText } from "@/utils/text-parsers";
 
 /**
  * EditPatientModal - Modal for editing patient information
@@ -27,6 +34,29 @@ export default function EditPatientModal({ patient, onCancel, onSuccess }) {
     const [errors, setErrors] = useState({});
     const [loading, setLoading] = useState(false);
     const [updateError, setUpdateError] = useState(null);
+    const [pasteError, setPasteError] = useState(null);
+
+    const handlePastePatient = async () => {
+        try {
+            const text = await navigator.clipboard.readText();
+
+            // Only overwrite fields the clipboard actually provided
+            setEditedPatient((prev) => ({
+                ...prev,
+                ...patientInfoFromText(text),
+            }));
+
+            // Clear any previous error
+            setPasteError(null);
+            setUpdateError(null);
+        } catch (err) {
+            console.error("Failed to paste patient information:", err);
+            // Show error to user
+            setPasteError(
+                "Failed to paste patient information. Please check the clipboard format.",
+            );
+        }
+    };
 
     const handleSave = async () => {
         setUpdateError(null);
@@ -72,6 +102,26 @@ export default function EditPatientModal({ patient, onCancel, onSuccess }) {
                         {updateError?.message || "Unknown error"}
                     </div>
                 )}
+                {pasteError && (
+                    <div className="bg-red-400/20 rounded-md mb-2 p-2 text-sm">
+                        {pasteError}
+                    </div>
+                )}
+                <ToolBar className="w-full flex-wrap sm:flex-nowrap">
+                    <div className="grow"></div>
+
+                    <ToolBarButton
+                        title="Paste Patient Details from Clipboard"
+                        onClick={handlePastePatient}
+                    >
+                        <ClipboardPasteIcon
+                            className=""
+                            width={16}
+                            height={16}
+                        />
+                        <ToolBarButtonLabel>Paste</ToolBarButtonLabel>
+                    </ToolBarButton>
+                </ToolBar>
                 <PatientForm
                     value={editedPatient}
                     onChange={setEditedPatient}
