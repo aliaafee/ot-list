@@ -9,6 +9,7 @@ import {
     EyeClosedIcon,
     EyeIcon,
     FileDownIcon,
+    MenuIcon,
     PrinterIcon,
 } from "lucide-react";
 
@@ -144,8 +145,8 @@ function ProcedureListEditor({
                 onClick={handleShowDaysList}
                 className="lg:hidden"
             >
-                <ChevronLeftIcon width={16} height={16} />
-                <ToolBarButtonLabel>OT Date List</ToolBarButtonLabel>
+                <MenuIcon width={16} height={16} />
+                <ToolBarButtonLabel>Date List</ToolBarButtonLabel>
             </ToolBarButton>
             <ToolBarLink
                 title="Print OT List"

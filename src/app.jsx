@@ -11,6 +11,7 @@ import Patients from "./pages/patients";
 import AllProcedures from "./pages/all-procedures";
 import NotFound from "./pages/not-found";
 import AdminBackups from "./pages/admin-backups";
+import SettingsDashboard from "./pages/settings-dashboard";
 
 export default function App() {
     return (
@@ -38,7 +39,11 @@ export default function App() {
                     />
 
                     <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/settings" element={<SettingsDashboard />} />
+                    <Route
+                        path="/settings/:page"
+                        element={<SettingsDashboard />}
+                    />
                     <Route path="/patients" element={<Patients />} />
                     <Route path="/procedures" element={<AllProcedures />} />
                 </Route>

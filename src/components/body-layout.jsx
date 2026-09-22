@@ -23,7 +23,7 @@ function BodyLayout({
     return (
         <div
             className={twMerge(
-                "flex flex-col overflow-y-auto lg:mt-0",
+                "flex flex-col overflow-y-auto lg:mt-0 lg:grow",
                 topMargin,
                 className,
             )}

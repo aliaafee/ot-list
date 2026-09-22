@@ -34,7 +34,6 @@ function OperatingLists() {
             <ProcedureListEditor
                 procedureDayId={otDayId}
                 handleShowDaysList={() => setShowDaysList(true)}
-                className="lg:grow"
             />
         </SidebarLayout>
     );
