@@ -19,6 +19,15 @@ function ProcedureComments({ procedureId }) {
     const [sending, setSending] = useState(false);
     const { user } = useAuth();
 
+    const appendComment = (comment) => {
+        setComments((prev) => {
+            if (prev.some((c) => c.id === comment.id)) {
+                return prev; // Comment already exists, do not add
+            }
+            return [...prev, comment];
+        });
+    };
+
     useEffect(() => {
         if (!procedureId) return;
 
@@ -76,15 +85,6 @@ function ProcedureComments({ procedureId }) {
             pb.collection("procedureComments").unsubscribe();
         };
     }, [procedureId]);
-
-    const appendComment = (comment) => {
-        setComments((prev) => {
-            if (prev.some((c) => c.id === comment.id)) {
-                return prev; // Comment already exists, do not add
-            }
-            return [...prev, comment];
-        });
-    };
 
     const handleSendComment = async (e) => {
         e.preventDefault();
