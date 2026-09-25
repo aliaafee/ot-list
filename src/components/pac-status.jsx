@@ -67,30 +67,91 @@ export function PacStatus({ procedureId, className, showLabel = true }) {
     const [loading, setLoading] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
 
+    const appendStatus = (status) => {
+        setStatuses((prev) => {
+            if (prev.some((s) => s.id === status.id)) {
+                return prev; // Status already exists, do not add
+            }
+            return [...prev, status];
+        });
+    };
+
     useEffect(() => {
         if (!procedureId) return;
+
+        const filter = pb.filter("procedure = {:procedureId}", {
+            procedureId: procedureId,
+        });
+
+        let cancelled = false;
+        let unsubscribe;
 
         const fetchPacStatuses = async () => {
             setLoading(true);
             try {
                 const records = await pb
                     .collection("procedurePacStatuses")
-                    .getList(1, 50, {
-                        filter: pb.filter("procedure = {:procedureId}", {
-                            procedureId: procedureId,
-                        }),
-                        sort: "+created",
-                    });
+                    .getList(1, 50, { filter, sort: "+created" });
+                if (cancelled) return;
                 setStatuses(records.items);
             } catch (error) {
+                if (cancelled) return;
                 console.error("Failed to fetch PAC statuses:", error);
                 setStatuses([]);
             } finally {
-                setLoading(false);
+                if (!cancelled) setLoading(false);
             }
         };
 
         fetchPacStatuses();
+
+        const handleEvent = (e) => {
+            if (e.record.procedure !== procedureId) return;
+
+            if (e.action === "create") {
+                appendStatus(e.record);
+            } else if (e.action === "update") {
+                setStatuses((prev) =>
+                    prev.map((s) => (s.id === e.record.id ? e.record : s)),
+                );
+            } else if (e.action === "delete") {
+                setStatuses((prev) => prev.filter((s) => s.id !== e.record.id));
+            }
+        };
+
+        // Subscribe to real-time updates.
+        //
+        // The filter is passed to subscribe as well as to the fetch above, and
+        // it is what makes switching procedures work. Selecting another
+        // procedure unmounts this component and mounts a new one in the same
+        // commit, so the old subscription is dropped and the new one created
+        // together. PocketBase builds its subscription key from the topic plus
+        // these options and decides whether to re-attach its event listeners by
+        // comparing only the set of keys against the one it last sent. Without
+        // the filter both subscriptions share the key "procedurePacStatuses/*",
+        // the set looks unchanged, and the new listener is registered but never
+        // attached to the event source, so no events arrive. Including the
+        // procedure in the filter gives each one a distinct key, and also means
+        // the server only sends events for this procedure.
+        (async () => {
+            try {
+                const off = await pb
+                    .collection("procedurePacStatuses")
+                    .subscribe("*", handleEvent, { filter });
+                if (cancelled) {
+                    off();
+                    return;
+                }
+                unsubscribe = off;
+            } catch (error) {
+                console.error("Error subscribing to PAC statuses:", error);
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+            if (unsubscribe) unsubscribe();
+        };
     }, [procedureId]);
 
     /**
@@ -182,7 +243,7 @@ export function PacStatus({ procedureId, className, showLabel = true }) {
                     procedureId={procedureId}
                     onCancel={() => setShowAddModal(false)}
                     onSuccess={(newStatusItem) => {
-                        setStatuses([...statuses, newStatusItem]);
+                        appendStatus(newStatusItem);
                         setShowAddModal(false);
                     }}
                 />

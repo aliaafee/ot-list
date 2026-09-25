@@ -31,6 +31,13 @@ function ProcedureComments({ procedureId }) {
     useEffect(() => {
         if (!procedureId) return;
 
+        const filter = pb.filter("procedure = {:procedureId}", {
+            procedureId: procedureId,
+        });
+
+        let cancelled = false;
+        let unsubscribe;
+
         // Fetch initial comments
         const fetchComments = async () => {
             setLoading(true);
@@ -38,51 +45,74 @@ function ProcedureComments({ procedureId }) {
                 const records = await pb
                     .collection("procedureComments")
                     .getFullList({
-                        filter: pb.filter("procedure = {:procedureId}", {
-                            procedureId: procedureId,
-                        }),
+                        filter,
                         sort: "+created",
                         expand: "creator",
                     });
+                if (cancelled) return;
                 setComments(records);
-                console.log("Fetched comments:", records);
             } catch (error) {
+                if (cancelled) return;
                 console.error("Error fetching comments:", error);
             } finally {
-                setLoading(false);
+                if (!cancelled) setLoading(false);
             }
         };
 
         fetchComments();
 
-        // Subscribe to real-time updates
-        pb.collection("procedureComments").subscribe(
-            "*",
-            (e) => {
-                if (e.record.procedure !== procedureId) return;
+        const handleEvent = (e) => {
+            if (e.record.procedure !== procedureId) return;
 
-                if (e.action === "create") {
-                    appendComment(e.record);
-                } else if (e.action === "update") {
-                    // Update comment (including removed status)
-                    setComments((prev) =>
-                        prev.map((c) => (c.id === e.record.id ? e.record : c)),
-                    );
-                } else if (e.action === "delete") {
-                    // Remove deleted comment
-                    setComments((prev) =>
-                        prev.filter((c) => c.id !== e.record.id),
-                    );
+            if (e.action === "create") {
+                appendComment(e.record);
+            } else if (e.action === "update") {
+                // Update comment (including removed status)
+                setComments((prev) =>
+                    prev.map((c) => (c.id === e.record.id ? e.record : c)),
+                );
+            } else if (e.action === "delete") {
+                // Remove deleted comment
+                setComments((prev) => prev.filter((c) => c.id !== e.record.id));
+            }
+        };
+
+        // Subscribe to real-time updates.
+        //
+        // The filter is passed to subscribe as well as to the fetch above, and
+        // it is what makes switching procedures work. Selecting another
+        // procedure unmounts this component and mounts a new one in the same
+        // commit, so the old subscription is dropped and the new one created
+        // together. PocketBase builds its subscription key from the topic plus
+        // these options and decides whether to re-attach its event listeners by
+        // comparing only the set of keys against the one it last sent. Without
+        // the filter both subscriptions share the key "procedureComments/*", the
+        // set looks unchanged, and the new listener is registered but never
+        // attached to the event source, so no events arrive. Including the
+        // procedure in the filter gives each one a distinct key, and also means
+        // the server only sends events for this procedure.
+        (async () => {
+            try {
+                const off = await pb
+                    .collection("procedureComments")
+                    .subscribe("*", handleEvent, {
+                        filter,
+                        expand: "creator",
+                    });
+                if (cancelled) {
+                    off();
+                    return;
                 }
-            },
-            {
-                expand: "creator",
-            },
-        );
+                unsubscribe = off;
+            } catch (error) {
+                console.error("Error subscribing to comments:", error);
+            }
+        })();
 
         // Cleanup subscription
         return () => {
-            pb.collection("procedureComments").unsubscribe();
+            cancelled = true;
+            if (unsubscribe) unsubscribe();
         };
     }, [procedureId]);
 
