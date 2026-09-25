@@ -4,11 +4,7 @@ import { twMerge } from "tailwind-merge";
 import { useCatalogue } from "@/contexts/catalogue-context";
 import SearchBox from "@/components/search-box";
 import ProcedureCodeBrowserModal from "@/modals/procedure-code-browser-modal";
-import {
-    ChevronRightIcon,
-    LibraryBigIcon,
-    TriangleAlertIcon,
-} from "lucide-react";
+import { LibraryBigIcon, TriangleAlertIcon } from "lucide-react";
 import {
     FACET_LABELS,
     LATERALITY_OPTIONS,
@@ -19,6 +15,7 @@ import {
     spannedVertebrae,
 } from "@/lib/procedure-catalogue";
 import FormField from "./form-field";
+import Collapsible from "./collapsible";
 
 /** Concept id of the catalogue's "not represented here" sentinel */
 const UNCODED_CONCEPT_ID = "NSX-00000";
@@ -293,7 +290,6 @@ export default function ProcedureCodeSelector({
     const listRef = useRef(null);
     const [open, setOpen] = useState(false);
     const [highlight, setHighlight] = useState(-1);
-    const [codeDetails, setCodeDetails] = useState(false);
     const [browsing, setBrowsing] = useState(false);
 
     const baseId = useId();
@@ -684,49 +680,38 @@ export default function ProcedureCodeSelector({
                         </div>
                     )}
                     {isCoded && (
-                        <div className="px-1 py-0.5 text-xs flex flex-col">
-                            <button
-                                type="button"
-                                className="flex items-center gap-1 cursor-pointer font-mono text-gray-500"
-                                onClick={() => setCodeDetails((prev) => !prev)}
-                            >
-                                <ChevronRightIcon
-                                    className={twMerge(
-                                        "h-3 w-3 shrink-0 transition-transform",
-                                        codeDetails && "rotate-90",
-                                    )}
-                                />
-                                {value?.concept?.conceptId} -{" "}
-                                {value?.concept?.catalogueRelease}
-                            </button>
-                            {codeDetails && (
-                                <div className="px-1 py-0.5">
-                                    <div className="text-xs text-gray-500">
-                                        {value?.concept?.fsn}
-                                    </div>
-                                    {facetChips.length > 0 && (
-                                        <div className="mt-2 flex flex-wrap gap-1">
-                                            {facetChips.map(
-                                                ([facetKey, term]) => (
-                                                    <span
-                                                        key={facetKey}
-                                                        className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[11px] text-gray-700 ring-1 ring-inset ring-blue-200"
-                                                    >
-                                                        <span className="text-blue-500">
-                                                            {FACET_LABELS[
-                                                                facetKey
-                                                            ] ?? facetKey}
-                                                            :
-                                                        </span>
-                                                        {term}
-                                                    </span>
-                                                ),
-                                            )}
-                                        </div>
-                                    )}
+                        <Collapsible
+                            className="px-1 py-0.5 text-xs"
+                            summaryClassName="font-mono text-gray-500"
+                            contentClassName="px-1 py-0.5"
+                            summary={
+                                <>
+                                    {value?.concept?.conceptId} -{" "}
+                                    {value?.concept?.catalogueRelease}
+                                </>
+                            }
+                        >
+                            <div className="text-xs text-gray-500">
+                                {value?.concept?.fsn}
+                            </div>
+                            {facetChips.length > 0 && (
+                                <div className="mt-2 flex flex-wrap gap-1">
+                                    {facetChips.map(([facetKey, term]) => (
+                                        <span
+                                            key={facetKey}
+                                            className="inline-flex items-center gap-1 rounded-full bg-white px-2 py-0.5 text-[11px] text-gray-700 ring-1 ring-inset ring-blue-200"
+                                        >
+                                            <span className="text-blue-500">
+                                                {FACET_LABELS[facetKey] ??
+                                                    facetKey}
+                                                :
+                                            </span>
+                                            {term}
+                                        </span>
+                                    ))}
                                 </div>
                             )}
-                        </div>
+                        </Collapsible>
                     )}
                 </div>
             )}
