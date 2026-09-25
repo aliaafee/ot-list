@@ -7,6 +7,9 @@ import { pb } from "@/lib/pb";
 import { twMerge } from "tailwind-merge";
 import { RoleLabels } from "@/utils/labels";
 
+/** How many of the most recent comments are shown before "show earlier" */
+const VISIBLE_COMMENTS = 5;
+
 /**
  * ProcedureComments - Display and manage comments for a procedure
  *
@@ -17,6 +20,7 @@ function ProcedureComments({ procedureId }) {
     const [commentText, setCommentText] = useState("");
     const [loading, setLoading] = useState(false);
     const [sending, setSending] = useState(false);
+    const [showAllComments, setShowAllComments] = useState(false);
     const { user } = useAuth();
 
     const appendComment = (comment) => {
@@ -159,6 +163,14 @@ function ProcedureComments({ procedureId }) {
         }
     };
 
+    // Comments are sorted oldest first, so the most recent ones are at the end
+    // and anything hidden sits above what is shown.
+    const hiddenCount = Math.max(0, comments.length - VISIBLE_COMMENTS);
+    const visibleComments =
+        showAllComments || !hiddenCount
+            ? comments
+            : comments.slice(-VISIBLE_COMMENTS);
+
     return (
         <div className="p-2">
             <span className="text-sm font-semibold">Comments</span>
@@ -167,83 +179,103 @@ function ProcedureComments({ procedureId }) {
                     Loading comments...
                 </div>
             ) : (
-                <ul className="">
-                    {comments.length === 0 ? (
-                        <li className="text-xs text-gray-500 py-2">
-                            No comments yet
-                        </li>
-                    ) : (
-                        comments.map((comment) => (
-                            <li
-                                key={comment.id}
-                                className={twMerge(
-                                    "text-sm mb-2 py-1 px-2 rounded-md select-text flex justify-between items-start gap-2 border border-gray-200 bg-gray-50",
-                                )}
-                            >
-                                <div className="flex-1">
-                                    <span
-                                        className={
-                                            comment.removed
-                                                ? "line-through"
-                                                : ""
-                                        }
-                                    >
-                                        {comment.content}
-                                    </span>
-                                    <div className="text-xs text-gray-500 text-right flex gap-2 justify-end">
-                                        {comment.creator === user.id &&
-                                            !comment.removed && (
-                                                <button
-                                                    className="text-red-600 rounded hover:bg-red-100 px-1 shrink-0 cursor-pointer"
-                                                    onClick={() =>
-                                                        handleRemoveComment(
-                                                            comment.id,
-                                                        )
-                                                    }
-                                                    title="Remove comment"
-                                                    type="button"
-                                                >
-                                                    remove
-                                                </button>
-                                            )}
-                                        {comment.creator === user.id &&
-                                            comment.removed && (
-                                                <button
-                                                    className="text-blue-600 rounded hover:bg-blue-200 px-1 shrink-0 cursor-pointer"
-                                                    onClick={() =>
-                                                        handleRestoreComment(
-                                                            comment.id,
-                                                        )
-                                                    }
-                                                    title="Restore comment"
-                                                    type="button"
-                                                >
-                                                    restore
-                                                </button>
-                                            )}
-                                        <span className="font-semibold">
-                                            {comment.expand?.creator?.name ||
-                                                comment.expand?.creator
-                                                    ?.email ||
-                                                comment.creator ||
-                                                "Unknown"}
-                                        </span>
-                                        <span>
-                                            {RoleLabels?.[
-                                                comment.expand?.creator?.role
-                                            ] ||
-                                                comment.expand?.creator?.role ||
-                                                "user"}
-                                        </span>
-                                        <span>
-                                            {formatDateTime(comment.created)}
-                                        </span>
-                                    </div>
-                                </div>
-                            </li>
-                        ))
+                <>
+                    {hiddenCount > 0 && (
+                        <button
+                            type="button"
+                            className="block w-fit text-xs text-blue-600 rounded hover:bg-blue-100 px-1 py-0.5 my-1 cursor-pointer"
+                            onClick={() => setShowAllComments((prev) => !prev)}
+                        >
+                            {showAllComments
+                                ? `Show only the latest ${VISIBLE_COMMENTS}`
+                                : `Show ${hiddenCount} earlier ${
+                                      hiddenCount === 1 ? "comment" : "comments"
+                                  }`}
+                        </button>
                     )}
-                </ul>
+                    <ul className="">
+                        {comments.length === 0 ? (
+                            <li className="text-xs text-gray-500 py-2">
+                                No comments yet
+                            </li>
+                        ) : (
+                            visibleComments.map((comment) => (
+                                <li
+                                    key={comment.id}
+                                    className={twMerge(
+                                        "text-sm mb-2 py-1 px-2 rounded-md select-text flex justify-between items-start gap-2 border border-gray-200 bg-gray-50",
+                                    )}
+                                >
+                                    <div className="flex-1">
+                                        <span
+                                            className={
+                                                comment.removed
+                                                    ? "line-through"
+                                                    : ""
+                                            }
+                                        >
+                                            {comment.content}
+                                        </span>
+                                        <div className="text-xs text-gray-500 text-right flex gap-2 justify-end">
+                                            {comment.creator === user.id &&
+                                                !comment.removed && (
+                                                    <button
+                                                        className="text-red-600 rounded hover:bg-red-100 px-1 shrink-0 cursor-pointer"
+                                                        onClick={() =>
+                                                            handleRemoveComment(
+                                                                comment.id,
+                                                            )
+                                                        }
+                                                        title="Remove comment"
+                                                        type="button"
+                                                    >
+                                                        remove
+                                                    </button>
+                                                )}
+                                            {comment.creator === user.id &&
+                                                comment.removed && (
+                                                    <button
+                                                        className="text-blue-600 rounded hover:bg-blue-200 px-1 shrink-0 cursor-pointer"
+                                                        onClick={() =>
+                                                            handleRestoreComment(
+                                                                comment.id,
+                                                            )
+                                                        }
+                                                        title="Restore comment"
+                                                        type="button"
+                                                    >
+                                                        restore
+                                                    </button>
+                                                )}
+                                            <span className="font-semibold">
+                                                {comment.expand?.creator
+                                                    ?.name ||
+                                                    comment.expand?.creator
+                                                        ?.email ||
+                                                    comment.creator ||
+                                                    "Unknown"}
+                                            </span>
+                                            <span>
+                                                {RoleLabels?.[
+                                                    comment.expand?.creator
+                                                        ?.role
+                                                ] ||
+                                                    comment.expand?.creator
+                                                        ?.role ||
+                                                    "user"}
+                                            </span>
+                                            <span>
+                                                {formatDateTime(
+                                                    comment.created,
+                                                )}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </li>
+                            ))
+                        )}
+                    </ul>
+                </>
             )}
             <form className="flex" onSubmit={handleSendComment}>
                 <input
