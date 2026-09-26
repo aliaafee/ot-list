@@ -287,6 +287,39 @@ function customItemKey(txApp, procedureId, label) {
     throw new BadRequestError("Could not find a free key for that item");
 }
 
+/**
+ * Recount a procedure's outstanding items and copy the number onto it.
+ *
+ * The collapsed list rows need "is anything still to do" without loading the
+ * items, the same way they read `pacStatus` rather than joining the status
+ * history. Outstanding means required, still applicable, and not ticked - a
+ * comment does not make an item done.
+ *
+ * Writes only when the number changes: ticking an advisory item, or editing a
+ * comment, should not bump the procedure's `updated`. `updater` is left alone
+ * deliberately, because a checklist tick is not an edit of the procedure.
+ */
+function syncOutstandingCount(txApp, procedureId) {
+    const outstanding = txApp.findRecordsByFilter(
+        "procedureChecklistItems",
+        "procedure = {:procedure} && required = true && applicable = true && checked = false",
+        "",
+        0,
+        0,
+        { procedure: procedureId },
+    );
+
+    const procedure = txApp.findRecordById("procedures", procedureId);
+    if (procedure.getInt("checklistOutstanding") === outstanding.length) {
+        return outstanding.length;
+    }
+
+    procedure.set("checklistOutstanding", outstanding.length);
+    txApp.save(procedure);
+
+    return outstanding.length;
+}
+
 /** Has a person put anything into this row? Spec section 7. */
 function isTouched(record) {
     return record.getBool("checked") || !!record.getString("comment");
@@ -409,6 +442,8 @@ function syncProcedureChecklist(txApp, procedureRecord) {
             txApp.delete(record);
         }
     });
+
+    syncOutstandingCount(txApp, procedureRecord.id);
 }
 
 /**
@@ -451,5 +486,6 @@ module.exports = {
     customItemKey,
     loadTemplates,
     previewChecklist,
+    syncOutstandingCount,
     syncProcedureChecklist,
 };

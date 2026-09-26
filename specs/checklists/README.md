@@ -324,6 +324,32 @@ time; adding it would inflate every list query for something the list does not
 render. Fetch it in the checklist component instead, as
 [`procedure-comments.jsx`](../../src/components/procedure-comments.jsx) does.
 
+### `procedures.checklistOutstanding`
+
+The collapsed list row still has to show whether anything is outstanding, and
+it renders once per procedure — exactly the join the rule above forbids. So the
+count is denormalised onto the procedure, the same trade already made for
+`pacStatus`, which is a copy on `procedures` rather than a join to the status
+history.
+
+| | |
+|---|---|
+| Meaning | Items where `required && applicable && !checked`. |
+| Written by | `syncOutstandingCount` in the checklist hook, called from reconciliation (§7) and from all three item routes (§5). |
+| Read by | [`procedure-simplified.jsx`](../../src/components/procedure-simplified.jsx), straight off the procedure. |
+
+Two rules it follows:
+
+- **Only written when the number changes.** Ticking an advisory item, or
+  editing a comment, leaves it alone — and so leaves the procedure's `updated`
+  alone. Without this, every comment keystroke-save would touch the procedure.
+- **`updater` is never set by it.** A checklist tick is not an edit of the
+  procedure, so it must not claim to be one. `updated` still moves when the
+  count genuinely changes; that is the accepted cost of the denormalisation.
+
+It is derived, not a source of truth: the items are. If the two ever disagree,
+`syncOutstandingCount` recomputes from the items.
+
 ---
 
 ## 7. Regeneration and preservation of staff input

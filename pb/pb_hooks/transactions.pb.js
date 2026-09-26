@@ -509,6 +509,13 @@ routerAdd(
 
                 txApp.save(item);
                 updatedItem = item;
+
+                // The collapsed list rows read this off the procedure rather
+                // than loading the items, so it has to move with the tick.
+                const { syncOutstandingCount } = require(
+                    `${__hooks}/procedure-checklists.js`,
+                );
+                syncOutstandingCount(txApp, item.getString("procedure"));
             });
 
             return e.json(200, { success: true, item: updatedItem });
@@ -590,7 +597,7 @@ routerAdd(
         }
 
         const group = data.group || "preop";
-        const { GROUPS, customItemKey } = require(
+        const { GROUPS, customItemKey, syncOutstandingCount } = require(
             `${__hooks}/procedure-checklists.js`,
         );
         if (GROUPS.indexOf(group) === -1) {
@@ -643,6 +650,8 @@ routerAdd(
                 record.set("custom", true);
                 txApp.save(record);
                 created = record;
+
+                syncOutstandingCount(txApp, procedure.id);
             });
 
             return e.json(200, { success: true, item: created });
@@ -693,7 +702,13 @@ routerAdd(
                     );
                 }
 
+                const procedureId = item.getString("procedure");
                 txApp.delete(item);
+
+                const { syncOutstandingCount } = require(
+                    `${__hooks}/procedure-checklists.js`,
+                );
+                syncOutstandingCount(txApp, procedureId);
             });
 
             return e.json(200, { success: true });

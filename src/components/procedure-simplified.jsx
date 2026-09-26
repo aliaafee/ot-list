@@ -4,6 +4,7 @@ import { age } from "@/utils/dates";
 import LabelValue from "./label-value";
 import { describeProcedureCodesSimplified } from "@/lib/procedure-codes";
 import { PacStatusSmall } from "./pac-status";
+import { TriangleAlertIcon } from "lucide-react";
 
 /**
  * ProcedureSimplifiedView - Display simplified procedure item in list view
@@ -65,8 +66,26 @@ function ProcedureSimplifiedView({
                 // single procedure: "ACDF (Left, C5-C6) + Burr hole drainage".
                 value={describeProcedureCodesSimplified(procedure).join(" + ")}
             />
-            <div className="col-span-2">
+            <div className="col-span-1">
                 <PacStatusSmall status={procedure?.pacStatus} />
+            </div>
+            {/* Read off the procedure rather than loading its checklist: this
+                renders once per row, and the checklist items are deliberately
+                kept out of the list queries. */}
+            <div className="col-span-1 flex items-center justify-center">
+                {procedure?.checklistOutstanding > 0 && (
+                    <span
+                        className="px-2 text-red-600 flex items-center gap-1"
+                        title={`${procedure.checklistOutstanding} checklist item${
+                            procedure.checklistOutstanding === 1 ? "" : "s"
+                        } outstanding`}
+                    >
+                        <TriangleAlertIcon size={14} />
+                        <span className="text-xs">
+                            {procedure.checklistOutstanding}
+                        </span>
+                    </span>
+                )}
             </div>
         </div>
     );
