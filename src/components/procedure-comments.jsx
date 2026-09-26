@@ -172,8 +172,7 @@ function ProcedureComments({ procedureId }) {
             : comments.slice(-VISIBLE_COMMENTS);
 
     return (
-        <div className="p-2">
-            <span className="text-sm font-semibold">Comments</span>
+        <div className="">
             {loading ? (
                 <div className="text-xs text-gray-500 py-2">
                     Loading comments...

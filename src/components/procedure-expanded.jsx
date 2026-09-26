@@ -7,7 +7,9 @@ import { age } from "@/utils/dates";
 import LabelValue from "./label-value";
 import { PacStatusSmall } from "./pac-status";
 import ProcedureComments from "./procedure-comments";
+import ProcedureChecklist from "./procedure-checklist";
 import { describeProcedureCodesSimplified } from "@/lib/procedure-codes";
+import Collapsible from "./collapsible";
 
 /**
  * ProcedureExpandedView - Display expanded procedure item with full patient details
@@ -122,6 +124,7 @@ function ProcedureExpandedView({
                 />
             </div>
             {children}
+            <ProcedureChecklist className="p-2" />
             <div className="text-xs text-gray-500 px-2 py-1 text-right sm:flex  sm:justify-end gap-2 bg-gray-200">
                 <div>
                     Created:{" "}
@@ -148,7 +151,14 @@ function ProcedureExpandedView({
                     </div>
                 )}
             </div>
-            <ProcedureComments procedureId={procedure.id} />
+            <Collapsible
+                className="p-2"
+                summaryClassName="text-sm font-semibold"
+                summary={<>Comments</>}
+                defaultOpen={true}
+            >
+                <ProcedureComments procedureId={procedure.id} />
+            </Collapsible>
         </div>
     );
 }
