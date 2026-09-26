@@ -72,7 +72,6 @@ function PatientSearchModal({
             okLabel="Select"
             onOk={handleConfirm}
             onCancel={onCancel}
-            okDisabled={!selectedPatient}
             large={true}
         >
             <div className="space-y-4">

@@ -124,7 +124,7 @@ function ProcedureExpandedView({
                 />
             </div>
             {children}
-            <ProcedureChecklist className="p-2" />
+            <ProcedureChecklist procedureId={procedure.id} className="p-2" />
             <div className="text-xs text-gray-500 px-2 py-1 text-right sm:flex  sm:justify-end gap-2 bg-gray-200">
                 <div>
                     Created:{" "}

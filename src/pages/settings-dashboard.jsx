@@ -21,6 +21,7 @@ import departmentsPage from "@/dashboard/departments";
 import operatingRoomsPage from "@/dashboard/operating-rooms";
 import operatingListsPage from "@/dashboard/operating-lists";
 import surgeonsPage from "@/dashboard/surgeons";
+import checklistsPage from "@/dashboard/checklists";
 
 /**
  * The settings pages, keyed by the :page segment of the route ("settings" is
@@ -43,6 +44,7 @@ const sidebarPages = {
     operatingrooms: operatingRoomsPage,
     operatinglists: operatingListsPage,
     surgeons: surgeonsPage,
+    checklists: checklistsPage,
 };
 
 const sidebarLinks = Object.entries(sidebarPages).map(

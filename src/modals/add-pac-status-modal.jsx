@@ -4,7 +4,6 @@ import { twMerge } from "tailwind-merge";
 
 import ModalWindow from "./modal-window";
 import { api } from "@/lib/api";
-import { useAuth } from "@/contexts/auth-context";
 import { getStatusColor } from "@/utils/colours";
 
 /**
@@ -79,7 +78,6 @@ function AddPacStatusModal({
             iconColor="bg-green-100 text-green-600"
             okColor="bg-green-600 hover:bg-green-500"
             loading={adding}
-            okDisabled={!selectedStatus}
         >
             <div className="space-y-3">
                 <p className="text-sm text-gray-600">

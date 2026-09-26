@@ -1,9 +1,11 @@
 # Procedure checklists
 
-Status: **proposed** — nothing in this document is built yet. The only existing
-code is the dummy UI in
-[`src/components/procedure-checklist.jsx`](../../src/components/procedure-checklist.jsx),
-which hardcodes eight items and keeps ticks in component state.
+Status: **implemented**, steps 1-8 of §12. The append-only audit under
+"Deferred" is not built, and template versioning (§11.1) remains undecided.
+
+Assembly (§4) is covered by unit tests over the pure function; the write path
+and reconciliation (§7) were exercised end to end against a copy of the dev
+database. Nothing here has been driven through the browser.
 
 This spec follows the conventions of
 [`specs/procedure_codes/README.md`](../procedure_codes/README.md) and depends on
@@ -104,6 +106,18 @@ same as any other select in this schema.
 | `commentBy` | relation → users | Who last wrote `comment`. Cleared with it. |
 | `commentAt` | date | When `comment` was last written. Cleared with it. |
 | `applicable` | bool, default true | Set `false` when a ticked or commented item stops matching after a code change (§7). |
+| `custom` | bool, default false | Added by hand to this one procedure rather than coming from a template. Exempt from the orphan pass (§7). |
+
+A **custom item** is a one-off added to a single procedure: something true of
+this patient that no template covers. It carries no `sourceTemplate` or
+`sourceScope`, and assembly never produces it, which is exactly why it needs
+the flag — without it the orphan pass would read "matches no template" as
+"no longer applies" and delete it on the next code change.
+
+Its `itemKey` is namespaced `custom-<slug-of-label>`, with a numeric suffix on
+collision. The namespace matters: a bare slug could collide with a template key
+added later, and the unique index would either reject it or, worse, let the
+template item inherit a tick recorded against something else.
 
 `comment` is user-entered, so it counts as work worth preserving on the same
 footing as a tick: it is never overwritten by regeneration, and an item carrying
@@ -284,6 +298,18 @@ Ticking never touches `commentBy` / `commentAt`, and commenting never touches
 which is the expected shape when someone ticks an item and records why in the
 same action.
 
+Two further routes, same roles, for the custom items of §2:
+
+```
+POST /api/add-checklist-item      { procedureId, label, group, required?, hint? }
+POST /api/remove-checklist-item   { itemId }
+```
+
+`add` mints the namespaced key and sets `custom`. `remove` **refuses a
+non-custom item**: a template-derived item is governed by its template, and
+deleting one from a single procedure would only bring it back on the next
+sync — a delete that silently undoes itself is worse than a refusal.
+
 ---
 
 ## 6. Read path
@@ -329,6 +355,17 @@ procedure — which is what the frozen `label` / `hint` / `required` are for.
 | Desired only | Create, stamping `label` / `hint` / `required` from the winning template item. |
 | Existing only, untouched | Delete. Nothing was lost. |
 | Existing only, touched | **Keep, set `applicable = false`.** Someone asserted this was done, or recorded why it was not; that is a clinical record. |
+| `custom = true` | **Skip entirely.** Never deleted, never made inapplicable. |
+
+A custom item is not "existing only" in any meaningful sense: no template was
+ever going to produce it, so its absence from the assembled list says nothing
+about whether it still applies. The only thing reconciliation may change on one
+is its `position`.
+
+Positions are therefore assigned across the **merged** list — assembled items
+plus custom ones — rather than across the assembled list alone, or the two
+would share indices. Within a group, custom items sort after the template
+items, in the order they were added.
 
 Inapplicable items render collapsed and struck through, excluded from the
 outstanding count, with the comment still readable. If the codes change back, an
@@ -368,6 +405,14 @@ outstanding count — is the right shape; only the data source changes.
 - Tick and untick via `POST /api/set-checklist-item`, optimistically. The
   checkbox is a plain toggle with no confirm step on untick — unticking is an
   ordinary correction, not a destructive action to guard.
+- **Add a custom item** (§2) from a control below the list, not inside it, so
+  an empty checklist can still be added to. The form itself is a **modal**,
+  following `move-procedure-modal.jsx` and `add-pac-status-modal.jsx`: label,
+  group, and whether it counts towards the outstanding total. Inline would be a
+  text input, a select and two buttons on one row, which wraps into an unusable
+  stack at phone width — the same reason moving a procedure is a modal.
+  Custom items carry a delete affordance; template items do not, which is the
+  clearest way to show that one is governed here and the other is not.
 - **Comment**: an existing comment always renders under its item, so nothing is
   hidden behind a click, followed by `commentBy` name and `commentAt` in the
   small grey style [`procedure-comments.jsx`](../../src/components/procedure-comments.jsx)
@@ -654,6 +699,7 @@ they are cheap now and awkward later:
 | [`pb/pb_hooks/transactions.pb.js`](../../pb/pb_hooks/transactions.pb.js) | Call sites (§5). |
 | [`src/components/procedure-checklist.jsx`](../../src/components/procedure-checklist.jsx) | The UI (dummy today). |
 | [`src/components/procedure-expanded.jsx`](../../src/components/procedure-expanded.jsx) | Where it is rendered. |
+| `src/modals/add-checklist-item-modal.jsx` | Adding a custom item (§8.1). |
 | `src/dashboard/checklists.jsx` | The authoring page (§8.2) and its preview (§8.3). |
 | [`src/modals/procedure-code-browser-modal.jsx`](../../src/modals/procedure-code-browser-modal.jsx) | Concept picker the preview reuses. |
 | [`src/pages/settings-dashboard.jsx`](../../src/pages/settings-dashboard.jsx) | Registers it in `sidebarPages`. |
