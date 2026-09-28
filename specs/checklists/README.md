@@ -1,6 +1,6 @@
 # Procedure checklists
 
-Status: **implemented**, steps 1-8 of §12. The append-only audit under
+Status: **implemented**, steps 1-7 of §12. The append-only audit under
 "Deferred" is not built, and template versioning (§11.1) remains undecided.
 
 Assembly (§4) is covered by unit tests over the pure function; the write path
@@ -676,22 +676,20 @@ One left. My recommendation, to accept or overrule:
 2. `pb/pb_hooks/procedure-checklists.js` — assembly (§4) and reconciliation (§7)
    as pure functions over plain objects, plus the record I/O around them.
 3. Wire into the two transaction routes (§5).
-4. Seed migration with a starter global template and one spine template, to
-   exercise dedupe across scopes.
-5. `POST /api/set-checklist-item`.
-6. Client: fetch, subscribe with filter, tick (§8.1).
-7. Settings dashboard authoring page (§8.2) — templates table, then item editor.
-8. `POST /api/preview-checklist` (§8.3), then the preview pane that renders it.
+4. `POST /api/set-checklist-item`.
+5. Client: fetch, subscribe with filter, tick (§8.1).
+6. Settings dashboard authoring page (§8.2) — templates table, then item editor.
+7. `POST /api/preview-checklist` (§8.3), then the preview pane that renders it.
    The route is the smaller half: if step 2 returned both halves of the assembly
    result as specified in §4, it is a thin read-only wrapper.
 
-Steps 1–4 are independently testable against a procedure with known codes;
-do not start 6 before the assembly output is stable.
+Steps 1–3 are independently testable against a procedure with known codes;
+do not start 5 before the assembly output is stable.
 
-The seed templates in step 4 exist so steps 5–6 have something to render before
-the authoring page is built. They are scaffolding, not the intended way to
-manage templates — step 7 is. Once it lands, templates are created and edited
-there, not by further seed migrations.
+Templates are created and edited only through the authoring page in step 6.
+There is no seed data and no seed migration. Until a template exists, assembly
+yields an empty checklist, which is the correct behaviour rather than a gap to
+fill with fixtures.
 
 ### Deferred
 

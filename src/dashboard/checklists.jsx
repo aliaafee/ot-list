@@ -122,7 +122,7 @@ export default {
                     field: "scope",
                     label: "Applies to",
                     type: "select",
-                    options: SCOPES,
+                    options: [{ value: "", label: "select" }, ...SCOPES],
                 },
                 {
                     field: "subspecialties",
@@ -148,8 +148,8 @@ export default {
                     label: "Status",
                     type: "select",
                     options: [
+                        { value: "", label: "Inactive" },
                         { value: true, label: "Active" },
-                        { value: false, label: "Inactive" },
                     ],
                 },
             ],
