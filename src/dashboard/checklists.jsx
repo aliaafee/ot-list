@@ -6,6 +6,7 @@ import {
     ListChecksIcon,
     LoaderCircleIcon,
     PlusIcon,
+    ViewIcon,
     XIcon,
 } from "lucide-react";
 import { twMerge } from "tailwind-merge";
@@ -15,6 +16,7 @@ import FormField from "@/components/form-field";
 import MultiSelectField from "@/components/multi-select-field";
 import ChecklistTemplateItems from "@/components/checklist-template-items";
 import ChecklistPreview from "@/components/checklist-preview";
+import ModalWindow from "@/modals/modal-window";
 import { pb } from "@/lib/pb";
 import { SCOPES, SCOPE_LABEL } from "@/lib/checklists";
 
@@ -432,6 +434,7 @@ export default {
         const [templates, setTemplates] = useState([]);
         const [loading, setLoading] = useState(true);
         const [error, setError] = useState("");
+        const [showPreview, setShowPreview] = useState(false);
 
         useEffect(() => {
             let ignore = false;
@@ -482,21 +485,8 @@ export default {
 
         return (
             <div className="flex flex-col gap-6">
-                <div className="bg-blue-50 border border-blue-200 rounded-md p-2 text-sm">
-                    Editing a template does not change checklists that already
-                    exist. A procedure picks up a reworded item only when its
-                    procedure codes next change, because each checklist keeps
-                    the wording it was created with.
-                </div>
-
                 <div>
                     <h2 className="text-lg mb-1">Templates</h2>
-                    <p className="text-sm text-gray-600 mb-2">
-                        Open a template to edit it and its items. Where two
-                        templates share an item key, the more specific one wins
-                        — all, then subspecialty, then site, then procedure
-                        code.
-                    </p>
 
                     <div className="mb-2 flex gap-2">
                         <div className="flex-1 relative">
@@ -519,11 +509,19 @@ export default {
                             )}
                         </div>
                         <Button
-                            className="gap-2 whitespace-nowrap"
+                            className="gap-2 whitespace-nowrap py-1"
                             onClick={() => navigate("/settings/checklists/new")}
                         >
                             <PlusIcon size={16} />
                             Add Template
+                        </Button>
+                        <Button
+                            className="gap-2 whitespace-nowrap py-1"
+                            variant="secondary"
+                            onClick={() => setShowPreview(true)}
+                        >
+                            <ViewIcon size={16} />
+                            Preview
                         </Button>
                     </div>
 
@@ -619,18 +617,26 @@ export default {
                     )}
                 </div>
 
-                <div>
-                    <h2 className="text-lg mb-1">Preview</h2>
-                    <p className="text-sm text-gray-600 mb-2">
-                        Pick the codes a procedure would carry and see what it
-                        would be given, which template won each item, and what
-                        was overridden.
-                    </p>
-                    {/* Nothing on this page edits a template any more, and
-                        coming back from one remounts this, so the preview is
-                        never showing data this page has made stale. */}
-                    <ChecklistPreview />
-                </div>
+                {showPreview && (
+                    <ModalWindow
+                        title="Preview"
+                        icon={<ViewIcon width={24} height={24} />}
+                        iconColor="bg-blue-100 text-blue-600"
+                        large
+                        cancelLabel="Close"
+                        onCancel={() => setShowPreview(false)}
+                    >
+                        <p className="text-sm text-gray-600 mb-2">
+                            Pick the codes a procedure would carry and see what
+                            it would be given, which template won each item, and
+                            what was overridden.
+                        </p>
+                        {/* Nothing on this page edits a template, so the
+                            preview is never showing data this page has made
+                            stale. */}
+                        <ChecklistPreview />
+                    </ModalWindow>
+                )}
             </div>
         );
     },
