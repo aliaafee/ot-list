@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import {
+    CheckIcon,
     ChevronRightIcon,
     ListChecksIcon,
+    LoaderCircleIcon,
     PlusIcon,
     XIcon,
 } from "lucide-react";
@@ -79,6 +81,16 @@ export default {
             const [subspecialties, setSubspecialties] = useState([]);
             const [error, setError] = useState("");
             const [saving, setSaving] = useState(false);
+            // Writes still in flight - a count, since a blur and a select can
+            // overlap - and whether the last one landed, shown for a moment.
+            const [updating, setUpdating] = useState(0);
+            const [saved, setSaved] = useState(false);
+
+            useEffect(() => {
+                if (!saved) return;
+                const timer = setTimeout(() => setSaved(false), 2000);
+                return () => clearTimeout(timer);
+            }, [saved]);
 
             // Options for the target fields. Read from PocketBase rather than
             // from the bundled catalogue, because these are relation fields
@@ -150,16 +162,21 @@ export default {
                 const previous = template;
                 setTemplate((current) => ({ ...current, ...patch }));
                 setError("");
+                setSaved(false);
+                setUpdating((n) => n + 1);
                 try {
                     await pb
                         .collection("checklistTemplates")
                         .update(record.id, patch, {
                             requestKey: "checklist-admin-template-save",
                         });
+                    setSaved(true);
                 } catch (err) {
                     console.error("Error saving template:", err);
                     setTemplate(previous);
                     setError(err?.message || "Failed to save the change.");
+                } finally {
+                    setUpdating((n) => n - 1);
                 }
             };
 
@@ -233,6 +250,9 @@ export default {
             };
 
             const target = SCOPE_TARGET[template.scope];
+            // Every save shares one request key, so a second write started
+            // while one is in flight would cancel it. Lock the form instead.
+            const busy = updating > 0;
             const targetOptions = {
                 subspecialties,
                 sites,
@@ -241,14 +261,36 @@ export default {
 
             return (
                 <div className="flex flex-col gap-6">
-                    {!!error && <p className="text-sm text-red-600">{error}</p>}
-
                     <div>
-                        <h2 className="text-lg mb-1">Properties</h2>
+                        <div className="flex items-center gap-3 mb-1">
+                            <h2 className="text-lg">Properties</h2>
+                            {updating > 0 ? (
+                                <span className="flex items-center gap-1 text-xs text-gray-500">
+                                    <LoaderCircleIcon
+                                        size={14}
+                                        className="animate-spin"
+                                    />
+                                    Saving...
+                                </span>
+                            ) : (
+                                saved && (
+                                    <span className="flex items-center gap-1 text-xs text-green-700">
+                                        <CheckIcon size={14} />
+                                        Saved
+                                    </span>
+                                )
+                            )}
+                        </div>
+                        {!!error && (
+                            <div className="bg-red-400/20 rounded-md p-2 text-sm mb-2">
+                                {error}
+                            </div>
+                        )}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 bg-gray-100 p-2 rounded-lg">
                             <FormField
                                 label="Name"
                                 name="name"
+                                disabled={busy}
                                 value={template.name ?? ""}
                                 className="md:col-span-2"
                                 onChange={edit("name")}
@@ -260,6 +302,7 @@ export default {
                             <FormField
                                 label="Order"
                                 name="position"
+                                disabled={busy}
                                 type="number"
                                 value={template.position ?? 0}
                                 onChange={edit("position")}
@@ -272,6 +315,7 @@ export default {
                             <FormField
                                 label="Status"
                                 name="active"
+                                disabled={busy}
                                 type="select"
                                 value={template.active}
                                 onChange={(e) =>
@@ -293,6 +337,7 @@ export default {
                             <FormField
                                 label="Description"
                                 name="description"
+                                disabled={busy}
                                 type="textarea"
                                 value={template.description ?? ""}
                                 className="md:col-span-2"
@@ -303,6 +348,7 @@ export default {
                             <FormField
                                 label="Applies to"
                                 name="scope"
+                                disabled={busy}
                                 type="select"
                                 value={template.scope}
                                 onChange={(e) => changeScope(e.target.value)}
@@ -330,6 +376,7 @@ export default {
                                             }
                                             value={template[target.field]}
                                             emptyLabel="Nothing chosen, so this template matches nothing."
+                                            disabled={busy}
                                             onChange={(items) =>
                                                 change({
                                                     [target.field]: items,

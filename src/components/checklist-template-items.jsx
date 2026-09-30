@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PlusIcon, TrashIcon } from "lucide-react";
+import { LoaderCircleIcon, PlusIcon, TrashIcon } from "lucide-react";
 
 import ReorderList from "@/components/reorder-list";
 import { pb } from "@/lib/pb";
@@ -24,6 +24,8 @@ function ChecklistTemplateItems({ template, onChanged = () => {} }) {
     const [loading, setLoading] = useState(true);
     const [reloadKey, setReloadKey] = useState(0);
     const [error, setError] = useState("");
+    const [adding, setAdding] = useState(false);
+    const [deletingIds, setDeletingIds] = useState(() => new Set());
     const [draft, setDraft] = useState({
         itemKey: "",
         label: "",
@@ -88,6 +90,7 @@ function ChecklistTemplateItems({ template, onChanged = () => {} }) {
         }
 
         const inGroup = items.filter((item) => item.group === draft.group);
+        setAdding(true);
         try {
             await pb.collection("checklistTemplateItems").create({
                 template: template.id,
@@ -103,16 +106,28 @@ function ChecklistTemplateItems({ template, onChanged = () => {} }) {
         } catch (err) {
             console.error("Error adding item:", err);
             setError(err?.message || "Failed to add item.");
+        } finally {
+            setAdding(false);
         }
     };
 
     const removeItem = async (id) => {
+        setError("");
+        setDeletingIds((ids) => new Set(ids).add(id));
         try {
             await pb.collection("checklistTemplateItems").delete(id);
+            // Drop it locally so the row does not linger until the reload lands.
+            setItems((current) => current.filter((item) => item.id !== id));
             reload();
         } catch (err) {
             console.error("Error deleting item:", err);
             setError("Failed to delete item.");
+        } finally {
+            setDeletingIds((ids) => {
+                const next = new Set(ids);
+                next.delete(id);
+                return next;
+            });
         }
     };
 
@@ -201,11 +216,16 @@ function ChecklistTemplateItems({ template, onChanged = () => {} }) {
                 </label>
                 <button
                     type="button"
-                    className="flex items-center gap-1 text-sm px-2 py-1 rounded bg-blue-600 text-white hover:bg-blue-500 cursor-pointer"
+                    className="flex items-center gap-1 text-sm px-2 py-1 rounded bg-blue-600 text-white hover:bg-blue-500 cursor-pointer disabled:opacity-60 disabled:cursor-wait"
                     onClick={addItem}
+                    disabled={adding}
                 >
-                    <PlusIcon size={14} />
-                    Add
+                    {adding ? (
+                        <LoaderCircleIcon size={14} className="animate-spin" />
+                    ) : (
+                        <PlusIcon size={14} />
+                    )}
+                    {adding ? "Adding..." : "Add"}
                 </button>
             </div>
 
@@ -237,51 +257,68 @@ function ChecklistTemplateItems({ template, onChanged = () => {} }) {
                                     items={inGroup}
                                     onChange={reorder}
                                     itemClassName="bg-white rounded-md border border-gray-200 flex items-center mb-2"
-                                    itemRender={(item) => (
-                                        <div className="flex items-center gap-2 w-full text-sm py-1 pr-2">
-                                            <span className="font-mono text-xs text-gray-500 shrink-0">
-                                                {item.itemKey}
-                                            </span>
-                                            <span className="grow">
-                                                {item.label}
-                                            </span>
-                                            {!item.required && (
-                                                <span className="text-xs text-gray-500">
-                                                    advisory
+                                    itemRender={(item) => {
+                                        const deleting = deletingIds.has(
+                                            item.id,
+                                        );
+                                        return (
+                                            <div
+                                                className={`flex items-center gap-2 w-full text-sm py-1 pr-2 ${deleting ? "opacity-50" : ""}`}
+                                            >
+                                                <span className="font-mono text-xs text-gray-500 shrink-0">
+                                                    {item.itemKey}
                                                 </span>
-                                            )}
-                                            <select
-                                                className="text-xs border border-gray-300 rounded bg-white"
-                                                value={item.group}
-                                                title="Move to another group"
-                                                onChange={(e) =>
-                                                    moveGroup(
-                                                        item,
-                                                        e.target.value,
-                                                    )
-                                                }
-                                            >
-                                                {GROUPS.map((option) => (
-                                                    <option
-                                                        key={option.value}
-                                                        value={option.value}
+                                                <span className="grow">
+                                                    {item.label}
+                                                </span>
+                                                {!item.required && (
+                                                    <span className="text-xs text-gray-500">
+                                                        advisory
+                                                    </span>
+                                                )}
+                                                <select
+                                                    className="text-xs border border-gray-300 rounded bg-white"
+                                                    value={item.group}
+                                                    title="Move to another group"
+                                                    onChange={(e) =>
+                                                        moveGroup(
+                                                            item,
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                >
+                                                    {GROUPS.map((option) => (
+                                                        <option
+                                                            key={option.value}
+                                                            value={option.value}
+                                                        >
+                                                            {option.label}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                {deleting ? (
+                                                    <span className="flex items-center gap-1 text-xs text-gray-500 p-1">
+                                                        <LoaderCircleIcon
+                                                            size={14}
+                                                            className="animate-spin"
+                                                        />
+                                                        Deleting...
+                                                    </span>
+                                                ) : (
+                                                    <button
+                                                        type="button"
+                                                        className="text-red-600 hover:bg-red-100 rounded p-1 cursor-pointer"
+                                                        title="Delete item"
+                                                        onClick={() =>
+                                                            removeItem(item.id)
+                                                        }
                                                     >
-                                                        {option.label}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            <button
-                                                type="button"
-                                                className="text-red-600 hover:bg-red-100 rounded p-1 cursor-pointer"
-                                                title="Delete item"
-                                                onClick={() =>
-                                                    removeItem(item.id)
-                                                }
-                                            >
-                                                <TrashIcon size={14} />
-                                            </button>
-                                        </div>
-                                    )}
+                                                        <TrashIcon size={14} />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        );
+                                    }}
                                 />
                             )}
                         </div>
