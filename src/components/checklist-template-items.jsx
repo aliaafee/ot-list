@@ -159,6 +159,56 @@ function ChecklistTemplateItems({ template, onChanged = () => {} }) {
 
     return (
         <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap items-center gap-2 mt-3 p-2 bg-gray-100 rounded-md">
+                <input
+                    className="text-sm py-1 px-2 rounded border border-gray-300 bg-white font-mono w-48"
+                    placeholder="item-key"
+                    value={draft.itemKey}
+                    onChange={(e) =>
+                        setDraft({ ...draft, itemKey: e.target.value })
+                    }
+                />
+                <input
+                    className="text-sm py-1 px-2 rounded border border-gray-300 bg-white grow min-w-48"
+                    placeholder="Label shown on the checklist"
+                    value={draft.label}
+                    onChange={(e) =>
+                        setDraft({ ...draft, label: e.target.value })
+                    }
+                />
+                <select
+                    className="text-sm py-1 px-2 rounded border border-gray-300 bg-white"
+                    value={draft.group}
+                    onChange={(e) =>
+                        setDraft({ ...draft, group: e.target.value })
+                    }
+                >
+                    {GROUPS.map((group) => (
+                        <option key={group.value} value={group.value}>
+                            {group.label}
+                        </option>
+                    ))}
+                </select>
+                <label className="text-sm flex items-center gap-1 cursor-pointer">
+                    <input
+                        type="checkbox"
+                        checked={draft.required}
+                        onChange={(e) =>
+                            setDraft({ ...draft, required: e.target.checked })
+                        }
+                    />
+                    Required
+                </label>
+                <button
+                    type="button"
+                    className="flex items-center gap-1 text-sm px-2 py-1 rounded bg-blue-600 text-white hover:bg-blue-500 cursor-pointer"
+                    onClick={addItem}
+                >
+                    <PlusIcon size={14} />
+                    Add
+                </button>
+            </div>
+
             {!!error && (
                 <div className="bg-red-400/20 rounded-md p-2 text-sm">
                     {error}
@@ -186,7 +236,7 @@ function ChecklistTemplateItems({ template, onChanged = () => {} }) {
                                 <ReorderList
                                     items={inGroup}
                                     onChange={reorder}
-                                    itemClassName="bg-white rounded-md border border-gray-200"
+                                    itemClassName="bg-white rounded-md border border-gray-200 flex items-center mb-2"
                                     itemRender={(item) => (
                                         <div className="flex items-center gap-2 w-full text-sm py-1 pr-2">
                                             <span className="font-mono text-xs text-gray-500 shrink-0">
@@ -238,56 +288,6 @@ function ChecklistTemplateItems({ template, onChanged = () => {} }) {
                     );
                 })
             )}
-
-            <div className="flex flex-wrap items-center gap-2 mt-3 p-2 bg-gray-100 rounded-md">
-                <input
-                    className="text-sm py-1 px-2 rounded border border-gray-300 bg-white font-mono w-48"
-                    placeholder="item-key"
-                    value={draft.itemKey}
-                    onChange={(e) =>
-                        setDraft({ ...draft, itemKey: e.target.value })
-                    }
-                />
-                <input
-                    className="text-sm py-1 px-2 rounded border border-gray-300 bg-white grow min-w-48"
-                    placeholder="Label shown on the checklist"
-                    value={draft.label}
-                    onChange={(e) =>
-                        setDraft({ ...draft, label: e.target.value })
-                    }
-                />
-                <select
-                    className="text-sm py-1 px-2 rounded border border-gray-300 bg-white"
-                    value={draft.group}
-                    onChange={(e) =>
-                        setDraft({ ...draft, group: e.target.value })
-                    }
-                >
-                    {GROUPS.map((group) => (
-                        <option key={group.value} value={group.value}>
-                            {group.label}
-                        </option>
-                    ))}
-                </select>
-                <label className="text-sm flex items-center gap-1 cursor-pointer">
-                    <input
-                        type="checkbox"
-                        checked={draft.required}
-                        onChange={(e) =>
-                            setDraft({ ...draft, required: e.target.checked })
-                        }
-                    />
-                    Required
-                </label>
-                <button
-                    type="button"
-                    className="flex items-center gap-1 text-sm px-2 py-1 rounded bg-blue-600 text-white hover:bg-blue-500 cursor-pointer"
-                    onClick={addItem}
-                >
-                    <PlusIcon size={14} />
-                    Add
-                </button>
-            </div>
         </div>
     );
 }

@@ -36,7 +36,27 @@ import checklistsPage from "@/dashboard/checklists";
  * tables need the lookups and the permission this dashboard holds, and it is
  * mounted rather than called, so a page can hold state and effects of its own
  * the way the dashboard page's health check does.
+ *
+ * A page may also carry a `detail`, which is what /settings/<page>/<id>
+ * renders in place of `content`:
+ *
+ *   detail: {
+ *       collection: "checklistTemplates",  // read with getOne(id)
+ *       titleField: "name",                // for the breadcrumb
+ *       newTitle: "New template",          // breadcrumb for /<page>/new
+ *       content: Component,                // gets { record, ...page props }
+ *   }
+ *
+ * The record is loaded here rather than by the detail page so that the
+ * breadcrumb, the missing-record state and the remount on id change are the
+ * same on every page instead of being rebuilt on each one. A detail page that
+ * needs more than one record can ignore `collection` and load its own.
+ *
+ * /<page>/new is the one id that names no record: nothing is read, and the
+ * detail page is handed `record: null` to mean "creating". A PocketBase id is
+ * fifteen characters, so "new" can never be one.
  */
+const NEW_DETAIL_ID = "new";
 const sidebarPages = {
     settings: systemInfo,
     users: users,
@@ -92,8 +112,54 @@ const SidebarLinks = ({ pages, onSelect = () => {} }) => {
     );
 };
 
+/**
+ * The one record a detail route names.
+ *
+ * `detail` is the page's detail descriptor from the registry above, which is
+ * module-level and so stable enough to depend on directly. Passing null - a
+ * list route, or a page that has no detail view - leaves this idle rather than
+ * fetching. A record that will not load is reported as absent rather than as
+ * an error of its own: for a mistyped or deleted id the page is simply not
+ * there, which the body already knows how to say.
+ */
+function useDetailRecord(detail, detailId) {
+    // Keyed by the id it was loaded for, so a record left over from the
+    // previous id is never handed back as this one's. That is also what makes
+    // `loading` derivable instead of a second piece of state to keep in step.
+    const [loaded, setLoaded] = useState({ id: null, record: null });
+
+    useEffect(() => {
+        if (!detail || !detailId) return;
+
+        let ignore = false;
+        (async () => {
+            let record = null;
+            try {
+                record = await pb
+                    .collection(detail.collection)
+                    .getOne(detailId, {
+                        requestKey: `settings-detail-${detail.collection}`,
+                    });
+            } catch (err) {
+                console.error("Error loading detail record:", err);
+            }
+            if (!ignore) setLoaded({ id: detailId, record });
+        })();
+
+        return () => {
+            ignore = true;
+        };
+    }, [detail, detailId]);
+
+    const settled = loaded.id === detailId;
+    return {
+        record: settled ? loaded.record : null,
+        loading: !!detail && !!detailId && !settled,
+    };
+}
+
 function SettingsDashboard() {
-    const { page = "settings" } = useParams();
+    const { page = "settings", detailId } = useParams();
     const [showSideBar, setShowSideBar] = useState(true);
 
     const { isAdmin } = useAuth();
@@ -151,6 +217,17 @@ function SettingsDashboard() {
     // effects, and switching pages should mount the new one from scratch.
     const PageContent = current?.content ?? null;
 
+    // A detail route on a page that has no detail view is a route that does not
+    // exist, and reads the same way as an unknown page name.
+    const detail = detailId ? (current?.detail ?? null) : null;
+    const creating = !!detail && detailId === NEW_DETAIL_ID;
+    // Nothing to read when creating, so the hook is left idle.
+    const { record: detailRecord, loading: detailLoading } = useDetailRecord(
+        creating ? null : detail,
+        detailId,
+    );
+    const DetailContent = detail?.content ?? null;
+
     const settingsToolbar = (
         <ToolBar>
             <ToolBarButton
@@ -169,6 +246,67 @@ function SettingsDashboard() {
         </ToolBar>
     );
 
+    // What every page is handed. Detail pages get the same, plus their record.
+    const pageProps = { isAdmin, departments, operatingRooms, refreshData };
+
+    const notFound = (
+        <div className="text-gray-500 py-8 text-center">
+            There is no &quot;{page}&quot; settings page.
+        </div>
+    );
+
+    let body;
+    if (!PageContent || (detailId && !detail)) {
+        body = notFound;
+    } else if (detail) {
+        if (detailLoading) {
+            body = <div className="text-gray-500 py-8">Loading...</div>;
+        } else if (!creating && !detailRecord) {
+            body = (
+                <div className="text-gray-500 py-8 text-center">
+                    That {current.title.toLowerCase()} entry no longer exists.{" "}
+                    <Link
+                        to={`/settings/${page}`}
+                        className="text-blue-700 hover:underline"
+                    >
+                        Back to {current.title}
+                    </Link>
+                </div>
+            );
+        } else {
+            body = (
+                <>
+                    <h1 className="mb-2 text-xl">
+                        <Link
+                            to={`/settings/${page}`}
+                            className="text-blue-700 hover:underline"
+                        >
+                            {current.title}
+                        </Link>
+                        <span className="text-gray-400 mx-2">/</span>
+                        {creating
+                            ? (detail.newTitle ?? "New")
+                            : detailRecord[detail.titleField]}
+                    </h1>
+                    {/* Keyed so moving between records mounts the detail page
+                        from scratch, for the same reason pages are. */}
+                    <DetailContent
+                        key={detailId}
+                        record={detailRecord}
+                        {...pageProps}
+                    />
+                </>
+            );
+        }
+    } else {
+        body = (
+            <>
+                <h1 className="mb-2 text-xl">{current.title}</h1>
+                <PageContent {...pageProps} />
+            </>
+        );
+    }
+
     return (
         <SidebarLayout
             sidebarTitle="Settings"
@@ -183,23 +321,7 @@ function SettingsDashboard() {
                 </div>
             }
         >
-            <BodyLayout header={settingsToolbar}>
-                {PageContent ? (
-                    <>
-                        <h1 className="mb-2 text-xl">{current.title}</h1>
-                        <PageContent
-                            isAdmin={isAdmin}
-                            departments={departments}
-                            operatingRooms={operatingRooms}
-                            refreshData={refreshData}
-                        />
-                    </>
-                ) : (
-                    <div className="text-gray-500 py-8 text-center">
-                        There is no &quot;{page}&quot; settings page.
-                    </div>
-                )}
-            </BodyLayout>
+            <BodyLayout header={settingsToolbar}>{body}</BodyLayout>
         </SidebarLayout>
     );
 }
