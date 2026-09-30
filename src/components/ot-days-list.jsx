@@ -82,7 +82,7 @@ function OtDaysList({
                                     )}
                                     onClick={() => onSelectDay(otDay.id)}
                                 >
-                                    <span className="flex overflow-clip grow">
+                                    <span className="flex overflow-clip grow items-center">
                                         <span className="overflow-clip whitespace-nowrap min-w-12">
                                             {dayjs(otDay.date).format("ddd")}
                                             ,{" "}
