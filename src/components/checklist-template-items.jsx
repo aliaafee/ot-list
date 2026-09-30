@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LoaderCircleIcon, PlusIcon, TrashIcon } from "lucide-react";
 
+import ItemKeySelector from "@/components/item-key-selector";
 import ReorderList from "@/components/reorder-list";
 import { pb } from "@/lib/pb";
 import { GROUPS, ITEM_KEY_PATTERN } from "@/lib/checklists";
@@ -26,6 +27,7 @@ function ChecklistTemplateItems({ template, onChanged = () => {} }) {
     const [error, setError] = useState("");
     const [adding, setAdding] = useState(false);
     const [deletingIds, setDeletingIds] = useState(() => new Set());
+    const [usedKeys, setUsedKeys] = useState([]);
     const [draft, setDraft] = useState({
         itemKey: "",
         label: "",
@@ -63,6 +65,60 @@ function ChecklistTemplateItems({ template, onChanged = () => {} }) {
             ignore = true;
         };
     }, [template, reloadKey]);
+
+    // Every key in use across all templates, offered while typing a new one so
+    // that an existing key is reused rather than near-duplicated. Reloaded
+    // with the items, since an add here is a new key there.
+    useEffect(() => {
+        let ignore = false;
+        (async () => {
+            try {
+                const records = await pb
+                    .collection("checklistTemplateItems")
+                    .getFullList({
+                        fields: "itemKey,label,template",
+                        sort: "+itemKey",
+                        requestKey: "checklist-admin-item-keys",
+                    });
+                if (ignore) return;
+                const byKey = new Map();
+                records.forEach((record) => {
+                    const entry = byKey.get(record.itemKey) ?? {
+                        itemKey: record.itemKey,
+                        label: record.label,
+                        templateIds: new Set(),
+                    };
+                    entry.templateIds.add(record.template);
+                    byKey.set(record.itemKey, entry);
+                });
+                setUsedKeys(
+                    [...byKey.values()].map((entry) => ({
+                        itemKey: entry.itemKey,
+                        label: entry.label,
+                        templates: entry.templateIds.size,
+                        templateIds: entry.templateIds,
+                    })),
+                );
+            } catch (err) {
+                // Suggestions are a convenience; typing a key still works.
+                console.error("Error loading item keys:", err);
+            }
+        })();
+
+        return () => {
+            ignore = true;
+        };
+    }, [reloadKey]);
+
+    // Keys this template already has cannot be added again, so they are not
+    // offered.
+    const keySuggestions = useMemo(
+        () =>
+            usedKeys.filter(
+                (entry) => !template || !entry.templateIds.has(template.id),
+            ),
+        [usedKeys, template],
+    );
 
     const reload = () => {
         setReloadKey((key) => key + 1);
@@ -175,12 +231,23 @@ function ChecklistTemplateItems({ template, onChanged = () => {} }) {
     return (
         <div className="flex flex-col gap-2">
             <div className="flex flex-wrap items-center gap-2 mt-3 p-2 bg-gray-100 rounded-md">
-                <input
-                    className="text-sm py-1 px-2 rounded border border-gray-300 bg-white font-mono w-48"
-                    placeholder="item-key"
+                <ItemKeySelector
+                    className="w-56"
                     value={draft.itemKey}
-                    onChange={(e) =>
-                        setDraft({ ...draft, itemKey: e.target.value })
+                    suggestions={keySuggestions}
+                    onChange={(itemKey) =>
+                        setDraft((current) => ({ ...current, itemKey }))
+                    }
+                    // Reusing a key usually means reusing its wording too, so
+                    // an empty label is filled in; a typed one is kept.
+                    onSelect={(suggestion) =>
+                        setDraft((current) => ({
+                            ...current,
+                            itemKey: suggestion.itemKey,
+                            label: current.label.trim()
+                                ? current.label
+                                : suggestion.label,
+                        }))
                     }
                 />
                 <input
