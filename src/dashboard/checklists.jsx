@@ -6,6 +6,7 @@ import {
     ListChecksIcon,
     LoaderCircleIcon,
     PlusIcon,
+    TrashIcon,
     ViewIcon,
     XIcon,
 } from "lucide-react";
@@ -99,6 +100,9 @@ export default {
             // overlap - and whether the last one landed, shown for a moment.
             const [updating, setUpdating] = useState(0);
             const [saved, setSaved] = useState(false);
+            const [confirmDelete, setConfirmDelete] = useState(false);
+            const [deleting, setDeleting] = useState(false);
+            const [deleteError, setDeleteError] = useState("");
             // Every template and every item key, for the overlap warning.
             // Reloaded when this template's items change.
             const [allTemplates, setAllTemplates] = useState([]);
@@ -110,8 +114,8 @@ export default {
                 let ignore = false;
                 (async () => {
                     try {
-                        const [templateRecords, keyRecords] =
-                            await Promise.all([
+                        const [templateRecords, keyRecords] = await Promise.all(
+                            [
                                 pb
                                     .collection("checklistTemplates")
                                     .getFullList({
@@ -126,7 +130,8 @@ export default {
                                         requestKey:
                                             "checklist-admin-overlap-keys",
                                     }),
-                            ]);
+                            ],
+                        );
                         if (ignore) return;
                         setAllTemplates(templateRecords);
                         setAllKeys(keyRecords);
@@ -373,6 +378,30 @@ export default {
                 }
             };
 
+            // The template's items go with it (cascade). Procedures keep the
+            // rows already built from it - those are snapshots, and their
+            // `sourceTemplate` is simply cleared - until their next rebuild,
+            // which removes untouched ones and keeps ticked or commented ones
+            // as no longer applying. Spec sections 2 and 7.
+            const deleteTemplate = async () => {
+                setDeleting(true);
+                setDeleteError("");
+                try {
+                    await pb.collection("checklistTemplates").delete(record.id);
+                    navigate("/settings/checklists", { replace: true });
+                } catch (err) {
+                    console.error("Error deleting template:", err);
+                    setDeleteError(
+                        err?.message || "Failed to delete the template.",
+                    );
+                    setDeleting(false);
+                }
+            };
+
+            const itemCount = creating
+                ? 0
+                : allKeys.filter((key) => key.template === record.id).length;
+
             const target = SCOPE_TARGET[template.scope];
             // Every save shares one request key, so a second write started
             // while one is in flight would cancel it. Lock the form instead.
@@ -403,6 +432,20 @@ export default {
                                         Saved
                                     </span>
                                 )
+                            )}
+                            {!creating && (
+                                <button
+                                    type="button"
+                                    className="ml-auto flex items-center gap-1 text-sm text-red-600 hover:bg-red-100 rounded px-2 py-1 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                                    disabled={busy}
+                                    onClick={() => {
+                                        setDeleteError("");
+                                        setConfirmDelete(true);
+                                    }}
+                                >
+                                    <TrashIcon size={14} />
+                                    Delete template
+                                </button>
                             )}
                         </div>
                         {!!error && (
@@ -510,20 +553,6 @@ export default {
                                     </p>
                                 </div>
                             )}
-
-                            {/* Independent of scope: changing scope leaves
-                                these alone. Spec section 3.1. */}
-                            <div className="md:col-span-2 border-t border-gray-300 pt-2 mt-1">
-                                <span className="text-sm text-gray-700">
-                                    Patients
-                                </span>
-                                <p className="text-xs text-gray-500">
-                                    Narrow this template to patients of a sex or
-                                    age range. When a patient's date of birth or
-                                    sex is not recorded, a template that needs
-                                    it is left out.
-                                </p>
-                            </div>
 
                             <div className="flex flex-col md:col-span-2">
                                 <span className="text-xs text-left text-gray-700">
@@ -639,6 +668,41 @@ export default {
                             />
                         )}
                     </div>
+
+                    {confirmDelete && (
+                        <ModalWindow
+                            title="Delete template"
+                            icon={<TrashIcon width={24} height={24} />}
+                            iconColor="bg-red-100 text-red-600"
+                            okLabel="Delete"
+                            cancelLabel="Cancel"
+                            loading={deleting}
+                            onOk={deleteTemplate}
+                            onCancel={() => setConfirmDelete(false)}
+                        >
+                            <p className="mb-2">
+                                Delete <strong>{template.name}</strong> and its{" "}
+                                {itemCount} item{itemCount === 1 ? "" : "s"}?
+                                This cannot be undone.
+                            </p>
+                            <p className="mb-2 text-sm text-gray-600">
+                                Procedures keep the items already on their
+                                checklists until the checklist is next rebuilt.
+                                Then untouched items from this template are
+                                removed, and ticked or commented ones stay,
+                                marked as no longer applying.
+                            </p>
+                            <p className="text-sm text-gray-600">
+                                To stop it applying without losing it, set its
+                                status to Inactive instead.
+                            </p>
+                            {!!deleteError && (
+                                <div className="bg-red-400/20 rounded-md p-2 text-sm mt-2">
+                                    {deleteError}
+                                </div>
+                            )}
+                        </ModalWindow>
+                    )}
                 </div>
             );
         },
