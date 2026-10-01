@@ -19,6 +19,119 @@ const GROUPS = ["preop", "dayof", "theatre", "postop"];
 /** Scope specificity. Higher wins a duplicate itemKey; lower sorts first. */
 const SCOPE_RANK = { all: 0, subspecialty: 1, site: 2, concept: 3 };
 
+/** The `patients.sex` vocabulary, which a template's `sexes` draws from. */
+const SEXES = ["male", "female"];
+
+/** Patient fields a template can be narrowed by, in reporting order. */
+const PATIENT_FIELDS = ["age", "sex"];
+
+/**
+ * The calendar date of a stored PocketBase date, as "YYYY-MM-DD", or null.
+ *
+ * Takes the date part of the stored string and never goes through a Date:
+ * a birth date stored at UTC midnight read back in a negative offset would
+ * otherwise become the day before.
+ */
+function datePart(value) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(value || ""));
+    return match ? `${match[1]}-${match[2]}-${match[3]}` : null;
+}
+
+/** Today's date on the server, as "YYYY-MM-DD". */
+function todayDate() {
+    const now = new Date();
+    const pad = (n) => ("0" + n).slice(-2);
+    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+}
+
+function daysInMonth(year, month) {
+    // Day 0 of the next month is the last day of this one. UTC so the
+    // server's offset cannot move it.
+    return new Date(Date.UTC(year, month, 0)).getUTCDate();
+}
+
+/**
+ * Whole completed months from a date of birth to a date, or null.
+ *
+ * Both are calendar dates ("YYYY-MM-DD", or anything datePart accepts). A
+ * month is completed when its day-of-month is reached; a birthday on the
+ * 29th-31st counts as reached on the last day of a shorter month. A birth
+ * date after `onDate` is bad data and gives null, the same as unknown.
+ * Spec section 3.1.
+ */
+function ageInMonths(dateOfBirth, onDate) {
+    const birth = datePart(dateOfBirth);
+    const on = datePart(onDate);
+    if (!birth || !on) return null;
+
+    const [by, bm, bd] = birth.split("-").map(Number);
+    const [oy, om, od] = on.split("-").map(Number);
+
+    let months = (oy - by) * 12 + (om - bm);
+    const birthdayThisMonth = Math.min(bd, daysInMonth(oy, om));
+    if (od < birthdayThisMonth) months -= 1;
+
+    return months < 0 ? null : months;
+}
+
+function hasAgeCriterion(template) {
+    return template.ageMinMonths > 0 || template.ageMaxMonths > 0;
+}
+
+function hasSexCriterion(template) {
+    return template.sexes.length > 0;
+}
+
+/** How many patient criteria a template carries: sex one, age one. */
+function criteriaCount(template) {
+    return (
+        (hasAgeCriterion(template) ? 1 : 0) + (hasSexCriterion(template) ? 1 : 0)
+    );
+}
+
+/** A template's criteria, with only the set ones present. */
+function criteriaOf(template) {
+    const criteria = {};
+    if (hasSexCriterion(template)) criteria.sexes = template.sexes.slice();
+    if (template.ageMinMonths > 0) criteria.ageMinMonths = template.ageMinMonths;
+    if (template.ageMaxMonths > 0) criteria.ageMaxMonths = template.ageMaxMonths;
+    return criteria;
+}
+
+/**
+ * Which of a template's patient criteria fail for this patient.
+ *
+ * An unknown value fails every criterion on it - the template is omitted, not
+ * included on a guess. Spec section 3.1. Returns [] when all pass.
+ *
+ * @param {Object} patient - { ageMonths, sex }, each null when unknown
+ */
+function failedCriteria(template, patient) {
+    const failed = [];
+
+    if (hasAgeCriterion(template)) {
+        const age = patient.ageMonths;
+        if (age === null || age === undefined) {
+            failed.push({ field: "age", reason: "unknown" });
+        } else if (
+            (template.ageMinMonths > 0 && age < template.ageMinMonths) ||
+            (template.ageMaxMonths > 0 && age >= template.ageMaxMonths)
+        ) {
+            failed.push({ field: "age", reason: "outOfRange" });
+        }
+    }
+
+    if (hasSexCriterion(template)) {
+        if (!patient.sex) {
+            failed.push({ field: "sex", reason: "unknown" });
+        } else if (template.sexes.indexOf(patient.sex) === -1) {
+            failed.push({ field: "sex", reason: "outOfRange" });
+        }
+    }
+
+    return failed;
+}
+
 function groupIndex(group) {
     const i = GROUPS.indexOf(group);
     // An unknown group sorts last rather than first, so a bad value is
@@ -51,12 +164,15 @@ function matchesConcept(template, concept) {
 /**
  * Which of two candidates for the same itemKey wins.
  *
- * Most specific scope, then the earlier template by position, then by id so
- * the result never depends on load order.
+ * Most specific scope, then more patient criteria (a paediatric override of a
+ * global item wins without juggling positions), then the earlier template by
+ * position, then by id so the result never depends on load order.
  */
 function compareCandidates(a, b) {
     const rank = scopeRank(b.template.scope) - scopeRank(a.template.scope);
     if (rank !== 0) return rank;
+    const criteria = criteriaCount(b.template) - criteriaCount(a.template);
+    if (criteria !== 0) return criteria;
     const position = a.template.position - b.template.position;
     if (position !== 0) return position;
     return a.template.id < b.template.id
@@ -67,35 +183,49 @@ function compareCandidates(a, b) {
 }
 
 /**
- * Assemble a checklist from a set of concepts and the whole template set.
+ * Assemble a checklist from a set of concepts, the patient, and the whole
+ * template set.
  *
- * Returns three things, and the write path only wants the first:
- *   items      - the surviving items, ordered, with `position` written in
- *   suppressed - items trimmed as duplicates, each naming what beat it
- *   templates  - every template that matched, including inactive ones
+ * Returns four things, and the write path wants the first and last:
+ *   items        - the surviving items, ordered, with `position` written in
+ *   suppressed   - items trimmed as duplicates, each naming what beat it
+ *   templates    - every template whose scope matched, including inactive
+ *                  ones and ones the patient criteria excluded (`excludedBy`)
+ *   missingFacts - patient fields that are unknown and cost at least one
+ *                  active template its place, e.g. ["age"]
  *
  * The losers are returned rather than dropped so the preview does not have to
  * recompute them, which would be a second implementation of these rules.
  *
  * @param {Array} concepts - [{ id, conceptId, subspecialty, site }]
+ * @param {Object} patient - { ageMonths, sex }, each null when unknown. Age is
+ *   already computed; assembly does no date arithmetic.
  * @param {Array} templates - [{ id, name, scope, active, position,
- *                               subspecialties, sites, concepts, items }]
+ *                               subspecialties, sites, concepts,
+ *                               sexes, ageMinMonths, ageMaxMonths, items }]
  */
-function assembleChecklist(concepts, templates) {
-    // 1-2. Templates matching any concept. A template matched by several
-    // concepts is collected once - the first place duplicates are trimmed.
-    // `all` is handled outside the concept loop so that a procedure with no
-    // codes still gets the global templates.
+function assembleChecklist(concepts, patient, templates) {
+    const facts = patient || { ageMonths: null, sex: null };
+
+    // 1-2. Templates matching any concept and passing the patient criteria.
+    // A template matched by several concepts is collected once - the first
+    // place duplicates are trimmed. `all` is handled outside the concept loop
+    // so that a procedure with no codes still gets the global templates.
+    // Criteria are checked once per template, not per concept: a procedure
+    // has one patient however many codes it carries.
     const matched = [];
+    const excluded = [];
     templates.forEach((template) => {
-        if (template.scope === "all") {
-            matched.push({ template, via: [] });
-            return;
+        let via = [];
+        if (template.scope !== "all") {
+            via = concepts.filter((concept) =>
+                matchesConcept(template, concept),
+            );
+            if (!via.length) return;
         }
-        const via = concepts.filter((concept) =>
-            matchesConcept(template, concept),
-        );
-        if (via.length) matched.push({ template, via });
+        const failed = failedCriteria(template, facts);
+        if (failed.length) excluded.push({ template, via, failed });
+        else matched.push({ template, via });
     });
 
     // 3. Expand the active ones to candidate items, grouped by key.
@@ -140,6 +270,9 @@ function assembleChecklist(concepts, templates) {
         if (group !== 0) return group;
         const rank = scopeRank(a.template.scope) - scopeRank(b.template.scope);
         if (rank !== 0) return rank;
+        const criteria =
+            criteriaCount(a.template) - criteriaCount(b.template);
+        if (criteria !== 0) return criteria;
         const position = a.template.position - b.template.position;
         if (position !== 0) return position;
         return a.item.position - b.item.position;
@@ -154,6 +287,7 @@ function assembleChecklist(concepts, templates) {
         position: index,
         sourceTemplate: template.id,
         sourceScope: template.scope,
+        sourceCriteria: criteriaOf(template),
     }));
 
     const contributed = {};
@@ -161,17 +295,39 @@ function assembleChecklist(concepts, templates) {
         contributed[template.id] = (contributed[template.id] || 0) + 1;
     });
 
+    // A missing field only counts when it cost an active template its place;
+    // a missing date of birth with no age-restricted templates in play is not
+    // worth telling anyone about.
+    const missing = {};
+    excluded.forEach(({ template, failed }) => {
+        if (!template.active) return;
+        failed.forEach((failure) => {
+            if (failure.reason === "unknown") missing[failure.field] = true;
+        });
+    });
+
+    const describe = ({ template, via }) => ({
+        id: template.id,
+        name: template.name,
+        scope: template.scope,
+        active: template.active,
+        criteria: criteriaOf(template),
+        matchedConcepts: via.map((concept) => concept.conceptId),
+        contributed: contributed[template.id] || 0,
+    });
+
     return {
         items,
         suppressed,
-        templates: matched.map(({ template, via }) => ({
-            id: template.id,
-            name: template.name,
-            scope: template.scope,
-            active: template.active,
-            matchedConcepts: via.map((concept) => concept.conceptId),
-            contributed: contributed[template.id] || 0,
-        })),
+        templates: matched
+            .map(describe)
+            .concat(
+                excluded.map((entry) => ({
+                    ...describe(entry),
+                    excludedBy: entry.failed,
+                })),
+            ),
+        missingFacts: PATIENT_FIELDS.filter((field) => missing[field]),
     };
 }
 
@@ -204,6 +360,9 @@ function loadTemplates(app) {
             subspecialties: template.getStringSlice("subspecialties"),
             sites: template.getStringSlice("sites"),
             concepts: template.getStringSlice("concepts"),
+            sexes: template.getStringSlice("sexes"),
+            ageMinMonths: template.getInt("ageMinMonths"),
+            ageMaxMonths: template.getInt("ageMaxMonths"),
             items: items.map((item) => ({
                 itemKey: item.getString("itemKey"),
                 label: item.getString("label"),
@@ -252,6 +411,99 @@ function conceptsOfProcedure(app, procedureRecord) {
     });
 
     return concepts;
+}
+
+/** The date of a procedure's OT day, as "YYYY-MM-DD", or null. */
+function procedureDate(app, procedureRecord) {
+    const dayId = procedureRecord.getString("procedureDay");
+    if (!dayId) return null;
+    try {
+        return datePart(app.findRecordById("otDays", dayId).getString("date"));
+    } catch (err) {
+        return null;
+    }
+}
+
+/**
+ * Is this procedure's day before today? The cut-off for the patient-edit
+ * resync, the rebuild route and the patient notices - spec sections 5 and 8.1.
+ */
+function isPastProcedure(app, procedureRecord) {
+    const date = procedureDate(app, procedureRecord);
+    return !!date && date < todayDate();
+}
+
+/**
+ * The patient as assembly needs it, and as the procedure records it.
+ *
+ * `facts` is what matching reads: age in months as of the procedure's day
+ * (never today - spec section 3.1) and sex, each null when unknown. `basis` is
+ * the raw inputs those came from, stored on the procedure so the checklist can
+ * tell when the patient has since been corrected.
+ */
+function patientOfProcedure(app, procedureRecord) {
+    let dateOfBirth = null;
+    let sex = null;
+
+    const patientId = procedureRecord.getString("patient");
+    if (patientId) {
+        try {
+            const patient = app.findRecordById("patients", patientId);
+            dateOfBirth = datePart(patient.getString("dateOfBirth"));
+            const value = patient.getString("sex");
+            sex = SEXES.indexOf(value) === -1 ? null : value;
+        } catch (err) {
+            // A missing patient reads as one with nothing recorded.
+        }
+    }
+
+    return {
+        facts: {
+            ageMonths: ageInMonths(dateOfBirth, procedureDate(app, procedureRecord)),
+            sex,
+        },
+        basis: { dateOfBirth, sex },
+    };
+}
+
+/** Parse a json field's stored value, or null. */
+function readJson(record, field) {
+    try {
+        const raw = record.getString(field);
+        return raw ? JSON.parse(raw) : null;
+    } catch (err) {
+        return null;
+    }
+}
+
+/**
+ * Copy the patient side of an assembly onto the procedure.
+ *
+ * `checklistMissingFacts` drives the "not recorded" notice and
+ * `checklistPatientBasis` the "details changed" one (spec section 6). Same
+ * rules as the outstanding count: written only when a value changes, and
+ * `updater` left alone because a rebuild is not an edit of the procedure.
+ */
+function syncPatientFields(txApp, procedureId, missingFacts, basis) {
+    const procedure = txApp.findRecordById("procedures", procedureId);
+
+    const missing = missingFacts.slice().sort();
+    const storedMissing = (readJson(procedure, "checklistMissingFacts") || [])
+        .slice()
+        .sort();
+    const storedBasis = readJson(procedure, "checklistPatientBasis") || {};
+
+    const missingChanged =
+        JSON.stringify(missing) !== JSON.stringify(storedMissing);
+    const basisChanged =
+        (storedBasis.dateOfBirth || null) !== basis.dateOfBirth ||
+        (storedBasis.sex || null) !== basis.sex;
+
+    if (!missingChanged && !basisChanged) return;
+
+    procedure.set("checklistMissingFacts", missingFacts);
+    procedure.set("checklistPatientBasis", basis);
+    txApp.save(procedure);
 }
 
 /**
@@ -334,11 +586,23 @@ function isTouched(record) {
  *
  * `group` and `position` are rewritten every time; `label`, `hint` and
  * `required` are snapshots and are only ever stamped at creation.
+ *
+ * `templates` may be passed in when one request rebuilds several procedures,
+ * so the template set is read once rather than per procedure. It is the same
+ * input either way.
+ *
+ * Returns what changed, for the rebuild route to report:
+ * { added, removed, madeInapplicable, restored }.
  */
-function syncProcedureChecklist(txApp, procedureRecord) {
+function syncProcedureChecklist(txApp, procedureRecord, templates) {
     const concepts = conceptsOfProcedure(txApp, procedureRecord);
-    const templates = loadTemplates(txApp);
-    const { items } = assembleChecklist(concepts, templates);
+    const patient = patientOfProcedure(txApp, procedureRecord);
+    const { items, missingFacts } = assembleChecklist(
+        concepts,
+        patient.facts,
+        templates || loadTemplates(txApp),
+    );
+    const counts = { added: 0, removed: 0, madeInapplicable: 0, restored: 0 };
 
     const existing = txApp.findRecordsByFilter(
         "procedureChecklistItems",
@@ -402,10 +666,12 @@ function syncProcedureChecklist(txApp, procedureRecord) {
             // Layout is recomputed; the snapshots and anything staff entered
             // are left alone. An item that stopped matching and has now come
             // back becomes applicable again, tick and comment intact.
+            if (!found.getBool("applicable")) counts.restored += 1;
             found.set("group", item.group);
             found.set("position", position);
             found.set("sourceTemplate", item.sourceTemplate);
             found.set("sourceScope", item.sourceScope);
+            found.set("sourceCriteria", item.sourceCriteria);
             found.set("applicable", true);
             txApp.save(found);
             return;
@@ -421,10 +687,12 @@ function syncProcedureChecklist(txApp, procedureRecord) {
         record.set("position", position);
         record.set("sourceTemplate", item.sourceTemplate);
         record.set("sourceScope", item.sourceScope);
+        record.set("sourceCriteria", item.sourceCriteria);
         record.set("checked", false);
         record.set("applicable", true);
         record.set("custom", false);
         txApp.save(record);
+        counts.added += 1;
     });
 
     existing.forEach((record) => {
@@ -436,23 +704,42 @@ function syncProcedureChecklist(txApp, procedureRecord) {
         if (isTouched(record)) {
             // Someone asserted this was done, or recorded why it was not.
             // Keep it as a record, out of the outstanding count.
-            record.set("applicable", false);
-            txApp.save(record);
+            if (record.getBool("applicable")) {
+                record.set("applicable", false);
+                txApp.save(record);
+                counts.madeInapplicable += 1;
+            }
         } else {
             txApp.delete(record);
+            counts.removed += 1;
         }
     });
 
     syncOutstandingCount(txApp, procedureRecord.id);
+    // Every rebuild refreshes the basis, whatever triggered it, or the
+    // "details changed" notice would stay on a checklist that is current.
+    syncPatientFields(
+        txApp,
+        procedureRecord.id,
+        missingFacts,
+        patient.basis,
+    );
+
+    return counts;
 }
 
 /**
- * Assemble against an arbitrary set of concept ids, for the authoring preview.
+ * Assemble against an arbitrary set of concept ids and patient, for the
+ * authoring preview.
  *
  * Read-only: it takes catalogue ids rather than a procedure, so there is no
- * record in scope to mutate by accident.
+ * record in scope to mutate by accident. The patient is given as an age, not
+ * a date of birth - the author asks "what does a 14-year-old get" - so there
+ * is no date arithmetic here to drift from ageInMonths.
+ *
+ * @param {Object} [patient] - { ageMonths, sex }; missing or null = unknown
  */
-function previewChecklist(app, conceptIds) {
+function previewChecklist(app, conceptIds, patient) {
     const concepts = [];
     (conceptIds || []).forEach((conceptId) => {
         let concept;
@@ -476,14 +763,39 @@ function previewChecklist(app, conceptIds) {
         });
     });
 
-    return assembleChecklist(concepts, loadTemplates(app));
+    const facts = { ageMonths: null, sex: null };
+    if (patient) {
+        const age = patient.ageMonths;
+        if (age !== null && age !== undefined && age !== "") {
+            if (!Number.isInteger(age) || age < 0) {
+                throw new BadRequestError(
+                    "patient.ageMonths must be a non-negative whole number",
+                );
+            }
+            facts.ageMonths = age;
+        }
+        if (patient.sex) {
+            if (SEXES.indexOf(patient.sex) === -1) {
+                throw new BadRequestError(
+                    `Invalid patient.sex. Must be one of: ${SEXES.join(", ")}`,
+                );
+            }
+            facts.sex = patient.sex;
+        }
+    }
+
+    return assembleChecklist(concepts, facts, loadTemplates(app));
 }
 
 module.exports = {
     GROUPS,
+    SEXES,
+    ageInMonths,
     assembleChecklist,
     conceptsOfProcedure,
     customItemKey,
+    datePart,
+    isPastProcedure,
     loadTemplates,
     previewChecklist,
     syncOutstandingCount,

@@ -142,17 +142,59 @@ export const api = {
      * authoring page. Runs the same assembly as the write paths, so the answer
      * is the one a procedure would actually get.
      */
-    async previewChecklist(conceptIds) {
+    async previewChecklist(conceptIds, patient) {
         const response = await pb.send(`/api/preview-checklist`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ conceptIds }),
+            body: JSON.stringify({ conceptIds, patient }),
         });
 
         if (!response.success) {
             throw new Error(response.message || "Failed to preview checklist.");
+        }
+
+        return response;
+    },
+
+    /**
+     * Edit a patient. A route rather than a collection update, because a date
+     * of birth or sex entered where it was missing rebuilds the patient's
+     * today and future checklists in the same transaction.
+     */
+    async updatePatient(id, changes) {
+        const response = await pb.send(`/api/update-patient`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id, changes }),
+        });
+
+        if (!response.success) {
+            throw new Error(response.message || "Failed to update patient.");
+        }
+
+        return response.patient;
+    },
+
+    /**
+     * Rebuild one procedure's checklist from its current codes, day, patient
+     * and templates. Ticks and comments survive. Returns what changed:
+     * { added, removed, madeInapplicable, restored }.
+     */
+    async rebuildChecklist(procedureId) {
+        const response = await pb.send(`/api/rebuild-checklist`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ procedureId }),
+        });
+
+        if (!response.success) {
+            throw new Error(response.message || "Failed to rebuild checklist.");
         }
 
         return response;

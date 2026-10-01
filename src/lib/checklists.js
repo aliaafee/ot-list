@@ -32,6 +32,128 @@ export const SCOPE_LABEL = Object.fromEntries(
 );
 
 /**
+ * Patient sexes a template can be narrowed to. Mirrors `patients.sex` and the
+ * `sexes` select on checklistTemplates - spec section 3.1.
+ */
+export const SEXES = [
+    { value: "male", label: "Male" },
+    { value: "female", label: "Female" },
+];
+
+export const SEX_LABEL = Object.fromEntries(
+    SEXES.map((sex) => [sex.value, sex.label]),
+);
+
+/** Patient fields a checklist can be missing, as the notices name them. */
+export const PATIENT_FACT_LABEL = { age: "date of birth", sex: "sex" };
+
+/** An age in months, short: "16 y", "8 m", "1 y 6 m". */
+export function formatAgeMonths(months) {
+    const years = Math.floor(months / 12);
+    const rest = months % 12;
+    if (!years) return `${rest} m`;
+    return rest ? `${years} y ${rest} m` : `${years} y`;
+}
+
+/**
+ * A template's age range in words. The upper bound is exclusive, so it reads
+ * "under", which is why this exists: `[192, 0)` shown as "16-" would be read
+ * as inclusive.
+ */
+export function describeAgeRange(minMonths, maxMonths) {
+    const parts = [];
+    if (minMonths > 0) parts.push(`from ${formatAgeMonths(minMonths)}`);
+    if (maxMonths > 0) parts.push(`under ${formatAgeMonths(maxMonths)}`);
+    return parts.join(", ");
+}
+
+/**
+ * Patient criteria in short form - "female · from 12 y, under 55 y" - or ""
+ * when there are none. Takes a template or a `sourceCriteria` object; both
+ * carry the same three fields.
+ */
+export function describeCriteria(criteria) {
+    if (!criteria) return "";
+    const parts = [];
+    if (criteria.sexes?.length) {
+        parts.push(
+            criteria.sexes
+                .map((sex) => (SEX_LABEL[sex] || sex).toLowerCase())
+                .join(" or "),
+        );
+    }
+    const age = describeAgeRange(
+        criteria.ageMinMonths || 0,
+        criteria.ageMaxMonths || 0,
+    );
+    if (age) parts.push(age);
+    return parts.join(" · ");
+}
+
+/** How many patient criteria a template carries: sex one, age one. */
+export function criteriaCount(template) {
+    return (
+        (template.sexes?.length ? 1 : 0) +
+        (template.ageMinMonths > 0 || template.ageMaxMonths > 0 ? 1 : 0)
+    );
+}
+
+/**
+ * Could one patient satisfy both templates' criteria at once?
+ *
+ * Used to warn about a key reused under overlapping criteria, where
+ * `position` then decides which label wins - "under 16" and "under 18" both
+ * defining `consent-signed`. Criteria that cannot overlap, like "under 16"
+ * and "from 16", are the intended pattern.
+ */
+export function criteriaOverlap(a, b) {
+    const aSexes = a.sexes || [];
+    const bSexes = b.sexes || [];
+    if (
+        aSexes.length &&
+        bSexes.length &&
+        !aSexes.some((sex) => bSexes.includes(sex))
+    ) {
+        return false;
+    }
+    // Half-open ranges [min, max), with 0 meaning no bound.
+    const lo = Math.max(a.ageMinMonths || 0, b.ageMinMonths || 0);
+    const his = [a.ageMaxMonths, b.ageMaxMonths].filter((max) => max > 0);
+    return !his.length || lo < Math.min(...his);
+}
+
+/**
+ * The patient details a checklist was built from that no longer match the
+ * patient, as [{ field, from, to }]. Empty when the checklist is current, or
+ * when it predates the basis being recorded.
+ *
+ * Plain equality on the stored inputs, deliberately: no age arithmetic here,
+ * so there is no second copy of the server's ageInMonths to drift. It can
+ * report a change that moves no age band, and the rebuild then says so.
+ */
+export function patientChanges(basis, patient) {
+    if (!basis || !patient) return [];
+    const current = {
+        dateOfBirth: patient.dateOfBirth
+            ? String(patient.dateOfBirth).slice(0, 10)
+            : null,
+        sex: patient.sex || null,
+    };
+    const changes = [];
+    if ((basis.dateOfBirth || null) !== current.dateOfBirth) {
+        changes.push({
+            field: "dateOfBirth",
+            from: basis.dateOfBirth || null,
+            to: current.dateOfBirth,
+        });
+    }
+    if ((basis.sex || null) !== current.sex) {
+        changes.push({ field: "sex", from: basis.sex || null, to: current.sex });
+    }
+    return changes;
+}
+
+/**
  * An itemKey is the identity of an item, not its wording: it is what dedupe
  * matches on and what ticks are recorded against. Slug-shaped so it stays
  * stable while labels are edited.

@@ -491,6 +491,7 @@ export function ProcedureListProvider({ children }) {
             getProcedureError,
             discardProcedureUpdate,
             reloadProcedure,
+            showToast,
             loading,
             error,
         };

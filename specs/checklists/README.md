@@ -1,15 +1,17 @@
 # Procedure checklists
 
-Status: **implemented**, steps 1-7 of §12. The append-only audit under
-"Deferred" is not built, and templates are deliberately not versioned (§11.1).
+Status: **implemented**, steps 1-14 of §12, including patient criteria (§3.1,
+matching on patient age and sex). The append-only audit under "Deferred" is
+not built, and templates are deliberately not versioned (§11.1).
 
-**Patient criteria** (§3.1, matching on patient age and sex) are **specified,
-not built** — steps 8-14 of §12. Every passage below that mentions them
-describes intended behaviour, not current code.
-
-Assembly (§4) is covered by unit tests over the pure function; the write path
-and reconciliation (§7) were exercised end to end against a copy of the dev
-database. Nothing here has been driven through the browser.
+Assembly (§4) and `ageInMonths` (§3.1) are covered by unit tests over the pure
+functions; the write path, reconciliation (§7), the patient-criteria migration
+and backfill, and the `update-patient` and `rebuild-checklist` routes (§5) were
+exercised end to end against a copy of the dev database. The patient-criteria
+UI — the notices and Rebuild button (§8.1), the template form's Patients block
+(§8.2) and the preview's patient inputs (§8.3) — was checked in headless
+Chrome against the same copy. The rest of the UI has not been driven through
+the browser.
 
 This spec follows the conventions of
 [`specs/procedure_codes/README.md`](../procedure_codes/README.md) and depends on

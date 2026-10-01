@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ClipboardPasteIcon, UserPenIcon } from "lucide-react";
 import ModalWindow from "./modal-window";
 import { PatientForm, validatePatient } from "@/forms/patient-form";
-import { pb } from "@/lib/pb";
+import { api } from "@/lib/api";
 import dayjs from "dayjs";
 import {
     ToolBar,
@@ -84,9 +84,9 @@ export default function EditPatientModal({ patient, onCancel, onSuccess }) {
 
         setLoading(true);
         try {
-            const updated = await pb
-                .collection("patients")
-                .update(patient.id, editedPatient);
+            // Through the route, not the collection: entering a missing date
+            // of birth or sex rebuilds the patient's checklists.
+            const updated = await api.updatePatient(patient.id, editedPatient);
             onSuccess?.(updated);
         } catch (error) {
             console.error("Failed to update patient:", error);

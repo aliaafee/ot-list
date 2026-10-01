@@ -177,7 +177,7 @@ routerAdd(
         const { PROCEDURE_EXPAND, syncProcedureCodes } = require(
             `${__hooks}/procedure-codes.js`,
         );
-        const { syncProcedureChecklist } = require(
+        const { loadTemplates, syncProcedureChecklist } = require(
             `${__hooks}/procedure-checklists.js`,
         );
 
@@ -185,6 +185,13 @@ routerAdd(
 
         try {
             $app.runInTransaction((txApp) => {
+                // Read once per request, on first need: moving a day's worth
+                // of procedures would otherwise reload every template for
+                // each one.
+                let templates = null;
+                const templatesOnce = () =>
+                    templates || (templates = loadTemplates(txApp));
+
                 data.procedures.forEach((procedureUpdate) => {
                     if (!procedureUpdate.id) {
                         throw new BadRequestError(
@@ -213,10 +220,20 @@ routerAdd(
                             record,
                             changes.procedureCodes,
                         );
-                        // Same guard: the checklist only needs rebuilding
-                        // when the codes it was assembled from have changed.
-                        // Reconciles rather than replaces, so ticks survive.
-                        syncProcedureChecklist(txApp, record);
+                    }
+
+                    // The checklist is rebuilt when anything it was assembled
+                    // from changes: the codes, the day (age is computed as of
+                    // the procedure's day, and a move can cross a birthday),
+                    // or the patient. After the codes are written, so it reads
+                    // the new ones. Reconciles rather than replaces, so ticks
+                    // survive. Reordering and removing send none of these.
+                    if (
+                        changes.procedureCodes !== undefined ||
+                        changes.procedureDay !== undefined ||
+                        changes.patient !== undefined
+                    ) {
+                        syncProcedureChecklist(txApp, record, templatesOnce());
                     }
 
                     updated.push(record.id);
@@ -554,13 +571,23 @@ routerAdd(
             throw new BadRequestError("conceptIds must be an array");
         }
 
+        // Optional; a missing patient, or a missing or null field in it, is
+        // unknown - the same path a real patient with nothing recorded takes.
+        if (
+            data.patient !== undefined &&
+            data.patient !== null &&
+            typeof data.patient !== "object"
+        ) {
+            throw new BadRequestError("patient must be an object");
+        }
+
         const { previewChecklist } = require(
             `${__hooks}/procedure-checklists.js`,
         );
 
         // No transaction: this reads and returns, and takes catalogue ids
         // rather than a procedure id so there is nothing in scope to mutate.
-        const result = previewChecklist($app, conceptIds);
+        const result = previewChecklist($app, conceptIds, data.patient);
 
         return e.json(200, { success: true, ...result });
     },
@@ -716,6 +743,198 @@ routerAdd(
             console.error("[remove-checklist-item] Transaction error:", error);
             throw new BadRequestError(
                 `Failed to remove checklist item: ${error.message}`,
+            );
+        }
+    },
+    $apis.requireAuth(),
+);
+
+// POST /api/update-patient
+// Edits a patient, and when a date of birth or sex is entered where it was
+// missing, rebuilds that patient's today and future checklists in the same
+// transaction. A route rather than the collection update rule (now closed) so
+// that rebuild cannot be skipped. Only a first entry rebuilds: correcting or
+// clearing a recorded value leaves checklists alone, and each one shows that
+// the patient has changed since it was built (specs/checklists/README.md,
+// section 5).
+routerAdd(
+    "POST",
+    "/api/update-patient",
+    (e) => {
+        const authRecord = e.auth;
+        if (!authRecord) {
+            throw new UnauthorizedError("Authentication required");
+        }
+
+        // The roles the patients update rule allowed before this route
+        // replaced it.
+        const role = authRecord.getString("role");
+        if (!(role === "doctor" || role === "admin")) {
+            throw new ForbiddenError("Not authorized to update patient");
+        }
+
+        const data = e.requestInfo().body;
+
+        if (!data.id) {
+            throw new BadRequestError("Missing required field: id");
+        }
+        if (!data.changes || typeof data.changes !== "object") {
+            throw new BadRequestError("Missing required field: changes");
+        }
+
+        // What the patient form edits. Anything else - creator, a stray id -
+        // is not the client's to set.
+        const EDITABLE = [
+            "nid",
+            "hospitalId",
+            "name",
+            "dateOfBirth",
+            "sex",
+            "phone",
+            "address",
+        ];
+
+        const {
+            datePart,
+            isPastProcedure,
+            loadTemplates,
+            syncProcedureChecklist,
+        } = require(`${__hooks}/procedure-checklists.js`);
+
+        let patient = null;
+        let rebuilt = 0;
+
+        try {
+            $app.runInTransaction((txApp) => {
+                patient = txApp.findRecordById("patients", data.id);
+
+                const before = {
+                    dateOfBirth: datePart(patient.getString("dateOfBirth")),
+                    sex: patient.getString("sex"),
+                };
+
+                EDITABLE.forEach((key) => {
+                    if (data.changes[key] !== undefined) {
+                        patient.set(key, data.changes[key]);
+                    }
+                });
+                patient.set("updater", authRecord.id);
+                txApp.save(patient);
+
+                const after = {
+                    dateOfBirth: datePart(patient.getString("dateOfBirth")),
+                    sex: patient.getString("sex"),
+                };
+
+                // Compared on stored values, not on which keys were sent: the
+                // edit modal sends the whole form every time.
+                const firstEntry =
+                    (!before.dateOfBirth && !!after.dateOfBirth) ||
+                    (!before.sex && !!after.sex);
+                if (!firstEntry) return;
+
+                // Past procedures keep the checklist they had on the day.
+                const procedures = txApp
+                    .findRecordsByFilter(
+                        "procedures",
+                        "patient = {:patient} && removed = false",
+                        "",
+                        0,
+                        0,
+                        { patient: patient.id },
+                    )
+                    .filter((procedure) => !isPastProcedure(txApp, procedure));
+
+                if (!procedures.length) return;
+
+                const templates = loadTemplates(txApp);
+                procedures.forEach((procedure) => {
+                    syncProcedureChecklist(txApp, procedure, templates);
+                    rebuilt += 1;
+                });
+                console.log(
+                    `[update-patient] Rebuilt ${rebuilt} checklist(s) for ${patient.id}`,
+                );
+            });
+
+            return e.json(200, { success: true, patient, rebuilt });
+        } catch (error) {
+            console.error("[update-patient] Transaction error:", error);
+            throw new BadRequestError(
+                `Failed to update patient: ${error.message}`,
+            );
+        }
+    },
+    $apis.requireAuth(),
+);
+
+// POST /api/rebuild-checklist
+// Rebuilds one procedure's checklist from its current codes, day, patient and
+// templates. Offered by the "patient details have changed" notice. The same
+// reconciliation as every other trigger, so ticks, comments and custom items
+// survive - which is why it needs no confirm step.
+routerAdd(
+    "POST",
+    "/api/rebuild-checklist",
+    (e) => {
+        const authRecord = e.auth;
+        if (!authRecord) {
+            throw new UnauthorizedError("Authentication required");
+        }
+
+        const role = authRecord.getString("role");
+        if (!(role === "doctor" || role === "admin")) {
+            throw new ForbiddenError("Not authorized to rebuild checklist");
+        }
+
+        const data = e.requestInfo().body;
+
+        if (!data.procedureId) {
+            throw new BadRequestError("Missing required field: procedureId");
+        }
+
+        const { isPastProcedure, syncProcedureChecklist } = require(
+            `${__hooks}/procedure-checklists.js`,
+        );
+
+        let procedure;
+        try {
+            procedure = $app.findRecordById("procedures", data.procedureId);
+        } catch (err) {
+            throw new NotFoundError("Procedure not found");
+        }
+
+        if (procedure.getBool("removed")) {
+            throw new BadRequestError(
+                "Checklists of removed procedures are not rebuilt",
+            );
+        }
+        // Enforced here as well as by the checklist hiding its button, so a
+        // stale tab or a direct call cannot rewrite a completed procedure's
+        // checklist.
+        if (isPastProcedure($app, procedure)) {
+            throw new BadRequestError(
+                "Checklists of past procedures are not rebuilt",
+            );
+        }
+
+        let counts = null;
+
+        try {
+            $app.runInTransaction((txApp) => {
+                // Deliberately does not set `updater`: rebuilding a checklist
+                // is not an edit of the procedure.
+                counts = syncProcedureChecklist(
+                    txApp,
+                    txApp.findRecordById("procedures", procedure.id),
+                );
+            });
+
+            return e.json(200, { success: true, ...counts });
+        } catch (error) {
+            console.error("[rebuild-checklist] Transaction error:", error);
+            throw new BadRequestError(
+                `Failed to rebuild checklist: ${error.message}`,
             );
         }
     },

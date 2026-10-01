@@ -14,11 +14,20 @@ import { twMerge } from "tailwind-merge";
 import Button from "@/components/button";
 import FormField from "@/components/form-field";
 import MultiSelectField from "@/components/multi-select-field";
+import AgeBoundField from "@/components/age-bound-field";
 import ChecklistTemplateItems from "@/components/checklist-template-items";
 import ChecklistPreview from "@/components/checklist-preview";
 import ModalWindow from "@/modals/modal-window";
 import { pb } from "@/lib/pb";
-import { SCOPES, SCOPE_LABEL } from "@/lib/checklists";
+import {
+    SCOPES,
+    SCOPE_LABEL,
+    SEXES,
+    criteriaCount,
+    criteriaOverlap,
+    describeAgeRange,
+    describeCriteria,
+} from "@/lib/checklists";
 
 /** Which target field each scope reads, and what to call it. */
 const SCOPE_TARGET = {
@@ -48,6 +57,9 @@ const BLANK_TEMPLATE = {
     subspecialties: [],
     sites: [],
     concepts: [],
+    sexes: [],
+    ageMinMonths: 0,
+    ageMaxMonths: 0,
 };
 
 /**
@@ -87,6 +99,79 @@ export default {
             // overlap - and whether the last one landed, shown for a moment.
             const [updating, setUpdating] = useState(0);
             const [saved, setSaved] = useState(false);
+            // Every template and every item key, for the overlap warning.
+            // Reloaded when this template's items change.
+            const [allTemplates, setAllTemplates] = useState([]);
+            const [allKeys, setAllKeys] = useState([]);
+            const [keysVersion, setKeysVersion] = useState(0);
+
+            useEffect(() => {
+                if (creating) return;
+                let ignore = false;
+                (async () => {
+                    try {
+                        const [templateRecords, keyRecords] =
+                            await Promise.all([
+                                pb
+                                    .collection("checklistTemplates")
+                                    .getFullList({
+                                        fields: "id,name,scope,sexes,ageMinMonths,ageMaxMonths",
+                                        requestKey:
+                                            "checklist-admin-overlap-templates",
+                                    }),
+                                pb
+                                    .collection("checklistTemplateItems")
+                                    .getFullList({
+                                        fields: "itemKey,template",
+                                        requestKey:
+                                            "checklist-admin-overlap-keys",
+                                    }),
+                            ]);
+                        if (ignore) return;
+                        setAllTemplates(templateRecords);
+                        setAllKeys(keyRecords);
+                    } catch (err) {
+                        // A warning is a convenience; editing still works.
+                        console.error("Error loading key overlaps:", err);
+                    }
+                })();
+                return () => {
+                    ignore = true;
+                };
+            }, [creating, keysVersion]);
+
+            // Keys this template shares with another at the same scope and
+            // criteria count, where one patient could satisfy both: Order
+            // then decides the label, which is rarely what was meant. Plain
+            // reuse with no criteria on either side is how dedupe is meant to
+            // work and is not warned about.
+            const overlaps = useMemo(() => {
+                if (creating || !criteriaCount(template)) return [];
+                const byId = Object.fromEntries(
+                    allTemplates.map((other) => [other.id, other]),
+                );
+                const mine = new Set(
+                    allKeys
+                        .filter((key) => key.template === record.id)
+                        .map((key) => key.itemKey),
+                );
+                return allKeys
+                    .filter(
+                        (key) =>
+                            key.template !== record.id && mine.has(key.itemKey),
+                    )
+                    .map((key) => ({
+                        itemKey: key.itemKey,
+                        template: byId[key.template],
+                    }))
+                    .filter(
+                        ({ template: other }) =>
+                            other &&
+                            other.scope === template.scope &&
+                            criteriaCount(other) === criteriaCount(template) &&
+                            criteriaOverlap(other, template),
+                    );
+            }, [creating, template, allTemplates, allKeys, record]);
 
             useEffect(() => {
                 if (!saved) return;
@@ -223,6 +308,43 @@ export default {
                         ).map((field) => [field, []]),
                     ),
                 });
+
+            // Refusing every sex rather than saving it: it looks like "any
+            // sex" but counts as a criterion in dedupe, and if the patients
+            // vocabulary gains a value, a template meant for everyone would
+            // silently stop matching those patients - spec section 8.2.
+            const changeSexes = (sexes) => {
+                if (sexes.length >= SEXES.length) {
+                    setError(
+                        "Leave sex empty to mean any sex, rather than choosing every option.",
+                    );
+                    return;
+                }
+                setError("");
+                change({ sexes });
+            };
+
+            /** One age bound, in months. False refuses it. */
+            const changeAge = (field, months) => {
+                if (months === null) {
+                    setError("Age must be a whole number of months or years.");
+                    return false;
+                }
+                const next = { ...template, [field]: months };
+                if (
+                    next.ageMinMonths > 0 &&
+                    next.ageMaxMonths > 0 &&
+                    next.ageMinMonths >= next.ageMaxMonths
+                ) {
+                    setError(
+                        `"From" must be below "Under" - the upper age is exclusive.`,
+                    );
+                    return false;
+                }
+                setError("");
+                change({ [field]: months });
+                return true;
+            };
 
             const create = async () => {
                 if (!template.name.trim()) {
@@ -388,6 +510,100 @@ export default {
                                     </p>
                                 </div>
                             )}
+
+                            {/* Independent of scope: changing scope leaves
+                                these alone. Spec section 3.1. */}
+                            <div className="md:col-span-2 border-t border-gray-300 pt-2 mt-1">
+                                <span className="text-sm text-gray-700">
+                                    Patients
+                                </span>
+                                <p className="text-xs text-gray-500">
+                                    Narrow this template to patients of a sex or
+                                    age range. When a patient's date of birth or
+                                    sex is not recorded, a template that needs
+                                    it is left out.
+                                </p>
+                            </div>
+
+                            <div className="flex flex-col md:col-span-2">
+                                <span className="text-xs text-left text-gray-700">
+                                    Sex
+                                </span>
+                                <p>
+                                    <MultiSelectField
+                                        label="Sex"
+                                        options={SEXES}
+                                        value={template.sexes || []}
+                                        emptyLabel="Any sex"
+                                        disabled={busy}
+                                        onChange={changeSexes}
+                                    />
+                                </p>
+                            </div>
+
+                            <div className="flex flex-wrap items-end gap-4 md:col-span-2">
+                                <AgeBoundField
+                                    key={`min-${template.ageMinMonths || 0}`}
+                                    label="From age"
+                                    months={template.ageMinMonths || 0}
+                                    disabled={busy}
+                                    onCommit={(months) =>
+                                        changeAge("ageMinMonths", months)
+                                    }
+                                />
+                                <AgeBoundField
+                                    key={`max-${template.ageMaxMonths || 0}`}
+                                    label="Under age"
+                                    months={template.ageMaxMonths || 0}
+                                    disabled={busy}
+                                    onCommit={(months) =>
+                                        changeAge("ageMaxMonths", months)
+                                    }
+                                />
+                                <span className="text-sm text-gray-600 pb-1">
+                                    {describeAgeRange(
+                                        template.ageMinMonths || 0,
+                                        template.ageMaxMonths || 0,
+                                    ) || "Any age"}
+                                </span>
+                            </div>
+
+                            {overlaps.length > 0 && (
+                                <div className="md:col-span-2 bg-amber-50 border border-amber-400 rounded-md p-2 text-xs text-amber-800">
+                                    <div className="font-semibold">
+                                        Keys shared under overlapping patient
+                                        criteria
+                                    </div>
+                                    <p>
+                                        A patient can match both templates, and
+                                        at the same scope and criteria count,
+                                        Order decides whose item wins.
+                                    </p>
+                                    <ul className="mt-1">
+                                        {overlaps.map((overlap) => (
+                                            <li
+                                                key={`${overlap.itemKey}-${overlap.template.id}`}
+                                            >
+                                                <span className="font-mono">
+                                                    {overlap.itemKey}
+                                                </span>{" "}
+                                                also in{" "}
+                                                <Link
+                                                    to={`/settings/checklists/${overlap.template.id}`}
+                                                    className="underline"
+                                                >
+                                                    {overlap.template.name}
+                                                </Link>{" "}
+                                                (
+                                                {describeCriteria(
+                                                    overlap.template,
+                                                ) || "any patient"}
+                                                )
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
                         </div>
                         {creating && (
                             <div className="mt-3 flex gap-2">
@@ -417,7 +633,10 @@ export default {
                                reloads on any change of identity to this prop
                                and reads only the id, so handing it a fresh
                                object on every property save would refetch. */
-                            <ChecklistTemplateItems template={record} />
+                            <ChecklistTemplateItems
+                                template={record}
+                                onChanged={() => setKeysVersion((v) => v + 1)}
+                            />
                         )}
                     </div>
                 </div>
@@ -479,6 +698,7 @@ export default {
                     template.name,
                     template.description,
                     SCOPE_LABEL[template.scope],
+                    describeCriteria(template),
                 ].some((field) => (field || "").toLowerCase().includes(query)),
             );
         }, [templates, search]);
@@ -553,6 +773,9 @@ export default {
                                             Applies to
                                         </th>
                                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                            Patients
+                                        </th>
+                                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                             Order
                                         </th>
                                         <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
@@ -583,6 +806,16 @@ export default {
                                             <td className="px-3 py-2 text-sm">
                                                 {SCOPE_LABEL[template.scope] ||
                                                     template.scope}
+                                            </td>
+                                            <td
+                                                className={twMerge(
+                                                    "px-3 py-2 text-sm",
+                                                    !criteriaCount(template) &&
+                                                        "text-gray-500",
+                                                )}
+                                            >
+                                                {describeCriteria(template) ||
+                                                    "Any"}
                                             </td>
                                             <td className="px-3 py-2 text-sm">
                                                 {template.position}
@@ -627,9 +860,10 @@ export default {
                         onCancel={() => setShowPreview(false)}
                     >
                         <p className="text-sm text-gray-600 mb-2">
-                            Pick the codes a procedure would carry and see what
-                            it would be given, which template won each item, and
-                            what was overridden.
+                            Pick the codes a procedure would carry and the
+                            patient's age and sex, and see what it would be
+                            given, which template won each item, what was
+                            overridden, and what the patient criteria left out.
                         </p>
                         {/* Nothing on this page edits a template, so the
                             preview is never showing data this page has made

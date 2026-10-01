@@ -4,7 +4,26 @@ import { twMerge } from "tailwind-merge";
 
 import ProcedureCodeBrowserModal from "@/modals/procedure-code-browser-modal";
 import { api } from "@/lib/api";
-import { GROUP_LABEL, SCOPE_LABEL, withGroupHeadings } from "@/lib/checklists";
+import {
+    GROUP_LABEL,
+    PATIENT_FACT_LABEL,
+    SCOPE_LABEL,
+    SEXES,
+    describeCriteria,
+    formatAgeMonths,
+    withGroupHeadings,
+} from "@/lib/checklists";
+
+/** Why a patient criterion excluded a template, for the preview patient. */
+function describeExclusion(failure, patient) {
+    if (failure.reason === "unknown") {
+        return failure.field === "age" ? "age unknown" : "sex unknown";
+    }
+    if (failure.field === "age") {
+        return `patient is ${formatAgeMonths(patient.ageMonths)}`;
+    }
+    return `patient is ${patient.sex}`;
+}
 
 /**
  * ChecklistPreview - what a procedure coded like this would actually get
@@ -29,6 +48,28 @@ function ChecklistPreview({ stale = false }) {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
     const [runKey, setRunKey] = useState(0);
+    // The preview patient. Both start unknown - the narrowest case, as for a
+    // patient with nothing recorded - with every template that needed a
+    // value listed as excluded, so what is being left out is visible at once.
+    const [ageText, setAgeText] = useState("");
+    const [ageUnit, setAgeUnit] = useState("years");
+    const [sex, setSex] = useState("");
+
+    // An age, not a date of birth: the author asks "what does a 14-year-old
+    // get", and inventing two dates to say that adds nothing.
+    const ageNumber = ageText.trim() === "" ? null : Number(ageText);
+    const ageMonths =
+        ageNumber === null
+            ? null
+            : ageUnit === "years"
+              ? ageNumber * 12
+              : ageNumber;
+    const ageValid =
+        ageMonths === null || (Number.isInteger(ageMonths) && ageMonths >= 0);
+    const patient = {
+        ageMonths: ageValid ? ageMonths : null,
+        sex: sex || null,
+    };
 
     useEffect(() => {
         let ignore = false;
@@ -36,6 +77,7 @@ function ChecklistPreview({ stale = false }) {
             try {
                 const response = await api.previewChecklist(
                     concepts.map((concept) => concept.conceptId),
+                    patient,
                 );
                 if (ignore) return;
                 setResult(response);
@@ -52,7 +94,9 @@ function ChecklistPreview({ stale = false }) {
         return () => {
             ignore = true;
         };
-    }, [concepts, runKey]);
+        // `patient` is rebuilt each render; its two values are the real deps.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [concepts, runKey, patient.ageMonths, patient.sex]);
 
     const addConcept = (concept) => {
         setBrowsing(false);
@@ -65,6 +109,13 @@ function ChecklistPreview({ stale = false }) {
     };
 
     const rows = withGroupHeadings(result?.items || []);
+    const matchedTemplates = (result?.templates || []).filter(
+        (template) => !template.excludedBy,
+    );
+    const excludedTemplates = (result?.templates || []).filter(
+        (template) => template.excludedBy,
+    );
+    const missing = result?.missingFacts || [];
 
     return (
         <div className="flex flex-col gap-2">
@@ -126,9 +177,63 @@ function ChecklistPreview({ stale = false }) {
                 </button>
             </div>
 
+            <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm text-gray-600">Patient:</span>
+                <input
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={ageText}
+                    placeholder="age unknown"
+                    className={twMerge(
+                        "w-32 px-2 py-0.5 border border-gray-300 rounded-md bg-white text-sm",
+                        !ageValid && "border-red-500",
+                    )}
+                    onChange={(e) => setAgeText(e.target.value)}
+                />
+                <select
+                    value={ageUnit}
+                    className="px-1 py-0.5 border border-gray-300 rounded-md bg-white text-sm"
+                    onChange={(e) => setAgeUnit(e.target.value)}
+                >
+                    <option value="years">years</option>
+                    <option value="months">months</option>
+                </select>
+                <select
+                    value={sex}
+                    className="px-1 py-0.5 border border-gray-300 rounded-md bg-white text-sm"
+                    onChange={(e) => setSex(e.target.value)}
+                >
+                    <option value="">Sex unknown</option>
+                    {SEXES.map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
+                {!ageValid && (
+                    <span className="text-xs text-red-600">
+                        Age must be a whole number of months; previewing as
+                        unknown.
+                    </span>
+                )}
+            </div>
+
             {!!error && (
                 <div className="bg-red-400/20 rounded-md p-2 text-sm">
                     {error}
+                </div>
+            )}
+
+            {!loading && missing.length > 0 && (
+                <div className="bg-amber-50 border border-amber-400 rounded-md p-2 text-sm text-amber-800">
+                    {missing
+                        .map((field) => PATIENT_FACT_LABEL[field] || field)
+                        .join(" and ")
+                        .replace(/^./, (c) => c.toUpperCase())}{" "}
+                    not recorded:{" "}
+                    {missing.length > 1 ? "age- and sex" : missing[0]}-specific
+                    items have been left out. This is what a ward would see.
                 </div>
             )}
 
@@ -174,6 +279,10 @@ function ChecklistPreview({ stale = false }) {
                                                 {SCOPE_LABEL[
                                                     row.item.sourceScope
                                                 ] || row.item.sourceScope}
+                                                {!!describeCriteria(
+                                                    row.item.sourceCriteria,
+                                                ) &&
+                                                    ` · ${describeCriteria(row.item.sourceCriteria)}`}
                                             </span>
                                         </li>
                                     ),
@@ -223,16 +332,16 @@ function ChecklistPreview({ stale = false }) {
 
                             <div>
                                 <div className="text-sm font-semibold mb-1">
-                                    Matched templates ({result.templates.length}
+                                    Matched templates ({matchedTemplates.length}
                                     )
                                 </div>
                                 <ul className="text-sm bg-white rounded-md border border-gray-200 p-2">
-                                    {result.templates.length === 0 && (
+                                    {matchedTemplates.length === 0 && (
                                         <li className="text-gray-500 text-xs">
                                             No template matches.
                                         </li>
                                     )}
-                                    {result.templates.map((template) => (
+                                    {matchedTemplates.map((template) => (
                                         <li
                                             key={template.id}
                                             className={twMerge(
@@ -246,6 +355,10 @@ function ChecklistPreview({ stale = false }) {
                                                 {" — "}
                                                 {SCOPE_LABEL[template.scope] ||
                                                     template.scope}
+                                                {!!describeCriteria(
+                                                    template.criteria,
+                                                ) &&
+                                                    ` · ${describeCriteria(template.criteria)}`}
                                                 , {template.contributed} item
                                                 {template.contributed === 1
                                                     ? ""
@@ -264,6 +377,56 @@ function ChecklistPreview({ stale = false }) {
                                                         contributes nothing
                                                     </span>
                                                 )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* Scope matched, patient criteria did not - the
+                                answer to "why does my template not apply to
+                                this patient". */}
+                            <div>
+                                <div className="text-sm font-semibold mb-1">
+                                    Excluded by patient criteria (
+                                    {excludedTemplates.length})
+                                </div>
+                                <ul className="text-sm bg-white rounded-md border border-gray-200 p-2">
+                                    {excludedTemplates.length === 0 && (
+                                        <li className="text-gray-500 text-xs">
+                                            None.
+                                        </li>
+                                    )}
+                                    {excludedTemplates.map((template) => (
+                                        <li
+                                            key={template.id}
+                                            className={twMerge(
+                                                "py-0.5",
+                                                !template.active &&
+                                                    "text-gray-400",
+                                            )}
+                                        >
+                                            {template.name}
+                                            <span className="text-xs text-gray-500">
+                                                {" — "}
+                                                {describeCriteria(
+                                                    template.criteria,
+                                                )}
+                                                {" — "}
+                                                {template.excludedBy
+                                                    .map((failure) =>
+                                                        describeExclusion(
+                                                            failure,
+                                                            patient,
+                                                        ),
+                                                    )
+                                                    .join(", ")}
+                                            </span>
+                                            {!template.active && (
+                                                <span className="text-xs">
+                                                    {" "}
+                                                    (inactive)
+                                                </span>
+                                            )}
                                         </li>
                                     ))}
                                 </ul>
