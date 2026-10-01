@@ -1,16 +1,19 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import {
     CheckIcon,
     ChevronRightIcon,
+    DownloadIcon,
     ListChecksIcon,
     LoaderCircleIcon,
     PlusIcon,
     TrashIcon,
+    UploadIcon,
     ViewIcon,
     XIcon,
 } from "lucide-react";
 import { twMerge } from "tailwind-merge";
+import dayjs from "dayjs";
 
 import Button from "@/components/button";
 import FormField from "@/components/form-field";
@@ -19,6 +22,8 @@ import AgeBoundField from "@/components/age-bound-field";
 import ChecklistTemplateItems from "@/components/checklist-template-items";
 import ChecklistPreview from "@/components/checklist-preview";
 import ModalWindow from "@/modals/modal-window";
+import ImportChecklistTemplatesModal from "@/modals/import-checklist-templates-modal";
+import { api } from "@/lib/api";
 import { pb } from "@/lib/pb";
 import {
     SCOPES,
@@ -718,6 +723,12 @@ export default {
         const [loading, setLoading] = useState(true);
         const [error, setError] = useState("");
         const [showPreview, setShowPreview] = useState(false);
+        const [reloadKey, setReloadKey] = useState(0);
+        const [exporting, setExporting] = useState(false);
+        const [notice, setNotice] = useState("");
+        // The parsed file waiting for the admin to confirm, and its name.
+        const [importing, setImporting] = useState(null);
+        const fileInput = useRef(null);
 
         useEffect(() => {
             let ignore = false;
@@ -743,7 +754,64 @@ export default {
             return () => {
                 ignore = true;
             };
-        }, []);
+        }, [reloadKey]);
+
+        // Downloads every template as one file. Built from the server's
+        // export, which writes catalogue ids rather than record ids so the
+        // file imports into another database.
+        const exportTemplates = async () => {
+            setExporting(true);
+            setError("");
+            setNotice("");
+            try {
+                const data = await api.exportChecklistTemplates();
+                const blob = new Blob([JSON.stringify(data, null, 2)], {
+                    type: "application/json",
+                });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = `checklist-templates-${dayjs().format("YYYY-MM-DD")}.json`;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error("Error exporting templates:", err);
+                setError(err?.message || "Failed to export the templates.");
+            } finally {
+                setExporting(false);
+            }
+        };
+
+        // Reads and parses the chosen file, then hands it to the import modal,
+        // which checks it on the server before anything is written.
+        const chooseImportFile = async (e) => {
+            const chosen = e.target.files?.[0];
+            // Cleared so choosing the same file again still fires a change.
+            e.target.value = "";
+            if (!chosen) return;
+            setError("");
+            setNotice("");
+            try {
+                const file = JSON.parse(await chosen.text());
+                setImporting({ file, fileName: chosen.name });
+            } catch (err) {
+                console.error("Error reading import file:", err);
+                setError(`${chosen.name} is not a valid JSON file.`);
+            }
+        };
+
+        const finishImport = (result) => {
+            setImporting(null);
+            setNotice(
+                `Imported ${result.created} template${result.created === 1 ? "" : "s"}` +
+                    (result.skipped.length
+                        ? `; skipped ${result.skipped.length} whose name was already taken.`
+                        : "."),
+            );
+            setReloadKey((key) => key + 1);
+        };
 
         const setSearch = (value) => {
             const params = new URLSearchParams(searchParams);
@@ -807,11 +875,41 @@ export default {
                             <ViewIcon size={16} />
                             Preview
                         </Button>
+                        <Button
+                            className="gap-2 whitespace-nowrap py-1"
+                            variant="secondary"
+                            loading={exporting}
+                            disabled={exporting}
+                            onClick={exportTemplates}
+                        >
+                            <DownloadIcon size={16} />
+                            Export
+                        </Button>
+                        <Button
+                            className="gap-2 whitespace-nowrap py-1"
+                            variant="secondary"
+                            onClick={() => fileInput.current?.click()}
+                        >
+                            <UploadIcon size={16} />
+                            Import
+                        </Button>
+                        <input
+                            ref={fileInput}
+                            type="file"
+                            accept="application/json,.json"
+                            className="hidden"
+                            onChange={chooseImportFile}
+                        />
                     </div>
 
                     {error && (
                         <div className="bg-red-400/20 rounded-md p-2 mb-2 text-sm">
                             {error}
+                        </div>
+                    )}
+                    {notice && (
+                        <div className="bg-green-100 border border-green-400 rounded-md p-2 mb-2 text-sm text-green-800">
+                            {notice}
                         </div>
                     )}
 
@@ -913,6 +1011,15 @@ export default {
                         </div>
                     )}
                 </div>
+
+                {importing && (
+                    <ImportChecklistTemplatesModal
+                        file={importing.file}
+                        fileName={importing.fileName}
+                        onCancel={() => setImporting(null)}
+                        onImported={finishImport}
+                    />
+                )}
 
                 {showPreview && (
                     <ModalWindow

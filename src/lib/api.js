@@ -159,6 +159,36 @@ export const api = {
     },
 
     /**
+     * Every checklist template with its items, as the JSON export file.
+     * Sites and concepts are catalogue ids, so the file imports into another
+     * database.
+     */
+    async exportChecklistTemplates() {
+        return await pb.send(`/api/export-checklist-templates`, {
+            method: "GET",
+        });
+    },
+
+    /**
+     * Import templates from an export file. With `dryRun`, nothing is written
+     * and the result says what would happen. Validation problems come back in
+     * `errors` rather than as a thrown error - the caller shows them - and
+     * nothing is written when there are any.
+     *
+     * @returns {Promise<Object>} { success, created, templates, skipped,
+     *   warnings, errors }
+     */
+    async importChecklistTemplates(file, { dryRun = false, inactive = false } = {}) {
+        return await pb.send(`/api/import-checklist-templates`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ file, dryRun, inactive }),
+        });
+    },
+
+    /**
      * Edit a patient. A route rather than a collection update, because a date
      * of birth or sex entered where it was missing rebuilds the patient's
      * today and future checklists in the same transaction.

@@ -940,3 +940,76 @@ routerAdd(
     },
     $apis.requireAuth(),
 );
+
+// GET /api/export-checklist-templates
+// Every checklist template with its items, as a JSON file that can be
+// imported into another database. Sites and concepts are written as their
+// catalogue ids, never record ids (specs/checklists/README.md, section 8.4).
+routerAdd(
+    "GET",
+    "/api/export-checklist-templates",
+    (e) => {
+        const authRecord = e.auth;
+        if (!authRecord) {
+            throw new UnauthorizedError("Authentication required");
+        }
+        if (authRecord.getString("role") !== "admin") {
+            throw new ForbiddenError("Not authorized to export checklists");
+        }
+
+        const { exportTemplates } = require(
+            `${__hooks}/checklist-templates-io.js`,
+        );
+
+        return e.json(200, exportTemplates($app));
+    },
+    $apis.requireAuth(),
+);
+
+// POST /api/import-checklist-templates
+// Creates templates from an exported file, all or nothing, in one
+// transaction. `dryRun` validates and reports without writing, which the page
+// uses to show what will happen first. Templates whose name already exists are
+// skipped, never overwritten.
+routerAdd(
+    "POST",
+    "/api/import-checklist-templates",
+    (e) => {
+        const authRecord = e.auth;
+        if (!authRecord) {
+            throw new UnauthorizedError("Authentication required");
+        }
+        if (authRecord.getString("role") !== "admin") {
+            throw new ForbiddenError("Not authorized to import checklists");
+        }
+
+        const data = e.requestInfo().body;
+        const options = {
+            dryRun: data.dryRun === true,
+            inactive: data.inactive === true,
+            actorId: authRecord.id,
+        };
+
+        const { importTemplates } = require(
+            `${__hooks}/checklist-templates-io.js`,
+        );
+
+        let result = null;
+
+        try {
+            $app.runInTransaction((txApp) => {
+                result = importTemplates(txApp, data.file, options);
+            });
+        } catch (error) {
+            console.error("[import-checklist-templates] Transaction error:", error);
+            throw new BadRequestError(
+                `Failed to import checklist templates: ${error.message}`,
+            );
+        }
+
+        // Validation problems are an answer, not a failure: the page shows
+        // them. Nothing was written when there are any.
+        return e.json(200, { success: result.errors.length === 0, ...result });
+    },
+    $apis.requireAuth(),
+);

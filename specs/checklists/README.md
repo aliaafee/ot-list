@@ -1131,6 +1131,56 @@ up: [`ChecklistPreview`](../../src/components/checklist-preview.jsx) takes a
 `stale` prop that shows a notice, and `ChecklistTemplateItems` takes an
 `onChanged` callback fired after every item write.
 
+### 8.4 Export and import
+
+The list page has **Export** and **Import** buttons, for moving templates
+between databases — dev to production, or one hospital to another.
+
+**The file** is JSON: `{ format: "ot-list.checklist-templates", version: 1,
+exportedAt, templates: [...] }`. Each template has its fields from §2 and its
+items, and **never carries record ids**: sites are written as their
+`facetValueId` (`SIT-0003`) and concepts as their `conceptId` (`NSX-00012`),
+the catalogue's stable ids. Record ids differ between databases, so a file
+holding them would import as templates that silently match nothing.
+
+```
+GET  /api/export-checklist-templates
+POST /api/import-checklist-templates   { file, dryRun?, inactive? }
+```
+
+Both require `admin`, and both run on the server in
+[`checklist-templates-io.js`](../../pb/pb_hooks/checklist-templates-io.js).
+
+**Import rules:**
+
+- **All or nothing.** Every template is validated before anything is written,
+  in one transaction. One bad template refuses the whole file, with a list of
+  every problem. The checks are the authoring page's (§8.2): known scope and
+  groups, slug-shaped keys unique within a template, a label on every item, no
+  "every sex", `ageMinMonths < ageMaxMonths`, and every site and concept code
+  present in this catalogue.
+- **Never overwrites.** A template whose name (case-insensitive) is already
+  taken is skipped and reported. Editing a live template changes what new
+  procedures get, and that should be a deliberate edit on the page, not a side
+  effect of a file. To replace one, delete it (§8.2) and import again.
+- **Inactive by default.** The import modal's "import as inactive" option is on
+  by default, so imported templates change nothing until each is switched on.
+  Turned off, each template keeps the `active` it had in the file.
+- **Target fields follow the scope.** Only the field the scope reads is kept;
+  values in the other two are dropped with a warning, as the page clears them
+  when the scope changes.
+- **Warnings do not block** the import: no items, no targets chosen, or a
+  subspecialty no catalogue concept carries.
+
+**Dry run first.** Choosing a file opens a modal that calls the import with
+`dryRun: true` — the same server code with the write step skipped — and lists
+what will be created, what is skipped and why, warnings and errors. A file with
+errors gets no Import button. Validation problems are returned in the response
+body, not as an HTTP error, because they are an answer for the modal to show.
+
+Importing creates templates only. Like any template edit, it does not change
+existing procedures until their checklists are next rebuilt (§8.2).
+
 ---
 
 ## 9. Access rules
@@ -1374,4 +1424,6 @@ they are cheap now and awkward later:
 | `pb/pb_migrations/*_added_patient_criteria_to_checklists.js` | Criteria, `sourceCriteria`, `checklistMissingFacts` and `checklistPatientBasis` fields, with the basis backfill (§12 step 8). |
 | [`src/modals/edit-patient-modal.jsx`](../../src/modals/edit-patient-modal.jsx) | Moves to `POST /api/update-patient` (§5). |
 | [`src/components/checklist-preview.jsx`](../../src/components/checklist-preview.jsx) | Preview pane; gains patient inputs (§8.3). |
+| [`pb/pb_hooks/checklist-templates-io.js`](../../pb/pb_hooks/checklist-templates-io.js) | Template export and import (§8.4). |
+| [`src/modals/import-checklist-templates-modal.jsx`](../../src/modals/import-checklist-templates-modal.jsx) | Import dry-run and confirm (§8.4). |
 | [`src/utils/dates.jsx`](../../src/utils/dates.jsx) | Client `age()` — display only, **not** for matching (§3.1). |
