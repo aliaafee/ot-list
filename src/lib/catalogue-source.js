@@ -5,7 +5,7 @@
  * it, and the copy bundled into the build at `src/data` (written by
  * scripts/procedure-codes.js when a catalogue version is published). All three
  * hand back the same record shape, so nothing downstream needs to know which
- * one answered.
+ * one answered - bar the record ids, which only the database has.
  *
  * The catalogue is a few hundred kilobytes that only changes when a new version
  * is published, so it is cached rather than refetched on every visit. Four
@@ -55,7 +55,7 @@ const CACHE_KEY = "ot-list.catalogue";
 
 // Bump when the cached record shape changes, to drop entries written by an
 // older version of this file.
-const CACHE_SCHEMA = 1;
+const CACHE_SCHEMA = 2;
 
 const CACHE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -106,6 +106,10 @@ function toSynonyms(record) {
  */
 function toConcept(record) {
     return {
+        // Record ids, which the bundled json does not carry. Only what stores
+        // a relation to the catalogue (checklist template targets) reads them.
+        id: record.id,
+        procedureSiteId: orNull(record.procedureSite),
         conceptId: record.conceptId,
         fsn: record.fsn,
         preferredTerm: record.preferredTerm,
