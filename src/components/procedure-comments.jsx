@@ -174,7 +174,7 @@ function ProcedureComments({ procedureId }) {
     return (
         <div className="">
             {loading ? (
-                <div className="text-xs text-gray-500 py-2">
+                <div className="text-xs text-gray-500 mb-2">
                     Loading comments...
                 </div>
             ) : (
@@ -194,7 +194,7 @@ function ProcedureComments({ procedureId }) {
                     )}
                     <ul className="">
                         {comments.length === 0 ? (
-                            <li className="text-xs text-gray-500 py-2">
+                            <li className="text-xs text-gray-500 mb-2">
                                 No comments yet
                             </li>
                         ) : (
