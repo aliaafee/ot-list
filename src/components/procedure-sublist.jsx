@@ -27,10 +27,16 @@ function ProcedureSublist({ procedures, operatingRoom, showRemoved = true }) {
     const selectedProcedureId = searchParams.get("procedureId");
     const scrollToProcedureId = searchParams.get("scrollTo");
 
-    const handleProcedureSelected = (id, scrollTo = false) => {
+    // `section` names a part of the expanded row to open and scroll to, such
+    // as "checklist". It goes with the selection, so choosing anything else
+    // drops it.
+    const handleProcedureSelected = (id, scrollTo = false, section = null) => {
         const params = new URLSearchParams();
         if (id !== null) {
             params.set("procedureId", id);
+            if (section) {
+                params.set("section", section);
+            }
         }
         if (scrollTo) {
             params.set("scrollTo", id);

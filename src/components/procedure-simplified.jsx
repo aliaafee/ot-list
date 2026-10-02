@@ -74,17 +74,24 @@ function ProcedureSimplifiedView({
                 kept out of the list queries. */}
             <div className="col-span-1 flex items-center justify-center">
                 {procedure?.checklistOutstanding > 0 && (
-                    <span
-                        className="px-2 text-red-600 flex items-center gap-1"
+                    // Opens the row at its checklist rather than at the top,
+                    // so the click goes no further than this button.
+                    <button
+                        type="button"
+                        className="p-1 rounded text-red-600 flex items-center gap-1 cursor-pointer hover:bg-red-100"
                         title={`${procedure.checklistOutstanding} checklist item${
                             procedure.checklistOutstanding === 1 ? "" : "s"
-                        } outstanding`}
+                        } outstanding - show the checklist`}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onSelected(procedure.id, false, "checklist");
+                        }}
                     >
-                        <TriangleAlertIcon size={14} />
+                        <TriangleAlertIcon size={14} aria-hidden="true" />
                         <span className="text-xs">
                             {procedure.checklistOutstanding}
                         </span>
-                    </span>
+                    </button>
                 )}
             </div>
         </div>

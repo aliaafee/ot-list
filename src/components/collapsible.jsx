@@ -13,25 +13,39 @@ import { twMerge } from "tailwind-merge";
  * @param {ReactNode} props.summary - Content of the always-visible toggle
  * @param {ReactNode} props.children - Content revealed while expanded
  * @param {boolean} [props.defaultOpen=false] - Whether it starts expanded
+ * @param {boolean} [props.open] - Controls the state instead, when given
+ * @param {function} [props.onOpenChange] - Called with the state the toggle
+ *   asks for; required to change a controlled one
  * @param {number} [props.iconSize=12] - Chevron size in pixels
  * @param {string} [props.className] - Optional classes for the wrapper
  * @param {string} [props.summaryClassName] - Optional classes for the toggle
  * @param {string} [props.contentClassName] - Optional classes for the content
+ * @param {Ref} [props.ref] - Attached to the wrapper, e.g. to scroll to it
  * @returns {JSX.Element} A collapsible section
  */
 export default function Collapsible({
     summary,
     children,
     defaultOpen = false,
+    open: openProp,
+    onOpenChange,
     iconSize = 12,
     className = "",
     summaryClassName = "",
     contentClassName = "",
+    ref,
 }) {
-    const [open, setOpen] = useState(defaultOpen);
+    const [openState, setOpenState] = useState(defaultOpen);
+    const controlled = openProp !== undefined;
+    const open = controlled ? openProp : openState;
+
+    const toggle = () => {
+        if (!controlled) setOpenState(!open);
+        onOpenChange?.(!open);
+    };
 
     return (
-        <div className={twMerge("flex flex-col", className)}>
+        <div ref={ref} className={twMerge("flex flex-col", className)}>
             <button
                 type="button"
                 aria-expanded={open}
@@ -39,7 +53,7 @@ export default function Collapsible({
                     "flex items-center gap-1 text-left cursor-pointer",
                     summaryClassName,
                 )}
-                onClick={() => setOpen((prev) => !prev)}
+                onClick={toggle}
             >
                 <ChevronRight
                     size={iconSize}

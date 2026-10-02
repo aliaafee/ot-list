@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import dayjs from "dayjs";
 import {
     TriangleAlertIcon,
@@ -72,10 +72,38 @@ function describeRebuild({ added, removed, madeInapplicable, restored }) {
  *   `patient` and `procedureDay` expanded
  * @param {string} [props.className] - Optional classes for the section
  * @param {boolean} [props.defaultOpen=false] - Whether it starts expanded
+ * @param {number} [props.focusKey=0] - Open the checklist and scroll to it
+ *   whenever this changes to a non-zero value, including on mount
  * @returns {JSX.Element} A collapsible checklist
  */
-function ProcedureChecklist({ procedure, className = "", defaultOpen = false }) {
+function ProcedureChecklist({
+    procedure,
+    className = "",
+    defaultOpen = false,
+    focusKey = 0,
+}) {
     const procedureId = procedure?.id;
+    const sectionRef = useRef(null);
+
+    // Held here rather than left to Collapsible, so a request to focus can
+    // open it again after it has been closed. Adjusted during render when the
+    // key changes, so it opens in the same pass rather than after a flash.
+    const [open, setOpen] = useState(defaultOpen || !!focusKey);
+    const [seenFocusKey, setSeenFocusKey] = useState(focusKey);
+    if (focusKey !== seenFocusKey) {
+        setSeenFocusKey(focusKey);
+        if (focusKey) setOpen(true);
+    }
+
+    // Asked for from an outstanding-items alert. Brings the heading to the
+    // top; the items fill in below it as they load.
+    useEffect(() => {
+        if (!focusKey) return;
+        sectionRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+        });
+    }, [focusKey]);
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(false);
     const [commentingId, setCommentingId] = useState(null);
@@ -265,9 +293,12 @@ function ProcedureChecklist({ procedure, className = "", defaultOpen = false }) 
 
     return (
         <Collapsible
-            className={className}
+            ref={sectionRef}
+            // Clears the sticky header, as the list rows do.
+            className={twMerge("scroll-mt-28 lg:scroll-mt-12", className)}
             summaryClassName="text-sm font-semibold"
-            defaultOpen={defaultOpen}
+            open={open}
+            onOpenChange={setOpen}
             summary={
                 <>
                     Checklist

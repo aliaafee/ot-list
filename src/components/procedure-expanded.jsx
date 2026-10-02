@@ -19,6 +19,7 @@ import Collapsible from "./collapsible";
  * @param {string} className - Additional CSS classes for the container
  * @param {function} onSelected - Callback when clicking to collapse the view
  * @param {ReactNode} children - Additional content (e.g., editor, view controls)
+ * @param {boolean} focusChecklist - Open the checklist and scroll to it
  */
 function ProcedureExpandedView({
     procedure,
@@ -26,8 +27,15 @@ function ProcedureExpandedView({
     className,
     onSelected,
     children,
+    focusChecklist = false,
 }) {
     const [showPatientDetails, setShowPatientDetails] = useState(false);
+    // Bumped by the outstanding-items alert; the checklist opens and scrolls
+    // into view on every change. Starts set when the row was opened from the
+    // alert in its collapsed form.
+    const [checklistFocus, setChecklistFocus] = useState(
+        focusChecklist ? 1 : 0,
+    );
 
     return (
         <div
@@ -88,17 +96,24 @@ function ProcedureExpandedView({
                 kept out of the list queries. */}
                 <div className="col-span-1 flex items-center justify-center">
                     {procedure?.checklistOutstanding > 0 && (
-                        <span
-                            className="px-2 text-red-600 flex items-center gap-1"
+                        // Goes to the checklist; the click goes no further,
+                        // or the header would close the row.
+                        <button
+                            type="button"
+                            className="p-1 rounded text-red-600 flex items-center gap-1 cursor-pointer hover:bg-red-100"
                             title={`${procedure.checklistOutstanding} checklist item${
                                 procedure.checklistOutstanding === 1 ? "" : "s"
-                            } outstanding`}
+                            } outstanding - show the checklist`}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setChecklistFocus((n) => n + 1);
+                            }}
                         >
-                            <TriangleAlertIcon size={14} />
+                            <TriangleAlertIcon size={14} aria-hidden="true" />
                             <span className="text-xs">
                                 {procedure.checklistOutstanding}
                             </span>
-                        </span>
+                        </button>
                     )}
                 </div>
             </div>
@@ -142,7 +157,11 @@ function ProcedureExpandedView({
                 />
             </div>
             {children}
-            <ProcedureChecklist procedure={procedure} className="p-2" />
+            <ProcedureChecklist
+                procedure={procedure}
+                className="p-2"
+                focusKey={checklistFocus}
+            />
             <div className="text-xs text-gray-500 px-2 py-1 text-right sm:flex  sm:justify-end gap-2 bg-gray-200">
                 <div>
                     Created:{" "}

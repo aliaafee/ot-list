@@ -26,7 +26,7 @@ function ProcedureItem({
     onRemove = (_item) => {},
     onRestore = (_item) => {},
     onMoveDate = (_item) => {},
-    onSelected = (id, _scrollTo = false) => {},
+    onSelected = (id, _scrollTo = false, _section = null) => {},
 }) {
     const { isUpdating, getProcedureError, discardProcedureUpdate } =
         useProcedureList();
@@ -37,6 +37,9 @@ function ProcedureItem({
     const [searchParams] = useSearchParams();
 
     const selectedProcedureId = searchParams.get("procedureId");
+    // Opened from the row's outstanding-items alert, so the checklist is what
+    // was asked for.
+    const focusChecklist = searchParams.get("section") === "checklist";
 
     if (recordError?.type === "update") {
         return (
@@ -98,6 +101,7 @@ function ProcedureItem({
                 isUpdating={isUpdating(procedure)}
                 className={className}
                 onSelected={onSelected}
+                focusChecklist={focusChecklist}
             >
                 <ProcedureDetails
                     procedure={procedure}
