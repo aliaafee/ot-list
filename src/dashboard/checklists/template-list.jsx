@@ -90,7 +90,7 @@ export default function TemplateList() {
         <div className="flex flex-col gap-6">
             <div>
                 <h2 className="text-lg mb-1">Templates</h2>
-                <ToolBar className="bg-gray-200 rounded-md mb-2">
+                <ToolBar className="bg-gray-200 rounded-lg mb-2">
                     <ToolBarButton
                         title="Add Template"
                         onClick={() => navigate("/settings/checklists/new")}
