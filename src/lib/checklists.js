@@ -206,6 +206,13 @@ export function patientChanges(basis, patient) {
 export const ITEM_KEY_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 /**
+ * The prefix of a hand-added item's key, which a template key may not use:
+ * rebuild matches items by key, so a template item keyed like a hand-added
+ * one would take it over, tick and all. The server refuses it too.
+ */
+export const CUSTOM_KEY_PREFIX = "custom-";
+
+/**
  * Walk a position-sorted item list into rows with group headings.
  *
  * Items arrive already ordered by `position`, which the server computed with

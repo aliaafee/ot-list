@@ -16,6 +16,12 @@
 /** Phase groups, in render order. Index into this is the primary sort key. */
 const GROUPS = ["preop", "dayof", "theatre", "postop"];
 
+/**
+ * The prefix of a hand-added item's key. Template keys may not use it - see
+ * customItemKey and the validation hook in checklist-validation.pb.js.
+ */
+const CUSTOM_KEY_PREFIX = "custom-";
+
 /** Scope specificity. Higher wins a duplicate itemKey; lower sorts first. */
 const SCOPE_RANK = { all: 0, subspecialty: 1, site: 2, concept: 3 };
 
@@ -509,18 +515,20 @@ function syncPatientFields(txApp, procedureId, missingFacts, basis) {
 /**
  * A free itemKey for a custom item on this procedure.
  *
- * Namespaced under `custom-` so a hand-added item can never collide with a
- * template's key: colliding would either be rejected by the unique index or,
- * worse, make a later template item look like the same item and inherit its
- * tick. Derived from the label so the key still reads as something.
+ * Namespaced under CUSTOM_KEY_PREFIX, which template keys are refused, so a
+ * hand-added item can never collide with a template's key: colliding would
+ * make a later template item look like the same item and inherit its tick.
+ * Derived from the label so the key still reads as something.
  */
 function customItemKey(txApp, procedureId, label) {
     const slug = String(label || "")
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-+|-+$/g, "")
-        .slice(0, 40);
-    const base = "custom-" + (slug || "item");
+        .slice(0, 40)
+        // The cut can land on a hyphen, which the key pattern refuses.
+        .replace(/-+$/, "");
+    const base = CUSTOM_KEY_PREFIX + (slug || "item");
 
     for (let attempt = 0; attempt < 100; attempt++) {
         const key = attempt === 0 ? base : `${base}-${attempt + 1}`;
@@ -788,6 +796,7 @@ function previewChecklist(app, conceptIds, patient) {
 }
 
 module.exports = {
+    CUSTOM_KEY_PREFIX,
     GROUPS,
     SEXES,
     ageInMonths,

@@ -23,6 +23,8 @@ const SCOPES = ["all", "subspecialty", "site", "concept"];
 const GROUPS = ["preop", "dayof", "theatre", "postop"];
 const SEXES = ["male", "female"];
 const ITEM_KEY_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+// Reserved for hand-added items - see procedure-checklists.js.
+const CUSTOM_KEY_PREFIX = "custom-";
 
 /** Which target field each scope reads; the others must be empty. */
 const SCOPE_TARGET = {
@@ -286,6 +288,10 @@ function planImport(app, data) {
                 const label = typeof item.label === "string" ? item.label.trim() : "";
                 if (!ITEM_KEY_PATTERN.test(itemKey)) {
                     fail(`${at} has an invalid key "${item.itemKey}" (lower-case words joined by hyphens).`);
+                    return;
+                }
+                if (itemKey.indexOf(CUSTOM_KEY_PREFIX) === 0) {
+                    fail(`${at} has the key "${itemKey}", but keys starting "${CUSTOM_KEY_PREFIX}" are reserved for items added to a single procedure.`);
                     return;
                 }
                 if (keys[itemKey]) {

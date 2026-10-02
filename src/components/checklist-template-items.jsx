@@ -4,7 +4,7 @@ import { LoaderCircleIcon, PlusIcon, TrashIcon } from "lucide-react";
 import ItemKeySelector from "@/components/item-key-selector";
 import ReorderList from "@/components/reorder-list";
 import { pb } from "@/lib/pb";
-import { GROUPS, ITEM_KEY_PATTERN } from "@/lib/checklists";
+import { CUSTOM_KEY_PREFIX, GROUPS, ITEM_KEY_PATTERN } from "@/lib/checklists";
 import ErrorBanner from "@/components/error-banner";
 
 /**
@@ -138,6 +138,12 @@ function ChecklistTemplateItems({ template, onChanged = () => {} }) {
         if (!ITEM_KEY_PATTERN.test(itemKey)) {
             setError(
                 "Key must be lower-case words separated by hyphens, e.g. consent-signed.",
+            );
+            return;
+        }
+        if (itemKey.startsWith(CUSTOM_KEY_PREFIX)) {
+            setError(
+                `Keys starting "${CUSTOM_KEY_PREFIX}" are reserved for items added to a single procedure.`,
             );
             return;
         }

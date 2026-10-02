@@ -120,3 +120,31 @@ onRecordCreateRequest((e) => {
 
     e.next();
 }, "procedurePacStatuses");
+
+// Checklist templates are written straight from the settings dashboard, so
+// the collection API is where their authorship is stamped. Import sets the
+// same two fields itself, since it saves inside a route.
+onRecordCreateRequest((e) => {
+    const authRecord = e.auth;
+
+    if (!authRecord) {
+        throw new BadRequestError("Authentication required");
+    }
+
+    e.record.set("creator", authRecord.id);
+    e.record.set("updater", authRecord.id);
+
+    e.next();
+}, "checklistTemplates");
+
+onRecordUpdateRequest((e) => {
+    const authRecord = e.auth;
+
+    if (!authRecord) {
+        throw new BadRequestError("Authentication required");
+    }
+
+    e.record.set("updater", authRecord.id);
+
+    e.next();
+}, "checklistTemplates");

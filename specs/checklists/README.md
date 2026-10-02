@@ -144,7 +144,9 @@ the flag — without it the orphan pass would read "matches no template" as
 Its `itemKey` is namespaced `custom-<slug-of-label>`, with a numeric suffix on
 collision. The namespace matters: a bare slug could collide with a template key
 added later, and the unique index would either reject it or, worse, let the
-template item inherit a tick recorded against something else.
+template item inherit a tick recorded against something else. The namespace
+is reserved: a template item key may not start `custom-`, which the dashboard,
+import and a validate hook on `checklistTemplateItems` all refuse.
 
 `comment` is user-entered, so it counts as work worth preserving on the same
 footing as a tick: it is never overwritten by regeneration, and an item carrying
@@ -1407,13 +1409,14 @@ they are cheap now and awkward later:
 
 | Path | Role |
 |---|---|
-| `pb/pb_migrations/*_created_checklists.js` | The three collections. |
+| [`pb/pb_migrations/1790600000_created_procedure_checklists.js`](../../pb/pb_migrations/1790600000_created_procedure_checklists.js) | The three collections; the checklist fields on `procedures`, with the basis backfill (§12 step 8); closes direct writes to `procedures` and patient updates (§5). |
+| [`pb/pb_hooks/checklist-validation.pb.js`](../../pb/pb_hooks/checklist-validation.pb.js) | Refuses template item keys starting `custom-`, which hand-added items use (§8.1). |
 | `pb/pb_hooks/procedure-checklists.js` | Assembly + reconciliation. |
 | [`pb/pb_hooks/transactions.pb.js`](../../pb/pb_hooks/transactions.pb.js) | Call sites (§5). |
 | [`src/components/procedure-checklist.jsx`](../../src/components/procedure-checklist.jsx) | The UI (dummy today). |
 | [`src/components/procedure-expanded.jsx`](../../src/components/procedure-expanded.jsx) | Where it is rendered. |
 | `src/modals/add-checklist-item-modal.jsx` | Adding a custom item (§8.1). |
-| [`src/dashboard/checklists.jsx`](../../src/dashboard/checklists.jsx) | The authoring page: template list, detail form (§8.2), preview modal (§8.3). |
+| [`src/dashboard/checklists/`](../../src/dashboard/checklists/) | The authoring page: template list, detail form (§8.2), preview modal (§8.3). |
 | [`src/components/checklist-template-items.jsx`](../../src/components/checklist-template-items.jsx) | Item editor on the detail page (§8.2). |
 | [`src/components/multi-select-field.jsx`](../../src/components/multi-select-field.jsx) | Target-field picker (§8.2). |
 | [`src/lib/checklists.js`](../../src/lib/checklists.js) | `SCOPES`, `GROUPS`, `ITEM_KEY_PATTERN` — shared vocabularies. |
@@ -1421,7 +1424,6 @@ they are cheap now and awkward later:
 | [`src/pages/settings-dashboard.jsx`](../../src/pages/settings-dashboard.jsx) | Registers it in `sidebarPages`. |
 | [`src/components/reorder-list.jsx`](../../src/components/reorder-list.jsx) | Item ordering. |
 | [`specs/procedure_codes/README.md`](../procedure_codes/README.md) | The catalogue this matches against. |
-| `pb/pb_migrations/*_added_patient_criteria_to_checklists.js` | Criteria, `sourceCriteria`, `checklistMissingFacts` and `checklistPatientBasis` fields, with the basis backfill (§12 step 8). |
 | [`src/modals/edit-patient-modal.jsx`](../../src/modals/edit-patient-modal.jsx) | Moves to `POST /api/update-patient` (§5). |
 | [`src/components/checklist-preview.jsx`](../../src/components/checklist-preview.jsx) | Preview pane; gains patient inputs (§8.3). |
 | [`pb/pb_hooks/checklist-templates-io.js`](../../pb/pb_hooks/checklist-templates-io.js) | Template export and import (§8.4). |
