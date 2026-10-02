@@ -32,6 +32,11 @@ import checklistsPage from "@/dashboard/checklists";
  * under src/dashboard and default-exports { title, icon, adminOnly?, content },
  * so adding one is a file there and a line here.
  *
+ * A page that outgrows one file - one with a `detail`, or past a few hundred
+ * lines - becomes a folder, src/dashboard/<page>/, whose index.jsx is only
+ * that descriptor and imports its components and hooks from beside it. The
+ * import here does not change. See src/dashboard/checklists.
+ *
  * `content` is a component rather than a ready-made element: most of these
  * tables need the lookups and the permission this dashboard holds, and it is
  * mounted rather than called, so a page can hold state and effects of its own

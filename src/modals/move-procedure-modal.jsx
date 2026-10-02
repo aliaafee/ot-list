@@ -7,6 +7,7 @@ import FormField from "@/components/form-field";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import { describeProcedureCodes } from "@/lib/procedure-codes";
 import { useSearchParams } from "react-router";
+import ErrorBanner from "@/components/error-banner";
 
 /**
  * MoveProcedureModal - Modal for moving a procedure to a different OT day or operating room
@@ -164,9 +165,9 @@ function MoveProcedureModal({
                 </FormField>
             </form>
             {!!error && (
-                <div className="bg-red-400/20 rounded-md mt-2 py-1 px-2">
+                <ErrorBanner className="mt-2 py-1 px-2 text-base">
                     Failed to move procedure. {error}
-                </div>
+                </ErrorBanner>
             )}
         </ModalWindow>
     );

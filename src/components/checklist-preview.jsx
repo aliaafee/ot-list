@@ -13,6 +13,7 @@ import {
     formatAgeMonths,
     withGroupHeadings,
 } from "@/lib/checklists";
+import ErrorBanner from "@/components/error-banner";
 
 /** Why a patient criterion excluded a template, for the preview patient. */
 function describeExclusion(failure, patient) {
@@ -219,11 +220,7 @@ function ChecklistPreview({ stale = false }) {
                 )}
             </div>
 
-            {!!error && (
-                <div className="bg-red-400/20 rounded-md p-2 text-sm">
-                    {error}
-                </div>
-            )}
+            {!!error && <ErrorBanner>{error}</ErrorBanner>}
 
             {!loading && missing.length > 0 && (
                 <div className="bg-amber-50 border border-amber-400 rounded-md p-2 text-sm text-amber-800">

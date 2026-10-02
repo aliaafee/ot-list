@@ -5,6 +5,7 @@ import ItemKeySelector from "@/components/item-key-selector";
 import ReorderList from "@/components/reorder-list";
 import { pb } from "@/lib/pb";
 import { GROUPS, ITEM_KEY_PATTERN } from "@/lib/checklists";
+import ErrorBanner from "@/components/error-banner";
 
 /**
  * ChecklistTemplateItems - the items of one checklist template
@@ -296,11 +297,7 @@ function ChecklistTemplateItems({ template, onChanged = () => {} }) {
                 </button>
             </div>
 
-            {!!error && (
-                <div className="bg-red-400/20 rounded-md p-2 text-sm">
-                    {error}
-                </div>
-            )}
+            {!!error && <ErrorBanner>{error}</ErrorBanner>}
 
             {loading ? (
                 <div className="text-sm text-gray-500">Loading items...</div>

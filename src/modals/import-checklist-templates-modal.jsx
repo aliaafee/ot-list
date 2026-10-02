@@ -4,6 +4,7 @@ import { FileUpIcon } from "lucide-react";
 import ModalWindow from "./modal-window";
 import { api } from "@/lib/api";
 import { SCOPE_LABEL, describeCriteria } from "@/lib/checklists";
+import ErrorBanner from "@/components/error-banner";
 
 /**
  * ImportChecklistTemplatesModal - shows what importing a file would do, then
@@ -22,7 +23,12 @@ import { SCOPE_LABEL, describeCriteria } from "@/lib/checklists";
  * @param {function} props.onImported - Called with the import result
  * @returns {JSX.Element} The modal
  */
-function ImportChecklistTemplatesModal({ file, fileName, onCancel, onImported }) {
+function ImportChecklistTemplatesModal({
+    file,
+    fileName,
+    onCancel,
+    onImported,
+}) {
     // Off by default would let a file switch on templates that change what
     // new procedures get before anyone has looked at them.
     const [inactive, setInactive] = useState(true);
@@ -79,7 +85,8 @@ function ImportChecklistTemplatesModal({ file, fileName, onCancel, onImported })
 
     const toCreate = plan?.templates || [];
     const errors = plan?.errors || [];
-    const canImport = !checking && !!plan && !errors.length && toCreate.length > 0;
+    const canImport =
+        !checking && !!plan && !errors.length && toCreate.length > 0;
 
     return (
         <ModalWindow
@@ -119,14 +126,12 @@ function ImportChecklistTemplatesModal({ file, fileName, onCancel, onImported })
                 switched on
             </label>
 
-            {!!error && (
-                <div className="bg-red-400/20 rounded-md p-2 text-sm mb-2">
-                    {error}
-                </div>
-            )}
+            {!!error && <ErrorBanner className="mb-2">{error}</ErrorBanner>}
 
             {checking ? (
-                <div className="text-sm text-gray-500">Checking the file...</div>
+                <div className="text-sm text-gray-500">
+                    Checking the file...
+                </div>
             ) : (
                 plan && (
                     <div className="flex flex-col gap-3 text-sm">
@@ -160,7 +165,10 @@ function ImportChecklistTemplatesModal({ file, fileName, onCancel, onImported })
                             ) : (
                                 <ul className="bg-white rounded-md border border-gray-200 p-2">
                                     {toCreate.map((template) => (
-                                        <li key={template.name} className="py-0.5">
+                                        <li
+                                            key={template.name}
+                                            className="py-0.5"
+                                        >
                                             {template.name}
                                             <span className="text-xs text-gray-500">
                                                 {" — "}
@@ -169,7 +177,10 @@ function ImportChecklistTemplatesModal({ file, fileName, onCancel, onImported })
                                                 {!!describeCriteria(template) &&
                                                     ` · ${describeCriteria(template)}`}
                                                 , {template.items} item
-                                                {template.items === 1 ? "" : "s"},{" "}
+                                                {template.items === 1
+                                                    ? ""
+                                                    : "s"}
+                                                ,{" "}
                                                 {template.active
                                                     ? "active"
                                                     : "inactive"}

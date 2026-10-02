@@ -24,6 +24,7 @@ import { PacStatus, PacStatusSmall } from "./pac-status";
 import ModalWindow from "@/modals/modal-window";
 import EditPatientModal from "@/modals/edit-patient-modal";
 import { useAuth } from "@/contexts/auth-context";
+import ErrorBanner from "@/components/error-banner";
 
 /**
  * ProcedureDetails - Detailed view of a procedure with action toolbar
@@ -207,14 +208,12 @@ function ProcedureDetails({
             )}
 
             {!!recordError && (
-                <div className="bg-red-400/20 rounded-md m-2 p-2 text-sm">
+                <ErrorBanner className="m-2">
                     {recordError?.message}
-                </div>
+                </ErrorBanner>
             )}
             {procedure.removed && (
-                <div className="bg-red-400/20 rounded-md m-2 p-2 text-sm">
-                    Removed
-                </div>
+                <ErrorBanner className="m-2">Removed</ErrorBanner>
             )}
             {!readOnly ? (
                 <PacStatus procedureId={procedure?.id} className="p-2" />

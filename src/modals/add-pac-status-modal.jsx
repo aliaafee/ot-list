@@ -5,6 +5,7 @@ import { twMerge } from "tailwind-merge";
 import ModalWindow from "./modal-window";
 import { api } from "@/lib/api";
 import { getStatusColor } from "@/utils/colours";
+import ErrorBanner from "@/components/error-banner";
 
 /**
  * AddPacStatusModal - Modal for adding a PAC status to a procedure
@@ -120,9 +121,9 @@ function AddPacStatusModal({
                 </div>
             </div>
             {!!error && (
-                <div className="bg-red-400/20 rounded-md mt-2 py-1 px-2">
+                <ErrorBanner className="mt-2 py-1 px-2 text-base">
                     {error}
-                </div>
+                </ErrorBanner>
             )}
         </ModalWindow>
     );

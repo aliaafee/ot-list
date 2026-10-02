@@ -38,6 +38,7 @@ import PatientInfo from "./patient-info";
 import { pb } from "@/lib/pb";
 import { toProcedureCodesPayload } from "@/lib/procedure-codes";
 import dayjs from "dayjs";
+import ErrorBanner from "@/components/error-banner";
 
 /**
  * ProcedureAdder - Form component for adding new OT procedures with patient information
@@ -330,9 +331,7 @@ function ProcedureAdder({
                 </ToolBarButton>
             </ToolBar>
             {addError?.message && (
-                <div className="bg-red-400/20 rounded-md m-2 p-2 text-sm">
-                    {addError.message}
-                </div>
+                <ErrorBanner className="m-2">{addError.message}</ErrorBanner>
             )}
             <div className="p-2 flex flex-col gap-2">
                 <ToolBar className="bg-gray-200 rounded-lg sm:w-fit flex-wrap sm:flex-nowrap">

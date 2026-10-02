@@ -5,6 +5,7 @@ import ModalWindow from "./modal-window";
 import FormField from "@/components/form-field";
 import { api } from "@/lib/api";
 import { GROUPS } from "@/lib/checklists";
+import ErrorBanner from "@/components/error-banner";
 
 /**
  * AddChecklistItemModal - Modal for adding a one-off checklist item
@@ -106,9 +107,9 @@ function AddChecklistItemModal({
                 </label>
             </form>
             {!!error && (
-                <div className="bg-red-400/20 rounded-md mt-2 py-1 px-2">
+                <ErrorBanner className="mt-2 py-1 px-2 text-base">
                     {error}
-                </div>
+                </ErrorBanner>
             )}
         </ModalWindow>
     );

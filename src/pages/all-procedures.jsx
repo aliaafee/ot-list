@@ -20,6 +20,7 @@ import { useCatalogue } from "@/contexts/catalogue-context";
 import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
 import LabelValue from "@/components/label-value";
+import ErrorBanner from "@/components/error-banner";
 
 // A concept facet, its relation field on `procedureConcepts`, and the URL param
 // its filter value is kept in. Filtering a procedure means "at least one of its
@@ -421,9 +422,7 @@ function AllProcedures() {
             </div>
 
             {error && (
-                <div className="bg-red-400/20 rounded-md p-2 mb-4 text-sm">
-                    {error.message}
-                </div>
+                <ErrorBanner className="mb-4">{error.message}</ErrorBanner>
             )}
 
             {loading ? (

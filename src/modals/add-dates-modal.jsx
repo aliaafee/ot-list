@@ -15,6 +15,7 @@ import {
 } from "@/components/toolbar";
 import DaysOfWeekSelector from "@/components/days-of-week-selector";
 import { useAuth } from "@/contexts/auth-context";
+import ErrorBanner from "@/components/error-banner";
 
 /**
  * AddDatesModal - Modal for adding single or multiple OT days to a list
@@ -210,12 +211,12 @@ export default function AddDatesModal({
                         onChange={(e) => setAddDate(e.target.value)}
                     />
                     {skippedDates.length > 0 && (
-                        <div className="bg-red-400/20 rounded-md mt-2 py-1 px-2">
+                        <ErrorBanner className="mt-2 py-1 px-2 text-base">
                             {dayjs(skippedDates[0].date).format(
                                 "dddd, DD MMM YYYY ",
                             )}{" "}
                             has already been added.
-                        </div>
+                        </ErrorBanner>
                     )}
                 </div>
             ) : (
@@ -259,9 +260,9 @@ export default function AddDatesModal({
                 </div>
             )}
             {!!error && (
-                <div className="bg-red-400/20 rounded-md mt-2 py-1 px-2">
+                <ErrorBanner className="mt-2 py-1 px-2 text-base">
                     {error}
-                </div>
+                </ErrorBanner>
             )}
         </ModalWindow>
     );

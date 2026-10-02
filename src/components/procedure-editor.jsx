@@ -18,6 +18,7 @@ import {
     procedureCodeRecordsOf,
     toProcedureCodesPayload,
 } from "@/lib/procedure-codes";
+import ErrorBanner from "@/components/error-banner";
 
 /**
  * ProcedureEditor - Form component for editing existing OT procedures
@@ -42,7 +43,7 @@ function ProcedureEditor({
 
     const [updatedProcedure, setUpdatedProcedure] = useState({
         diagnosis: procedure?.diagnosis || "",
-        comorbids: procedure?.comorbids || "",
+        comorbids: procedure?.comorbids || "",
         // Null until the user edits the codes; what is stored is derived
         // below and used in the meantime.
         procedureCodes: null,
@@ -94,7 +95,7 @@ function ProcedureEditor({
             bed: updatedProcedure.bed,
             comorbids: updatedProcedure.comorbids,
             diagnosis: updatedProcedure.diagnosis,
-            duration: updatedProcedure.duration,
+            duration: updatedProcedure.duration,
             procedureCodes: toProcedureCodesPayload(procedureCodes),
             remarks: updatedProcedure.remarks,
             removed: updatedProcedure.removed,
@@ -138,14 +139,12 @@ function ProcedureEditor({
                 )}
             </ToolBar>
             {error?.type === "update" && (
-                <div className="bg-red-400/20 rounded-md m-2 p-2 text-sm">
+                <ErrorBanner className="m-2">
                     Failed to update procedure
-                </div>
+                </ErrorBanner>
             )}
             {procedure.removed && (
-                <div className="bg-red-400/20 rounded-md m-2 p-2 text-sm">
-                    Removed
-                </div>
+                <ErrorBanner className="m-2">Removed</ErrorBanner>
             )}
             <PacStatus procedureId={procedure?.id} className="p-2" />
             <div className="p-2">

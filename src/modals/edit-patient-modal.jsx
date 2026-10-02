@@ -12,6 +12,7 @@ import {
 } from "@/components/toolbar";
 import { patientInfoFromText } from "@/utils/text-parsers";
 import PastePatientPreviewModal from "./paste-patient-preview-modal";
+import ErrorBanner from "@/components/error-banner";
 
 /**
  * EditPatientModal - Modal for editing patient information
@@ -112,15 +113,13 @@ export default function EditPatientModal({ patient, onCancel, onSuccess }) {
             >
                 <div className="mt-2">
                     {updateError && (
-                        <div className="bg-red-400/20 rounded-md mb-2 p-2 text-sm">
+                        <ErrorBanner className="mb-2">
                             Failed to update patient:{" "}
                             {updateError?.message || "Unknown error"}
-                        </div>
+                        </ErrorBanner>
                     )}
                     {pasteError && (
-                        <div className="bg-red-400/20 rounded-md mb-2 p-2 text-sm">
-                            {pasteError}
-                        </div>
+                        <ErrorBanner className="mb-2">{pasteError}</ErrorBanner>
                     )}
                     <ToolBar className="w-full flex-wrap sm:flex-nowrap">
                         <div className="grow"></div>

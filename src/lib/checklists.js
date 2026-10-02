@@ -31,6 +31,16 @@ export const SCOPE_LABEL = Object.fromEntries(
     SCOPES.map((scope) => [scope.value, scope.label]),
 );
 
+/** Which target field each scope reads, and what to call it. */
+export const SCOPE_TARGET = {
+    subspecialty: { field: "subspecialties", label: "Subspecialties" },
+    site: { field: "sites", label: "Sites" },
+    concept: { field: "concepts", label: "Procedure codes" },
+};
+
+/** The target fields, which a change of scope clears. */
+export const TARGET_FIELDS = ["subspecialties", "sites", "concepts"];
+
 /**
  * Patient sexes a template can be narrowed to. Mirrors `patients.sex` and the
  * `sexes` select on checklistTemplates - spec section 3.1.
@@ -123,6 +133,37 @@ export function criteriaOverlap(a, b) {
 }
 
 /**
+ * Keys a template shares with another at the same scope and criteria count,
+ * where one patient could satisfy both: Order then decides the label, which
+ * is rarely what was meant. Plain reuse with no criteria on either side is how
+ * dedupe is meant to work and is not reported.
+ *
+ * `keys` are { itemKey, template } rows for every template's items, and
+ * `templates` every template, as [{ itemKey, template: other }].
+ */
+export function findKeyOverlaps(template, templateId, templates, keys) {
+    if (!criteriaCount(template)) return [];
+    const byId = Object.fromEntries(
+        templates.map((other) => [other.id, other]),
+    );
+    const mine = new Set(
+        keys
+            .filter((key) => key.template === templateId)
+            .map((key) => key.itemKey),
+    );
+    return keys
+        .filter((key) => key.template !== templateId && mine.has(key.itemKey))
+        .map((key) => ({ itemKey: key.itemKey, template: byId[key.template] }))
+        .filter(
+            ({ template: other }) =>
+                other &&
+                other.scope === template.scope &&
+                criteriaCount(other) === criteriaCount(template) &&
+                criteriaOverlap(other, template),
+        );
+}
+
+/**
  * The patient details a checklist was built from that no longer match the
  * patient, as [{ field, from, to }]. Empty when the checklist is current, or
  * when it predates the basis being recorded.
@@ -148,7 +189,11 @@ export function patientChanges(basis, patient) {
         });
     }
     if ((basis.sex || null) !== current.sex) {
-        changes.push({ field: "sex", from: basis.sex || null, to: current.sex });
+        changes.push({
+            field: "sex",
+            from: basis.sex || null,
+            to: current.sex,
+        });
     }
     return changes;
 }
