@@ -634,40 +634,63 @@ function syncProcedureChecklist(txApp, procedureRecord, templates) {
         .filter((record) => record.getBool("custom"))
         .sort((a, b) => a.getInt("position") - b.getInt("position"));
 
+    const desiredKeys = {};
+    items.forEach((item) => {
+        desiredKeys[item.itemKey] = true;
+    });
+
+    // Template items that no longer match but that someone ticked or
+    // commented on. They are kept as a record (below), so they need a place
+    // in the list like everything else: left at their old position they
+    // would sort into the middle of another group and split its heading.
+    const kept = existing
+        .filter(
+            (record) =>
+                !record.getBool("custom") &&
+                !desiredKeys[record.getString("itemKey")] &&
+                isTouched(record),
+        )
+        .sort((a, b) => a.getInt("position") - b.getInt("position"));
+
     // Positions are assigned across the merged list, not across the assembled
-    // one, so a custom item does not share a position with a template item.
+    // one, so a custom or kept item does not share a position with a template
+    // item. Inside a group: template items, then custom, then kept.
     const merged = [];
-    GROUPS.forEach((group) => {
+    const mergeGroup = (inGroup) => {
         items
-            .filter((item) => item.group === group)
+            .filter((item) => inGroup(item.group))
             .forEach((item) => merged.push({ item }));
         customs
-            .filter((record) => record.getString("group") === group)
+            .filter((record) => inGroup(record.getString("group")))
             .forEach((record) => merged.push({ record }));
-    });
+        kept
+            .filter((record) => inGroup(record.getString("group")))
+            .forEach((record) => merged.push({ record, kept: true }));
+    };
+    GROUPS.forEach((group) => mergeGroup((value) => value === group));
     // An unknown group would otherwise drop out of the merge entirely.
-    items
-        .filter((item) => GROUPS.indexOf(item.group) === -1)
-        .forEach((item) => merged.push({ item }));
-    customs
-        .filter((record) => GROUPS.indexOf(record.getString("group")) === -1)
-        .forEach((record) => merged.push({ record }));
+    mergeGroup((value) => GROUPS.indexOf(value) === -1);
 
     const collection = txApp.findCollectionByNameOrId(
         "procedureChecklistItems",
     );
-    const desiredKeys = {};
 
     merged.forEach((entry, position) => {
         if (entry.record) {
-            // Custom item: only its place in the list is ours to move.
+            // Custom or kept item: only its place in the list is ours to
+            // move.
             entry.record.set("position", position);
+            if (entry.kept && entry.record.getBool("applicable")) {
+                // Someone asserted this was done, or recorded why it was
+                // not. Keep it as a record, out of the outstanding count.
+                entry.record.set("applicable", false);
+                counts.madeInapplicable += 1;
+            }
             txApp.save(entry.record);
             return;
         }
 
         const item = entry.item;
-        desiredKeys[item.itemKey] = true;
         const found = existingByKey[item.itemKey];
 
         if (found) {
@@ -708,19 +731,11 @@ function syncProcedureChecklist(txApp, procedureRecord, templates) {
         // it, so its absence from the assembled list says nothing.
         if (record.getBool("custom")) return;
         if (desiredKeys[record.getString("itemKey")]) return;
+        // Touched ones were kept and placed in the merge above.
+        if (isTouched(record)) return;
 
-        if (isTouched(record)) {
-            // Someone asserted this was done, or recorded why it was not.
-            // Keep it as a record, out of the outstanding count.
-            if (record.getBool("applicable")) {
-                record.set("applicable", false);
-                txApp.save(record);
-                counts.madeInapplicable += 1;
-            }
-        } else {
-            txApp.delete(record);
-            counts.removed += 1;
-        }
+        txApp.delete(record);
+        counts.removed += 1;
     });
 
     syncOutstandingCount(txApp, procedureRecord.id);

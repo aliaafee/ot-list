@@ -100,7 +100,7 @@ export default function TemplateList() {
                     </ToolBarButton>
                     <ToolBarButton
                         title="Preview Template"
-                        onClick={() => navigate("/settings/checklists/new")}
+                        onClick={() => setShowPreview(true)}
                     >
                         <ViewIcon size={16} />
                         <ToolBarButtonLabel>Preview</ToolBarButtonLabel>

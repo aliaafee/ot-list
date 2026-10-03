@@ -279,6 +279,8 @@ function ProcedureChecklist({
         !!dayDate &&
         String(dayDate).slice(0, 10) < dayjs().format("YYYY-MM-DD");
 
+    const canRebuild = !isPast && !procedure?.removed;
+
     const changed = isPast
         ? []
         : patientChanges(
@@ -545,14 +547,35 @@ function ProcedureChecklist({
                 phone an inline row of input, select and two buttons wraps into
                 an unusable stack. */}
             {canEdit && (
-                <button
-                    type="button"
-                    className="ml-3 mt-2 flex items-center gap-1 text-blue-600 hover:bg-blue-100 rounded px-1 py-0.5 cursor-pointer"
-                    onClick={() => setShowAdd(true)}
-                >
-                    <PlusIcon size={14} />
-                    Add an item for this procedure
-                </button>
+                <div className="ml-3 mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <button
+                        type="button"
+                        className="flex items-center gap-1 text-blue-600 hover:bg-blue-100 rounded px-1 py-0.5 cursor-pointer"
+                        onClick={() => setShowAdd(true)}
+                    >
+                        <PlusIcon size={14} />
+                        Add an item for this procedure
+                    </button>
+                    {/* For a checklist that predates the templates, or to
+                        pick up a template edit. Today and future procedures
+                        only, as the route enforces; the changed-details
+                        notice carries its own. */}
+                    {canRebuild && changed.length === 0 && (
+                        <button
+                            type="button"
+                            className="flex items-center gap-1 text-blue-600 hover:bg-blue-100 rounded px-1 py-0.5 cursor-pointer disabled:opacity-60 disabled:cursor-wait"
+                            title="Rebuild from the current templates. Ticks, notes and added items are kept."
+                            disabled={rebuilding}
+                            onClick={rebuild}
+                        >
+                            <RefreshCwIcon
+                                size={14}
+                                className={rebuilding ? "animate-spin" : ""}
+                            />
+                            {rebuilding ? "Rebuilding..." : "Rebuild checklist"}
+                        </button>
+                    )}
+                </div>
             )}
 
             {showAdd && (
