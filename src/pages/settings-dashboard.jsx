@@ -22,6 +22,7 @@ import operatingRoomsPage from "@/dashboard/operating-rooms";
 import operatingListsPage from "@/dashboard/operating-lists";
 import surgeonsPage from "@/dashboard/surgeons";
 import checklistsPage from "@/dashboard/checklists";
+import generalPage from "@/dashboard/general";
 
 /**
  * The settings pages, keyed by the :page segment of the route ("settings" is
@@ -64,6 +65,7 @@ import checklistsPage from "@/dashboard/checklists";
 const NEW_DETAIL_ID = "new";
 const sidebarPages = {
     settings: systemInfo,
+    general: generalPage,
     users: users,
     departments: departmentsPage,
     operatingrooms: operatingRoomsPage,

@@ -146,6 +146,32 @@ migration depends on the seeded catalogue — the one that moves legacy procedur
 text onto the uncoded concept does — rename the regenerated file back to its
 original timestamp, or it will run after the migration that needs it.
 
+## Time zone
+
+"Today" is the hospital's date, not the server's, the database's or the
+browser's. It is computed from `appSettings.utcOffsetMinutes`, a single record
+that admins edit under **Settings → General**, and everything that asks what
+day it is reads that one setting:
+
+| Where | How |
+| --- | --- |
+| Hooks | `todayDate(app)` in `pb/pb_hooks/app-settings.js` |
+| Client | `hospitalToday()` in `src/lib/app-settings.js` |
+| SQL views | `DATE('now', …)` shifted by the setting, as `upcomingOtDays` does |
+
+That covers which OT days and procedures are upcoming, which procedures are
+past (their checklists are no longer rebuilt), a patient's age on screen and on
+the printed list, and the default "added" date of a new procedure. New code
+that needs today's date uses one of the three rather than the local clock —
+`new Date()`, a bare `dayjs()` and SQLite's `DATE('now')` each answer in a
+different zone.
+
+The setting is a fixed offset from UTC, not a zone name, because the hooks
+runtime has no time zone database. A hospital that observes daylight saving
+changes it when the clocks change. The migration seeds it with the server's
+offset at the time it runs, so set it once after the first deploy if the server
+is not in the hospital's zone.
+
 ## Deploy
 
 ### Linux host

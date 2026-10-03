@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { pb } from "@/lib/pb";
+import { loadAppSettings } from "@/lib/app-settings";
 
 const AuthContext = createContext(null);
 
@@ -34,6 +35,13 @@ export function AuthProvider({ children }) {
         });
         return unsubscribe;
     }, []);
+
+    // The app settings need a signed-in user to read, and decide what "today"
+    // is everywhere, so they are fetched as soon as there is one.
+    const userId = user?.id;
+    useEffect(() => {
+        if (userId) loadAppSettings();
+    }, [userId]);
 
     const value = useMemo(
         () => ({

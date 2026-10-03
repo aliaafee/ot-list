@@ -25,22 +25,37 @@ const formatDate = (dateTime) => {
     return `${day} ${monthName} ${year}`;
 };
 
+/** "YYYY-MM-DD" as [year, month, day], or null. */
+const dateParts = (value) => {
+    const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(value || ""));
+    return match ? [Number(match[1]), Number(match[2]), Number(match[3])] : null;
+};
+
+// Age as of today at the hospital (the app setting), on calendar dates: the
+// server's own clock and zone play no part, so the printed list shows the
+// same age the app does.
 const age = (dob) => {
-    const birth = new Date(dob);
-    const now = new Date();
+    const { todayDate } = require(`${__hooks}/app-settings.js`);
+    const birth = dateParts(dob);
+    const now = dateParts(todayDate($app));
+    if (!birth || !now) return "-";
 
-    let years = now.getFullYear() - birth.getFullYear();
-    if (isNaN(years) || years < 0) return "-";
+    const [by, bm, bd] = birth;
+    const [ny, nm, nd] = now;
 
-    const m = now.getMonth() - birth.getMonth();
-    if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) years--;
+    let years = ny - by;
+    if (years < 0) return "-";
+
+    const m = nm - bm;
+    if (m < 0 || (m === 0 && nd < bd)) years--;
     if (years < 1) {
-        let months =
-            (now.getFullYear() - birth.getFullYear()) * 12 +
-            (now.getMonth() - birth.getMonth());
-        if (now.getDate() < birth.getDate()) months--;
+        let months = (ny - by) * 12 + (nm - bm);
+        if (nd < bd) months--;
         if (months < 1) {
-            const days = Math.floor((now - birth) / (1000 * 60 * 60 * 24));
+            const days = Math.round(
+                (Date.UTC(ny, nm - 1, nd) - Date.UTC(by, bm - 1, bd)) /
+                    (1000 * 60 * 60 * 24),
+            );
             return `${days} days`;
         }
         return `${months} months`;

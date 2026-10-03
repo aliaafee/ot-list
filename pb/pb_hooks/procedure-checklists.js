@@ -43,13 +43,6 @@ function datePart(value) {
     return match ? `${match[1]}-${match[2]}-${match[3]}` : null;
 }
 
-/** Today's date on the server, as "YYYY-MM-DD". */
-function todayDate() {
-    const now = new Date();
-    const pad = (n) => ("0" + n).slice(-2);
-    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-}
-
 function daysInMonth(year, month) {
     // Day 0 of the next month is the last day of this one. UTC so the
     // server's offset cannot move it.
@@ -435,8 +428,10 @@ function procedureDate(app, procedureRecord) {
  * resync, the rebuild route and the patient notices - spec sections 5 and 8.1.
  */
 function isPastProcedure(app, procedureRecord) {
+    // Today at the hospital, from the app setting - not the server's clock.
+    const { todayDate } = require(`${__hooks}/app-settings.js`);
     const date = procedureDate(app, procedureRecord);
-    return !!date && date < todayDate();
+    return !!date && date < todayDate(app);
 }
 
 /**

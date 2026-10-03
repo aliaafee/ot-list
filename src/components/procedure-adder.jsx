@@ -37,8 +37,8 @@ import PastePatientPreviewModal from "@/modals/paste-patient-preview-modal";
 import PatientInfo from "./patient-info";
 import { pb } from "@/lib/pb";
 import { toProcedureCodesPayload } from "@/lib/procedure-codes";
-import dayjs from "dayjs";
 import ErrorBanner from "@/components/error-banner";
+import { hospitalToday } from "@/lib/app-settings";
 
 /**
  * ProcedureAdder - Form component for adding new OT procedures with patient information
@@ -62,7 +62,7 @@ function ProcedureAdder({
     const [selectedPatient, setSelectedPatient] = useState(null);
     const [newProcedure, setNewProcedure] = useState({
         ...initialProcedureValue,
-        addedDate: dayjs().format("YYYY-MM-DD"),
+        addedDate: hospitalToday(),
     });
     const [newProcedureErrors, setNewProcedureErrors] = useState({});
     const [addError, setAddError] = useState(null);

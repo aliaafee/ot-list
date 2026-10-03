@@ -17,6 +17,7 @@ import {
 } from "@/lib/procedure-codes";
 import { FACET_LABELS } from "@/lib/procedure-catalogue";
 import { useCatalogue } from "@/contexts/catalogue-context";
+import { hospitalToday } from "@/lib/app-settings";
 import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
 import LabelValue from "@/components/label-value";
@@ -136,8 +137,8 @@ function AllProcedures() {
             }
 
             if (upcoming) {
-                const today = dayjs().format("YYYY-MM-DD");
-                filters.push(`procedureDay.date >= "${today}"`);
+                // Today at the hospital, the same line upcomingOtDays draws.
+                filters.push(`procedureDay.date >= "${hospitalToday()}"`);
             }
 
             if (!includeRemoved) {

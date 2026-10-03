@@ -2,10 +2,9 @@ import { useEffect, useReducer, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { PlusIcon } from "lucide-react";
 import dayjs from "dayjs";
-import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
-dayjs.extend(isSameOrAfter);
 
 import { pb } from "@/lib/pb";
+import { hospitalToday } from "@/lib/app-settings";
 import {
     ToolBar,
     ToolBarPill,
@@ -186,7 +185,11 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                         }
                         if (
                             e.action === "create" &&
-                            dayjs(e.record.date).isSameOrAfter(dayjs(), "day")
+                            // The line the upcomingOtDays view draws: the
+                            // day's calendar date against today's at the
+                            // hospital.
+                            String(e.record.date).slice(0, 10) >=
+                                hospitalToday()
                         ) {
                             dispatchOtDaysList({
                                 type: "ADD_DAY",
