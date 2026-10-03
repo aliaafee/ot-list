@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ClockIcon } from "lucide-react";
+import { ClockIcon, SlidersIcon } from "lucide-react";
 import dayjs from "dayjs";
 
 import ErrorBanner from "@/components/error-banner";
@@ -24,7 +24,7 @@ import {
  */
 export default {
     title: "General",
-    icon: <ClockIcon width={16} height={16} />,
+    icon: <SlidersIcon width={16} height={16} />,
     content: function General({ isAdmin }) {
         const settings = useAppSettings();
 
@@ -122,8 +122,7 @@ export default {
                         <p className="text-sm text-amber-700 md:col-span-2">
                             This browser is on {formatUtcOffset(browserOffset)},
                             which is not the hospital&apos;s time zone. Times
-                            are shown in hospital time, not this
-                            browser&apos;s.
+                            are shown in hospital time, not this browser&apos;s.
                         </p>
                     )}
                 </div>
