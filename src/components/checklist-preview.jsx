@@ -6,7 +6,9 @@ import ProcedureCodeBrowserModal from "@/modals/procedure-code-browser-modal";
 import { api } from "@/lib/api";
 import {
     GROUP_LABEL,
+    PATIENT_FACTS,
     PATIENT_FACT_LABEL,
+    PRIORITIES,
     SCOPE_LABEL,
     SEXES,
     describeCriteria,
@@ -15,8 +17,15 @@ import {
 } from "@/lib/checklists";
 import ErrorBanner from "@/components/error-banner";
 
-/** Why a patient criterion excluded a template, for the preview patient. */
+/** Why a criterion excluded a template, for the preview codes and patient. */
 function describeExclusion(failure, patient) {
+    // Priority is a code's, not the patient's: the template found a code in
+    // its scope, but none at a priority it lists.
+    if (failure.field === "priority") {
+        return failure.reason === "unknown"
+            ? "no priority recorded"
+            : "no code at that priority";
+    }
     if (failure.reason === "unknown") {
         return failure.field === "age" ? "age unknown" : "sex unknown";
     }
@@ -77,7 +86,10 @@ function ChecklistPreview({ stale = false }) {
         (async () => {
             try {
                 const response = await api.previewChecklist(
-                    concepts.map((concept) => concept.conceptId),
+                    concepts.map((concept) => ({
+                        conceptId: concept.conceptId,
+                        priority: concept.priority || null,
+                    })),
                     patient,
                 );
                 if (ignore) return;
@@ -102,12 +114,22 @@ function ChecklistPreview({ stale = false }) {
     const addConcept = (concept) => {
         setBrowsing(false);
         if (!concept) return;
+        // Priority starts not recorded - the narrowest case, as for a code
+        // entered without one: every priority-specific template is left out
+        // and listed with its reason.
         setConcepts((prev) =>
             prev.some((c) => c.conceptId === concept.conceptId)
                 ? prev
-                : [...prev, concept],
+                : [...prev, { ...concept, priority: "" }],
         );
     };
+
+    // Per code, not one for the preview: priority is a qualifier on each
+    // code, and a mixed-priority procedure is the case worth reproducing.
+    const setPriority = (conceptId, priority) =>
+        setConcepts((prev) =>
+            prev.map((c) => (c.conceptId === conceptId ? { ...c, priority } : c)),
+        );
 
     const rows = withGroupHeadings(result?.items || []);
     const matchedTemplates = (result?.templates || []).filter(
@@ -117,6 +139,9 @@ function ChecklistPreview({ stale = false }) {
         (template) => template.excludedBy,
     );
     const missing = result?.missingFacts || [];
+    const missingPatient = missing.filter((field) =>
+        PATIENT_FACTS.includes(field),
+    );
 
     return (
         <div className="flex flex-col gap-2">
@@ -145,6 +170,21 @@ function ChecklistPreview({ stale = false }) {
                             {concept.conceptId}
                         </span>
                         {concept.preferredTerm}
+                        <select
+                            value={concept.priority}
+                            title="Priority this code is recorded at"
+                            className="border border-gray-300 rounded bg-white text-xs"
+                            onChange={(e) =>
+                                setPriority(concept.conceptId, e.target.value)
+                            }
+                        >
+                            <option value="">Priority not recorded</option>
+                            {PRIORITIES.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
                         <button
                             type="button"
                             className="text-gray-400 hover:text-red-600 cursor-pointer"
@@ -222,15 +262,24 @@ function ChecklistPreview({ stale = false }) {
 
             {!!error && <ErrorBanner>{error}</ErrorBanner>}
 
-            {!loading && missing.length > 0 && (
+            {!loading && missingPatient.length > 0 && (
                 <div className="bg-amber-50 border border-amber-400 rounded-md p-2 text-sm text-amber-800">
-                    {missing
+                    {missingPatient
                         .map((field) => PATIENT_FACT_LABEL[field] || field)
                         .join(" and ")
                         .replace(/^./, (c) => c.toUpperCase())}{" "}
                     not recorded:{" "}
-                    {missing.length > 1 ? "age- and sex" : missing[0]}-specific
-                    items have been left out. This is what a ward would see.
+                    {missingPatient.length > 1
+                        ? "age- and sex"
+                        : missingPatient[0]}
+                    -specific items have been left out. This is what a ward
+                    would see.
+                </div>
+            )}
+            {!loading && missing.includes("priority") && (
+                <div className="bg-amber-50 border border-amber-400 rounded-md p-2 text-sm text-amber-800">
+                    Priority not recorded: priority-specific items have been
+                    left out. This is what a ward would see.
                 </div>
             )}
 
@@ -379,12 +428,12 @@ function ChecklistPreview({ stale = false }) {
                                 </ul>
                             </div>
 
-                            {/* Scope matched, patient criteria did not - the
+                            {/* Scope matched, a criterion did not - the
                                 answer to "why does my template not apply to
-                                this patient". */}
+                                this procedure". */}
                             <div>
                                 <div className="text-sm font-semibold mb-1">
-                                    Excluded by patient criteria (
+                                    Excluded by criteria (
                                     {excludedTemplates.length})
                                 </div>
                                 <ul className="text-sm bg-white rounded-md border border-gray-200 p-2">

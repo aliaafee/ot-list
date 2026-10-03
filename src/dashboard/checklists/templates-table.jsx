@@ -4,7 +4,8 @@ import { twMerge } from "tailwind-merge";
 
 import { SCOPE_LABEL, criteriaCount, describeCriteria } from "@/lib/checklists";
 
-const COLUMNS = ["Name", "Applies to", "Patients", "Order", "Status"];
+// "Only for" is the criteria: priority, sex and age range.
+const COLUMNS = ["Name", "Applies to", "Only for", "Order", "Status"];
 
 /** The template list, each row linking to its template. */
 export default function TemplatesTable({ templates }) {

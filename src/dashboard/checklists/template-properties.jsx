@@ -8,6 +8,7 @@ import MultiSelectField from "@/components/multi-select-field";
 import AgeBoundField from "@/components/age-bound-field";
 import SaveStatus from "@/components/save-status";
 import {
+    PRIORITIES,
     SCOPES,
     SCOPE_TARGET,
     SEXES,
@@ -151,6 +152,25 @@ export default function TemplateProperties({
                         </p>
                     </div>
                 )}
+
+                {/* Beside the scope it is tested with, not among the
+                    patient criteria: priority is recorded on the procedure's
+                    codes. Independent of scope, so changing that leaves it. */}
+                <div className="flex flex-col md:col-span-2">
+                    <span className="text-xs text-left text-gray-700">
+                        Priority
+                    </span>
+                    <p>
+                        <MultiSelectField
+                            label="Priority"
+                            options={PRIORITIES}
+                            value={template.priorities || []}
+                            emptyLabel="Any priority"
+                            disabled={busy}
+                            onChange={editor.changePriorities}
+                        />
+                    </p>
+                </div>
 
                 <div className="flex flex-col md:col-span-2">
                     <span className="text-xs text-left text-gray-700">Sex</span>

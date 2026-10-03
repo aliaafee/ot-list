@@ -547,10 +547,14 @@ routerAdd(
 );
 
 // POST /api/preview-checklist
-// What a checklist would come out as for a given set of concepts, for the
+// What a checklist would come out as for a given set of codes, for the
 // template authoring page. Read-only, and runs the same assembly the write
 // paths run - a second implementation on the client would drift silently and
 // keep looking authoritative.
+//
+// Body: { codes: [{ conceptId, priority? }], patient?: { ageMonths?, sex? } }.
+// A code is a concept and the priority it would be recorded at, because
+// priority is a qualifier on the code, not on the procedure.
 routerAdd(
     "POST",
     "/api/preview-checklist",
@@ -565,11 +569,18 @@ routerAdd(
         }
 
         const data = e.requestInfo().body;
-        const conceptIds = data.conceptIds || [];
+        const codes = data.codes || [];
 
-        if (!Array.isArray(conceptIds)) {
-            throw new BadRequestError("conceptIds must be an array");
+        if (!Array.isArray(codes)) {
+            throw new BadRequestError("codes must be an array");
         }
+        codes.forEach((code) => {
+            if (!code || typeof code !== "object" || !code.conceptId) {
+                throw new BadRequestError(
+                    "Each code must be an object with a conceptId",
+                );
+            }
+        });
 
         // Optional; a missing patient, or a missing or null field in it, is
         // unknown - the same path a real patient with nothing recorded takes.
@@ -587,7 +598,7 @@ routerAdd(
 
         // No transaction: this reads and returns, and takes catalogue ids
         // rather than a procedure id so there is nothing in scope to mutate.
-        const result = previewChecklist($app, conceptIds, data.patient);
+        const result = previewChecklist($app, codes, data.patient);
 
         return e.json(200, { success: true, ...result });
     },

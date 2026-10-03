@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 import { pb } from "@/lib/pb";
-import { SCOPE_TARGET, SEXES, TARGET_FIELDS } from "@/lib/checklists";
+import {
+    PRIORITIES,
+    SCOPE_TARGET,
+    SEXES,
+    TARGET_FIELDS,
+} from "@/lib/checklists";
 
 /**
  * What /settings/checklists/new starts from. Inactive, so a template does
@@ -20,6 +25,7 @@ const BLANK_TEMPLATE = {
     sexes: [],
     ageMinMonths: 0,
     ageMaxMonths: 0,
+    priorities: [],
 };
 
 /**
@@ -126,6 +132,20 @@ export default function useTemplateEditor(record) {
         change({ sexes });
     };
 
+    // The same refusal as every sex, for the same reasons: all three looks
+    // like "any priority" but fails on a code with none recorded, and counts
+    // as a criterion in dedupe - spec section 8.2.
+    const changePriorities = (priorities) => {
+        if (priorities.length >= PRIORITIES.length) {
+            setError(
+                "Leave priority empty to mean any priority, rather than choosing every option.",
+            );
+            return;
+        }
+        setError("");
+        change({ priorities });
+    };
+
     /** One age bound, in months. False refuses it. */
     const changeAge = (field, months) => {
         if (months === null) {
@@ -186,6 +206,7 @@ export default function useTemplateEditor(record) {
         commit,
         changeScope,
         changeSexes,
+        changePriorities,
         changeAge,
     };
 }

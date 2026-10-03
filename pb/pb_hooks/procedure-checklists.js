@@ -28,8 +28,18 @@ const SCOPE_RANK = { all: 0, subspecialty: 1, site: 2, concept: 3 };
 /** The `patients.sex` vocabulary, which a template's `sexes` draws from. */
 const SEXES = ["male", "female"];
 
-/** Patient fields a template can be narrowed by, in reporting order. */
-const PATIENT_FIELDS = ["age", "sex"];
+/**
+ * The `procedureCodes.priority` vocabulary, which a template's `priorities`
+ * draws from. A post-coordination qualifier: it is recorded on each code row,
+ * never in the catalogue - spec section 3.2.
+ */
+const PRIORITIES = ["elective", "urgent", "emergency"];
+
+/**
+ * Fields a template can be narrowed by, in reporting order. Age and sex are
+ * the patient's; priority is a code's.
+ */
+const FACT_FIELDS = ["age", "sex", "priority"];
 
 /**
  * The calendar date of a stored PocketBase date, as "YYYY-MM-DD", or null.
@@ -81,10 +91,19 @@ function hasSexCriterion(template) {
     return template.sexes.length > 0;
 }
 
-/** How many patient criteria a template carries: sex one, age one. */
+function hasPriorityCriterion(template) {
+    return (template.priorities || []).length > 0;
+}
+
+/**
+ * How many criteria a template carries: sex one, age one, priority one
+ * (however many values it lists).
+ */
 function criteriaCount(template) {
     return (
-        (hasAgeCriterion(template) ? 1 : 0) + (hasSexCriterion(template) ? 1 : 0)
+        (hasAgeCriterion(template) ? 1 : 0) +
+        (hasSexCriterion(template) ? 1 : 0) +
+        (hasPriorityCriterion(template) ? 1 : 0)
     );
 }
 
@@ -94,6 +113,9 @@ function criteriaOf(template) {
     if (hasSexCriterion(template)) criteria.sexes = template.sexes.slice();
     if (template.ageMinMonths > 0) criteria.ageMinMonths = template.ageMinMonths;
     if (template.ageMaxMonths > 0) criteria.ageMaxMonths = template.ageMaxMonths;
+    if (hasPriorityCriterion(template)) {
+        criteria.priorities = template.priorities.slice();
+    }
     return criteria;
 }
 
@@ -161,11 +183,53 @@ function matchesConcept(template, concept) {
 }
 
 /**
+ * The codes a template applies through, and why not when there are none.
+ *
+ * Scope and priority are tested on the same code: both are facts about a code
+ * row, so "emergency spine" needs one row that is both, and an elective spine
+ * code beside an emergency cranial one does not match. Spec section 3.2.
+ *
+ * Returns null when the scope matches nothing - the template is not in play
+ * at all. Otherwise { via, failed }: `via` is the codes it matched through
+ * (all in-scope codes when it failed, for reporting), and `failed` the
+ * priority failure, if any. A code with no priority fails every priority
+ * criterion; the reason is "unknown" when recording one might have matched -
+ * an in-scope code has none, or there are no codes - and "outOfRange" when
+ * every in-scope code has one and none is listed.
+ */
+function matchCodes(template, codes) {
+    const scoped =
+        template.scope === "all"
+            ? codes
+            : codes.filter((code) => matchesConcept(template, code));
+    if (template.scope !== "all" && !scoped.length) return null;
+
+    if (!hasPriorityCriterion(template)) return { via: scoped, failed: [] };
+
+    const via = scoped.filter(
+        (code) =>
+            !!code.priority && template.priorities.indexOf(code.priority) !== -1,
+    );
+    if (via.length) return { via, failed: [] };
+
+    const unknown = !scoped.length || scoped.some((code) => !code.priority);
+    return {
+        via: scoped,
+        failed: [
+            { field: "priority", reason: unknown ? "unknown" : "outOfRange" },
+        ],
+    };
+}
+
+/**
  * Which of two candidates for the same itemKey wins.
  *
- * Most specific scope, then more patient criteria (a paediatric override of a
+ * Most specific scope, then more criteria (a paediatric override of a
  * global item wins without juggling positions), then the earlier template by
- * position, then by id so the result never depends on load order.
+ * position, then by id so the result never depends on load order. Priority
+ * adds no tie-break of its own: on a procedure whose codes carry different
+ * priorities an elective-only and an emergency-only template can both be
+ * candidates, and position decides - spec section 11.5.
  */
 function compareCandidates(a, b) {
     const rank = scopeRank(b.template.scope) - scopeRank(a.template.scope);
@@ -182,47 +246,51 @@ function compareCandidates(a, b) {
 }
 
 /**
- * Assemble a checklist from a set of concepts, the patient, and the whole
+ * Assemble a checklist from a procedure's codes, the patient, and the whole
  * template set.
  *
  * Returns four things, and the write path wants the first and last:
  *   items        - the surviving items, ordered, with `position` written in
  *   suppressed   - items trimmed as duplicates, each naming what beat it
  *   templates    - every template whose scope matched, including inactive
- *                  ones and ones the patient criteria excluded (`excludedBy`)
- *   missingFacts - patient fields that are unknown and cost at least one
- *                  active template its place, e.g. ["age"]
+ *                  ones and ones a criterion excluded (`excludedBy`)
+ *   missingFacts - fields that are unknown and cost at least one active
+ *                  template its place, e.g. ["age"] or ["priority"]
  *
  * The losers are returned rather than dropped so the preview does not have to
  * recompute them, which would be a second implementation of these rules.
  *
- * @param {Array} concepts - [{ id, conceptId, subspecialty, site }]
+ * @param {Array} codes - [{ id, conceptId, subspecialty, site, priority }],
+ *   one per distinct (concept, priority) on the procedure; `id` is the
+ *   concept's record id and `priority` is null when none is recorded
  * @param {Object} patient - { ageMonths, sex }, each null when unknown. Age is
  *   already computed; assembly does no date arithmetic.
  * @param {Array} templates - [{ id, name, scope, active, position,
  *                               subspecialties, sites, concepts,
- *                               sexes, ageMinMonths, ageMaxMonths, items }]
+ *                               sexes, ageMinMonths, ageMaxMonths,
+ *                               priorities, items }]
  */
-function assembleChecklist(concepts, patient, templates) {
+function assembleChecklist(codes, patient, templates) {
     const facts = patient || { ageMonths: null, sex: null };
 
-    // 1-2. Templates matching any concept and passing the patient criteria.
-    // A template matched by several concepts is collected once - the first
-    // place duplicates are trimmed. `all` is handled outside the concept loop
-    // so that a procedure with no codes still gets the global templates.
-    // Criteria are checked once per template, not per concept: a procedure
-    // has one patient however many codes it carries.
+    // 1-2. Templates matching any code - scope and priority together - and
+    // passing the patient criteria. A template matched by several codes is
+    // collected once - the first place duplicates are trimmed. A procedure
+    // with no codes still gets the global templates. Patient criteria are
+    // checked once per template, not per code: a procedure has one patient
+    // however many codes it carries.
     const matched = [];
     const excluded = [];
     templates.forEach((template) => {
-        let via = [];
-        if (template.scope !== "all") {
-            via = concepts.filter((concept) =>
-                matchesConcept(template, concept),
-            );
-            if (!via.length) return;
-        }
-        const failed = failedCriteria(template, facts);
+        const match = matchCodes(template, codes || []);
+        if (!match) return;
+        // A plain global template applies to everything, so naming the codes
+        // it "matched" would say nothing.
+        const via =
+            template.scope === "all" && !hasPriorityCriterion(template)
+                ? []
+                : match.via;
+        const failed = match.failed.concat(failedCriteria(template, facts));
         if (failed.length) excluded.push({ template, via, failed });
         else matched.push({ template, via });
     });
@@ -311,7 +379,10 @@ function assembleChecklist(concepts, patient, templates) {
         scope: template.scope,
         active: template.active,
         criteria: criteriaOf(template),
-        matchedConcepts: via.map((concept) => concept.conceptId),
+        // Distinct: one concept recorded at two priorities is two codes.
+        matchedConcepts: via
+            .map((code) => code.conceptId)
+            .filter((id, index, all) => all.indexOf(id) === index),
         contributed: contributed[template.id] || 0,
     });
 
@@ -326,7 +397,7 @@ function assembleChecklist(concepts, patient, templates) {
                     excludedBy: entry.failed,
                 })),
             ),
-        missingFacts: PATIENT_FIELDS.filter((field) => missing[field]),
+        missingFacts: FACT_FIELDS.filter((field) => missing[field]),
     };
 }
 
@@ -362,6 +433,7 @@ function loadTemplates(app) {
             sexes: template.getStringSlice("sexes"),
             ageMinMonths: template.getInt("ageMinMonths"),
             ageMaxMonths: template.getInt("ageMaxMonths"),
+            priorities: template.getStringSlice("priorities"),
             items: items.map((item) => ({
                 itemKey: item.getString("itemKey"),
                 label: item.getString("label"),
@@ -374,8 +446,12 @@ function loadTemplates(app) {
     });
 }
 
-/** The distinct concepts behind a procedure's codes, in plain form. */
-function conceptsOfProcedure(app, procedureRecord) {
+/**
+ * A procedure's codes in plain form: one entry per distinct (concept,
+ * priority). The same concept at two priorities is two entries, because a
+ * template may match one and not the other - spec section 4, step 1.
+ */
+function codesOfProcedure(app, procedureRecord) {
     const codes = app.findRecordsByFilter(
         "procedureCodes",
         "procedure = {:procedure}",
@@ -389,8 +465,13 @@ function conceptsOfProcedure(app, procedureRecord) {
     const concepts = [];
     codes.forEach((code) => {
         const conceptRecordId = code.getString("concept");
-        if (!conceptRecordId || seen[conceptRecordId]) return;
-        seen[conceptRecordId] = true;
+        if (!conceptRecordId) return;
+        // The qualifier on this code row, never a property of the concept.
+        const value = code.getString("priority");
+        const priority = PRIORITIES.indexOf(value) === -1 ? null : value;
+        const pair = conceptRecordId + "|" + (priority || "");
+        if (seen[pair]) return;
+        seen[pair] = true;
 
         let concept;
         try {
@@ -406,6 +487,7 @@ function conceptsOfProcedure(app, procedureRecord) {
             conceptId: concept.getString("conceptId"),
             subspecialty: concept.getString("subspecialty"),
             site: concept.getString("procedureSite"),
+            priority,
         });
     });
 
@@ -598,10 +680,10 @@ function isTouched(record) {
  * { added, removed, madeInapplicable, restored }.
  */
 function syncProcedureChecklist(txApp, procedureRecord, templates) {
-    const concepts = conceptsOfProcedure(txApp, procedureRecord);
+    const codes = codesOfProcedure(txApp, procedureRecord);
     const patient = patientOfProcedure(txApp, procedureRecord);
     const { items, missingFacts } = assembleChecklist(
-        concepts,
+        codes,
         patient.facts,
         templates || loadTemplates(txApp),
     );
@@ -747,19 +829,31 @@ function syncProcedureChecklist(txApp, procedureRecord, templates) {
 }
 
 /**
- * Assemble against an arbitrary set of concept ids and patient, for the
- * authoring preview.
+ * Assemble against an arbitrary set of codes and patient, for the authoring
+ * preview.
+ *
+ * Each code is a catalogue concept id and the priority it would be recorded
+ * at; a missing or null priority is none recorded - the same path a real
+ * code entered without one takes.
  *
  * Read-only: it takes catalogue ids rather than a procedure, so there is no
  * record in scope to mutate by accident. The patient is given as an age, not
  * a date of birth - the author asks "what does a 14-year-old get" - so there
  * is no date arithmetic here to drift from ageInMonths.
  *
+ * @param {Array} codes - [{ conceptId, priority? }]
  * @param {Object} [patient] - { ageMonths, sex }; missing or null = unknown
  */
-function previewChecklist(app, conceptIds, patient) {
+function previewChecklist(app, codes, patient) {
     const concepts = [];
-    (conceptIds || []).forEach((conceptId) => {
+    (codes || []).forEach((code) => {
+        const conceptId = code && code.conceptId;
+        const priority = (code && code.priority) || null;
+        if (priority && PRIORITIES.indexOf(priority) === -1) {
+            throw new BadRequestError(
+                `Invalid priority. Must be one of: ${PRIORITIES.join(", ")}`,
+            );
+        }
         let concept;
         try {
             concept = app.findFirstRecordByData(
@@ -772,12 +866,19 @@ function previewChecklist(app, conceptIds, patient) {
                 `Unknown procedure concept: ${conceptId}`,
             );
         }
-        if (concepts.some((c) => c.id === concept.id)) return;
+        if (
+            concepts.some(
+                (c) => c.id === concept.id && c.priority === priority,
+            )
+        ) {
+            return;
+        }
         concepts.push({
             id: concept.id,
             conceptId: concept.getString("conceptId"),
             subspecialty: concept.getString("subspecialty"),
             site: concept.getString("procedureSite"),
+            priority,
         });
     });
 
@@ -808,10 +909,11 @@ function previewChecklist(app, conceptIds, patient) {
 module.exports = {
     CUSTOM_KEY_PREFIX,
     GROUPS,
+    PRIORITIES,
     SEXES,
     ageInMonths,
     assembleChecklist,
-    conceptsOfProcedure,
+    codesOfProcedure,
     customItemKey,
     datePart,
     isPastProcedure,

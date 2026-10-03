@@ -4,8 +4,8 @@ import { pb } from "@/lib/pb";
 import { findKeyOverlaps } from "@/lib/checklists";
 
 /**
- * The item keys this template shares with another under overlapping patient
- * criteria (see findKeyOverlaps), and how many items it has.
+ * The item keys this template shares with another under overlapping criteria
+ * (see findKeyOverlaps), and how many items it has.
  *
  * Reads every template and every item key, so `reload` should be called when
  * this template's items change. Idle while creating: a template that does not
@@ -27,7 +27,7 @@ export default function useKeyOverlaps(record, template) {
             try {
                 const [templateRecords, keyRecords] = await Promise.all([
                     pb.collection("checklistTemplates").getFullList({
-                        fields: "id,name,scope,sexes,ageMinMonths,ageMaxMonths",
+                        fields: "id,name,scope,sexes,ageMinMonths,ageMaxMonths,priorities",
                         requestKey: "checklist-admin-overlap-templates",
                     }),
                     pb.collection("checklistTemplateItems").getFullList({

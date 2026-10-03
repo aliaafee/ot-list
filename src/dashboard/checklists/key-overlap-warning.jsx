@@ -5,7 +5,7 @@ import { describeCriteria } from "@/lib/checklists";
 
 /**
  * The warning for keys this template shares with another under overlapping
- * patient criteria, as findKeyOverlaps reports them. Nothing when none.
+ * criteria, as findKeyOverlaps reports them. Nothing when none.
  */
 export default function KeyOverlapWarning({ overlaps, className }) {
     if (!overlaps.length) return null;
@@ -17,11 +17,11 @@ export default function KeyOverlapWarning({ overlaps, className }) {
             )}
         >
             <div className="font-semibold">
-                Keys shared under overlapping patient criteria
+                Keys shared under overlapping criteria
             </div>
             <p>
-                A patient can match both templates, and at the same scope and
-                criteria count, Order decides whose item wins.
+                A procedure can match both templates, and at the same scope
+                and criteria count, Order decides whose item wins.
             </p>
             <ul className="mt-1">
                 {overlaps.map((overlap) => (
@@ -34,7 +34,7 @@ export default function KeyOverlapWarning({ overlaps, className }) {
                         >
                             {overlap.template.name}
                         </Link>{" "}
-                        ({describeCriteria(overlap.template) || "any patient"})
+                        ({describeCriteria(overlap.template) || "no criteria"})
                     </li>
                 ))}
             </ul>

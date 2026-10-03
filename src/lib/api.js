@@ -138,17 +138,21 @@ export const api = {
     },
 
     /**
-     * What a checklist would assemble to for these concepts, for the template
+     * What a checklist would assemble to for these codes, for the template
      * authoring page. Runs the same assembly as the write paths, so the answer
      * is the one a procedure would actually get.
+     *
+     * @param {Array} codes - [{ conceptId, priority? }]; priority is a
+     *   qualifier on each code, and none means not recorded
+     * @param {Object} [patient] - { ageMonths, sex }, each null when unknown
      */
-    async previewChecklist(conceptIds, patient) {
+    async previewChecklist(codes, patient) {
         const response = await pb.send(`/api/preview-checklist`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ conceptIds, patient }),
+            body: JSON.stringify({ codes, patient }),
         });
 
         if (!response.success) {

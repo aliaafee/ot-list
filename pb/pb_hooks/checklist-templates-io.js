@@ -22,6 +22,8 @@ const VERSION = 1;
 const SCOPES = ["all", "subspecialty", "site", "concept"];
 const GROUPS = ["preop", "dayof", "theatre", "postop"];
 const SEXES = ["male", "female"];
+// The procedureCodes.priority vocabulary - see procedure-checklists.js.
+const PRIORITIES = ["elective", "urgent", "emergency"];
 const ITEM_KEY_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 // Reserved for hand-added items - see procedure-checklists.js.
 const CUSTOM_KEY_PREFIX = "custom-";
@@ -90,6 +92,7 @@ function exportTemplates(app) {
                 sexes: template.getStringSlice("sexes"),
                 ageMinMonths: template.getInt("ageMinMonths"),
                 ageMaxMonths: template.getInt("ageMaxMonths"),
+                priorities: template.getStringSlice("priorities"),
                 items: items.map((item) => ({
                     itemKey: item.getString("itemKey"),
                     label: item.getString("label"),
@@ -212,6 +215,7 @@ function planImport(app, data) {
             sexes: [],
             ageMinMonths: 0,
             ageMaxMonths: 0,
+            priorities: [],
             items: [],
         };
 
@@ -270,6 +274,29 @@ function planImport(app, data) {
                 template.ageMinMonths >= template.ageMaxMonths
             ) {
                 fail("ageMinMonths must be below ageMaxMonths (the upper age is exclusive).");
+            }
+        }
+
+        // Priority criterion. Optional: a file exported before the field
+        // existed has none, which is "any priority".
+        if (source.priorities !== undefined && !isArray(source.priorities)) {
+            fail("priorities must be a list.");
+        } else if (isArray(source.priorities)) {
+            const unknown = source.priorities.filter(
+                (priority) => PRIORITIES.indexOf(priority) === -1,
+            );
+            if (unknown.length) {
+                fail(`unknown priority ${unknown.map((p) => `"${p}"`).join(", ")}.`);
+            } else if (
+                source.priorities.filter(
+                    (priority, index, all) => all.indexOf(priority) === index,
+                ).length >= PRIORITIES.length
+            ) {
+                fail("lists every priority; leave priorities empty to mean any priority.");
+            } else {
+                template.priorities = source.priorities.filter(
+                    (priority, index, all) => all.indexOf(priority) === index,
+                );
             }
         }
 
@@ -352,6 +379,7 @@ function importTemplates(
         sexes: template.sexes,
         ageMinMonths: template.ageMinMonths,
         ageMaxMonths: template.ageMaxMonths,
+        priorities: template.priorities,
     }));
     const result = {
         created: 0,
@@ -379,6 +407,7 @@ function importTemplates(
         record.set("sexes", source.sexes);
         record.set("ageMinMonths", source.ageMinMonths);
         record.set("ageMaxMonths", source.ageMaxMonths);
+        record.set("priorities", source.priorities);
         record.set("creator", actorId);
         record.set("updater", actorId);
         txApp.save(record);

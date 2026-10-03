@@ -22,6 +22,7 @@ import { formatDateTime } from "@/utils/dates";
 import { hospitalToday, useAppSettings } from "@/lib/app-settings";
 import {
     GROUP_LABEL,
+    PATIENT_FACTS,
     PATIENT_FACT_LABEL,
     SEX_LABEL,
     describeCriteria,
@@ -75,6 +76,8 @@ function describeRebuild({ added, removed, madeInapplicable, restored }) {
  * @param {boolean} [props.defaultOpen=false] - Whether it starts expanded
  * @param {number} [props.focusKey=0] - Open the checklist and scroll to it
  *   whenever this changes to a non-zero value, including on mount
+ * @param {function} [props.onEditProcedure] - Opens the procedure for editing;
+ *   offered by the "priority not recorded" notice, whose fix is on the codes
  * @returns {JSX.Element} A collapsible checklist
  */
 function ProcedureChecklist({
@@ -82,6 +85,7 @@ function ProcedureChecklist({
     className = "",
     defaultOpen = false,
     focusKey = 0,
+    onEditProcedure,
 }) {
     const procedureId = procedure?.id;
     const sectionRef = useRef(null);
@@ -289,11 +293,17 @@ function ProcedureChecklist({
               procedure?.checklistPatientBasis,
               procedure?.expand?.patient,
           );
+    const missingFacts = isPast ? [] : procedure?.checklistMissingFacts || [];
     // When the details changed, only that notice shows: it is the one with an
     // action, and the rebuild brings the missing-facts notice back if it
     // still applies.
-    const missing =
-        isPast || changed.length ? [] : procedure?.checklistMissingFacts || [];
+    const missing = changed.length
+        ? []
+        : missingFacts.filter((fact) => PATIENT_FACTS.includes(fact));
+    // A code with no priority recorded cost the checklist a template. Not
+    // the patient's to fix, so it has its own notice and its own link, and a
+    // changed patient does not hide it: a code edit rebuilds on its own.
+    const missingPriority = missingFacts.includes("priority");
 
     return (
         <Collapsible
@@ -320,7 +330,7 @@ function ProcedureChecklist({
                             Patient details changed
                         </span>
                     )}
-                    {missing.length > 0 && (
+                    {(missing.length > 0 || missingPriority) && (
                         <span className="ml-2 flex items-center gap-1 font-normal text-xs text-amber-700">
                             <UserRoundXIcon size={14} aria-hidden="true" />
                             Items left out
@@ -391,6 +401,22 @@ function ProcedureChecklist({
                             onClick={() => setEditingPatient(true)}
                         >
                             Edit patient
+                        </button>
+                    )}
+                </div>
+            )}
+
+            {missingPriority && (
+                <div className="ml-4 mb-2 bg-amber-50 border border-amber-400 rounded-md p-2 text-xs text-amber-800">
+                    <span className="font-semibold">Priority not recorded:</span>{" "}
+                    priority-specific items have been left out.
+                    {canEdit && !!onEditProcedure && !procedure?.removed && (
+                        <button
+                            type="button"
+                            className="ml-1 text-blue-700 underline cursor-pointer"
+                            onClick={onEditProcedure}
+                        >
+                            Edit procedure
                         </button>
                     )}
                 </div>

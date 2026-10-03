@@ -1,8 +1,14 @@
 # Procedure checklists
 
-Status: **implemented**, steps 1-14 of §12, including patient criteria (§3.1,
-matching on patient age and sex). The append-only audit under "Deferred" is
+Status: **implemented**, steps 1-19 of §12, including patient criteria (§3.1,
+matching on patient age and sex) and priority (§3.2, matching on the priority
+recorded on a procedure's codes). The append-only audit under "Deferred" is
 not built, and templates are deliberately not versioned (§11.1).
+
+Priority was checked the same way as the rest: the assembly cases of §12 step
+16 against the pure function, the write path, preview route and import/export
+end to end against a throwaway database, and the template form, the preview
+and the procedure notice in headless Chrome.
 
 Assembly (§4) and `ageInMonths` (§3.1) are covered by unit tests over the pure
 functions; the write path, reconciliation (§7), the patient-criteria migration
@@ -23,7 +29,8 @@ the collections it describes.
 
 A **checklist template** is an authored list of items that applies to some slice
 of the procedure catalogue: to everything, to a subspecialty, to a site, or to
-named concepts — optionally narrowed to patients of a given sex or age range.
+named concepts — optionally narrowed to codes recorded at a given priority
+(elective, urgent, emergency) and to patients of a given sex or age range.
 When a procedure is created, or whenever its codes or its scheduled day
 change, or its patient's missing age or sex is first recorded, the server collects every template matching any
 of the procedure's codes and its patient, merges their items, trims
@@ -61,6 +68,7 @@ follow the file shape of
 | `sexes` | select, multi, values `male` \| `female` | Patient criterion (§3.1). Empty = any sex. Same vocabulary as `patients.sex`. |
 | `ageMinMonths` | number, integer, ≥ 0 | Patient criterion (§3.1). Inclusive lower bound. `0` = no lower bound. |
 | `ageMaxMonths` | number, integer, ≥ 0 | Patient criterion (§3.1). **Exclusive** upper bound. `0` = no upper bound. |
+| `priorities` | select, multi, values `elective` \| `urgent` \| `emergency` | Priority criterion (§3.2). Empty = any priority, including none recorded. Same vocabulary as `procedureCodes.priority`. |
 | `creator` / `updater` | relation → users | Matches the pattern on `procedures`. |
 
 The target fields are **multi-valued on purpose**. The site vocabulary is flat —
@@ -75,6 +83,13 @@ answer "which patients having them". A template has exactly one scope and any
 combination of criteria, so "female patients having any spine procedure" is
 one template: `scope = subspecialty`, `subspecialties = [spine]`,
 `sexes = [female]`. §3.1 gives the reasoning.
+
+`priorities` is a criterion of the same standing — beside `scope`, not inside
+it, and free to combine with the patient criteria — but it is tested against
+something different: the priority recorded on a procedure **code**, not
+anything about the patient. "Emergency cranial trauma" is `scope =
+subspecialty`, `subspecialties = [cranial-trauma]`, `priorities = [emergency]`.
+One value, several, or none for "all priorities". §3.2.
 
 Age is stored in **whole months**, not years, because the thresholds that
 matter in paediatric neurosurgery sit below one year (neonate, infant). The
@@ -125,7 +140,7 @@ same as any other select in this schema.
 | `position` | number | Computed at assembly time (§4); already accounts for the group. |
 | `sourceTemplate` | relation → `checklistTemplates` | Which template contributed the item that won. Nullable — the template may later be deleted. |
 | `sourceScope` | select | `all` \| `subspecialty` \| `site` \| `concept`. Kept so the UI can explain *why* an item is on the list. |
-| `sourceCriteria` | json | The winning template's patient criteria, `{ sexes, ageMinMonths, ageMaxMonths }`, empty object when it has none. Same purpose as `sourceScope`: explaining *why*. **Not** a snapshot — recomputed with `sourceScope` (§7). |
+| `sourceCriteria` | json | The winning template's criteria, `{ sexes, ageMinMonths, ageMaxMonths, priorities }`, only the set ones present, empty object when it has none. Same purpose as `sourceScope`: explaining *why*. **Not** a snapshot — recomputed with `sourceScope` (§7). |
 | `checked` | bool, default false | |
 | `checkedBy` | relation → users | |
 | `checkedAt` | date | |
@@ -179,19 +194,23 @@ A template matches a **concept** when:
 | `site` | `concept.procedureSite` ∈ `template.sites`. |
 | `concept` | The concept ∈ `template.concepts`. |
 
-A template matches a **procedure** when **both** of these hold:
+A template matches a **procedure** when **all** of these hold:
 
-1. its scope matches any concept on any of the procedure's `procedureCodes`
-   rows (or its scope is `all`), and
-2. its patient criteria (§3.1) pass for the procedure's patient.
+1. its scope matches the concept on at least one of the procedure's
+   `procedureCodes` rows (or its scope is `all`),
+2. its priority criterion (§3.2) passes on **one of those same rows**, and
+3. its patient criteria (§3.1) pass for the procedure's patient.
 
-Scope is evaluated per concept; criteria are evaluated **once per procedure**,
-because a procedure has one patient however many codes it carries.
+Scope and priority are evaluated **per code, together**: both are facts about
+a code row, and a template asking for "emergency spine" must find one row that
+is both. Patient criteria are evaluated **once per procedure**, because a
+procedure has one patient however many codes it carries.
 
 Two rules the requirements do not state, both needed:
 
 - **A procedure with no codes** gets `scope = all` templates only — still
-  filtered by patient criteria.
+  filtered by patient criteria, and none that set `priorities`, since there is
+  no code to carry one (§3.2).
 - **The uncoded sentinel `NSX-00000`** carries subspecialty `uncoded` and no
   site, so it naturally matches `all` templates and any template that explicitly
   lists the `uncoded` subspecialty. Do not special-case it beyond that.
@@ -302,21 +321,113 @@ Three shapes were considered.
 | Criteria on each **item** | **Rejected.** One spine template could hold a female-only item, but dedupe (§4) would have to decide whether a winning template's excluded item lets a losing template's version through. That is a second, harder dedupe rule for a saving of one small template. |
 | Criteria on each **template**, alongside `scope` | **Chosen.** Criteria only filter which templates are collected (step 2); dedupe and ordering are unchanged except for one extra tie-break. A female-only item is a small template of its own — "Pregnancy test", `scope = all`, `sexes = [female]`, 12–55 y. |
 
+### 3.2 Priority (elective, urgent, emergency)
+
+A template may narrow itself to codes recorded at a given priority: one value,
+several, or none. With `priorities` empty it matches at every priority,
+including codes with none recorded — how every template behaves before the
+field exists, so the migration adding it changes no checklist.
+
+| `priorities` | Passes on a code when |
+|---|---|
+| empty | Always — "all priorities". |
+| set | `code.priority` ∈ `priorities`. |
+
+So "elective only" is `[elective]`, "urgent or emergency" is
+`[urgent, emergency]`, and "all" is empty. Selecting all three is refused
+(§8.2), for the same reason as every sex: it reads like "all" but fails on a
+code with no priority recorded.
+
+#### Where priority comes from
+
+Priority is a **post-coordination qualifier**
+([coding spec §5](../procedure_codes/neurosurgery-coding-system-spec.md#5-encounter-level-post-coordination)):
+it is not part of a concept's identity and never appears in the catalogue —
+there is no "emergency decompressive craniectomy" concept. It is recorded per
+operation, on the `procedureCodes` row that binds a concept to this procedure,
+as the optional select `priority` with exactly these three values. The
+template field draws on that vocabulary; keep the list in one place
+(`PRIORITY_OPTIONS` in
+[`procedure-catalogue.js`](../../src/lib/procedure-catalogue.js)) rather than
+retyping it.
+
+That is why this is not a patient criterion and not a scope:
+
+- **Not a patient criterion.** It is a fact about a code, so it is evaluated
+  per code (§3), not once per procedure, and it changes when the codes are
+  edited, not when the patient is.
+- **Not a scope.** `scope` picks a slice of the *catalogue*, and priority is
+  deliberately not in the catalogue. As a scope value it would also be
+  single-valued against the others, so "emergency spine" could not be said —
+  the same objection as for sex and age (§3.1).
+
+Only `priority` is matched on. The other qualifiers on a code — laterality,
+revision status, staged sequence, intent override, spinal levels — are not
+template criteria. If one is wanted later, it is a sibling of `priorities`
+evaluated the same per-code way; do not generalise ahead of the need.
+
+#### Per code, with the scope
+
+Scope and priority are tested **on the same code row**. A template with
+`scope = subspecialty [spine]` and `priorities = [emergency]` matches when the
+procedure has a spine code recorded as emergency. It does **not** match a
+procedure with an elective spine code and an emergency cranial one: no single
+row is both. For `scope = all`, any code at a listed priority will do.
+
+A procedure whose codes carry **different** priorities is unusual — one
+sitting usually has one urgency — but the data allows it, and it has a
+consequence the patient criteria never have: an `[elective]` template and an
+`[emergency]` template can both match the same procedure, each through a
+different code. Their items are merged like any others, and where they reuse a
+key the ordinary tie-break (§4) decides. This is left to `position` on purpose
+(§11.5); the preview shows it (§8.3).
+
+#### No priority recorded
+
+`procedureCodes.priority` is optional, so a code may carry none.
+
+**Rule: a code with no priority fails every `priorities` criterion** — the
+same rule as unknown age or sex (§3.1), for the same reason: the checklist
+only ever holds items known to apply. A template with `priorities` empty is
+unaffected.
+
+The omission is announced the same way. `"priority"` joins `"age"` and `"sex"`
+in `procedures.checklistMissingFacts` (§6) when a code with no priority cost
+the procedure at least one active template: the template's scope matched that
+code, its `priorities` is set, and no other code of the procedure satisfied
+it. A procedure with **no codes at all** counts the same way for a
+`scope = all` template that sets `priorities`: nothing is recorded, and
+recording a code with a priority is what would bring the template in. The
+checklist then shows "Priority not recorded: priority-specific items
+have been left out" (§8.1), pointing at the procedure's codes rather than at
+the patient.
+
+It self-corrects without a new trigger. Priority can only change by editing
+the procedure's codes, and a code edit already rebuilds the checklist (§5).
+Recording the priority adds the items that now match; changing it from
+elective to emergency swaps them through the ordinary reconciliation (§7) —
+untouched elective-only items deleted, touched ones kept as inapplicable, the
+emergency ones added.
+
 ---
 
 ## 4. Assembly
 
 Given a procedure, its codes and its patient, build the item list:
 
-1. **Collect concepts.** Distinct concepts across the procedure's
-   `procedureCodes` rows. Two codes on the same concept contribute once.
+1. **Collect codes.** Distinct `(concept, priority)` pairs across the
+   procedure's `procedureCodes` rows, `priority` being `null` when none is
+   recorded. Two codes on the same concept at the same priority contribute
+   once; the same concept at two priorities is two pairs, because a template
+   may match one and not the other (§3.2).
    Alongside, resolve the **patient facts**: `{ ageMonths, sex }`, each `null`
    when unknown (§3.1), with age computed as of the procedure's day.
-2. **Collect templates.** Every `active` template whose scope matches any
-   collected concept **and** whose patient criteria pass (§3). A template
-   matched via several concepts is collected once — this is the first place
-   duplicates are trimmed. A criterion on an unknown field fails, so a
-   collected template has every one of its criteria satisfied by a known value.
+2. **Collect templates.** Every `active` template for which some collected
+   pair satisfies both its scope and its priority criterion, **and** whose
+   patient criteria pass (§3). A template matched via several pairs is
+   collected once — this is the first place duplicates are trimmed. A
+   criterion on an unknown value fails, so a collected template has every one
+   of its criteria satisfied by a known value.
    Record, for templates that matched on scope but were omitted, which criteria
    failed and whether for lack of a value — this is what
    `checklistMissingFacts` (§6) and the preview (§8.3) are built from.
@@ -332,14 +443,21 @@ Given a procedure, its codes and its patient, build the item list:
 
    Ties within the same scope break, in order, on:
 
-   1. **More criteria wins.** Count sex as one and age as one (whether min,
-      max or both is set), so 0–2. A paediatric `consent-signed` at
+   1. **More criteria wins.** Count sex as one, age as one (whether min,
+      max or both is set) and priority as one (however many values are
+      listed), so 0–3. A paediatric `consent-signed` at
       `scope = all` beats the global one without the author having to juggle
       `position` — overriding a generic item for a patient group is the main
       reason to reuse a key under criteria. Since a collected template has all
       its criteria satisfied (step 2), "criteria set" and "criteria satisfied"
       are the same count.
    2. `template.position`, then `template.id`.
+
+   Priority adds no tie-break of its own. On a procedure whose codes carry
+   different priorities, an `[elective]` and an `[emergency]` template can
+   both be collected (§3.2) and both supply a key; they count one criterion
+   each, so `position` decides. "The more urgent one wins" was considered and
+   left out (§11.5).
 
    Scope still outranks criteria: a `concept`-scoped item beats an `all`-scoped
    one however many criteria the latter carries. A procedure-specific
@@ -393,15 +511,26 @@ when the patient has no value for that field. They contribute nothing to the
 items, but "why does my template not apply to this patient" is the new form of
 the preview's central question.
 
-The result also carries `missingFacts`: the fields that appear with
-`reason: "unknown"` on at least one **active** excluded template. The write
-path copies it to `procedures.checklistMissingFacts` (§6); the preview shows
-it. Deriving it inside assembly keeps "which missing fields mattered" in the
-one implementation rather than recomputed by each caller.
+A template whose scope matched some code but whose `priorities` no such code
+satisfied is listed the same way, with `field: "priority"`. The reason is
+`"unknown"` when at least one of the scope-matching codes has no priority
+recorded, or the procedure has no codes at all — recording one might have
+matched — and `"outOfRange"` when every one of them has a priority and none is
+listed. (`outOfRange` is the existing word
+for "has a value, and it is not an accepted one"; sex already uses it.)
 
-Assembly is a pure function of (concepts, patient facts, templates). Keep it
+The result also carries `missingFacts`: the fields that appear with
+`reason: "unknown"` on at least one **active** excluded template — `"age"`,
+`"sex"` or `"priority"`. The write path copies it to
+`procedures.checklistMissingFacts` (§6); the preview shows it. Deriving it
+inside assembly keeps "which missing fields mattered" in the one
+implementation rather than recomputed by each caller.
+
+Assembly is a pure function of (codes, patient facts, templates). Keep it
 that way — it makes it testable without a procedure record, and it is what lets
-the preview route and the write paths share one implementation. The patient
+the preview route and the write paths share one implementation. The codes go
+in as plain `{ id, conceptId, subspecialty, site, priority }`, the priority
+copied straight off the `procedureCodes` row. The patient
 facts go in as plain `{ ageMonths, sex }`, already computed; assembly never
 sees a date of birth or does date arithmetic. `ageInMonths` (§3.1) is its own
 pure function, called by the record I/O layer before assembly.
@@ -430,7 +559,7 @@ keys is present in `changes`:
 
 | Key | Why |
 |---|---|
-| `procedureCodes` | The existing guard: scope matching reads the codes. |
+| `procedureCodes` | The existing guard: scope matching reads the codes. It is also the **only** way a code's priority changes (§3.2) — the qualifiers are part of each entry in this key — so priority matching needs no trigger of its own. |
 | `procedureDay` | Age is computed as of the procedure's day (§3.1); a move can cross a birthday boundary. Moving a procedure sends this key through this route today. |
 | `patient` | A different patient has a different age and sex. No client path reassigns a procedure's patient today, but the route accepts any key, so guard it rather than rely on that. |
 
@@ -651,14 +780,15 @@ It is derived, not a source of truth: the items are. If the two ever disagree,
 
 ### `procedures.checklistMissingFacts`
 
-Items omitted because age or sex is unknown (§3.1) leave no row behind, so
-nothing in `procedureChecklistItems` can say they are missing. The fact lives
-on the procedure instead.
+Items omitted because age or sex is unknown (§3.1), or because a code has no
+priority recorded (§3.2), leave no row behind, so nothing in
+`procedureChecklistItems` can say they are missing. The fact lives on the
+procedure instead.
 
 | | |
 |---|---|
-| Type | json, array of `"age"` \| `"sex"`, default `[]`. |
-| Meaning | Patient fields that are unknown **and** caused at least one active, scope-matching template to be omitted — assembly's `missingFacts` (§4). |
+| Type | json, array of `"age"` \| `"sex"` \| `"priority"`, default `[]`. |
+| Meaning | Fields that are unknown **and** caused at least one active, scope-matching template to be omitted — assembly's `missingFacts` (§4). `"age"` and `"sex"` are the patient's; `"priority"` is a code's. |
 | Written by | `syncProcedureChecklist`, at the end of every reconciliation (§7). No other writer: it changes only when assembly re-runs. |
 | Read by | The checklist component's notice (§8.1). It rides on the procedure record the component already has, so it needs no extra fetch. |
 
@@ -699,6 +829,12 @@ inputs, on purpose:
 
 Stores inputs, not the computed `{ ageMonths, sex }`, for the first reason:
 comparing computed facts would need the client to compute them too.
+
+**Priority is not part of the basis, and needs none.** The basis exists
+because a patient can be edited without the checklist being rebuilt. A code's
+priority cannot: it changes only through a code edit, which always rebuilds
+(§5). A checklist is therefore never out of date with respect to priority, and
+there is nothing to compare.
 
 Same two rules as the other two fields: written only when the value changes,
 and never setting `updater`.
@@ -772,6 +908,14 @@ unticked. When a date of birth is first *entered*, the rebuild it triggers
 simply creates the age-restricted items that now match — there is nothing to
 remove, because nothing was included on an unknown (§3.1).
 
+**So do priority changes.** A code re-recorded from elective to emergency
+changes `desired` like any other code edit. The case to test: an elective
+procedure has a ticked "Pre-admission clinic attended" from an `[elective]`
+template; the code's priority is changed to emergency; the rebuild leaves that
+item ticked and marked inapplicable, deletes the untouched elective-only
+items, and adds the `[emergency]` template's items unticked. Changing it back
+restores the inapplicable row with its tick.
+
 Reconciliation ends by writing `procedures.checklistMissingFacts` (§6) from
 assembly's `missingFacts`, alongside `syncOutstandingCount`.
 
@@ -817,6 +961,18 @@ outstanding count — is the right shape; only the data source changes.
     would ask for a fix that cannot reach the checklist it is shown on.
     `checklistMissingFacts` is still stored on a past procedure; only the
     display is suppressed.
+  - **`"priority"` is the same notice with a different fix.** It reads
+    "Priority not recorded: priority-specific items have been left out", and
+    its link opens the **procedure** for editing, not the patient — the
+    priority is on the procedure's codes (§3.2). When both a patient field and
+    priority are missing, show one notice per fix, since each has its own
+    link. The "patient details changed" notice hides the patient one (below)
+    but not this one: a code edit rebuilds on its own, whatever the patient
+    basis says. Saving the codes rebuilds the checklist (§5), so the notice clears
+    with no further step. Hidden on past procedures like the other, though
+    for the second reason only: the fix *would* reach a past checklist, since
+    a code edit rebuilds it, but a past checklist is not prompted to change
+    (§11.3).
 - **Patient details changed.** When `procedure.checklistPatientBasis` (§6)
   differs from the patient's current date of birth or sex, show a notice above
   the list — "Patient details have changed since this checklist was built" —
@@ -851,8 +1007,9 @@ outstanding count — is the right shape; only the data source changes.
     one with an action, and the rebuild will produce the missing-facts notice
     if it still applies.
 - **Why an item is here.** Where the row already explains `sourceScope`, add
-  its `sourceCriteria` in short form — "Spine · female · 12–55 y". An item that
-  appears for some patients and not others is otherwise a puzzle to the ward.
+  its `sourceCriteria` in short form — "Spine · female · 12–55 y", or "Spine ·
+  emergency", or "urgent or emergency". An item that appears for some patients
+  or some priorities and not others is otherwise a puzzle to the ward.
 - Tick and untick via `POST /api/set-checklist-item`, optimistically. The
   checkbox is a plain toggle with no confirm step on untick — unticking is an
   ordinary correction, not a destructive action to guard.
@@ -1016,6 +1173,31 @@ Rules the page enforces:
 - A template list column shows criteria in the same short form as §8.1, so
   patient-restricted templates are visible without opening each one.
 
+**Priority** is one more control in the template form, directly below "Applies
+to" and above "Patients": it qualifies the procedure, not the patient, and
+belongs beside the scope it is tested with (§3.2). Like the patient criteria
+it is independent of `scope` — changing scope does not clear it.
+
+- The same multi-select control as the targets, options from
+  `PRIORITY_OPTIONS` in
+  [`procedure-catalogue.js`](../../src/lib/procedure-catalogue.js) — the list
+  the procedure code picker already uses, so the two cannot drift. Empty reads
+  "Any priority".
+- **Refuse to save all three selected**; ask for none instead, as for sex. It
+  looks like "all priorities" but is not: it fails on a code with no priority
+  recorded, counts as a criterion for dedupe (§4), and would silently stop
+  matching if the vocabulary ever gained a value.
+- The short form (§8.1) and the template list column include it: "emergency",
+  "urgent or emergency" — in urgency order whatever order they were ticked
+  in, and ahead of sex and age. The column is headed "Only for" rather than
+  "Patients", since it no longer describes only the patient.
+- The **overlap warning** above treats priority like the other criteria: two
+  templates at the same scope and criteria count that reuse a key overlap when
+  their `priorities` share a value, or either is empty. Disjoint sets —
+  `[elective]` and `[emergency]` — are the intended pattern and get no
+  warning, even though a procedure with codes at both priorities can collect
+  both (§3.2); that case is rare and is visible in the preview.
+
 **Editing a template does not change existing procedures.** Materialised rows
 carry snapshots (§10), and reconciliation never restamps `label`, `hint` or
 `required` on a row that already exists (§7). A reworded item therefore reaches
@@ -1046,6 +1228,14 @@ case an author cannot reason about unaided.
 Zero concepts is a valid input, not an empty state. It previews the no-codes
 case from §3: `all` templates only.
 
+**A priority on each concept**, as a small select on its row — Not recorded /
+Elective / Urgent / Emergency — because priority belongs to the code, not to
+the procedure as a whole (§3.2). It defaults to **not recorded**, the
+narrowest case: every template that sets `priorities` is left out and listed
+with its reason, as for a code entered without a priority. Setting it per row
+is what lets the author reproduce a mixed-priority procedure and see which of
+two priority-specific templates wins a shared key.
+
 **A patient**, as two controls beside the concepts: age (number plus years /
 months, blank = unknown) and sex (Male / Female / Unknown). Both default to
 **unknown**, which is the narrowest case — every template with criteria on
@@ -1074,7 +1264,9 @@ them invent two dates to say that adds nothing.
    separately the templates whose scope matched but whose **criteria
    excluded** them, with the failing criterion and reason (§4) — "under 16 y —
    patient is 17 y", or "under 16 y — age unknown" — which answers the question
-   before it is asked.
+   before it is asked. Priority reads the same way: "emergency — no code at
+   that priority", or "emergency — no priority recorded". The section is
+   headed "Excluded by criteria", since not every criterion is the patient's.
 
 When `missingFacts` is non-empty, show the same notice a ward would see on a
 procedure (§8.1).
@@ -1086,8 +1278,13 @@ the first available answer to "why is this contributing nothing", not a puzzle.
 **Where it runs — a server route, not a second implementation.**
 
 ```
-POST /api/preview-checklist   { conceptIds: [...], patient?: { ageMonths?, sex? } }
+POST /api/preview-checklist   { codes: [{ conceptId, priority? }, ...], patient?: { ageMonths?, sex? } }
 ```
+
+`codes` replaces the earlier `conceptIds: [...]`: a bare list of concept ids
+cannot say which priority each was recorded at. An omitted or `null`
+`priority` means none recorded (§3.2); the route validates a given one against
+the three values.
 
 An omitted `patient`, or an omitted or `null` field in it, means unknown — the
 same path a real patient with a missing field takes, omitting templates with
@@ -1159,8 +1356,12 @@ Both require `admin`, and both run on the server in
   in one transaction. One bad template refuses the whole file, with a list of
   every problem. The checks are the authoring page's (§8.2): known scope and
   groups, slug-shaped keys unique within a template, a label on every item, no
-  "every sex", `ageMinMonths < ageMaxMonths`, and every site and concept code
-  present in this catalogue.
+  "every sex", `ageMinMonths < ageMaxMonths`, known `priorities` values and
+  not all three of them, and every site and concept code present in this
+  catalogue.
+- **`priorities` is optional in the file.** A template without it imports
+  with none set — any priority — so files exported before the field existed
+  still import, and the format stays at `version: 1`. Export always writes it.
 - **Never overwrites.** A template whose name (case-insensitive) is already
   taken is skipped and reported. Editing a live template changes what new
   procedures get, and that should be a deliberate edit on the page, not a side
@@ -1231,13 +1432,26 @@ rule, so there is exactly one place to change it.
   match rather than record what was asked.
 - **Patient criteria filter; they are not a scope.** They decide which
   templates are collected (§4 step 2) and break ties within a scope (step 4);
-  they never outrank scope.
+  they never outrank scope. The same holds for `priorities`.
+- **Priority is tested on the code, with the scope.** It is a post-coordination
+  qualifier on a `procedureCodes` row (§3.2), not a property of the procedure
+  or the patient: a template must find one row whose concept is in scope *and*
+  whose priority is listed. Do not collapse a procedure's codes to a single
+  "procedure priority" first — that would make "emergency spine" match an
+  elective spine code sitting beside an emergency cranial one.
+- **Empty `priorities` means all, and is the only way to say all.** Listing
+  all three is refused (§8.2): it would fail on a code with no priority
+  recorded.
+- **The priority vocabulary is `procedureCodes.priority`'s.** Elective, urgent,
+  emergency, from the coding spec. Do not add a value to the template field
+  that a code cannot carry, or retype the list in a second place.
 - **Age is as of the procedure's day, in whole months, from UTC dates.** Never
   as of today (§3.1), never from the client's `age()`, and never via local-time
   conversion — a date of birth stored at UTC midnight read in UTC+5 is still
   the same day, but read back through a local `Date` in a negative offset it is
   the day before.
-- **Unknown fails, and says so.** A missing date of birth or sex fails every
+- **Unknown fails, and says so.** A missing date of birth or sex — or a code
+  with no priority recorded (§3.2) — fails every
   criterion on that field, omitting the template (§3.1), and the procedure's
   `checklistMissingFacts` records it (§6). The omission is only safe because it
   is announced: never drop the notice (§8.1) or stop writing that field, or a
@@ -1322,6 +1536,27 @@ All decided; none open. Kept with their reasons so they are not re-argued.
    `POST /api/rebuild-checklist` (§5). Without this, a date of birth corrected
    from 17 to 15 would leave the paediatric items out with nothing on screen to
    say so.
+5. **Priority — decided: a template criterion tested per code, with no
+   tie-break of its own.** Three shapes were weighed, as for sex and age
+   (§3.1): a `scope` value (rejected — priority is not in the catalogue, and
+   "emergency spine" could not be said), a criterion on each item (rejected —
+   the same second dedupe rule), and a criterion on the template (chosen).
+   Two further choices:
+   - **Per code, not per procedure.** Reducing a procedure's codes to one
+     priority first — "the most urgent of them" — was rejected. Priority is
+     recorded per code because the coding spec makes it a qualifier of the
+     concept it is attached to, and matching it anywhere else would let a
+     template fire on a code it does not describe (§3.2).
+   - **No "most urgent wins" tie-break.** When an `[elective]` and an
+     `[emergency]` template both supply a key on a mixed-priority procedure,
+     `position` decides, as for any two templates of equal standing. Ranking
+     emergency above elective would need assembly to carry which code matched
+     each candidate, for a case that is rare and that the author can settle
+     with `position` and see in the preview (§8.3). Revisit if mixed-priority
+     procedures turn out to be common.
+   - **No priority recorded fails the criterion**, and is announced through
+     `checklistMissingFacts` — decision 2 applied to a code instead of a
+     patient.
 
 ---
 
@@ -1377,6 +1612,41 @@ Steps 8–10 are testable against a procedure whose patient has a known date of
 birth, by editing it in the database and resyncing; step 11 is where the
 automatic resync arrives.
 
+**Priority (§3.2)** — the third phase.
+
+15. Migration: `priorities` on `checklistTemplates`, a multi select over the
+    three values of `procedureCodes.priority`. Blank everywhere, so no
+    existing checklist changes and nothing is backfilled. `sourceCriteria` and
+    `checklistMissingFacts` are json and need no schema change.
+16. Assembly: take codes as `{ id, conceptId, subspecialty, site, priority }`
+    and collect distinct `(concept, priority)` pairs (§4 step 1); test scope
+    and priority on the same pair (step 2); count priority as a criterion in
+    the tie-break and the ordering; report `field: "priority"` in `excludedBy`
+    with `unknown` / `outOfRange`, and `"priority"` in `missingFacts`. Unit
+    tests: each single value, a multi-value set, empty, no priority recorded,
+    a mixed-priority procedure collecting both an `[elective]` and an
+    `[emergency]` template, and "emergency spine" **not** matching an elective
+    spine code beside an emergency cranial one. Existing assembly tests must
+    pass unchanged with every code's priority `null` and no template setting
+    `priorities`.
+17. Record I/O: `codesOfProcedure` (was `conceptsOfProcedure`) reads
+    `priority` off each `procedureCodes` row; `criteriaOf` includes `priorities`, so
+    `sourceCriteria` carries it. No new trigger — check that changing only a
+    code's priority through `bulk-update-procedures` rebuilds, and run the
+    elective → emergency → elective case of §7.
+18. Authoring and preview: the Priority control and its rules, the short form
+    and the list column, the overlap check (§8.2); the per-concept priority
+    select and the `codes` request shape on `POST /api/preview-checklist`,
+    with the excluded-template reasons (§8.3); `priorities` in export and
+    import, optional on the way in (§8.4).
+19. Procedure checklist (§8.1): the "Priority not recorded" notice with its
+    link to edit the procedure, its mark on the collapsed summary, and
+    priority in the "why" line.
+
+Step 16 is testable on its own against the pure function; 17 makes it live
+for real procedures, at which point templates still have no way to set
+`priorities` except through the database, so 18 follows directly.
+
 Templates are created and edited only through the authoring page in step 6.
 There is no seed data and no seed migration. Until a template exists, assembly
 yields an empty checklist, which is the correct behaviour rather than a gap to
@@ -1410,6 +1680,7 @@ they are cheap now and awkward later:
 | Path | Role |
 |---|---|
 | [`pb/pb_migrations/1790600000_created_procedure_checklists.js`](../../pb/pb_migrations/1790600000_created_procedure_checklists.js) | The three collections; the checklist fields on `procedures`, with the basis backfill (§12 step 8); closes direct writes to `procedures` and patient updates (§5). |
+| [`pb/pb_migrations/1790600003_added_priorities_to_checklistTemplates.js`](../../pb/pb_migrations/1790600003_added_priorities_to_checklistTemplates.js) | `priorities` on `checklistTemplates` (§12 step 15). |
 | [`pb/pb_hooks/checklist-validation.pb.js`](../../pb/pb_hooks/checklist-validation.pb.js) | Refuses template item keys starting `custom-`, which hand-added items use (§8.1). |
 | `pb/pb_hooks/procedure-checklists.js` | Assembly + reconciliation. |
 | [`pb/pb_hooks/transactions.pb.js`](../../pb/pb_hooks/transactions.pb.js) | Call sites (§5). |
@@ -1424,6 +1695,9 @@ they are cheap now and awkward later:
 | [`src/pages/settings-dashboard.jsx`](../../src/pages/settings-dashboard.jsx) | Registers it in `sidebarPages`. |
 | [`src/components/reorder-list.jsx`](../../src/components/reorder-list.jsx) | Item ordering. |
 | [`specs/procedure_codes/README.md`](../procedure_codes/README.md) | The catalogue this matches against. |
+| [`specs/procedure_codes/neurosurgery-coding-system-spec.md`](../procedure_codes/neurosurgery-coding-system-spec.md) | §5: post-coordination, where `priority` and its three values are defined (§3.2). |
+| [`src/lib/procedure-catalogue.js`](../../src/lib/procedure-catalogue.js) | `PRIORITY_OPTIONS` — the one list of priority values (§3.2, §8.2). |
+| [`pb/pb_hooks/procedure-codes.js`](../../pb/pb_hooks/procedure-codes.js) | Writes `priority` onto each `procedureCodes` row; what assembly reads (§3.2). |
 | [`src/modals/edit-patient-modal.jsx`](../../src/modals/edit-patient-modal.jsx) | Moves to `POST /api/update-patient` (§5). |
 | [`src/components/checklist-preview.jsx`](../../src/components/checklist-preview.jsx) | Preview pane; gains patient inputs (§8.3). |
 | [`pb/pb_hooks/checklist-templates-io.js`](../../pb/pb_hooks/checklist-templates-io.js) | Template export and import (§8.4). |

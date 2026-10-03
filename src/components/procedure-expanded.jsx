@@ -19,6 +19,8 @@ import Collapsible from "./collapsible";
  * @param {function} onSelected - Callback when clicking to collapse the view
  * @param {ReactNode} children - Additional content (e.g., editor, view controls)
  * @param {boolean} focusChecklist - Open the checklist and scroll to it
+ * @param {function} onEdit - Opens the procedure for editing, for the checklist
+ *   to offer when its fix is on the procedure's codes; omit while editing
  */
 function ProcedureExpandedView({
     procedure,
@@ -27,6 +29,7 @@ function ProcedureExpandedView({
     onSelected,
     children,
     focusChecklist = false,
+    onEdit,
 }) {
     const [showPatientDetails, setShowPatientDetails] = useState(false);
     // Bumped by the outstanding-items alert; the checklist opens and scrolls
@@ -160,6 +163,7 @@ function ProcedureExpandedView({
                 procedure={procedure}
                 className="p-2"
                 focusKey={checklistFocus}
+                onEditProcedure={onEdit}
             />
             <div className="text-xs text-gray-500 px-2 py-1 text-right sm:flex  sm:justify-end gap-2 bg-gray-200">
                 <div>

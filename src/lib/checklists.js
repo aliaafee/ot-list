@@ -1,3 +1,5 @@
+import { PRIORITY_OPTIONS } from "@/lib/procedure-catalogue";
+
 /**
  * Checklist vocabulary, shared by the procedure checklist and the template
  * authoring page.
@@ -54,8 +56,22 @@ export const SEX_LABEL = Object.fromEntries(
     SEXES.map((sex) => [sex.value, sex.label]),
 );
 
+/**
+ * Priorities a template can be narrowed to - spec section 3.2. The list the
+ * procedure code picker uses, not a copy: priority is a qualifier recorded on
+ * each code, and a template may only ask for a value a code can carry.
+ */
+export const PRIORITIES = PRIORITY_OPTIONS;
+
+export const PRIORITY_LABEL = Object.fromEntries(
+    PRIORITIES.map((priority) => [priority.value, priority.label]),
+);
+
 /** Patient fields a checklist can be missing, as the notices name them. */
 export const PATIENT_FACT_LABEL = { age: "date of birth", sex: "sex" };
+
+/** The fields of `checklistMissingFacts` that are the patient's to fix. */
+export const PATIENT_FACTS = ["age", "sex"];
 
 /** An age in months, short: "16 y", "8 m", "1 y 6 m". */
 export function formatAgeMonths(months) {
@@ -78,13 +94,24 @@ export function describeAgeRange(minMonths, maxMonths) {
 }
 
 /**
- * Patient criteria in short form - "female · from 12 y, under 55 y" - or ""
- * when there are none. Takes a template or a `sourceCriteria` object; both
- * carry the same three fields.
+ * Criteria in short form - "emergency · female · from 12 y, under 55 y" - or
+ * "" when there are none. Takes a template or a `sourceCriteria` object; both
+ * carry the same fields. Priority leads: it qualifies the procedure, as the
+ * scope before it does, and the rest describe the patient.
  */
 export function describeCriteria(criteria) {
     if (!criteria) return "";
     const parts = [];
+    if (criteria.priorities?.length) {
+        parts.push(
+            // In urgency order, however they were ticked.
+            PRIORITIES.filter((priority) =>
+                criteria.priorities.includes(priority.value),
+            )
+                .map((priority) => priority.label.toLowerCase())
+                .join(" or "),
+        );
+    }
     if (criteria.sexes?.length) {
         parts.push(
             criteria.sexes
@@ -100,23 +127,40 @@ export function describeCriteria(criteria) {
     return parts.join(" · ");
 }
 
-/** How many patient criteria a template carries: sex one, age one. */
+/**
+ * How many criteria a template carries: sex one, age one, priority one
+ * (however many values it lists).
+ */
 export function criteriaCount(template) {
     return (
         (template.sexes?.length ? 1 : 0) +
-        (template.ageMinMonths > 0 || template.ageMaxMonths > 0 ? 1 : 0)
+        (template.ageMinMonths > 0 || template.ageMaxMonths > 0 ? 1 : 0) +
+        (template.priorities?.length ? 1 : 0)
     );
 }
 
 /**
- * Could one patient satisfy both templates' criteria at once?
+ * Could one code and one patient satisfy both templates' criteria at once?
  *
  * Used to warn about a key reused under overlapping criteria, where
  * `position` then decides which label wins - "under 16" and "under 18" both
  * defining `consent-signed`. Criteria that cannot overlap, like "under 16"
- * and "from 16", are the intended pattern.
+ * and "from 16", or "elective" and "emergency", are the intended pattern.
+ *
+ * Priorities are compared as sets on one code. A procedure whose codes carry
+ * different priorities can still collect both an elective-only and an
+ * emergency-only template; that is rare, and the preview shows it.
  */
 export function criteriaOverlap(a, b) {
+    const aPriorities = a.priorities || [];
+    const bPriorities = b.priorities || [];
+    if (
+        aPriorities.length &&
+        bPriorities.length &&
+        !aPriorities.some((priority) => bPriorities.includes(priority))
+    ) {
+        return false;
+    }
     const aSexes = a.sexes || [];
     const bSexes = b.sexes || [];
     if (

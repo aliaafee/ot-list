@@ -102,6 +102,7 @@ function ProcedureItem({
                 className={className}
                 onSelected={onSelected}
                 focusChecklist={focusChecklist}
+                onEdit={() => setEditing(true)}
             >
                 <ProcedureDetails
                     procedure={procedure}
