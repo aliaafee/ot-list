@@ -11,6 +11,7 @@ import {
     UserPenIcon,
     CopyIcon,
     CopyCheckIcon,
+    RefreshCwIcon,
 } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
@@ -24,6 +25,9 @@ import ModalWindow from "@/modals/modal-window";
 import EditPatientModal from "@/modals/edit-patient-modal";
 import { useAuth } from "@/contexts/auth-context";
 import ErrorBanner from "@/components/error-banner";
+import { api } from "@/lib/api";
+import { describeRebuild } from "@/lib/checklists";
+import { hospitalToday, useAppSettings } from "@/lib/app-settings";
 
 /**
  * ProcedureDetails - Detailed view of a procedure with action toolbar
@@ -56,13 +60,35 @@ function ProcedureDetails({
     readOnly = false,
 }) {
     const { canEdit } = useAuth();
-    const { isBusy, reloadProcedure } = useProcedureList();
+    const { isBusy, reloadProcedure, showToast } = useProcedureList();
 
     const [confirmRemove, setConfirmRemove] = useState(false);
     const [editingPatient, setEditingPatient] = useState(false);
     const [copied, setCopied] = useState(false);
 
+    const [rebuilding, setRebuilding] = useState(false);
+    const appSettings = useAppSettings();
+
     const procedureCodes = describeProcedureCodes(procedure);
+
+    // A past procedure's checklist is not rebuilt - the same cut-off as the
+    // route's: the day's date against today's at the hospital.
+    const dayDate = procedure?.expand?.procedureDay?.date;
+    const isPast =
+        !!dayDate && String(dayDate).slice(0, 10) < hospitalToday(appSettings);
+
+    const rebuildChecklist = async () => {
+        setRebuilding(true);
+        try {
+            const result = await api.rebuildChecklist(procedure.id);
+            showToast(`Checklist rebuilt: ${describeRebuild(result)}`);
+        } catch (error) {
+            console.error("Failed to rebuild checklist:", error);
+            showToast(error?.message || "Failed to rebuild checklist", "error");
+        } finally {
+            setRebuilding(false);
+        }
+    };
 
     const handleCopyAdvice = () => {
         const adviceText = `${procedureCodes.join(" + ")} for ${procedure?.diagnosis} on ${formateDateLong(procedure?.expand?.procedureDay?.date)} in ${procedure?.expand?.procedureDay?.expand?.otList?.name}`;
@@ -192,6 +218,26 @@ function ProcedureDetails({
                             <UserPenIcon className="" width={16} height={16} />
                             <ToolBarButtonLabel className="hidden sm:inline">
                                 Edit Patient
+                            </ToolBarButtonLabel>
+                        </ToolBarButton>
+                    )}
+                    {/* For a checklist that predates the templates, or to
+                        pick up a template edit. Today and future procedures
+                        only, as the route enforces. The rebuilt rows reach
+                        the checklist through its own subscription. */}
+                    {!!canEdit && !procedure.removed && !isPast && (
+                        <ToolBarButton
+                            title="Rebuild the checklist from the current templates. Ticks, notes and added items are kept."
+                            disabled={isBusy() || rebuilding}
+                            onClick={rebuildChecklist}
+                        >
+                            <RefreshCwIcon
+                                width={16}
+                                height={16}
+                                className={rebuilding ? "animate-spin" : ""}
+                            />
+                            <ToolBarButtonLabel className="hidden sm:inline">
+                                Rebuild Checklist
                             </ToolBarButtonLabel>
                         </ToolBarButton>
                     )}

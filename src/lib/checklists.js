@@ -242,6 +242,21 @@ export function patientChanges(basis, patient) {
     return changes;
 }
 
+/** "2 items added, 1 no longer applies" - what a rebuild did, or "no changes". */
+export function describeRebuild({ added, removed, madeInapplicable, restored }) {
+    const plural = (n, word) => `${n} item${n === 1 ? "" : "s"} ${word}`;
+    const parts = [];
+    if (added) parts.push(plural(added, "added"));
+    if (removed) parts.push(plural(removed, "removed"));
+    if (madeInapplicable) {
+        parts.push(
+            `${madeInapplicable} no longer ${madeInapplicable === 1 ? "applies" : "apply"}`,
+        );
+    }
+    if (restored) parts.push(plural(restored, "restored"));
+    return parts.length ? parts.join(", ") : "no changes";
+}
+
 /**
  * An itemKey is the identity of an item, not its wording: it is what dedupe
  * matches on and what ticks are recorded against. Slug-shaped so it stays

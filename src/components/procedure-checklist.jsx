@@ -26,6 +26,7 @@ import {
     PATIENT_FACT_LABEL,
     SEX_LABEL,
     describeCriteria,
+    describeRebuild,
     patientChanges,
     withGroupHeadings,
 } from "@/lib/checklists";
@@ -39,21 +40,6 @@ function describePatientValue(field, value) {
     if (!value) return "not recorded";
     if (field === "dateOfBirth") return dayjs(value).format("DD MMM YYYY");
     return SEX_LABEL[value] || value;
-}
-
-/** "2 items added, 1 no longer applies" - what a rebuild did, or "no changes". */
-function describeRebuild({ added, removed, madeInapplicable, restored }) {
-    const plural = (n, word) => `${n} item${n === 1 ? "" : "s"} ${word}`;
-    const parts = [];
-    if (added) parts.push(plural(added, "added"));
-    if (removed) parts.push(plural(removed, "removed"));
-    if (madeInapplicable) {
-        parts.push(
-            `${madeInapplicable} no longer ${madeInapplicable === 1 ? "applies" : "apply"}`,
-        );
-    }
-    if (restored) parts.push(plural(restored, "restored"));
-    return parts.length ? parts.join(", ") : "no changes";
 }
 
 /**
@@ -284,8 +270,6 @@ function ProcedureChecklist({
     const dayDate = procedure?.expand?.procedureDay?.date;
     const isPast =
         !!dayDate && String(dayDate).slice(0, 10) < hospitalToday(appSettings);
-
-    const canRebuild = !isPast && !procedure?.removed;
 
     const changed = isPast
         ? []
@@ -584,25 +568,10 @@ function ProcedureChecklist({
                         <PlusIcon size={14} />
                         Add an item for this procedure
                     </button>
-                    {/* For a checklist that predates the templates, or to
-                        pick up a template edit. Today and future procedures
-                        only, as the route enforces; the changed-details
-                        notice carries its own. */}
-                    {canRebuild && changed.length === 0 && (
-                        <button
-                            type="button"
-                            className="flex items-center gap-1 text-blue-600 hover:bg-blue-100 rounded px-1 py-0.5 cursor-pointer disabled:opacity-60 disabled:cursor-wait"
-                            title="Rebuild from the current templates. Ticks, notes and added items are kept."
-                            disabled={rebuilding}
-                            onClick={rebuild}
-                        >
-                            <RefreshCwIcon
-                                size={14}
-                                className={rebuilding ? "animate-spin" : ""}
-                            />
-                            {rebuilding ? "Rebuilding..." : "Rebuild checklist"}
-                        </button>
-                    )}
+                    {/* A rebuild for any other reason - a checklist that
+                        predates the templates, a template edit - is on the
+                        procedure's toolbar; only the changed-details notice
+                        above carries one here. */}
                 </div>
             )}
 

@@ -652,8 +652,10 @@ was.
   1 no longer applies" rather than silently reshuffling the list.
 
 The route is deliberately generic: it rebuilds from the current codes, day,
-patient and templates, not only the patient. The notice is the one place that
-offers it today (§8.1).
+patient and templates, not only the patient. Two places offer it (§8.1): the
+"patient details changed" notice in the checklist, and a **Rebuild Checklist**
+button on the procedure's toolbar, for every other reason to rebuild — a
+checklist that predates the templates, or a template edited since.
 
 Past procedures are left alone even on a first entry (decided, §11.3). A
 code change resyncs a past procedure because someone is editing *that*
@@ -1006,6 +1008,17 @@ outstanding count — is the right shape; only the data source changes.
     the basis has one and the patient does not — show only this one. It is the
     one with an action, and the rebuild will produce the missing-facts notice
     if it still applies.
+- **Rebuild from the toolbar.** The procedure's toolbar, in
+  [`procedure-details.jsx`](../../src/components/procedure-details.jsx),
+  carries a **Rebuild Checklist** button beside Edit, Move and Copy, calling
+  the same route and showing the same summary toast. It is the general way to
+  rebuild — a procedure that existed before any template did, or a template
+  edited since — and is not tied to any notice. Shown to `doctor` and `admin`,
+  on today's and future procedures that are not removed: the conditions the
+  route enforces (§5). The rebuilt rows reach the checklist through its
+  subscription, so the toolbar and the checklist share nothing but the route.
+  The notice above keeps its own button, since that is the action it asks
+  for; there is no other rebuild control inside the checklist.
 - **Why an item is here.** Where the row already explains `sourceScope`, add
   its `sourceCriteria` in short form — "Spine · female · 12–55 y", or "Spine ·
   emergency", or "urgent or emergency". An item that appears for some patients
