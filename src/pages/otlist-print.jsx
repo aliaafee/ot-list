@@ -2,8 +2,7 @@ import { LoadingSpinnerFull } from "@/components/loading-spinner";
 import Button from "@/components/button";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import { describeProcedureCodes } from "@/lib/procedure-codes";
-import { age } from "@/utils/dates";
-import dayjs from "dayjs";
+import { age, calendarDate } from "@/utils/dates";
 import { useEffect, useMemo } from "react";
 import { useParams, useSearchParams } from "react-router";
 import { twMerge } from "tailwind-merge";
@@ -300,7 +299,7 @@ function OtListPrint({}) {
                 List
             </div>
             <div className="text-center">
-                {dayjs(otDay?.date).format("dddd, DD MMM YYYY")} -{" "}
+                {calendarDate(otDay?.date).format("dddd, DD MMM YYYY")} -{" "}
                 {otDay?.expand?.otList?.description}
                 {!!otDay?.disabled && (
                     <span className="italic ml-2">

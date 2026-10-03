@@ -110,16 +110,20 @@ export default {
                         </p>
                     </div>
                     <p className="text-sm text-gray-600 md:col-span-2">
-                        Decides which day is today everywhere in the app: which
-                        OT days and procedures are upcoming, which are past,
-                        and patients&apos; ages. This is a fixed offset: if the
+                        Every date and time in the app is shown on the
+                        hospital&apos;s clock, wherever it is opened from. It
+                        also decides which day is today: which OT days and
+                        procedures are upcoming, which are past, and
+                        patients&apos; ages. This is a fixed offset: if the
                         hospital observes daylight saving, change it when the
                         clocks change.
                     </p>
                     {offset !== browserOffset && (
                         <p className="text-sm text-amber-700 md:col-span-2">
                             This browser is on {formatUtcOffset(browserOffset)},
-                            which is not the hospital&apos;s time zone.
+                            which is not the hospital&apos;s time zone. Times
+                            are shown in hospital time, not this
+                            browser&apos;s.
                         </p>
                     )}
                 </div>

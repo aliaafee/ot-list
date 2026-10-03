@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
-import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
 import {
     CalendarCheckIcon,
@@ -114,7 +113,7 @@ function ProcedureListEditor({
             // Download HTML as file
             downloadBlob(
                 new Blob([report.content], { type: report.type }),
-                `Ot List ${formatDate(dayjs(otDay.date))}.html`,
+                `Ot List ${formatDate(otDay.date)}.html`,
             );
         } catch (e) {
             console.log("Failed to download list");

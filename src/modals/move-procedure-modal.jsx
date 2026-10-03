@@ -1,5 +1,4 @@
 import { useState } from "react";
-import dayjs from "dayjs";
 import { CalendarArrowDownIcon } from "lucide-react";
 
 import ModalWindow from "./modal-window";
@@ -8,6 +7,7 @@ import { useProcedureList } from "@/contexts/procedure-list-context";
 import { describeProcedureCodes } from "@/lib/procedure-codes";
 import { useSearchParams } from "react-router";
 import ErrorBanner from "@/components/error-banner";
+import { calendarDate } from "@/utils/dates";
 
 /**
  * MoveProcedureModal - Modal for moving a procedure to a different OT day or operating room
@@ -121,7 +121,7 @@ function MoveProcedureModal({
             <p className="mb-2">
                 {itemToMove.expand.patient.nid} {itemToMove.expand.patient.name}{" "}
                 planned for {describeProcedureCodes(itemToMove).join(" + ")} on{" "}
-                {dayjs(itemToMove.expand.procedureDay.date).format(
+                {calendarDate(itemToMove.expand.procedureDay.date).format(
                     "DD MMM YYYY",
                 )}
             </p>
@@ -142,7 +142,7 @@ function MoveProcedureModal({
                     {otDay?.expand?.otList?.expand?.upcomingOtDays_via_otList.map(
                         (day) => (
                             <option key={day.id} value={day.id}>
-                                {dayjs(day.date).format("ddd, DD MMM YYYY")}
+                                {calendarDate(day.date).format("ddd, DD MMM YYYY")}
                             </option>
                         ),
                     )}

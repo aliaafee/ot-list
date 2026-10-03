@@ -36,10 +36,15 @@ export function setAppSettings(record) {
     listeners.forEach((listener) => listener());
 }
 
-/** Load the settings once; later calls share the same request. */
-export function loadAppSettings() {
+/**
+ * Load the settings once; later calls share the same request.
+ *
+ * `client` is the PocketBase client to read with: the signed-in user's by
+ * default, or the superuser's on the backups page, which has no user session.
+ */
+export function loadAppSettings(client = pb) {
     if (!pending) {
-        pending = pb
+        pending = client
             .collection("appSettings")
             // Not auto-cancelled: several rows can ask in the same tick.
             .getOne(APP_SETTINGS_ID, { requestKey: null })
@@ -92,6 +97,14 @@ export function hospitalToday(appSettings = settings) {
     return new Date(Date.now() + (appSettings.utcOffsetMinutes || 0) * 60000)
         .toISOString()
         .slice(0, 10);
+}
+
+/**
+ * The hospital's offset from UTC in minutes, or null if the settings could
+ * not be loaded. What `hospitalTime` in utils/dates shows timestamps at.
+ */
+export function hospitalUtcOffset() {
+    return settings ? settings.utcOffsetMinutes || 0 : null;
 }
 
 /** "UTC+05:30", "UTC-08:00", "UTC+00:00". */

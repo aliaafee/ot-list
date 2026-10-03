@@ -19,6 +19,8 @@ import {
     toProcedureCodesPayload,
 } from "@/lib/procedure-codes";
 import ErrorBanner from "@/components/error-banner";
+import { calendarDate } from "@/utils/dates";
+import { hospitalToday } from "@/lib/app-settings";
 
 /**
  * ProcedureEditor - Form component for editing existing OT procedures
@@ -47,7 +49,12 @@ function ProcedureEditor({
         // Null until the user edits the codes; what is stored is derived
         // below and used in the meantime.
         procedureCodes: null,
-        addedDate: dayjs(procedure?.addedDate).format("YYYY-MM-DD") || "",
+        // A calendar date: its date part, never through the browser's zone,
+        // or saving the form would move it. A procedure without one starts
+        // on today's date at the hospital.
+        addedDate: procedure?.addedDate
+            ? calendarDate(procedure.addedDate).format("YYYY-MM-DD")
+            : hospitalToday(),
         addedBy: procedure?.addedBy || "",
         remarks: procedure?.remarks || "",
         duration: procedure?.duration || "",

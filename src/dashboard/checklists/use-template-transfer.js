@@ -1,7 +1,7 @@
 import { useState } from "react";
-import dayjs from "dayjs";
 
 import { api } from "@/lib/api";
+import { hospitalToday } from "@/lib/app-settings";
 import { downloadJson } from "@/utils/download";
 
 /**
@@ -31,7 +31,7 @@ export default function useTemplateTransfer(onImported) {
             const data = await api.exportChecklistTemplates();
             downloadJson(
                 data,
-                `checklist-templates-${dayjs().format("YYYY-MM-DD")}.json`,
+                `checklist-templates-${hospitalToday()}.json`,
             );
         } catch (err) {
             console.error("Error exporting templates:", err);

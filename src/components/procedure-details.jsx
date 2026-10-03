@@ -1,6 +1,5 @@
 import { useState } from "react";
-import dayjs from "dayjs";
-import { formateDateLong } from "@/utils/dates";
+import { formateDateLong, calendarDate } from "@/utils/dates";
 import {
     EditIcon,
     MoveUpIcon,
@@ -258,7 +257,7 @@ function ProcedureDetails({
                 <LabelValue
                     className="md:col-span-1"
                     label="Added Date"
-                    value={dayjs(procedure.addedDate).format("DD MMM YYYY")}
+                    value={calendarDate(procedure.addedDate).format("DD MMM YYYY")}
                 />
                 <LabelValue label="Admitted Bed" value={procedure.bed} />
                 <LabelValue
@@ -288,7 +287,7 @@ function ProcedureDetails({
                         {procedure?.expand?.patient?.nid}{" "}
                         {procedure?.expand?.patient?.name} planned for{" "}
                         {procedureCodes.join(" + ")} on{" "}
-                        {dayjs(procedure?.expand?.procedureDay.date).format(
+                        {calendarDate(procedure?.expand?.procedureDay.date).format(
                             "DD MMM YYYY",
                         )}
                     </p>

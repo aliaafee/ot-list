@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
-import dayjs from "dayjs";
 import { ChevronRight, TriangleAlertIcon } from "lucide-react";
 
-import { age } from "@/utils/dates";
+import { age, hospitalTime } from "@/utils/dates";
 import LabelValue from "./label-value";
 import { PacStatusSmall } from "./pac-status";
 import ProcedureComments from "./procedure-comments";
@@ -166,7 +165,7 @@ function ProcedureExpandedView({
                 <div>
                     Created:{" "}
                     <span>
-                        {dayjs(procedure?.created).format("DD MMM YYYY HH:mm")}
+                        {hospitalTime(procedure?.created).format("DD MMM YYYY HH:mm")}
                     </span>{" "}
                     by{" "}
                     <span className="font-semibold">
@@ -177,7 +176,7 @@ function ProcedureExpandedView({
                     <div>
                         Updated:{" "}
                         <span>
-                            {dayjs(procedure?.updated).format(
+                            {hospitalTime(procedure?.updated).format(
                                 "DD MMM YYYY HH:mm",
                             )}
                         </span>{" "}

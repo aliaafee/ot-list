@@ -18,10 +18,10 @@ import {
 import { FACET_LABELS } from "@/lib/procedure-catalogue";
 import { useCatalogue } from "@/contexts/catalogue-context";
 import { hospitalToday } from "@/lib/app-settings";
-import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
 import LabelValue from "@/components/label-value";
 import ErrorBanner from "@/components/error-banner";
+import { calendarDate } from "@/utils/dates";
 
 // A concept facet, its relation field on `procedureConcepts`, and the URL param
 // its filter value is kept in. Filtering a procedure means "at least one of its
@@ -490,7 +490,7 @@ function AllProcedures() {
                                             </Link>
                                         </td>
                                         <td className="px-3 py-2 text-sm whitespace-nowrap">
-                                            {dayjs(
+                                            {calendarDate(
                                                 proc.expand?.procedureDay?.date,
                                             ).format("DD MMM YYYY")}
                                         </td>

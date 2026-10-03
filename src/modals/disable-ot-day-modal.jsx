@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import { CalendarCheckIcon, CalendarOffIcon } from "lucide-react";
 
 import { useProcedureList } from "@/contexts/procedure-list-context";
@@ -6,6 +5,7 @@ import ModalWindow from "./modal-window";
 import FormField from "@/components/form-field";
 import { useState } from "react";
 import ErrorBanner from "@/components/error-banner";
+import { calendarDate } from "@/utils/dates";
 
 /**
  * DisableOtDayModal - Modal for disabling/enabling an OT day with remarks
@@ -84,7 +84,7 @@ function DisableOtDayModal({ onCancel = () => {}, onSuccess = () => {} }) {
         >
             <p className="mb-2">
                 {displayedOtDay?.disabled ? "Enable" : "Disable"} the OT Day on{" "}
-                {dayjs(displayedOtDay?.date).format("DD MMM YYYY")}?
+                {calendarDate(displayedOtDay?.date).format("DD MMM YYYY")}?
             </p>
             {!displayedOtDay?.disabled && (
                 <form>

@@ -13,16 +13,13 @@ const monthNames = [
     "Dec",
 ];
 
+// A calendar date (an OT day) as D MMM YYYY. Read from its date part, never
+// through a Date: the server's zone must not move it to the day before.
 const formatDate = (dateTime) => {
-    //Formate date to D MMM YYYY
-    const date = new Date(dateTime);
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1; // Months are zero indexed
-
-    const monthName = monthNames[month - 1];
-    const day = date.getDate();
-    console.log(date, year, month, day);
-    return `${day} ${monthName} ${year}`;
+    const parts = dateParts(dateTime);
+    if (!parts) return "";
+    const [year, month, day] = parts;
+    return `${day} ${monthNames[month - 1]} ${year}`;
 };
 
 /** "YYYY-MM-DD" as [year, month, day], or null. */

@@ -1,5 +1,7 @@
 import dayjs from "dayjs";
 
+import { calendarDate } from "@/utils/dates";
+
 /**
  * Insert an OT day into a list that is kept sorted by date, without mutating
  * the original. Used by both the reducer and the realtime handlers so that a
@@ -16,6 +18,7 @@ export function insertDayInOrder(days, day) {
  * True if an OT day falls within the given year and 1-based month.
  */
 export function isInMonth(date, year, month) {
-    const d = dayjs(date);
+    // A calendar date: its own year and month, not the browser's reading.
+    const d = calendarDate(date);
     return d.year() === year && d.month() + 1 === month;
 }

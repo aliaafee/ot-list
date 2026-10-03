@@ -9,7 +9,6 @@ import {
     TrashIcon,
     UploadIcon,
 } from "lucide-react";
-import dayjs from "dayjs";
 
 import Button from "@/components/button";
 import FormField from "@/components/form-field";
@@ -29,6 +28,8 @@ import {
     useSuperuserAuth,
 } from "@/contexts/superuser-auth-context";
 import { backendUrl, pbAdmin } from "@/lib/pb";
+import { hospitalTime } from "@/utils/dates";
+import { loadAppSettings } from "@/lib/app-settings";
 
 /** A backup's size, in the units a person reads it in. */
 function formatSize(bytes) {
@@ -45,7 +46,8 @@ function formatSize(bytes) {
 
 /** PocketBase reports the modified time as "2026-09-18 03:12:44.123Z". */
 function formatModified(modified) {
-    const parsed = dayjs(modified);
+    // On the hospital's clock, like every other time in the app.
+    const parsed = hospitalTime(modified);
     return parsed.isValid() ? parsed.format("DD MMM YYYY HH:mm") : modified;
 }
 
@@ -255,6 +257,10 @@ function BackupManager() {
         let ignore = false;
         (async () => {
             try {
+                // This page has no user session to have loaded the settings,
+                // so they are read as the superuser: the times below are on
+                // the hospital's clock, like everywhere else.
+                await loadAppSettings(pbAdmin);
                 const list = await pbAdmin.backups.getFullList();
                 // Newest first: the one you want is almost always the last
                 // one taken.

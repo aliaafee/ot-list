@@ -3,7 +3,6 @@ import { ClipboardPasteIcon, UserPenIcon } from "lucide-react";
 import ModalWindow from "./modal-window";
 import { PatientForm, validatePatient } from "@/forms/patient-form";
 import { api } from "@/lib/api";
-import dayjs from "dayjs";
 import {
     ToolBar,
     ToolBarButton,
@@ -13,6 +12,7 @@ import {
 import { patientInfoFromText } from "@/utils/text-parsers";
 import PastePatientPreviewModal from "./paste-patient-preview-modal";
 import ErrorBanner from "@/components/error-banner";
+import { calendarDate } from "@/utils/dates";
 
 /**
  * EditPatientModal - Modal for editing patient information
@@ -25,9 +25,11 @@ export default function EditPatientModal({ patient, onCancel, onSuccess }) {
         nid: patient?.nid || "",
         hospitalId: patient?.hospitalId || "",
         name: patient?.name || "",
-        // dayjs("") formats to "Invalid Date", so only format a real value.
+        // An empty date formats to "Invalid Date", so only format a real
+        // value. A calendar date: its date part, never through the browser's
+        // zone, or saving the form would move it.
         dateOfBirth: patient?.dateOfBirth
-            ? dayjs(patient.dateOfBirth).format("YYYY-MM-DD")
+            ? calendarDate(patient.dateOfBirth).format("YYYY-MM-DD")
             : "",
         sex: patient?.sex || "",
         phone: patient?.phone || "",
