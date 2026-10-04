@@ -1,13 +1,11 @@
-import { twMerge } from "tailwind-merge";
-
-import { age } from "@/utils/dates";
-import LabelValue from "../label-value";
-import { describeProcedureCodesSimplified } from "@/lib/procedure-codes";
-import { PacStatusSmall } from "../pac-status";
-import { TriangleAlertIcon } from "lucide-react";
+import ProcedureHeaderRow from "./header-row";
 
 /**
  * ProcedureSimplifiedView - Display simplified procedure item in list view
+ *
+ * The collapsed row: the shared header row and nothing else. Clicking it
+ * opens the procedure; clicking the outstanding-items alert opens it at its
+ * checklist rather than at the top.
  *
  * @param {Object} procedure - Procedure object with patient and details
  * @param {boolean} isUpdating - Whether the procedure is currently being updated
@@ -21,80 +19,16 @@ function ProcedureSimplifiedView({
     onSelected,
 }) {
     return (
-        <div
-            className={twMerge(
-                "flex-auto p-2 grid grid-cols-10 lg:grid-cols-14 cursor-pointer gap-1 rounded-lg md:rounded-l-none",
+        <ProcedureHeaderRow
+            procedure={procedure}
+            className={[
+                "rounded-lg md:rounded-l-none",
                 isUpdating ? "animate-pulse" : "",
-                !!procedure.removed && "line-through",
                 className,
-            )}
+            ].join(" ")}
             onClick={() => onSelected(procedure.id)}
-        >
-            <LabelValue
-                value={!procedure.removed && procedure.order}
-                blank={<>&nbsp;</>}
-            />
-            <LabelValue
-                // label="NID"
-                value={procedure?.expand?.patient?.nid}
-                className="col-span-2 lg:col-span-2"
-                copyButton={true}
-            />
-            <LabelValue
-                className="col-span-2 lg:col-span-2"
-                // label="Name"
-                value={procedure?.expand?.patient?.name}
-            />
-            <LabelValue
-                // label="Age/Sex"
-                value={`${
-                    procedure?.expand?.patient?.dateOfBirth
-                        ? age(procedure?.expand?.patient?.dateOfBirth)
-                        : "-"
-                } / ${procedure?.expand?.patient?.sex[0]?.toUpperCase() || "-"}`}
-                className="col-span-1 hidden lg:inline"
-            />
-            <LabelValue
-                className="col-span-3 hidden lg:inline"
-                // label="Diagnosis"
-                value={procedure.diagnosis}
-            />
-            <LabelValue
-                className="col-span-3"
-                // label="Procedure Codes"
-                // One line per row, so staged or multiple codes read as a
-                // single procedure: "ACDF (Left, C5-C6) + Burr hole drainage".
-                value={describeProcedureCodesSimplified(procedure).join(" + ")}
-            />
-            <div className="col-span-1">
-                <PacStatusSmall status={procedure?.pacStatus} />
-            </div>
-            {/* Read off the procedure rather than loading its checklist: this
-                renders once per row, and the checklist items are deliberately
-                kept out of the list queries. */}
-            <div className="col-span-1 flex items-center justify-center">
-                {procedure?.checklistOutstanding > 0 && (
-                    // Opens the row at its checklist rather than at the top,
-                    // so the click goes no further than this button.
-                    <button
-                        type="button"
-                        className="p-1 rounded text-red-600 flex items-center gap-1 cursor-pointer hover:bg-red-100"
-                        title={`${procedure.checklistOutstanding} checklist item${
-                            procedure.checklistOutstanding === 1 ? "" : "s"
-                        } outstanding - show the checklist`}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onSelected(procedure.id, false, "checklist");
-                        }}
-                    >
-                        <TriangleAlertIcon size={14} aria-hidden="true" />
-                        <span className="text-xs">
-                            {procedure.checklistOutstanding}
-                        </span>
-                    </button>
-                )}
-            </div>
-        </div>
+            onChecklistAlert={() => onSelected(procedure.id, false, "checklist")}
+        />
     );
 }
 

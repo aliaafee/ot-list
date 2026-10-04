@@ -27,7 +27,7 @@ import { useAuth } from "@/contexts/auth-context";
 import ErrorBanner from "@/components/error-banner";
 import { api } from "@/lib/api";
 import { describeRebuild } from "@/lib/checklists";
-import { hospitalToday, useAppSettings } from "@/lib/app-settings";
+import useIsPastProcedure from "./use-is-past-procedure";
 
 /**
  * ProcedureDetails - Detailed view of a procedure with action toolbar
@@ -67,15 +67,10 @@ function ProcedureDetails({
     const [copied, setCopied] = useState(false);
 
     const [rebuilding, setRebuilding] = useState(false);
-    const appSettings = useAppSettings();
+    // A past procedure's checklist is not rebuilt; the route refuses it too.
+    const isPast = useIsPastProcedure(procedure);
 
     const procedureCodes = describeProcedureCodes(procedure);
-
-    // A past procedure's checklist is not rebuilt - the same cut-off as the
-    // route's: the day's date against today's at the hospital.
-    const dayDate = procedure?.expand?.procedureDay?.date;
-    const isPast =
-        !!dayDate && String(dayDate).slice(0, 10) < hospitalToday(appSettings);
 
     const rebuildChecklist = async () => {
         setRebuilding(true);

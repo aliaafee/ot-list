@@ -19,7 +19,7 @@ import { api } from "@/lib/api";
 import { useAuth } from "@/contexts/auth-context";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import { formatDateTime } from "@/utils/dates";
-import { hospitalToday, useAppSettings } from "@/lib/app-settings";
+import useIsPastProcedure from "./use-is-past-procedure";
 import {
     GROUP_LABEL,
     PATIENT_FACTS,
@@ -107,7 +107,10 @@ function ProcedureChecklist({
     // route - this just keeps the controls out of a receptionist's way.
     const { canEdit } = useAuth();
     const { showToast } = useProcedureList();
-    const appSettings = useAppSettings();
+    // Both patient notices are for today and future procedures only. A past
+    // procedure's checklist records what was asked on the day, and neither a
+    // patient edit nor a rebuild will change it - spec section 8.1.
+    const isPast = useIsPastProcedure(procedure);
 
     useEffect(() => {
         if (!procedureId) return;
@@ -261,15 +264,6 @@ function ProcedureChecklist({
     ).length;
 
     const rows = withGroupHeadings(items);
-
-    // Both patient notices are for today and future procedures only. A past
-    // procedure's checklist records what was asked on the day, and neither a
-    // patient edit nor a rebuild will change it - spec section 8.1. Same
-    // cut-off as the server's: the day's date against today's at the
-    // hospital, from the same setting.
-    const dayDate = procedure?.expand?.procedureDay?.date;
-    const isPast =
-        !!dayDate && String(dayDate).slice(0, 10) < hospitalToday(appSettings);
 
     const changed = isPast
         ? []

@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
-import { ChevronRight, TriangleAlertIcon } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
-import { age, hospitalTime } from "@/utils/dates";
+import { hospitalTime } from "@/utils/dates";
 import LabelValue from "../label-value";
-import { PacStatusSmall } from "../pac-status";
+import ProcedureHeaderRow from "./header-row";
 import ProcedureComments from "./comments";
 import ProcedureChecklist from "./checklist";
-import { describeProcedureCodesSimplified } from "@/lib/procedure-codes";
 import Collapsible from "../collapsible";
 
 /**
@@ -47,78 +46,13 @@ function ProcedureExpandedView({
                 className,
             )}
         >
-            <div
-                className={twMerge(
-                    "flex-auto p-2 grid grid-cols-10 lg:grid-cols-14 cursor-pointer gap-1",
-                    !!procedure.removed && "line-through",
-                )}
+            {/* The same row the collapsed view shows. Here a click closes the
+                procedure, and the alert goes to the checklist below. */}
+            <ProcedureHeaderRow
+                procedure={procedure}
                 onClick={() => onSelected(null)}
-            >
-                <LabelValue
-                    value={!procedure.removed && procedure.order}
-                    blank={<>&nbsp;</>}
-                />
-                <LabelValue
-                    // label="NID"
-                    value={procedure?.expand?.patient?.nid}
-                    className="col-span-2 lg:col-span-2"
-                    copyButton={true}
-                />
-                <LabelValue
-                    className="col-span-2 lg:col-span-2"
-                    // label="Name"
-                    value={procedure?.expand?.patient?.name}
-                />
-                <LabelValue
-                    // label="Age/Sex"
-                    value={`${
-                        procedure?.expand?.patient?.dateOfBirth
-                            ? age(procedure?.expand?.patient?.dateOfBirth)
-                            : "-"
-                    } / ${procedure?.expand?.patient?.sex[0]?.toUpperCase() || "-"}`}
-                    className="col-span-1 hidden lg:inline"
-                />
-                <LabelValue
-                    className="col-span-3 hidden lg:inline"
-                    // label="Diagnosis"
-                    value={procedure.diagnosis}
-                />
-                <LabelValue
-                    className="col-span-3"
-                    // label="Procedure"
-                    value={describeProcedureCodesSimplified(procedure).join(
-                        " + ",
-                    )}
-                />
-                <div className="col-span-1">
-                    <PacStatusSmall status={procedure?.pacStatus} />
-                </div>
-                {/* Read off the procedure rather than loading its checklist: this
-                renders once per row, and the checklist items are deliberately
-                kept out of the list queries. */}
-                <div className="col-span-1 flex items-center justify-center">
-                    {procedure?.checklistOutstanding > 0 && (
-                        // Goes to the checklist; the click goes no further,
-                        // or the header would close the row.
-                        <button
-                            type="button"
-                            className="p-1 rounded text-red-600 flex items-center gap-1 cursor-pointer hover:bg-red-100"
-                            title={`${procedure.checklistOutstanding} checklist item${
-                                procedure.checklistOutstanding === 1 ? "" : "s"
-                            } outstanding - show the checklist`}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setChecklistFocus((n) => n + 1);
-                            }}
-                        >
-                            <TriangleAlertIcon size={14} aria-hidden="true" />
-                            <span className="text-xs">
-                                {procedure.checklistOutstanding}
-                            </span>
-                        </button>
-                    )}
-                </div>
-            </div>
+                onChecklistAlert={() => setChecklistFocus((n) => n + 1)}
+            />
             <div
                 className="flex items-center cursor-pointer md:hidden p-2 gap-2 text-gray-600"
                 onClick={() => setShowPatientDetails(!showPatientDetails)}
