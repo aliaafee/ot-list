@@ -166,7 +166,7 @@ import and a validate hook on `checklistTemplateItems` all refuse.
 `comment` is user-entered, so it counts as work worth preserving on the same
 footing as a tick: it is never overwritten by regeneration, and an item carrying
 one is never silently deleted (§7). It is deliberately a plain text field rather
-than a thread — [`procedureComments`](../../src/components/procedure-comments.jsx)
+than a thread — [`procedureComments`](../../src/components/procedure-item/comments.jsx)
 already exists for discussion about the procedure as a whole, and per-item
 discussion is not what this is for.
 
@@ -752,7 +752,7 @@ sync. **Do not add the checklist to them.** Those queries load whole lists of
 procedures, and the checklist is only ever read for one expanded procedure at a
 time; adding it would inflate every list query for something the list does not
 render. Fetch it in the checklist component instead, as
-[`procedure-comments.jsx`](../../src/components/procedure-comments.jsx) does.
+[`procedure-item/comments.jsx`](../../src/components/procedure-item/comments.jsx) does.
 
 ### `procedures.checklistOutstanding`
 
@@ -766,7 +766,7 @@ history.
 |---|---|
 | Meaning | Items where `required && applicable && !checked`. |
 | Written by | `syncOutstandingCount` in the checklist hook, called from reconciliation (§7) and from all three item routes (§5). |
-| Read by | [`procedure-simplified.jsx`](../../src/components/procedure-simplified.jsx), straight off the procedure. |
+| Read by | [`procedure-item/simplified.jsx`](../../src/components/procedure-item/simplified.jsx), straight off the procedure. |
 
 Two rules it follows:
 
@@ -928,7 +928,7 @@ assembly's `missingFacts`, alongside `syncOutstandingCount`.
 ### 8.1 The checklist on a procedure
 
 Replace the dummy in
-[`procedure-checklist.jsx`](../../src/components/procedure-checklist.jsx). Its
+[`procedure-item/checklist.jsx`](../../src/components/procedure-item/checklist.jsx). Its
 current shape — a self-contained `Collapsible` whose summary carries the
 outstanding count — is the right shape; only the data source changes.
 
@@ -1009,7 +1009,7 @@ outstanding count — is the right shape; only the data source changes.
     one with an action, and the rebuild will produce the missing-facts notice
     if it still applies.
 - **Rebuild from the toolbar.** The procedure's toolbar, in
-  [`procedure-details.jsx`](../../src/components/procedure-details.jsx),
+  [`procedure-item/details.jsx`](../../src/components/procedure-item/details.jsx),
   carries a **Rebuild Checklist** button beside Edit, Move and Copy, calling
   the same route and showing the same summary toast. It is the general way to
   rebuild — a procedure that existed before any template did, or a template
@@ -1036,7 +1036,7 @@ outstanding count — is the right shape; only the data source changes.
   clearest way to show that one is governed here and the other is not.
 - **Comment**: an existing comment always renders under its item, so nothing is
   hidden behind a click, followed by `commentBy` name and `commentAt` in the
-  small grey style [`procedure-comments.jsx`](../../src/components/procedure-comments.jsx)
+  small grey style [`procedure-item/comments.jsx`](../../src/components/procedure-item/comments.jsx)
   already uses for its author line. Expand `commentBy` on the fetch and on the
   subscription, as that component expands `creator`. Entry is a single-line input
   revealed by a small "note" affordance on the row, saved on blur or Enter — not
@@ -1058,7 +1058,7 @@ per-procedure filter both share the key `procedureChecklistItems/*`, the set
 looks unchanged, and the new listener is registered but never attached — the
 component goes silently dead. This was diagnosed and fixed in
 [`pac-status.jsx`](../../src/components/pac-status.jsx) and
-[`procedure-comments.jsx`](../../src/components/procedure-comments.jsx); do the
+[`procedure-item/comments.jsx`](../../src/components/procedure-item/comments.jsx); do the
 same here.
 
 ### 8.2 Template authoring — a settings dashboard page
@@ -1697,8 +1697,8 @@ they are cheap now and awkward later:
 | [`pb/pb_hooks/checklist-validation.pb.js`](../../pb/pb_hooks/checklist-validation.pb.js) | Refuses template item keys starting `custom-`, which hand-added items use (§8.1). |
 | `pb/pb_hooks/procedure-checklists.js` | Assembly + reconciliation. |
 | [`pb/pb_hooks/transactions.pb.js`](../../pb/pb_hooks/transactions.pb.js) | Call sites (§5). |
-| [`src/components/procedure-checklist.jsx`](../../src/components/procedure-checklist.jsx) | The UI (dummy today). |
-| [`src/components/procedure-expanded.jsx`](../../src/components/procedure-expanded.jsx) | Where it is rendered. |
+| [`src/components/procedure-item/checklist.jsx`](../../src/components/procedure-item/checklist.jsx) | The UI (dummy today). |
+| [`src/components/procedure-item/expanded.jsx`](../../src/components/procedure-item/expanded.jsx) | Where it is rendered. |
 | `src/modals/add-checklist-item-modal.jsx` | Adding a custom item (§8.1). |
 | [`src/dashboard/checklists/`](../../src/dashboard/checklists/) | The authoring page: template list, detail form (§8.2), preview modal (§8.3). |
 | [`src/components/checklist-template-items.jsx`](../../src/components/checklist-template-items.jsx) | Item editor on the detail page (§8.2). |

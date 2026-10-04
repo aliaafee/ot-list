@@ -1,9 +1,9 @@
 import { twMerge } from "tailwind-merge";
 
 import { age } from "@/utils/dates";
-import LabelValue from "./label-value";
+import LabelValue from "../label-value";
 import { describeProcedureCodesSimplified } from "@/lib/procedure-codes";
-import { PacStatusSmall } from "./pac-status";
+import { PacStatusSmall } from "../pac-status";
 import { TriangleAlertIcon } from "lucide-react";
 
 /**

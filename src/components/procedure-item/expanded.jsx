@@ -3,12 +3,12 @@ import { twMerge } from "tailwind-merge";
 import { ChevronRight, TriangleAlertIcon } from "lucide-react";
 
 import { age, hospitalTime } from "@/utils/dates";
-import LabelValue from "./label-value";
-import { PacStatusSmall } from "./pac-status";
-import ProcedureComments from "./procedure-comments";
-import ProcedureChecklist from "./procedure-checklist";
+import LabelValue from "../label-value";
+import { PacStatusSmall } from "../pac-status";
+import ProcedureComments from "./comments";
+import ProcedureChecklist from "./checklist";
 import { describeProcedureCodesSimplified } from "@/lib/procedure-codes";
-import Collapsible from "./collapsible";
+import Collapsible from "../collapsible";
 
 /**
  * ProcedureExpandedView - Display expanded procedure item with full patient details

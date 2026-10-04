@@ -6,12 +6,12 @@ import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 dayjs.extend(isSameOrAfter);
 import { XIcon, PencilOffIcon, SaveIcon } from "lucide-react";
 
-import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
+import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "../toolbar";
 import { useProcedureList } from "@/contexts/procedure-list-context";
 
 import { ProcedureForm, validateProcedure } from "@/forms/procedure-form";
-import PatientInfo from "./patient-info";
-import { PacStatus } from "./pac-status";
+import PatientInfo from "../patient-info";
+import { PacStatus } from "../pac-status";
 import { useCatalogue } from "@/contexts/catalogue-context";
 import {
     fromProcedureCodeRecords,

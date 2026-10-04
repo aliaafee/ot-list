@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useSearchParams } from "react-router";
 
 import { useProcedureList } from "@/contexts/procedure-list-context";
-import ProcedureEditor from "./procedure-editor";
-import ProcedureDetails from "./procedure-details";
-import ProcedureExpandedView from "./procedure-expanded";
-import ProcedureSimplifiedView from "./procedure-simplified";
+import ProcedureEditor from "./editor";
+import ProcedureDetails from "./details";
+import ProcedureExpandedView from "./expanded";
+import ProcedureSimplifiedView from "./simplified";
 
 /**
  * ProcedureItem - Display and manage a single OT procedure item

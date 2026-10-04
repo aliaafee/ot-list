@@ -15,12 +15,12 @@ import {
 } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
-import LabelValue from "./label-value";
-import LabelListValue from "./label-list-value";
+import LabelValue from "../label-value";
+import LabelListValue from "../label-list-value";
 import { describeProcedureCodes } from "@/lib/procedure-codes";
 import { useProcedureList } from "@/contexts/procedure-list-context";
-import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
-import { PacStatus, PacStatusSmall } from "./pac-status";
+import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "../toolbar";
+import { PacStatus, PacStatusSmall } from "../pac-status";
 import ModalWindow from "@/modals/modal-window";
 import EditPatientModal from "@/modals/edit-patient-modal";
 import { useAuth } from "@/contexts/auth-context";

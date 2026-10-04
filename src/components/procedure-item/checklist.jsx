@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
-import Collapsible from "./collapsible";
+import Collapsible from "../collapsible";
 import AddChecklistItemModal from "@/modals/add-checklist-item-modal";
 import EditPatientModal from "@/modals/edit-patient-modal";
 import { pb } from "@/lib/pb";
