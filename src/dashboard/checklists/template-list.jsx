@@ -111,7 +111,7 @@ export default function TemplateList() {
                         disabled={transfer.exporting}
                         onClick={transfer.exportTemplates}
                     >
-                        <UploadIcon size={16} />
+                        <DownloadIcon size={16} />
                         <ToolBarButtonLabel className="hidden sm:inline">
                             Export
                         </ToolBarButtonLabel>
@@ -120,7 +120,7 @@ export default function TemplateList() {
                         title="Import Templates fron File"
                         onClick={() => fileInput.current?.click()}
                     >
-                        <DownloadIcon size={16} />
+                        <UploadIcon size={16} />
                         <ToolBarButtonLabel className="hidden sm:inline">
                             Import
                         </ToolBarButtonLabel>
