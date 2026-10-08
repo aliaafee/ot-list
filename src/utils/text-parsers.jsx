@@ -113,7 +113,8 @@ export function bedInfoFromHINAIHeader(text) {
 
         // Extract Bed - looking for patterns like:
         // "BED NO :NORMAL/SURGICAL WARD/ SW-33" -> SW-33
-        // "BED NO :ICU & CCU/ICCU/ ICU12" -> ICCU12
+        // "BED NO :ICU & CCU/ICCU/ ICU12" -> ICU12
+        // "BED NO :NORMAL/ICCU/ 12" -> ICCU12
         // "BED NO :NORMAL/DHARUMAVANTHA 17/ 17-08" -> 17-08
         const bedMatch = firstLine.match(
             /BED\s+NO\s*:[^/]*\/[^/]*\/\s*([^\s\t]+)/i,
@@ -134,12 +135,6 @@ export function bedInfoFromHINAIHeader(text) {
                 // combine them (e.g., "ICCU" + "12" = "ICCU12")
                 if (/^[A-Z]+$/.test(location) && /^\d+$/.test(bedPart)) {
                     bedNumber = location + bedPart;
-                } else if (/^[A-Z]+\s*&\s*[A-Z]+\/[A-Z]+$/.test(location)) {
-                    // For "ICU & CCU/ICCU", extract the last part
-                    const roomMatch = location.match(/\/([A-Z]+)$/);
-                    if (roomMatch && /^\d+$/.test(bedPart)) {
-                        bedNumber = roomMatch[1] + bedPart;
-                    }
                 }
             }
 

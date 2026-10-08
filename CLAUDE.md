@@ -23,7 +23,9 @@ npm install
 npm run dev        # Vite on :5173, proxies /api and /_ to 127.0.0.1:8090
 npm run pb:serve   # PocketBase on :8090, serving ./dist; applies pending migrations on start
 npm run build      # client bundle into ./dist
-npm run lint       # ESLint over client, hooks, scripts and mcp
+npm run lint       # ESLint over client, hooks, scripts, tests and mcp
+npm test           # unit tests (client + hooks); no PocketBase needed
+npm run test:watch
 npm run release    # build + zip into releases/ot-list-v<version>.zip
 npm run codes -- list | new <ver> | publish <ver> [--dry-run] [--stamp]
 ```
@@ -31,11 +33,10 @@ npm run codes -- list | new <ver> | publish <ver> [--dry-run] [--stamp]
 Both `dev` and `pb:serve` must be running for local work. PocketBase must be
 downloaded separately and extracted into `pb/` (`pb/pocketbase.exe` on Windows).
 
-There is **no test runner and no tests in the repo yet**; see
-[Testing](#testing-proposed-not-yet-set-up) for the plan. Until it lands,
-verification is `npm run lint`, `npm run build`, and exercising the change against
-a running PocketBase. The checklist spec mentions unit tests of the pure
-functions; they are not checked in.
+Verification is `npm test`, `npm run lint`, `npm run build`, and, for anything
+the unit tests cannot see, exercising the change against a running PocketBase.
+See [Testing](#testing). `npm run lint` currently reports existing errors in
+`src/`; a change should add none.
 
 `.env` holds only `VITE_PB_BASE_URL`, and it is read in dev builds only. A
 production build always talks to its own origin.
@@ -49,6 +50,7 @@ production build always talks to its own origin.
 | `pb/pb_migrations/` | Schema and seed migrations. Append-only history. |
 | `specs/` | Design specs. **Read the relevant one before touching that feature.** |
 | `scripts/` | Catalogue release manager, release zipper, deploy scripts (systemd, Ansible, Windows). |
+| `tests/` | Unit tests: `client/` mirrors `src/`, `hooks/` covers `pb/pb_hooks`. |
 | `mcp/` | Standalone MCP server exposing OT List data read-only. Own `package.json`. |
 | `src/data/` | Bundled catalogue copy. **Generated** by `npm run codes -- publish`. |
 
@@ -147,20 +149,19 @@ with a role check, plus a wrapper in `src/lib/api.js`. Inside a transaction use
 `pb/pb_hooks_testing/` is not loaded by anything and is not in the release zip.
 It holds older copies of the hooks; do not edit it expecting an effect.
 
-## Testing (proposed, not yet set up)
+## Testing
 
-This section is the agreed plan. Nothing in it is installed. Remove "proposed"
-from the heading, and add the scripts to Commands, as each layer lands.
+**Framework: Vitest**, configured in `vitest.config.js` on top of `vite.config.js`,
+so the `@/` alias and JSX resolve in a test as they do in the client. Each layer
+is a Vitest project; run one with `npx vitest run --project hooks`, or one file
+with `npx vitest run tests/client/lib/checklists.test.js`.
 
-**Framework: Vitest.** It reads the existing `vite.config.js`, so the `@/` alias and
-JSX work with no second config, and Vitest 5 supports Vite 8. One runner covers all
-three layers below, as separate Vitest projects.
+Layers 1 and 2 are in place. Layer 3 is still a plan.
 
-```bash
-npm test              # unit layers (client + hooks), no PocketBase needed
-npm run test:watch
-npm run test:pb       # integration layer, starts its own PocketBase
-```
+The whole run uses `TZ=America/Los_Angeles`, set in `vitest.config.js`: a zone
+behind UTC and far from the hospital's, so code that reads a stored date through
+the local clock gets the day before and fails. Do not remove it to make a date
+test pass; fix the read.
 
 ### Layer 1: client unit tests
 
@@ -168,32 +169,37 @@ Pure functions in `src/lib` and `src/utils`, in the `node` environment. Tests li
 in `tests/client/`, mirroring `src/` (`tests/client/lib/procedure-catalogue.test.js`),
 and import the source through `@/`. No test files go in `src/`.
 
-First targets, in order of risk:
-- `lib/procedure-catalogue.js`: search scoring, level and laterality extraction,
-  span expansion, `sortLevelCodes`.
-- `lib/procedure-codes.js`: picker ⇄ payload ⇄ display round trips.
-- `lib/checklists.js`: `criteriaOverlap`, `findKeyOverlaps`, `describeAgeRange`,
-  `patientChanges`.
-- `utils/dates.jsx` and `utils/text-parsers.jsx`. Date tests set `TZ` to a zone
-  other than the hospital's, so a local-zone read fails the test.
+Covered so far: `lib/procedure-catalogue.js`, `lib/procedure-codes.js`,
+`lib/checklists.js`, the date helpers in `utils/dates.jsx`, `utils/ot-days.jsx`
+and `lib/app-settings.js`, and `utils/text-parsers.jsx`.
+
+Tests of "today" set the shared settings with `setAppSettings` and freeze the
+clock with `vi.useFakeTimers`; see `tests/client/utils/dates.test.js`.
 
 ### Layer 2: hook unit tests
 
-The pure functions in `pb/pb_hooks/*.js`: `assembleChecklist`, `ageInMonths`,
-`datePart`, `customItemKey`, and the validation half of `checklist-templates-io.js`.
-The cases to cover are listed in the checklist spec, §12 steps 9 and 16.
+The pure functions in `pb/pb_hooks/*.js`. Covered so far: `assembleChecklist`,
+`ageInMonths`, `datePart` and `customItemKey` in `procedure-checklists.js`, and
+import validation and writing in `checklist-templates-io.js`.
 
 Hook modules are CommonJS scripts for PocketBase's runtime, while the repo is
-`"type": "module"`, so they cannot be imported directly. Tests load them through
-one helper, `tests/hooks/load-hook.js`, which evaluates the file with a `module`,
-a `require` that resolves `${__hooks}/…`, and stubs for the PocketBase globals.
+`"type": "module"`, so they cannot be imported directly. Tests load them with
+`loadHook("procedure-checklists.js")` from `tests/hooks/load-hook.js`, which
+evaluates the file with a `module`, a `require` that resolves `${__hooks}/…`, and
+the PocketBase error classes. Other globals (`Record`, `$app`) are passed in by
+the test that needs them.
 **Do not change a hook file's module format to suit the test runner**: PocketBase
 is the runtime that matters.
+
+`tests/hooks/fake-app.js` has a minimal stand-in app and record for code that
+reads a few rows around the logic under test. It has no filters, rules or
+transactions on purpose: anything that depends on those belongs in layer 3, not
+in a cleverer fake.
 
 Tests live in `tests/hooks/`, not in `pb/pb_hooks/`, because that whole directory
 is zipped into the release.
 
-### Layer 3: integration tests against PocketBase
+### Layer 3: integration tests against PocketBase (proposed, not yet set up)
 
 For what the unit layers cannot see: migrations, collection rules, role checks,
 transactions and reconciliation against real records. A global setup starts
@@ -206,8 +212,9 @@ First targets: the checklist write path end to end (tick preservation across a
 code change, the three patient edits of spec §5, the past-procedure refusals), and
 that closed collections reject direct writes.
 
-Tests live in `tests/pb/`. This layer needs the PocketBase binary, so it is a
-separate script and is skipped with a clear message when the binary is missing.
+Tests will live in `tests/pb/` and run with `npm run test:pb`. This layer needs
+the PocketBase binary, so it is a separate script and is skipped with a clear
+message when the binary is missing.
 
 ### Not planned yet
 
@@ -221,9 +228,13 @@ when a bug shows a gap the three layers cannot cover.
 - Test names state the rule, with the spec section where there is one:
   `"an unknown age fails every age criterion (§3.1)"`.
 - Fixtures are small literals built in the test. No shared database snapshot and
-  no dependence on seeded templates; the catalogue seed migrations are the only
-  data a test may assume.
-- `npm test` must pass before a commit; `npm run test:pb` before a release.
+  no dependence on seeded templates. The one exception is the spinal-level
+  vocabulary (`src/data/spinal-levels.json`), which tests may import; concepts are
+  built in the test so a catalogue release cannot change what a test asserts.
+- Test files import `describe`, `it` and `expect` from `vitest`; there are no
+  test globals.
+- `npm test` must pass before a commit; `npm run test:pb`, once it exists, before
+  a release.
 
 ## Rules that are easy to break
 

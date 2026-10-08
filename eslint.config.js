@@ -70,7 +70,12 @@ export default defineConfig([
     {
         // Build and release tooling, the Vite/ESLint configs, and the MCP
         // server all run under Node, not the browser.
-        files: ["scripts/**/*.js", "mcp/**/*.js", "*.config.js"],
+        files: [
+            "scripts/**/*.js",
+            "mcp/**/*.js",
+            "tests/**/*.js",
+            "*.config.js",
+        ],
         languageOptions: {
             globals: globals.node,
         },
