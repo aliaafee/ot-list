@@ -13,6 +13,8 @@ import ProcedureCodeSelector from "@/components/procedure-code-selector";
  * @param {string} name - Name attribute for the input
  * @param {string} value - Current value of the input
  * @param {function} onChange - Change handler function
+ * @param {function} onBlur - Blur handler, for a field that saves when it is
+ *   left rather than on every keystroke (optional)
  * @param {ReactNode} children - Options for select type (optional)
  * @param {string} type - Input type: 'text', 'email', 'password', 'number', 'date', 'textarea', 'select', 'procedure-code'
  * @param {boolean} error - Whether the field has an error
@@ -28,6 +30,7 @@ export default function FormField({
     name,
     value,
     onChange,
+    onBlur,
     children,
     type = "text",
     error = false,
@@ -110,7 +113,7 @@ export default function FormField({
                 htmlFor={fieldId}
                 className={twMerge(
                     "text-xs opacity-0 text-left text-gray-700",
-                    !!value && "opacity-100",
+                    (!!value || type === "number") && "opacity-100",
                 )}
             >
                 {label}
@@ -121,6 +124,7 @@ export default function FormField({
                     name={name}
                     value={value}
                     onChange={onChange}
+                    onBlur={onBlur}
                     placeholder={placeholder || label}
                     disabled={disabled}
                     aria-invalid={!!error || undefined}
@@ -138,6 +142,7 @@ export default function FormField({
                     name={name}
                     value={value}
                     onChange={onChange}
+                    onBlur={onBlur}
                     placeholder={placeholder || label}
                     disabled={disabled}
                     aria-invalid={!!error || undefined}

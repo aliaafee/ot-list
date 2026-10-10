@@ -8,6 +8,7 @@ import { useTreeKeyboardNav } from "@/hooks/use-tree-keyboard-nav";
 import { insertDayInOrder, isInMonth } from "@/utils/ot-days";
 import OtListMarker from "./ot-list-marker";
 import { ChevronRightIcon } from "lucide-react";
+import { calendarDate } from "@/utils/dates";
 
 // Every row is a real button, so Tab reaches it and Enter/Space activate it.
 // data-tree-item marks it for the arrow key handling on the root list, and
@@ -46,10 +47,10 @@ function DayItem({ day, isSelected, onSelect }) {
             >
                 <span className="flex overflow-clip grow">
                     <span className="overflow-clip whitespace-nowrap min-w-12">
-                        {dayjs(day.date).format("ddd")},{" "}
+                        {calendarDate(day.date).format("ddd")},{" "}
                     </span>
                     <span className="col-span-2 text-ellipsis whitespace-nowrap grow">
-                        {dayjs(day.date).format("DD MMMM")}
+                        {calendarDate(day.date).format("DD MMMM")}
                     </span>
                     <span className="overflow-clip whitespace-nowrap">
                         <OtListMarker otList={day.expand?.otList} />
@@ -392,8 +393,8 @@ function OtDaysBrowser({
             // branch to the tree by being the first in a month, or empty one
             // by being the last. Neither is visible from the day list alone,
             // so refresh them unless this lands in a branch already on screen.
-            const recordYear = dayjs(record.date).year();
-            const recordMonth = dayjs(record.date).month() + 1;
+            const recordYear = calendarDate(record.date).year();
+            const recordMonth = calendarDate(record.date).month() + 1;
             const knownBranch =
                 years.some((y) => y.year === recordYear) &&
                 (year !== recordYear ||

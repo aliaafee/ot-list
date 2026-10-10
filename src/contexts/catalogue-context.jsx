@@ -20,6 +20,9 @@ export function CatalogueProvider({ children }) {
     const { isAuthed } = useAuth();
     const [data, setData] = useState(fetchBundledCatalogue());
     const [error, setError] = useState(null);
+    // Whether the load has settled, so a reader that needs more than the
+    // bundled copy can tell "not yet" from "not coming".
+    const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
         // The catalogue collections require a signed-in user, so there is
@@ -40,6 +43,7 @@ export function CatalogueProvider({ children }) {
                 console.log(e);
                 if (!cancelled) setError(e);
             }
+            if (!cancelled) setLoaded(true);
         })();
 
         return () => {
@@ -61,6 +65,7 @@ export function CatalogueProvider({ children }) {
             levels: data.levels,
             release: CATALOGUE_RELEASE,
             error,
+            loaded,
             conceptById: (conceptId) => byConceptId.get(conceptId) ?? null,
             search: (query) => searchWithQualifiers(index, levelLookup, query),
             levelsFor: (concept, all) =>
@@ -69,7 +74,7 @@ export function CatalogueProvider({ children }) {
             sortLevels: (codes, kind) =>
                 sortLevelCodes(levelLookup, codes, kind),
         };
-    }, [data, error]);
+    }, [data, error, loaded]);
 
     return (
         <CatalogueContext.Provider value={value}>

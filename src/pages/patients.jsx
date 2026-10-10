@@ -23,6 +23,7 @@ import PatientProcedures from "@/components/patient-procedures";
 import LabelValue from "@/components/label-value";
 import { useAuth } from "@/contexts/auth-context";
 import EditPatientModal from "@/modals/edit-patient-modal";
+import ErrorBanner from "@/components/error-banner";
 
 const PAGE_SIZE = 50;
 
@@ -169,9 +170,7 @@ function Patients() {
             </div>
 
             {error && (
-                <div className="bg-red-400/20 rounded-md p-2 mb-4 text-sm">
-                    {error.message}
-                </div>
+                <ErrorBanner className="mb-4">{error.message}</ErrorBanner>
             )}
 
             {loading ? (

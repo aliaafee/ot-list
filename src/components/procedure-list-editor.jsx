@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
-import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
 import {
     CalendarCheckIcon,
@@ -26,6 +25,7 @@ import DisableOtDayModal from "@/modals/disable-ot-day-modal";
 import BodyLayout from "./body-layout";
 import { api } from "@/lib/api";
 import { formatDate, formateDateLong } from "@/utils/dates";
+import { downloadBlob } from "@/utils/download";
 import { useAuth } from "@/contexts/auth-context";
 
 const TableHeader = ({ className }) => (
@@ -110,21 +110,11 @@ function ProcedureListEditor({
         try {
             const report = await api.generateOtListHtml(otDay.id);
 
-            // Open HTML in new window
-            // const printWindow = window.open("", "_blank");
-            // printWindow.document.write(html);
-            // printWindow.document.close();
-
             // Download HTML as file
-            const blob = new Blob([report.content], { type: report.type });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = `Ot List ${formatDate(dayjs(otDay.date))}.html`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            downloadBlob(
+                new Blob([report.content], { type: report.type }),
+                `Ot List ${formatDate(otDay.date)}.html`,
+            );
         } catch (e) {
             console.log("Failed to download list");
             alert("Failed to download report");

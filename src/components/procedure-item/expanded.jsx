@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
-import dayjs from "dayjs";
 import { ChevronRight } from "lucide-react";
 
-import { age } from "@/utils/dates";
-import LabelValue from "./label-value";
-import { PacStatusSmall } from "./pac-status";
-import ProcedureComments from "./procedure-comments";
-import { describeProcedureCodesSimplified } from "@/lib/procedure-codes";
+import { hospitalTime } from "@/utils/dates";
+import LabelValue from "../label-value";
+import ProcedureHeaderRow from "./header-row";
+import ProcedureComments from "./comments";
+import ProcedureChecklist from "./checklist";
+import Collapsible from "../collapsible";
 
 /**
  * ProcedureExpandedView - Display expanded procedure item with full patient details
@@ -17,6 +17,9 @@ import { describeProcedureCodesSimplified } from "@/lib/procedure-codes";
  * @param {string} className - Additional CSS classes for the container
  * @param {function} onSelected - Callback when clicking to collapse the view
  * @param {ReactNode} children - Additional content (e.g., editor, view controls)
+ * @param {boolean} focusChecklist - Open the checklist and scroll to it
+ * @param {function} onEdit - Opens the procedure for editing, for the checklist
+ *   to offer when its fix is on the procedure's codes; omit while editing
  */
 function ProcedureExpandedView({
     procedure,
@@ -24,8 +27,16 @@ function ProcedureExpandedView({
     className,
     onSelected,
     children,
+    focusChecklist = false,
+    onEdit,
 }) {
     const [showPatientDetails, setShowPatientDetails] = useState(false);
+    // Bumped by the outstanding-items alert; the checklist opens and scrolls
+    // into view on every change. Starts set when the row was opened from the
+    // alert in its collapsed form.
+    const [checklistFocus, setChecklistFocus] = useState(
+        focusChecklist ? 1 : 0,
+    );
 
     return (
         <div
@@ -35,53 +46,13 @@ function ProcedureExpandedView({
                 className,
             )}
         >
-            <div
-                className={twMerge(
-                    "flex-auto p-2 grid grid-cols-10 lg:grid-cols-14 cursor-pointer gap-1",
-                    !!procedure.removed && "line-through",
-                )}
+            {/* The same row the collapsed view shows. Here a click closes the
+                procedure, and the alert goes to the checklist below. */}
+            <ProcedureHeaderRow
+                procedure={procedure}
                 onClick={() => onSelected(null)}
-            >
-                <LabelValue
-                    value={!procedure.removed && procedure.order}
-                    blank={<>&nbsp;</>}
-                />
-                <LabelValue
-                    // label="NID"
-                    value={procedure?.expand?.patient?.nid}
-                    className="col-span-2 lg:col-span-2"
-                    copyButton={true}
-                />
-                <LabelValue
-                    className="col-span-2 lg:col-span-2"
-                    // label="Name"
-                    value={procedure?.expand?.patient?.name}
-                />
-                <LabelValue
-                    // label="Age/Sex"
-                    value={`${
-                        procedure?.expand?.patient?.dateOfBirth
-                            ? age(procedure?.expand?.patient?.dateOfBirth)
-                            : "-"
-                    } / ${procedure?.expand?.patient?.sex[0]?.toUpperCase() || "-"}`}
-                    className="col-span-1 hidden lg:inline"
-                />
-                <LabelValue
-                    className="col-span-3 hidden lg:inline"
-                    // label="Diagnosis"
-                    value={procedure.diagnosis}
-                />
-                <LabelValue
-                    className="col-span-3"
-                    // label="Procedure"
-                    value={describeProcedureCodesSimplified(procedure).join(
-                        " + ",
-                    )}
-                />
-                <div className="col-span-2">
-                    <PacStatusSmall status={procedure?.pacStatus} />
-                </div>
-            </div>
+                onChecklistAlert={() => setChecklistFocus((n) => n + 1)}
+            />
             <div
                 className="flex items-center cursor-pointer md:hidden p-2 gap-2 text-gray-600"
                 onClick={() => setShowPatientDetails(!showPatientDetails)}
@@ -122,11 +93,17 @@ function ProcedureExpandedView({
                 />
             </div>
             {children}
+            <ProcedureChecklist
+                procedure={procedure}
+                className="p-2"
+                focusKey={checklistFocus}
+                onEditProcedure={onEdit}
+            />
             <div className="text-xs text-gray-500 px-2 py-1 text-right sm:flex  sm:justify-end gap-2 bg-gray-200">
                 <div>
                     Created:{" "}
                     <span>
-                        {dayjs(procedure?.created).format("DD MMM YYYY HH:mm")}
+                        {hospitalTime(procedure?.created).format("DD MMM YYYY HH:mm")}
                     </span>{" "}
                     by{" "}
                     <span className="font-semibold">
@@ -137,7 +114,7 @@ function ProcedureExpandedView({
                     <div>
                         Updated:{" "}
                         <span>
-                            {dayjs(procedure?.updated).format(
+                            {hospitalTime(procedure?.updated).format(
                                 "DD MMM YYYY HH:mm",
                             )}
                         </span>{" "}
@@ -148,7 +125,14 @@ function ProcedureExpandedView({
                     </div>
                 )}
             </div>
-            <ProcedureComments procedureId={procedure.id} />
+            <Collapsible
+                className="p-2"
+                summaryClassName="text-sm font-semibold"
+                summary={<>Comments</>}
+                defaultOpen={true}
+            >
+                <ProcedureComments procedureId={procedure.id} />
+            </Collapsible>
         </div>
     );
 }

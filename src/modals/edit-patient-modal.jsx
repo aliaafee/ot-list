@@ -2,8 +2,7 @@ import { useState } from "react";
 import { ClipboardPasteIcon, UserPenIcon } from "lucide-react";
 import ModalWindow from "./modal-window";
 import { PatientForm, validatePatient } from "@/forms/patient-form";
-import { pb } from "@/lib/pb";
-import dayjs from "dayjs";
+import { api } from "@/lib/api";
 import {
     ToolBar,
     ToolBarButton,
@@ -12,6 +11,8 @@ import {
 } from "@/components/toolbar";
 import { patientInfoFromText } from "@/utils/text-parsers";
 import PastePatientPreviewModal from "./paste-patient-preview-modal";
+import ErrorBanner from "@/components/error-banner";
+import { calendarDate } from "@/utils/dates";
 
 /**
  * EditPatientModal - Modal for editing patient information
@@ -24,9 +25,11 @@ export default function EditPatientModal({ patient, onCancel, onSuccess }) {
         nid: patient?.nid || "",
         hospitalId: patient?.hospitalId || "",
         name: patient?.name || "",
-        // dayjs("") formats to "Invalid Date", so only format a real value.
+        // An empty date formats to "Invalid Date", so only format a real
+        // value. A calendar date: its date part, never through the browser's
+        // zone, or saving the form would move it.
         dateOfBirth: patient?.dateOfBirth
-            ? dayjs(patient.dateOfBirth).format("YYYY-MM-DD")
+            ? calendarDate(patient.dateOfBirth).format("YYYY-MM-DD")
             : "",
         sex: patient?.sex || "",
         phone: patient?.phone || "",
@@ -84,9 +87,9 @@ export default function EditPatientModal({ patient, onCancel, onSuccess }) {
 
         setLoading(true);
         try {
-            const updated = await pb
-                .collection("patients")
-                .update(patient.id, editedPatient);
+            // Through the route, not the collection: entering a missing date
+            // of birth or sex rebuilds the patient's checklists.
+            const updated = await api.updatePatient(patient.id, editedPatient);
             onSuccess?.(updated);
         } catch (error) {
             console.error("Failed to update patient:", error);
@@ -112,15 +115,13 @@ export default function EditPatientModal({ patient, onCancel, onSuccess }) {
             >
                 <div className="mt-2">
                     {updateError && (
-                        <div className="bg-red-400/20 rounded-md mb-2 p-2 text-sm">
+                        <ErrorBanner className="mb-2">
                             Failed to update patient:{" "}
                             {updateError?.message || "Unknown error"}
-                        </div>
+                        </ErrorBanner>
                     )}
                     {pasteError && (
-                        <div className="bg-red-400/20 rounded-md mb-2 p-2 text-sm">
-                            {pasteError}
-                        </div>
+                        <ErrorBanner className="mb-2">{pasteError}</ErrorBanner>
                     )}
                     <ToolBar className="w-full flex-wrap sm:flex-nowrap">
                         <div className="grow"></div>

@@ -1,4 +1,4 @@
-import { formatDate } from "@/utils/dates";
+import { formatTimestampDate } from "@/utils/dates";
 import { ArrowRight, PlusIcon } from "lucide-react";
 import { useState, useEffect, Fragment } from "react";
 import { twMerge } from "tailwind-merge";
@@ -213,7 +213,7 @@ export function PacStatus({ procedureId, className, showLabel = true }) {
                             </span>
 
                             <span className="text-xs text-gray-500">
-                                {formatDate(item.created)}
+                                {formatTimestampDate(item.created)}
                             </span>
                         </div>
                         <div className="flex items-center">

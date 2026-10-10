@@ -1,11 +1,9 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { PlusIcon } from "lucide-react";
-import dayjs from "dayjs";
-import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
-dayjs.extend(isSameOrAfter);
 
 import { pb } from "@/lib/pb";
+import { hospitalToday } from "@/lib/app-settings";
 import {
     ToolBar,
     ToolBarPill,
@@ -20,6 +18,7 @@ import { OtListColours } from "@/utils/colours";
 import { LoadingSpinner } from "./loading-spinner";
 import OtDaysBrowser from "./ot-days-browser";
 import { useProcedureList } from "@/contexts/procedure-list-context";
+import { calendarDate } from "@/utils/dates";
 
 const otDaysCollectionOptions = {
     sort: "+date",
@@ -186,7 +185,11 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
                         }
                         if (
                             e.action === "create" &&
-                            dayjs(e.record.date).isSameOrAfter(dayjs(), "day")
+                            // The line the upcomingOtDays view draws: the
+                            // day's calendar date against today's at the
+                            // hospital.
+                            String(e.record.date).slice(0, 10) >=
+                                hospitalToday()
                         ) {
                             dispatchOtDaysList({
                                 type: "ADD_DAY",
@@ -218,9 +221,9 @@ function OtDaysEditor({ selectedDayId, onSelectDay, className }) {
     const handleShowAllToggle = (value) => {
         if (value) {
             setShowAll(true);
-            setBrowserSelectedYear(otDay ? dayjs(otDay.date).year() : null);
+            setBrowserSelectedYear(otDay ? calendarDate(otDay.date).year() : null);
             setBrowserSelectedMonth(
-                otDay ? dayjs(otDay.date).month() + 1 : null,
+                otDay ? calendarDate(otDay.date).month() + 1 : null,
             );
             return;
         }

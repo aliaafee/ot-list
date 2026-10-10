@@ -158,7 +158,8 @@ export function describeProcedureCode(record, simplified = false) {
 export function describeProcedureCodes(procedure) {
     return [...procedureCodeRecordsOf(procedure)]
         .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
-        .map(describeProcedureCode);
+        // Not passed to map directly: map's index would land in `simplified`.
+        .map((record) => describeProcedureCode(record));
 }
 
 /** Every stored code on a procedure, as display lines. */

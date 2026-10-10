@@ -44,6 +44,13 @@ export default function App() {
                         path="/settings/:page"
                         element={<SettingsDashboard />}
                     />
+                    {/* A settings page's detail view: one record of that
+                        page's collection, mounted in the same shell so the
+                        sidebar keeps the parent selected. */}
+                    <Route
+                        path="/settings/:page/:detailId"
+                        element={<SettingsDashboard />}
+                    />
                     <Route path="/patients" element={<Patients />} />
                     <Route path="/procedures" element={<AllProcedures />} />
                 </Route>

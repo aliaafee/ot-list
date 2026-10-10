@@ -3,7 +3,7 @@ import { ExternalLinkIcon } from "lucide-react";
 import { pb } from "@/lib/pb";
 import { formateDateLong } from "@/utils/dates";
 import { ToolBar, ToolBarLink } from "./toolbar";
-import ProcedureDetails from "./procedure-details";
+import ProcedureDetails from "./procedure-item/details";
 
 const PROC_PAGE_SIZE = 25;
 

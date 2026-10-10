@@ -17,9 +17,11 @@ import {
 } from "@/lib/procedure-codes";
 import { FACET_LABELS } from "@/lib/procedure-catalogue";
 import { useCatalogue } from "@/contexts/catalogue-context";
-import dayjs from "dayjs";
+import { hospitalToday } from "@/lib/app-settings";
 import { twMerge } from "tailwind-merge";
 import LabelValue from "@/components/label-value";
+import ErrorBanner from "@/components/error-banner";
+import { calendarDate } from "@/utils/dates";
 
 // A concept facet, its relation field on `procedureConcepts`, and the URL param
 // its filter value is kept in. Filtering a procedure means "at least one of its
@@ -135,8 +137,8 @@ function AllProcedures() {
             }
 
             if (upcoming) {
-                const today = dayjs().format("YYYY-MM-DD");
-                filters.push(`procedureDay.date >= "${today}"`);
+                // Today at the hospital, the same line upcomingOtDays draws.
+                filters.push(`procedureDay.date >= "${hospitalToday()}"`);
             }
 
             if (!includeRemoved) {
@@ -421,9 +423,7 @@ function AllProcedures() {
             </div>
 
             {error && (
-                <div className="bg-red-400/20 rounded-md p-2 mb-4 text-sm">
-                    {error.message}
-                </div>
+                <ErrorBanner className="mb-4">{error.message}</ErrorBanner>
             )}
 
             {loading ? (
@@ -490,7 +490,7 @@ function AllProcedures() {
                                             </Link>
                                         </td>
                                         <td className="px-3 py-2 text-sm whitespace-nowrap">
-                                            {dayjs(
+                                            {calendarDate(
                                                 proc.expand?.procedureDay?.date,
                                             ).format("DD MMM YYYY")}
                                         </td>

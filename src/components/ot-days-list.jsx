@@ -5,6 +5,7 @@ import { Link } from "react-router";
 import Button from "@/components/button";
 import { useTreeKeyboardNav } from "@/hooks/use-tree-keyboard-nav";
 import OtListMarker from "./ot-list-marker";
+import { calendarDate } from "@/utils/dates";
 
 function OtDaysList({
     otDays = [],
@@ -21,7 +22,7 @@ function OtDaysList({
         return [...datesList]
             .sort((a, b) => new Date(a.date) - new Date(b.date))
             .reduce((acc, otDay) => {
-                const month = dayjs(otDay.date).format("YYYY-MM");
+                const month = calendarDate(otDay.date).format("YYYY-MM");
                 if (!acc[month]) {
                     acc[month] = [];
                 }
@@ -82,13 +83,13 @@ function OtDaysList({
                                     )}
                                     onClick={() => onSelectDay(otDay.id)}
                                 >
-                                    <span className="flex overflow-clip grow">
+                                    <span className="flex overflow-clip grow items-center">
                                         <span className="overflow-clip whitespace-nowrap min-w-12">
-                                            {dayjs(otDay.date).format("ddd")}
+                                            {calendarDate(otDay.date).format("ddd")}
                                             ,{" "}
                                         </span>
                                         <span className="col-span-2 text-ellipsis whitespace-nowrap grow">
-                                            {dayjs(otDay.date).format(
+                                            {calendarDate(otDay.date).format(
                                                 "DD MMMM",
                                             )}
                                         </span>

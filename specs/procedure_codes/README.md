@@ -295,9 +295,9 @@ no UI yet.
 | `describeProcedureCodes` / `…Simplified(procedure)` | — | All codes on an expanded procedure as an array of lines. |
 
 Read-only views join lines with `" + "`:
-[`procedure-details.jsx`](../../src/components/procedure-details.jsx),
-[`procedure-expanded.jsx`](../../src/components/procedure-expanded.jsx),
-[`procedure-simplified.jsx`](../../src/components/procedure-simplified.jsx),
+[`procedure-item/details.jsx`](../../src/components/procedure-item/details.jsx),
+[`procedure-item/expanded.jsx`](../../src/components/procedure-item/expanded.jsx),
+[`procedure-item/simplified.jsx`](../../src/components/procedure-item/simplified.jsx),
 [`otlist-print.jsx`](../../src/pages/otlist-print.jsx),
 [`all-procedures.jsx`](../../src/pages/all-procedures.jsx),
 [`patients.jsx`](../../src/pages/patients.jsx),
@@ -308,7 +308,7 @@ Read-only views join lines with `" + "`:
 `procedure-form.jsx` renders `<FormListField type="procedure-code"
 name="procedureCodes" …>`. `validateProcedure` treats `procedureCodes` as
 required and uses `isFilledCode` (a length check would pass on the padded
-blank rows). In `procedure-editor.jsx` the stored codes stay `null` until the
+blank rows). In `procedure-item/editor.jsx` the stored codes stay `null` until the
 catalogue is in memory (resolving against an empty catalogue then saving would
 silently delete every code); the form value falls back to the derived
 `storedCodes` until the user edits.

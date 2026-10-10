@@ -5,6 +5,7 @@ import Button from "@/components/button";
 import ModalWindow from "./modal-window";
 import PatientInfo from "@/components/patient-info";
 import { age } from "@/utils/dates";
+import ErrorBanner from "@/components/error-banner";
 
 /**
  * PatientSearchModal - Modal for searching and selecting existing patients
@@ -72,7 +73,6 @@ function PatientSearchModal({
             okLabel="Select"
             onOk={handleConfirm}
             onCancel={onCancel}
-            okDisabled={!selectedPatient}
             large={true}
         >
             <div className="space-y-4">
@@ -105,11 +105,7 @@ function PatientSearchModal({
                     </Button>
                 </div>
 
-                {error && (
-                    <div className="bg-red-400/20 rounded-md p-2 text-sm">
-                        {error.message}
-                    </div>
-                )}
+                {error && <ErrorBanner>{error.message}</ErrorBanner>}
 
                 {loading && (
                     <div className="text-center py-4 text-gray-500">

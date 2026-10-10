@@ -1,6 +1,5 @@
 import { useState } from "react";
-import dayjs from "dayjs";
-import { formateDateLong } from "@/utils/dates";
+import { formateDateLong, calendarDate } from "@/utils/dates";
 import {
     EditIcon,
     MoveUpIcon,
@@ -12,18 +11,23 @@ import {
     UserPenIcon,
     CopyIcon,
     CopyCheckIcon,
+    RefreshCwIcon,
 } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
-import LabelValue from "./label-value";
-import LabelListValue from "./label-list-value";
+import LabelValue from "../label-value";
+import LabelListValue from "../label-list-value";
 import { describeProcedureCodes } from "@/lib/procedure-codes";
 import { useProcedureList } from "@/contexts/procedure-list-context";
-import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "./toolbar";
-import { PacStatus, PacStatusSmall } from "./pac-status";
+import { ToolBar, ToolBarButton, ToolBarButtonLabel } from "../toolbar";
+import { PacStatus, PacStatusSmall } from "../pac-status";
 import ModalWindow from "@/modals/modal-window";
 import EditPatientModal from "@/modals/edit-patient-modal";
 import { useAuth } from "@/contexts/auth-context";
+import ErrorBanner from "@/components/error-banner";
+import { api } from "@/lib/api";
+import { describeRebuild } from "@/lib/checklists";
+import useIsPastProcedure from "./use-is-past-procedure";
 
 /**
  * ProcedureDetails - Detailed view of a procedure with action toolbar
@@ -56,13 +60,30 @@ function ProcedureDetails({
     readOnly = false,
 }) {
     const { canEdit } = useAuth();
-    const { isBusy, reloadProcedure } = useProcedureList();
+    const { isBusy, reloadProcedure, showToast } = useProcedureList();
 
     const [confirmRemove, setConfirmRemove] = useState(false);
     const [editingPatient, setEditingPatient] = useState(false);
     const [copied, setCopied] = useState(false);
 
+    const [rebuilding, setRebuilding] = useState(false);
+    // A past procedure's checklist is not rebuilt; the route refuses it too.
+    const isPast = useIsPastProcedure(procedure);
+
     const procedureCodes = describeProcedureCodes(procedure);
+
+    const rebuildChecklist = async () => {
+        setRebuilding(true);
+        try {
+            const result = await api.rebuildChecklist(procedure.id);
+            showToast(`Checklist rebuilt: ${describeRebuild(result)}`);
+        } catch (error) {
+            console.error("Failed to rebuild checklist:", error);
+            showToast(error?.message || "Failed to rebuild checklist", "error");
+        } finally {
+            setRebuilding(false);
+        }
+    };
 
     const handleCopyAdvice = () => {
         const adviceText = `${procedureCodes.join(" + ")} for ${procedure?.diagnosis} on ${formateDateLong(procedure?.expand?.procedureDay?.date)} in ${procedure?.expand?.procedureDay?.expand?.otList?.name}`;
@@ -195,6 +216,26 @@ function ProcedureDetails({
                             </ToolBarButtonLabel>
                         </ToolBarButton>
                     )}
+                    {/* For a checklist that predates the templates, or to
+                        pick up a template edit. Today and future procedures
+                        only, as the route enforces. The rebuilt rows reach
+                        the checklist through its own subscription. */}
+                    {!!canEdit && !procedure.removed && !isPast && (
+                        <ToolBarButton
+                            title="Rebuild the checklist from the current templates. Ticks, notes and added items are kept."
+                            disabled={isBusy() || rebuilding}
+                            onClick={rebuildChecklist}
+                        >
+                            <RefreshCwIcon
+                                width={16}
+                                height={16}
+                                className={rebuilding ? "animate-spin" : ""}
+                            />
+                            <ToolBarButtonLabel className="hidden sm:inline">
+                                Rebuild Checklist
+                            </ToolBarButtonLabel>
+                        </ToolBarButton>
+                    )}
                     <div className="grow"></div>
                     <ToolBarButton
                         title="close"
@@ -207,14 +248,12 @@ function ProcedureDetails({
             )}
 
             {!!recordError && (
-                <div className="bg-red-400/20 rounded-md m-2 p-2 text-sm">
+                <ErrorBanner className="m-2">
                     {recordError?.message}
-                </div>
+                </ErrorBanner>
             )}
             {procedure.removed && (
-                <div className="bg-red-400/20 rounded-md m-2 p-2 text-sm">
-                    Removed
-                </div>
+                <ErrorBanner className="m-2">Removed</ErrorBanner>
             )}
             {!readOnly ? (
                 <PacStatus procedureId={procedure?.id} className="p-2" />
@@ -259,7 +298,7 @@ function ProcedureDetails({
                 <LabelValue
                     className="md:col-span-1"
                     label="Added Date"
-                    value={dayjs(procedure.addedDate).format("DD MMM YYYY")}
+                    value={calendarDate(procedure.addedDate).format("DD MMM YYYY")}
                 />
                 <LabelValue label="Admitted Bed" value={procedure.bed} />
                 <LabelValue
@@ -289,7 +328,7 @@ function ProcedureDetails({
                         {procedure?.expand?.patient?.nid}{" "}
                         {procedure?.expand?.patient?.name} planned for{" "}
                         {procedureCodes.join(" + ")} on{" "}
-                        {dayjs(procedure?.expand?.procedureDay.date).format(
+                        {calendarDate(procedure?.expand?.procedureDay.date).format(
                             "DD MMM YYYY",
                         )}
                     </p>
