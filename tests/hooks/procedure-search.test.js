@@ -89,6 +89,29 @@ describe("buildProcedureConditions", () => {
         expect(params).toEqual({ today: TODAY });
     });
 
+    it("keeps OT days on or after the from date", () => {
+        const { sql, params } = only({ from: "2026-03-01" });
+
+        expect(sql).toContain("[[otDays.date]] >= {:fromDate}");
+        expect(params).toEqual({ fromDate: "2026-03-01" });
+    });
+
+    it("keeps the whole of the to date, whose stored value carries a time", () => {
+        const { sql, params } = only({ to: "2026-03-31" });
+
+        expect(sql).toContain("[[otDays.date]] <= {:toDate}");
+        expect(params).toEqual({ toDate: "2026-03-31 23:59:59.999Z" });
+    });
+
+    it("ignores a from or to that is not a calendar date", () => {
+        expect(
+            buildProcedureConditions(
+                { from: "March", to: "2026-3-1", showRemoved: "true" },
+                TODAY,
+            ),
+        ).toEqual([]);
+    });
+
     it("filters a facet through its relation field on the concept", () => {
         const { sql, params } = only({ f_intent: "Curative" });
 

@@ -19,6 +19,7 @@ import { useCatalogue } from "@/contexts/catalogue-context";
 import { twMerge } from "tailwind-merge";
 import LabelValue from "@/components/label-value";
 import ErrorBanner from "@/components/error-banner";
+import Collapsible from "@/components/collapsible";
 import { calendarDate } from "@/utils/dates";
 import { downloadBlob } from "@/utils/download";
 
@@ -78,6 +79,9 @@ function AllProcedures() {
     const uncodedOnly = searchParams.get("uncoded") === "true";
     const pacStatus = searchParams.get("pac") || "";
     const addedBy = searchParams.get("addedBy") || "";
+    // The OT day's date range, both ends inclusive, as "YYYY-MM-DD".
+    const fromDate = searchParams.get("from") || "";
+    const toDate = searchParams.get("to") || "";
 
     // The selected facet term per facet, from the URL. `facetKey` is a stable
     // string of them, so the fetch effect re-runs when any changes without
@@ -87,7 +91,6 @@ function AllProcedures() {
         return acc;
     }, {});
     const facetKey = FACETS.map(({ key }) => facetFilters[key]).join("|");
-    const hasFacetFilters = facetKey.replace(/\|/g, "") !== "";
 
     // The terms actually in use for each facet, so a filter never offers a
     // value that would match nothing.
@@ -173,6 +176,8 @@ function AllProcedures() {
         uncodedOnly,
         pacStatus,
         addedBy,
+        fromDate,
+        toDate,
     ]);
 
     const handleSearch = () => {
@@ -208,6 +213,8 @@ function AllProcedures() {
         for (const { key } of FACETS) params.delete(facetParam(key));
         params.delete("pac");
         params.delete("addedBy");
+        params.delete("from");
+        params.delete("to");
         params.set("page", "1");
         setSearchParams(params);
     };
@@ -235,7 +242,16 @@ function AllProcedures() {
         }
     };
 
-    const hasFilters = hasFacetFilters || pacStatus !== "" || addedBy !== "";
+    // How many of the collapsible filters are in use, shown on its summary so
+    // a collapsed section does not hide that the list is narrowed.
+    const activeFilterCount = [
+        fromDate,
+        toDate,
+        pacStatus,
+        addedBy,
+        ...FACETS.map(({ key }) => facetFilters[key]),
+    ].filter(Boolean).length;
+    const hasFilters = activeFilterCount > 0;
 
     return (
         <BodyLayout header={<Tools />}>
@@ -287,8 +303,8 @@ function AllProcedures() {
                 </button>
             </div>
 
-            {/* Toggle for Upcoming Procedures */}
-            <div className="mb-4 flex flex-wrap gap-4">
+            {/* Toggles, and the CSV export of whatever the page is showing */}
+            <div className="mb-4 flex flex-wrap items-center gap-4">
                 <label className="flex items-center cursor-pointer">
                     <input
                         type="checkbox"
@@ -349,10 +365,66 @@ function AllProcedures() {
                         Uncoded only
                     </span>
                 </label>
+                <button
+                    type="button"
+                    onClick={handleExport}
+                    disabled={exporting}
+                    title="Export every procedure matching the search and filters"
+                    className="ml-auto inline-flex items-center rounded-md border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
+                >
+                    <DownloadIcon width={16} height={16} className="mr-2" />
+                    {exporting ? "Exporting..." : "Export CSV"}
+                </button>
             </div>
 
-            {/* PAC status, added-by and procedure concept facet filters */}
-            <div className="mb-4 flex flex-wrap items-center gap-2">
+            {/* Date range, PAC status, added-by and procedure concept facet
+                filters. Starts open when the URL already carries one. */}
+            <Collapsible
+                className="mb-4"
+                summaryClassName="text-sm font-medium text-gray-700"
+                contentClassName="mt-2 flex flex-wrap items-center gap-2"
+                defaultOpen={hasFilters}
+                iconSize={14}
+                summary={
+                    <>
+                        Filters
+                        {hasFilters && (
+                            <span className="rounded-full bg-blue-100 px-2 text-xs text-blue-700">
+                                {activeFilterCount} active
+                            </span>
+                        )}
+                    </>
+                }
+            >
+                {[
+                    {
+                        name: "from",
+                        label: "From",
+                        value: fromDate,
+                        max: toDate,
+                    },
+                    { name: "to", label: "To", value: toDate, min: fromDate },
+                ].map(({ name, label, value, min, max }) => (
+                    <label
+                        key={name}
+                        className="flex items-center gap-1 text-sm text-gray-700"
+                    >
+                        {label}
+                        <input
+                            type="date"
+                            value={value}
+                            min={min || undefined}
+                            max={max || undefined}
+                            onChange={(e) => setParam(name, e.target.value)}
+                            className={twMerge(
+                                "px-2 py-0.5 border rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500",
+                                value
+                                    ? "border-blue-400 text-blue-700"
+                                    : "border-gray-300 text-gray-700",
+                            )}
+                        />
+                    </label>
+                ))}
                 <select
                     value={pacStatus}
                     onChange={(e) => setParam("pac", e.target.value)}
@@ -416,17 +488,7 @@ function AllProcedures() {
                         Clear filters
                     </button>
                 )}
-                <button
-                    type="button"
-                    onClick={handleExport}
-                    disabled={exporting}
-                    title="Export every procedure matching the search and filters"
-                    className="ml-auto inline-flex items-center rounded-md border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
-                >
-                    <DownloadIcon width={16} height={16} className="mr-2" />
-                    {exporting ? "Exporting..." : "Export CSV"}
-                </button>
-            </div>
+            </Collapsible>
 
             {error && (
                 <ErrorBanner className="mb-4">{error.message}</ErrorBanner>

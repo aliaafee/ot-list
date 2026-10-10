@@ -32,6 +32,8 @@ const MAX_PER_PAGE = 200;
 const FILTER_PARAMS = [
     "search",
     "upcoming",
+    "from",
+    "to",
     "showRemoved",
     "uncoded",
     "pac",
@@ -102,6 +104,10 @@ const withConcept = (where, facetField) =>
         : "") +
     ` WHERE ${where})`;
 
+/** A "YYYY-MM-DD" URL parameter, or "" if it is not one. */
+const calendarDate = (value) =>
+    /^\d{4}-\d{2}-\d{2}$/.test(String(value || "")) ? String(value) : "";
+
 /**
  * The conditions for the page's URL parameters, each `{ sql, params }` in
  * the form `$dbx.exp` takes; a procedure must meet all of them. Every value
@@ -134,6 +140,26 @@ function buildProcedureConditions(query, today) {
         add(
             "[[procedures.procedureDay]] IN (SELECT [[otDays.id]] FROM {{otDays}} WHERE [[otDays.date]] >= {:today})",
             { today },
+        );
+    }
+
+    // The OT day's date, from and to inclusive. Anything that is not a
+    // calendar date is ignored rather than compared as text.
+    const from = calendarDate(query.from);
+    if (from) {
+        add(
+            "[[procedures.procedureDay]] IN (SELECT [[otDays.id]] FROM {{otDays}} WHERE [[otDays.date]] >= {:fromDate})",
+            { fromDate: from },
+        );
+    }
+
+    // The stored value carries a time, so "to" reaches the end of its day
+    // or the day itself would fall outside.
+    const to = calendarDate(query.to);
+    if (to) {
+        add(
+            "[[procedures.procedureDay]] IN (SELECT [[otDays.id]] FROM {{otDays}} WHERE [[otDays.date]] <= {:toDate})",
+            { toDate: `${to} 23:59:59.999Z` },
         );
     }
 
