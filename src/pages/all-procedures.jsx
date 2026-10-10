@@ -64,6 +64,7 @@ function AllProcedures() {
     const [error, setError] = useState(null);
     const [totalPages, setTotalPages] = useState(1);
     const pageSize = 50;
+    const [surgeons, setSurgeons] = useState([]);
 
     const { concepts } = useCatalogue();
 
@@ -77,6 +78,7 @@ function AllProcedures() {
     const showRemoved = searchParams.get("showRemoved") === "true";
     const uncodedOnly = searchParams.get("uncoded") === "true";
     const pacStatus = searchParams.get("pac") || "";
+    const addedBy = searchParams.get("addedBy") || "";
 
     // The selected facet term per facet, from the URL. `facetKey` is a stable
     // string of them, so the fetch effect re-runs when any changes without
@@ -109,6 +111,23 @@ function AllProcedures() {
         );
     }, [concepts]);
 
+    // Every surgeon, not only `activeSurgeons`: this page reaches back over past
+    // procedures, which may have been added by someone no longer active.
+    useEffect(() => {
+        let cancelled = false;
+        pb.collection("surgeons")
+            .getFullList({ sort: "name" })
+            .then((items) => {
+                if (!cancelled) setSurgeons(items);
+            })
+            .catch((err) => {
+                console.error("Error fetching surgeons:", err);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
     const fetchProcedures = async (
         pageNumber,
         query = "",
@@ -117,6 +136,7 @@ function AllProcedures() {
         facets = {},
         onlyUncoded = false,
         pac = "",
+        surgeon = "",
     ) => {
         setLoading(true);
         setError(null);
@@ -174,6 +194,10 @@ function AllProcedures() {
                 filters.push(pb.filter(`pacStatus = {:pac}`, { pac }));
             }
 
+            if (surgeon) {
+                filters.push(pb.filter(`addedBy = {:surgeon}`, { surgeon }));
+            }
+
             if (filters.length > 0) {
                 options.filter = filters.join(" && ");
             }
@@ -207,6 +231,7 @@ function AllProcedures() {
             facetFilters,
             uncodedOnly,
             pacStatus,
+            addedBy,
         );
         // facetKey stands in for facetFilters, which is a fresh object each render
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -218,6 +243,7 @@ function AllProcedures() {
         facetKey,
         uncodedOnly,
         pacStatus,
+        addedBy,
     ]);
 
     const handleSearch = () => {
@@ -252,11 +278,12 @@ function AllProcedures() {
         const params = new URLSearchParams(searchParams);
         for (const { key } of FACETS) params.delete(facetParam(key));
         params.delete("pac");
+        params.delete("addedBy");
         params.set("page", "1");
         setSearchParams(params);
     };
 
-    const hasFilters = hasFacetFilters || pacStatus !== "";
+    const hasFilters = hasFacetFilters || pacStatus !== "" || addedBy !== "";
 
     return (
         <BodyLayout header={<Tools />}>
@@ -372,7 +399,7 @@ function AllProcedures() {
                 </label>
             </div>
 
-            {/* PAC status and procedure concept facet filters */}
+            {/* PAC status, added-by and procedure concept facet filters */}
             <div className="mb-4 flex flex-wrap items-center gap-2">
                 <select
                     value={pacStatus}
@@ -388,6 +415,23 @@ function AllProcedures() {
                     {PAC_STATUS_OPTIONS.map(({ value, label }) => (
                         <option key={value} value={value}>
                             {label}
+                        </option>
+                    ))}
+                </select>
+                <select
+                    value={addedBy}
+                    onChange={(e) => setParam("addedBy", e.target.value)}
+                    className={twMerge(
+                        "px-2 py-1 border rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500",
+                        addedBy
+                            ? "border-blue-400 text-blue-700"
+                            : "border-gray-300 text-gray-700",
+                    )}
+                >
+                    <option value="">Added by: any</option>
+                    {surgeons.map((surgeon) => (
+                        <option key={surgeon.id} value={surgeon.id}>
+                            {surgeon.name}
                         </option>
                     ))}
                 </select>
@@ -462,6 +506,9 @@ function AllProcedures() {
                                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                                         Room
                                     </th>
+                                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Added By
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 bg-white">
@@ -521,6 +568,9 @@ function AllProcedures() {
                                         </td>
                                         <td className="px-3 py-2 text-sm">
                                             {proc.expand?.operatingRoom?.name}
+                                        </td>
+                                        <td className="px-3 py-2 text-sm">
+                                            {proc.expand?.addedBy?.name}
                                         </td>
                                     </tr>
                                 ))}
