@@ -133,6 +133,7 @@ const { syncProcedureCodes } = require(`${__hooks}/procedure-codes.js`);
 | `checklist-validation.pb.js` | Refuses template item keys starting `custom-`. |
 | `auto_tracking.pb.js` | Stamps `creator`/`updater` on collection API writes. |
 | `reports.pb.js`, `reports.js`, `templates/` | The printable list, `GET /api/lists/{otDayId}/html`. |
+| `procedure-search.js` | The All Procedures page: its paged table, `GET /api/procedures/search`, and CSV export, `GET /api/procedures/csv` (routes in `reports.pb.js`). `buildProcedureConditions` is the only place its search and filters become a query; it is SQL, not a filter string, so the same expressions can count the matches. |
 | `app-settings.js` | `todayDate(app)`. |
 
 Routes: `add-procedure-with-patient`, `bulk-update-procedures`, `add-pac-status`,
@@ -286,8 +287,8 @@ receives events. Always unsubscribe in the effect cleanup.
 
 **Expand strings.** The procedure expand
 (`…procedureCodes_via_procedure.concept,procedureCodes_via_procedure.spinalLevels`)
-is repeated in `procedure-list-context.jsx`, `pages/all-procedures.jsx`,
-`pages/patients.jsx` and `PROCEDURE_EXPAND` in the hook. Change them together.
+is repeated in `procedure-list-context.jsx`, `pages/patients.jsx`,
+`PROCEDURE_EXPAND` in the hook and `SEARCH_EXPAND` in `procedure-search.js`. Change them together.
 The checklist is fetched per expanded procedure and must stay out of these.
 
 **Editing codes.** Never resolve stored codes against an unloaded catalogue and

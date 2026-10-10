@@ -4,6 +4,7 @@ import {
     ChevronLeft,
     ChevronLeftIcon,
     ChevronRightIcon,
+    DownloadIcon,
     ExternalLinkIcon,
     SearchIcon,
     XIcon,
@@ -11,29 +12,26 @@ import {
 import BodyLayout from "@/components/body-layout";
 import { ToolBar, ToolBarButtonLabel, ToolBarLink } from "@/components/toolbar";
 import { pb } from "@/lib/pb";
-import {
-    describeProcedureCodes,
-    UNCODED_CONCEPT_ID,
-} from "@/lib/procedure-codes";
+import { api } from "@/lib/api";
+import { describeProcedureCodes } from "@/lib/procedure-codes";
 import { FACET_LABELS } from "@/lib/procedure-catalogue";
 import { useCatalogue } from "@/contexts/catalogue-context";
-import { hospitalToday } from "@/lib/app-settings";
 import { twMerge } from "tailwind-merge";
 import LabelValue from "@/components/label-value";
 import ErrorBanner from "@/components/error-banner";
 import { calendarDate } from "@/utils/dates";
+import { downloadBlob } from "@/utils/download";
 
-// A concept facet, its relation field on `procedureConcepts`, and the URL param
-// its filter value is kept in. Filtering a procedure means "at least one of its
-// procedure codes has a concept with this facet term" - hence the `?=` operator
-// across the has-many `procedureCodes_via_procedure` back-relation.
+// The concept facets the page filters on. Each keeps its value in the URL
+// param `f_<key>`; the server turns that into the filter (`FACET_FIELDS` in
+// pb/pb_hooks/procedure-search.js), so a facet added here is added there.
 const FACETS = [
-    { key: "method", field: "method" },
-    { key: "procedureSite", field: "procedureSite" },
-    { key: "surgicalApproach", field: "surgicalApproach" },
-    { key: "device", field: "device" },
-    { key: "morphology", field: "morphology" },
-    { key: "intent", field: "defaultIntent" },
+    { key: "method" },
+    { key: "procedureSite" },
+    { key: "surgicalApproach" },
+    { key: "device" },
+    { key: "morphology" },
+    { key: "intent" },
 ];
 const facetParam = (key) => `f_${key}`;
 
@@ -65,6 +63,7 @@ function AllProcedures() {
     const [totalPages, setTotalPages] = useState(1);
     const pageSize = 50;
     const [surgeons, setSurgeons] = useState([]);
+    const [exporting, setExporting] = useState(false);
 
     const { concepts } = useCatalogue();
 
@@ -128,88 +127,26 @@ function AllProcedures() {
         };
     }, []);
 
-    const fetchProcedures = async (
-        pageNumber,
-        query = "",
-        upcoming = false,
-        includeRemoved = false,
-        facets = {},
-        onlyUncoded = false,
-        pac = "",
-        surgeon = "",
-    ) => {
+    // The page's own URL parameters are the routes' parameters: the search
+    // and filters are turned into a query on the server, in one place, for
+    // both the table and the CSV export.
+    const fetchProcedures = async () => {
         setLoading(true);
         setError(null);
 
         try {
-            const options = {
-                sort: "procedureDay.date",
-                expand: "patient,addedBy,procedureDay,procedureDay.otList,operatingRoom,procedureCodes_via_procedure.concept,procedureCodes_via_procedure.spinalLevels",
-            };
-
-            const filters = [];
-
-            const term = query.trim();
-            if (term) {
-                filters.push(
-                    `(patient.nid ~ "${term}" || patient.hospitalId ~ "${term}" || patient.name ~ "${term}" || diagnosis ~ "${term}" || procedure ~ "${term}")`,
-                );
-            }
-
-            if (upcoming) {
-                // Today at the hospital, the same line upcomingOtDays draws.
-                filters.push(`procedureDay.date >= "${hospitalToday()}"`);
-            }
-
-            if (!includeRemoved) {
-                filters.push(`removed = false`);
-            }
-
-            for (const { key, field } of FACETS) {
-                const term = facets[key];
-                if (!term) continue;
-                filters.push(
-                    pb.filter(
-                        `procedureCodes_via_procedure.concept.${field}.term ?= {:term}`,
-                        { term },
-                    ),
-                );
-            }
-
-            // Procedures still carrying the uncoded sentinel - the coverage gap
-            // the catalogue custodian works through (spec section 8).
-            if (onlyUncoded) {
-                filters.push(
-                    pb.filter(
-                        `procedureCodes_via_procedure.concept.conceptId ?= {:uncoded}`,
-                        { uncoded: UNCODED_CONCEPT_ID },
-                    ),
-                );
-            }
-
-            // Current PAC status. "none" is procedures with none recorded yet.
-            if (pac === "none") {
-                filters.push(`pacStatus = ""`);
-            } else if (pac) {
-                filters.push(pb.filter(`pacStatus = {:pac}`, { pac }));
-            }
-
-            if (surgeon) {
-                filters.push(pb.filter(`addedBy = {:surgeon}`, { surgeon }));
-            }
-
-            if (filters.length > 0) {
-                options.filter = filters.join(" && ");
-            }
-
-            const result = await pb
-                .collection("procedures")
-                .getList(pageNumber, pageSize, options);
+            const result = await api.searchProcedures({
+                ...Object.fromEntries(searchParams),
+                page,
+                perPage: pageSize,
+            });
 
             setProcedures(result.items);
             setTotalPages(result.totalPages);
         } catch (err) {
             console.error("Error fetching procedures:", err);
+            setProcedures([]);
+            setTotalPages(1);
             setError({
                 message: "Failed to load procedures. Please try again.",
             });
@@ -223,17 +160,9 @@ function AllProcedures() {
         // for the request it runs. That is the intended shape, not a cascading
         // render to design away.
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        fetchProcedures(
-            page,
-            trimmedSearch,
-            showUpcoming,
-            showRemoved,
-            facetFilters,
-            uncodedOnly,
-            pacStatus,
-            addedBy,
-        );
-        // facetKey stands in for facetFilters, which is a fresh object each render
+        fetchProcedures();
+        // Re-run on the values the server reads, not on searchParams itself,
+        // so typing a trailing space in the search box does not refetch.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         page,
@@ -281,6 +210,29 @@ function AllProcedures() {
         params.delete("addedBy");
         params.set("page", "1");
         setSearchParams(params);
+    };
+
+    const handleExport = async () => {
+        setExporting(true);
+        setError(null);
+
+        try {
+            const report = await api.exportProceduresCsv(
+                Object.fromEntries(searchParams),
+            );
+
+            downloadBlob(
+                new Blob([report.content], { type: report.type }),
+                report.fileName,
+            );
+        } catch (err) {
+            console.error("Error exporting procedures:", err);
+            setError({
+                message: "Failed to export procedures. Please try again.",
+            });
+        } finally {
+            setExporting(false);
+        }
     };
 
     const hasFilters = hasFacetFilters || pacStatus !== "" || addedBy !== "";
@@ -464,6 +416,16 @@ function AllProcedures() {
                         Clear filters
                     </button>
                 )}
+                <button
+                    type="button"
+                    onClick={handleExport}
+                    disabled={exporting}
+                    title="Export every procedure matching the search and filters"
+                    className="ml-auto inline-flex items-center rounded-md border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
+                >
+                    <DownloadIcon width={16} height={16} className="mr-2" />
+                    {exporting ? "Exporting..." : "Export CSV"}
+                </button>
             </div>
 
             {error && (
@@ -476,7 +438,7 @@ function AllProcedures() {
                 </div>
             ) : procedures.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
-                    No procedures found.
+                    {page > 1 ? "No more procedures." : "No procedures found."}
                 </div>
             ) : (
                 <>
@@ -577,60 +539,58 @@ function AllProcedures() {
                             </tbody>
                         </table>
                     </div>
-
-                    {/* Pagination Controls */}
-                    {totalPages > 1 && (
-                        <div className="flex items-center justify-between mt-2">
-                            <div className="text-sm text-gray-700">
-                                Page <span className="font-medium">{page}</span>{" "}
-                                of{" "}
-                                <span className="font-medium">
-                                    {totalPages}
-                                </span>
-                            </div>
-                            <div className="flex gap-2">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const params = new URLSearchParams(
-                                            searchParams,
-                                        );
-                                        params.set("page", String(page - 1));
-                                        setSearchParams(params);
-                                    }}
-                                    disabled={page === 1}
-                                    className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    <ChevronLeftIcon
-                                        width={16}
-                                        height={16}
-                                        className="mr-1"
-                                    />
-                                    Previous
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const params = new URLSearchParams(
-                                            searchParams,
-                                        );
-                                        params.set("page", String(page + 1));
-                                        setSearchParams(params);
-                                    }}
-                                    disabled={page === totalPages}
-                                    className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    Next
-                                    <ChevronRightIcon
-                                        width={16}
-                                        height={16}
-                                        className="ml-1"
-                                    />
-                                </button>
-                            </div>
-                        </div>
-                    )}
                 </>
+            )}
+
+            {/* Pagination controls. Shown on an empty page past the end too, so
+                there is a way back from it. */}
+            {!loading && (page > 1 || totalPages > 1) && (
+                <div className="flex items-center justify-between mt-2">
+                    <div className="text-sm text-gray-700">
+                        Page <span className="font-medium">{page}</span> of{" "}
+                        <span className="font-medium">{totalPages}</span>
+                    </div>
+                    <div className="flex gap-2">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                const params = new URLSearchParams(
+                                    searchParams,
+                                );
+                                params.set("page", String(page - 1));
+                                setSearchParams(params);
+                            }}
+                            disabled={page === 1}
+                            className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <ChevronLeftIcon
+                                width={16}
+                                height={16}
+                                className="mr-1"
+                            />
+                            Previous
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                const params = new URLSearchParams(
+                                    searchParams,
+                                );
+                                params.set("page", String(page + 1));
+                                setSearchParams(params);
+                            }}
+                            disabled={page >= totalPages}
+                            className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Next
+                            <ChevronRightIcon
+                                width={16}
+                                height={16}
+                                className="ml-1"
+                            />
+                        </button>
+                    </div>
+                </div>
             )}
         </BodyLayout>
     );

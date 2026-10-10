@@ -182,7 +182,10 @@ export const api = {
      * @returns {Promise<Object>} { success, created, templates, skipped,
      *   warnings, errors }
      */
-    async importChecklistTemplates(file, { dryRun = false, inactive = false } = {}) {
+    async importChecklistTemplates(
+        file,
+        { dryRun = false, inactive = false } = {},
+    ) {
         return await pb.send(`/api/import-checklist-templates`, {
             method: "POST",
             headers: {
@@ -263,6 +266,47 @@ export const api = {
 
         if (!response.success) {
             throw new Error(response.message || "Failed to generate report.");
+        }
+
+        return response.report;
+    },
+
+    /**
+     * One page of the All Procedures table.
+     *
+     * `query` is the page's own URL parameters (search, toggles, filters,
+     * `page`) plus `perPage`. The server turns them into the filter, so the
+     * table and the CSV export cannot disagree. Resolves to the collection
+     * API's list shape: `{ page, perPage, totalItems, totalPages, items }`.
+     */
+    async searchProcedures(query) {
+        const response = await pb.send(`/api/procedures/search`, {
+            method: "GET",
+            query,
+        });
+
+        if (!response.success) {
+            throw new Error(response.message || "Failed to search procedures.");
+        }
+
+        return response;
+    },
+
+    /**
+     * The All Procedures page as a CSV file, generated on the server.
+     *
+     * `query` is the page's own URL parameters (search, toggles, filters);
+     * the server exports every procedure they match, not one page of them.
+     * Resolves to `{ content, type, fileName }`.
+     */
+    async exportProceduresCsv(query) {
+        const response = await pb.send(`/api/procedures/csv`, {
+            method: "GET",
+            query,
+        });
+
+        if (!response.success) {
+            throw new Error(response.message || "Failed to export procedures.");
         }
 
         return response.report;
