@@ -140,8 +140,11 @@ function ProcedureDetails({
                             onClick={() => setEditing(true)}
                         >
                             <EditIcon className="" width={16} height={16} />
-                            <ToolBarButtonLabel className="hidden sm:inline">
-                                Edit
+                            <ToolBarButtonLabel className="">
+                                Edit{" "}
+                                <span className="hidden xl:inline">
+                                    Procedure
+                                </span>
                             </ToolBarButtonLabel>
                         </ToolBarButton>
                     )}
@@ -152,7 +155,7 @@ function ProcedureDetails({
                             onClick={() => onMoveDate(procedure)}
                         >
                             <CalendarArrowDownIcon width={16} height={16} />
-                            <ToolBarButtonLabel className="hidden sm:inline">
+                            <ToolBarButtonLabel className="hidden md:inline">
                                 Move
                             </ToolBarButtonLabel>
                         </ToolBarButton>
@@ -174,7 +177,7 @@ function ProcedureDetails({
                             className={copied ? "hidden" : "inline"}
                         />
 
-                        <ToolBarButtonLabel className="hidden sm:inline">
+                        <ToolBarButtonLabel className="hidden md:inline">
                             Copy
                         </ToolBarButtonLabel>
                     </ToolBarButton>
@@ -190,7 +193,7 @@ function ProcedureDetails({
                                     width={16}
                                     height={16}
                                 />
-                                <ToolBarButtonLabel className="hidden sm:inline">
+                                <ToolBarButtonLabel className="hidden md:inline">
                                     Remove
                                 </ToolBarButtonLabel>
                             </ToolBarButton>
@@ -211,8 +214,9 @@ function ProcedureDetails({
                             onClick={() => setEditingPatient(true)}
                         >
                             <UserPenIcon className="" width={16} height={16} />
-                            <ToolBarButtonLabel className="hidden sm:inline">
-                                Edit Patient
+                            <ToolBarButtonLabel className="hidden md:inline">
+                                <span className="hidden xl:inline">Edit</span>{" "}
+                                Patient
                             </ToolBarButtonLabel>
                         </ToolBarButton>
                     )}
@@ -231,8 +235,11 @@ function ProcedureDetails({
                                 height={16}
                                 className={rebuilding ? "animate-spin" : ""}
                             />
-                            <ToolBarButtonLabel className="hidden sm:inline">
-                                Rebuild Checklist
+                            <ToolBarButtonLabel className="hidden md:inline">
+                                <span className="hidden xl:inline">
+                                    Rebuild
+                                </span>{" "}
+                                Checklist
                             </ToolBarButtonLabel>
                         </ToolBarButton>
                     )}
@@ -298,7 +305,9 @@ function ProcedureDetails({
                 <LabelValue
                     className="md:col-span-1"
                     label="Added Date"
-                    value={calendarDate(procedure.addedDate).format("DD MMM YYYY")}
+                    value={calendarDate(procedure.addedDate).format(
+                        "DD MMM YYYY",
+                    )}
                 />
                 <LabelValue label="Admitted Bed" value={procedure.bed} />
                 <LabelValue
@@ -328,9 +337,9 @@ function ProcedureDetails({
                         {procedure?.expand?.patient?.nid}{" "}
                         {procedure?.expand?.patient?.name} planned for{" "}
                         {procedureCodes.join(" + ")} on{" "}
-                        {calendarDate(procedure?.expand?.procedureDay.date).format(
-                            "DD MMM YYYY",
-                        )}
+                        {calendarDate(
+                            procedure?.expand?.procedureDay.date,
+                        ).format("DD MMM YYYY")}
                     </p>
                     <p>Remove the selected procedure?</p>
                 </ModalWindow>
