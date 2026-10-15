@@ -75,33 +75,35 @@ function ProcedureHeaderRow({
                 // single procedure: "ACDF (Left, C5-C6) + Burr hole drainage".
                 value={describeProcedureCodesSimplified(procedure).join(" + ")}
             />
-            <div className="col-span-1">
-                <PacStatusSmall status={procedure?.pacStatus} />
-            </div>
-            {/* Read off the procedure rather than loading its checklist: this
+            <div className="col-span-2 grid grid-rows-2 xl:grid-cols-2 xl:grid-rows-1 justify-center items-center">
+                <div>
+                    <PacStatusSmall status={procedure?.pacStatus} />
+                </div>
+                {/* Read off the procedure rather than loading its checklist: this
                 renders once per row, and the checklist items are deliberately
                 kept out of the list queries. */}
-            <div className="col-span-1 flex items-center justify-center">
-                {procedure?.checklistOutstanding > 0 && (
-                    // The click goes no further than this button, or it
-                    // would also do whatever a click on the row does.
-                    <button
-                        type="button"
-                        className="p-1 rounded text-red-600 flex items-center gap-1 cursor-pointer hover:bg-red-100"
-                        title={`${procedure.checklistOutstanding} checklist item${
-                            procedure.checklistOutstanding === 1 ? "" : "s"
-                        } outstanding - show the checklist`}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onChecklistAlert?.();
-                        }}
-                    >
-                        <TriangleAlertIcon size={14} aria-hidden="true" />
-                        <span className="text-xs">
-                            {procedure.checklistOutstanding}
-                        </span>
-                    </button>
-                )}
+                <div className="flex items-center justify-center">
+                    {procedure?.checklistOutstanding > 0 && (
+                        // The click goes no further than this button, or it
+                        // would also do whatever a click on the row does.
+                        <button
+                            type="button"
+                            className="p-1 rounded text-red-600 flex items-center gap-1 cursor-pointer hover:bg-red-100"
+                            title={`${procedure.checklistOutstanding} checklist item${
+                                procedure.checklistOutstanding === 1 ? "" : "s"
+                            } outstanding - show the checklist`}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onChecklistAlert?.();
+                            }}
+                        >
+                            <TriangleAlertIcon size={14} aria-hidden="true" />
+                            <span className="text-xs">
+                                {procedure.checklistOutstanding}
+                            </span>
+                        </button>
+                    )}
+                </div>
             </div>
         </div>
     );
