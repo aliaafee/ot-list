@@ -2,7 +2,7 @@ import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { ChevronRight } from "lucide-react";
 
-import { hospitalTime } from "@/utils/dates";
+import { age, hospitalTime } from "@/utils/dates";
 import LabelValue from "../label-value";
 import ProcedureHeaderRow from "./header-row";
 import ProcedureComments from "./comments";
@@ -30,6 +30,7 @@ function ProcedureExpandedView({
     focusChecklist = false,
     onEdit,
 }) {
+    const patient = procedure?.expand?.patient;
     const [showPatientDetails, setShowPatientDetails] = useState(false);
     // Bumped by the outstanding-items alert; the checklist opens and scrolls
     // into view on every change. Starts set when the row was opened from the
@@ -75,6 +76,13 @@ function ProcedureExpandedView({
             >
                 <div className="hidden md:inline-block"></div>
                 <LabelValue
+                    label="Age/Sex"
+                    value={`${
+                        patient?.dateOfBirth ? age(patient?.dateOfBirth) : "-"
+                    } / ${patient?.sex[0]?.toUpperCase() || "-"}`}
+                    className="col-span-1 lg:hidden"
+                />
+                <LabelValue
                     label="Hospital ID"
                     value={procedure?.expand?.patient?.hospitalId}
                     className="col-span-1 md:col-span-3"
@@ -103,7 +111,9 @@ function ProcedureExpandedView({
                 <div>
                     Created:{" "}
                     <span>
-                        {hospitalTime(procedure?.created).format("DD MMM YYYY HH:mm")}
+                        {hospitalTime(procedure?.created).format(
+                            "DD MMM YYYY HH:mm",
+                        )}
                     </span>{" "}
                     by{" "}
                     <span className="font-semibold">

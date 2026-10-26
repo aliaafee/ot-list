@@ -50,7 +50,9 @@ const TableHeader = ({ className }) => (
             <div className="col-span-3 overflow-clip text-ellipsis">
                 Procedure
             </div>
-            <div className="col-span-2 overflow-clip text-ellipsis">PAC</div>
+            <div className="col-span-2 overflow-clip text-ellipsis text-center xl:text-left">
+                PAC
+            </div>
         </div>
     </div>
 );
