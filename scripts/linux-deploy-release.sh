@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Configuration
-DEFAULT_VERSION="0.2.0"
+DEFAULT_VERSION="0.2.1"
 ROOT_DIR="/opt/ot-list"
 PB_DIR="$ROOT_DIR/pb"
 PB_USER="pocketbase"
