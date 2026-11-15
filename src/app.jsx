@@ -12,6 +12,7 @@ import AllProcedures from "./pages/all-procedures";
 import NotFound from "./pages/not-found";
 import AdminBackups from "./pages/admin-backups";
 import SettingsDashboard from "./pages/settings-dashboard";
+import OTWorkspace from "./pages/ot-workspace";
 
 export default function App() {
     return (
@@ -53,6 +54,12 @@ export default function App() {
                     />
                     <Route path="/patients" element={<Patients />} />
                     <Route path="/procedures" element={<AllProcedures />} />
+                    <Route path="/ot" element={<OTWorkspace />} />
+                    <Route path="/ot/:otDayId" element={<OTWorkspace />} />
+                    <Route
+                        path="/ot/:otDayId/:procedureId"
+                        element={<OTWorkspace />}
+                    />
                 </Route>
                 <Route path="/lists/:otDayId/print" element={<OtListPrint />} />
             </Route>
