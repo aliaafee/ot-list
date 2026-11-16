@@ -8,6 +8,18 @@ PB_DIR="$ROOT_DIR/pb"
 PB_USER="pocketbase"
 SERVICE_NAME="otlist"
 
+# Dependancy Versions
+POCKETBASE_VERSION="0.42.2"
+NODE_VERSION="22"
+NVM_VERSION="v0.40.1"
+
+# Source URLs
+REPO_GIT_URL="https://github.com/aliaafee/ot-list.git"
+# Releases are at $RELEASE_BASE_URL/v<VERSION>/ot-list-v<VERSION>.zip
+RELEASE_BASE_URL="https://github.com/aliaafee/ot-list/releases/download"
+POCKETBASE_URL="https://ganigeorgiev.com/meta/pocketbase/pocketbase/download/v${POCKETBASE_VERSION}/pocketbase_${POCKETBASE_VERSION}_linux_amd64.zip"
+NVM_INSTALL_URL="https://raw.githubusercontent.com/nvm-sh/nvm/$NVM_VERSION/install.sh"
+
 # Where the script fetches its own updates from
 REPO_RAW_URL="https://raw.githubusercontent.com/aliaafee/ot-list"
 SCRIPT_REPO_PATH="scripts/linux-deploy-release.sh"
@@ -208,7 +220,6 @@ is_installed() {
 # Function to build from source
 build_from_source() {
     local BRANCH="${1:-main}"
-    local REPO_URL="https://github.com/aliaafee/ot-list.git"
     local BUILD_DIR="/tmp/ot-list-build-$(date +%s)"
     
     echo "[*] Building OT List from source..."
@@ -224,22 +235,22 @@ build_from_source() {
     
     # Clone the repository
     echo "[*] Cloning repository..."
-    git clone --depth 1 --branch "$BRANCH" "$REPO_URL" "$BUILD_DIR" || {
-        echo "Error: Failed to clone repository from $REPO_URL (branch: $BRANCH)"
+    git clone --depth 1 --branch "$BRANCH" "$REPO_GIT_URL" "$BUILD_DIR" || {
+        echo "Error: Failed to clone repository from $REPO_GIT_URL (branch: $BRANCH)"
         echo "Please check that the branch exists and you have network connectivity"
         exit 1
     }
     cd "$BUILD_DIR"
     
-    # Install Node.js v22 using nvm if not already installed
+    # Install Node.js NODE_VERSION using nvm if not already installed
     echo "[*] Checking Node.js installation..."
-    if ! command -v node &> /dev/null || ! node --version | grep -q "v22"; then
-        echo "[*] Installing Node.js v22 using nvm..."
-        echo "[*] Note: Installing from nvm-sh/nvm repository (v0.40.1)"
+    if ! command -v node &> /dev/null || ! node --version | grep -q "^v${NODE_VERSION}\."; then
+        echo "[*] Installing Node.js v$NODE_VERSION using nvm..."
+        echo "[*] Note: Installing from nvm-sh/nvm repository ($NVM_VERSION)"
         
         # Install nvm if not present
         if [ ! -d "$HOME/.nvm" ]; then
-            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash || {
+            curl -o- "$NVM_INSTALL_URL" | bash || {
                 echo "Error: Failed to install nvm"
                 exit 1
             }
@@ -250,11 +261,11 @@ build_from_source() {
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         fi
         
-        nvm install 22 || {
-            echo "Error: Failed to install Node.js v22"
+        nvm install "$NODE_VERSION" || {
+            echo "Error: Failed to install Node.js v$NODE_VERSION"
             exit 1
         }
-        nvm use 22
+        nvm use "$NODE_VERSION"
     else
         echo "[*] Node.js $(node --version) is already installed"
     fi
@@ -392,7 +403,7 @@ install() {
         BRANCH="main"
     fi
     
-    RELEASE_URL="https://github.com/aliaafee/ot-list/releases/download/v${VERSION}/ot-list-v${VERSION}.zip"
+    RELEASE_URL="$RELEASE_BASE_URL/v${VERSION}/ot-list-v${VERSION}.zip"
 
     echo "[*] OT List Release Deployment Script"
     if [ "$FROM_SOURCE" = true ]; then
@@ -464,20 +475,14 @@ install() {
     fi
 
     # Download PocketBase binary
-    echo "[*] Downloading latest PocketBase binary..."
+    echo "[*] Downloading PocketBase v$POCKETBASE_VERSION binary..."
     mkdir -p "$PB_DIR"
 
-    LATEST_URL=$(curl -s https://api.github.com/repos/pocketbase/pocketbase/releases/latest \
-        | grep "browser_download_url.*linux_amd64.zip" \
-        | cut -d '"' -f 4 | head -n1)
-
-    if [ -z "$LATEST_URL" ]; then
-        echo "Error: Could not fetch PocketBase release URL"
+    PB_TMPFILE="$PB_DIR/pocketbase.zip"
+    if ! curl -L -f "$POCKETBASE_URL" -o "$PB_TMPFILE"; then
+        echo "Error: Could not download PocketBase from $POCKETBASE_URL"
         exit 1
     fi
-
-    PB_TMPFILE="$PB_DIR/pocketbase.zip"
-    curl -L "$LATEST_URL" -o "$PB_TMPFILE"
     unzip -o "$PB_TMPFILE" -d "$PB_DIR"
     rm "$PB_TMPFILE"
     echo "[*] PocketBase binary installed"
@@ -595,7 +600,7 @@ update() {
         BRANCH="main"
     fi
     
-    RELEASE_URL="https://github.com/aliaafee/ot-list/releases/download/v${VERSION}/ot-list-v${VERSION}.zip"
+    RELEASE_URL="$RELEASE_BASE_URL/v${VERSION}/ot-list-v${VERSION}.zip"
 
     echo "[*] OT List Update Script"
     if [ "$FROM_SOURCE" = true ]; then
@@ -685,22 +690,16 @@ update() {
         echo "Database restored"
     fi
 
-    # Download latest PocketBase binary
-    echo "[*] Downloading latest PocketBase binary..."
+    # Download PocketBase binary
+    echo "[*] Downloading PocketBase v$POCKETBASE_VERSION binary..."
     mkdir -p "$PB_DIR"
 
-    LATEST_URL=$(curl -s https://api.github.com/repos/pocketbase/pocketbase/releases/latest \
-        | grep "browser_download_url.*linux_amd64.zip" \
-        | cut -d '"' -f 4 | head -n1)
-
-    if [ -z "$LATEST_URL" ]; then
-        echo "Error: Could not fetch PocketBase release URL"
+    PB_TMPFILE="/tmp/pocketbase-$(date +%s).zip"
+    if ! curl -L -f "$POCKETBASE_URL" -o "$PB_TMPFILE"; then
+        echo "Error: Could not download PocketBase from $POCKETBASE_URL"
         echo "Backup is available at: $BACKUP_DIR"
         exit 1
     fi
-
-    PB_TMPFILE="/tmp/pocketbase-$(date +%s).zip"
-    curl -L "$LATEST_URL" -o "$PB_TMPFILE"
     unzip -o "$PB_TMPFILE" -d "$PB_DIR"
     rm "$PB_TMPFILE"
     echo "[*] PocketBase binary updated"
