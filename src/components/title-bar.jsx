@@ -11,6 +11,7 @@ import Logo from "./logo";
 
 const Sections = [
     { name: "lists", label: "Lists", link: "/lists" },
+    { name: "ot", label: "OT", link: "/ot" },
     { name: "patients", label: "Patients", link: "/patients" },
     {
         name: "procedures",
