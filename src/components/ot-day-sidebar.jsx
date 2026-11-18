@@ -20,6 +20,7 @@ import {
     SIDEBAR_PROCEDURE_EXPAND,
 } from "@/lib/ot-days";
 import { pb } from "@/lib/pb";
+import { OtListColours } from "@/utils/colours";
 import { calendarDate, formateDateLong } from "@/utils/dates";
 
 function ProcedureRow({ procedure, otDay, selected, onNavigate }) {
@@ -106,15 +107,24 @@ function ListGroup({
             className="border-b border-gray-200"
             summaryClassName={twMerge(
                 "w-full px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-blue-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-600",
-                selected && "text-blue-800",
+                selected && "bg-blue-100",
                 !!otDay.disabled && "text-red-400",
             )}
             contentClassName="pb-1"
             summary={
                 <span className="grow min-w-0">
                     <span className="flex gap-2 items-baseline">
-                        <span className="grow truncate">
-                            {otDay.expand?.otList?.name}
+                        {/* The list's own colour, as OtListMarker shows it in
+                            the days list. */}
+                        <span className="grow min-w-0">
+                            <span
+                                className={twMerge(
+                                    "inline-block max-w-full truncate align-middle rounded-sm px-1.5 py-0.5 text-white bg-gray-500",
+                                    OtListColours[otDay.expand?.otList?.colour],
+                                )}
+                            >
+                                {otDay.expand?.otList?.name}
+                            </span>
                         </span>
                         <span className="text-xs font-normal text-gray-500">
                             {shown.length}
