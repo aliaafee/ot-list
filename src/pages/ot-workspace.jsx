@@ -1,5 +1,6 @@
 import BodyLayout from "@/components/body-layout";
 import OtDaySidebar from "@/components/ot-day-sidebar";
+import OtProcedureView from "@/components/ot-procedure-view";
 import SidebarLayout from "@/components/sidebar-layout";
 import {
     ToolBar,
@@ -9,7 +10,7 @@ import {
 import { useProcedureList } from "@/contexts/procedure-list-context";
 import { hospitalToday } from "@/lib/app-settings";
 import { findOtDayOnDate } from "@/lib/ot-days";
-import { MenuIcon } from "lucide-react";
+import { MenuIcon, PlusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
@@ -59,6 +60,14 @@ function OTWorkspace() {
                 <MenuIcon width={16} height={16} />
                 <ToolBarButtonLabel>Cases</ToolBarButtonLabel>
             </ToolBarButton>
+            <ToolBarButton
+                title="Add Something"
+                disabled={false}
+                onClick={() => {}}
+            >
+                <PlusIcon width={16} height={16} />
+                <ToolBarButtonLabel>Add Something</ToolBarButtonLabel>
+            </ToolBarButton>
         </ToolBar>
     );
 
@@ -78,7 +87,7 @@ function OTWorkspace() {
             }
         >
             <BodyLayout header={procedureToolBar}>
-                <div>Procedure write</div>
+                <OtProcedureView otDayId={otDayId} procedureId={procedureId} />
             </BodyLayout>
         </SidebarLayout>
     );
