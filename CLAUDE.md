@@ -288,7 +288,8 @@ receives events. Always unsubscribe in the effect cleanup.
 **Expand strings.** The procedure expand
 (`…procedureCodes_via_procedure.concept,procedureCodes_via_procedure.spinalLevels`)
 is repeated in `procedure-list-context.jsx`, `pages/patients.jsx`,
-`PROCEDURE_EXPAND` in the hook and `SEARCH_EXPAND` in `procedure-search.js`. Change them together.
+`PROCEDURE_EXPAND` in the hook, `SEARCH_EXPAND` in `procedure-search.js` and
+`SIDEBAR_PROCEDURE_EXPAND` in `src/lib/ot-days.js`. Change them together.
 The checklist is fetched per expanded procedure and must stay out of these.
 
 **Editing codes.** Never resolve stored codes against an unloaded catalogue and

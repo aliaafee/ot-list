@@ -57,7 +57,11 @@ export default function App() {
                     <Route path="/ot" element={<OTWorkspace />} />
                     <Route path="/ot/:otDayId" element={<OTWorkspace />} />
                     <Route
-                        path="/ot/:otDayId/:procedureId"
+                        path="/ot/:otDayId/:otListId"
+                        element={<OTWorkspace />}
+                    />
+                    <Route
+                        path="/ot/:otDayId/:otListId/:procedureId"
                         element={<OTWorkspace />}
                     />
                 </Route>
